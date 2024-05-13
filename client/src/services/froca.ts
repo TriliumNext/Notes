@@ -1,10 +1,23 @@
-import FBranch from "../entities/fbranch.js";
-import FNote from "../entities/fnote.js";
-import FAttribute from "../entities/fattribute.js";
+import FBranch, { FBranchRow } from "../entities/fbranch.js";
+import FNote, { FNoteRow } from "../entities/fnote.js";
+import FAttribute, { FAttributeRow } from "../entities/fattribute.js";
 import server from "./server.js";
 import appContext from "../components/app_context.js";
-import FBlob from "../entities/fblob.js";
-import FAttachment from "../entities/fattachment.js";
+import FBlob, { FBlobRow } from "../entities/fblob.js";
+import FAttachment, { FAttachmentRow } from "../entities/fattachment.js";
+import { Froca } from "./froca-interface.js";
+
+interface SubtreeResponse {
+    notes: FNoteRow[];
+    branches: FBranchRow[];
+    attributes: FAttributeRow[];
+}
+
+interface SearchNoteResponse {
+    searchResultNoteIds: string[];
+    highlightedTokens: string[];
+    error: string | null;
+}
 
 /**
  * Froca (FROntend CAche) keeps a read only cache of note tree structure in frontend's memory.
@@ -16,48 +29,47 @@ import FAttachment from "../entities/fattachment.js";
  *
  * Backend has a similar cache called Becca
  */
-class Froca {
+class FrocaImpl implements Froca {
+    private initializedPromise: Promise<void>;
+
+    notes!: Record<string, FNote>;
+    branches!: Record<string, FBranch>;
+    attributes!: Record<string, FAttribute>;
+    attachments!: Record<string, FAttachment>;
+    blobPromises!: Record<string, Promise<void | FBlob> | null>;
+
     constructor() {
         this.initializedPromise = this.loadInitialTree();
     }
 
     async loadInitialTree() {
-        const resp = await server.get('tree');
+        const resp = await server.get<SubtreeResponse>('tree');
 
         // clear the cache only directly before adding new content which is important for e.g., switching to protected session
 
-        /** @type {Object.<string, FNote>} */
         this.notes = {};
-
-        /** @type {Object.<string, FBranch>} */
         this.branches = {};
-
-        /** @type {Object.<string, FAttribute>} */
         this.attributes = {};
-
-        /** @type {Object.<string, FAttachment>} */
         this.attachments = {};
-
-        /** @type {Object.<string, Promise<FBlob>>} */
         this.blobPromises = {};
 
         this.addResp(resp);
     }
 
-    async loadSubTree(subTreeNoteId) {
-        const resp = await server.get(`tree?subTreeNoteId=${subTreeNoteId}`);
+    async loadSubTree(subTreeNoteId: string) {
+        const resp = await server.get<SubtreeResponse>(`tree?subTreeNoteId=${subTreeNoteId}`);
 
         this.addResp(resp);
 
         return this.notes[subTreeNoteId];
     }
 
-    addResp(resp) {
+    addResp(resp: SubtreeResponse) {
         const noteRows = resp.notes;
         const branchRows = resp.branches;
         const attributeRows = resp.attributes;
 
-        const noteIdsToSort = new Set();
+        const noteIdsToSort = new Set<string>();
 
         for (const noteRow of noteRows) {
             const {noteId} = noteRow;
@@ -160,28 +172,28 @@ class Froca {
         }
     }
 
-    async reloadNotes(noteIds) {
+    async reloadNotes(noteIds: string[]) {
         if (noteIds.length === 0) {
             return;
         }
 
         noteIds = Array.from(new Set(noteIds)); // make noteIds unique
 
-        const resp = await server.post('tree/load', { noteIds });
+        const resp = await server.post<SubtreeResponse>('tree/load', { noteIds });
 
         this.addResp(resp);
 
         appContext.triggerEvent('notesReloaded', {noteIds});
     }
 
-    async loadSearchNote(noteId) {
+    async loadSearchNote(noteId: string) {
         const note = await this.getNote(noteId);
 
         if (!note || note.type !== 'search') {
             return;
         }
 
-        const {searchResultNoteIds, highlightedTokens, error} = await server.get(`search-note/${note.noteId}`);
+        const {searchResultNoteIds, highlightedTokens, error} = await server.get<SearchNoteResponse>(`search-note/${note.noteId}`);
 
         if (!Array.isArray(searchResultNoteIds)) {
             throw new Error(`Search note '${note.noteId}' failed: ${searchResultNoteIds}`);
@@ -193,7 +205,7 @@ class Froca {
             froca.notes[note.noteId].childToBranch = {};
         }
 
-        const branches = [...note.getParentBranches(), ...note.getChildBranches()];
+        const branches: FBranchRow[] = [...note.getParentBranches(), ...note.getChildBranches()];
 
         searchResultNoteIds.forEach((resultNoteId, index) => branches.push({
             // branchId should be repeatable since sometimes we reload some notes without rerendering the tree
@@ -217,8 +229,7 @@ class Froca {
         return {error};
     }
 
-    /** @returns {FNote[]} */
-    getNotesFromCache(noteIds, silentNotFoundError = false) {
+    getNotesFromCache(noteIds: string[], silentNotFoundError = false): FNote[] {
         return noteIds.map(noteId => {
             if (!this.notes[noteId] && !silentNotFoundError) {
                 console.trace(`Can't find note '${noteId}'`);
@@ -228,11 +239,10 @@ class Froca {
             else {
                 return this.notes[noteId];
             }
-        }).filter(note => !!note);
+        }).filter(note => !!note) as FNote[];
     }
 
-    /** @returns {Promise<FNote[]>} */
-    async getNotes(noteIds, silentNotFoundError = false) {
+    async getNotes(noteIds: string[], silentNotFoundError = false): Promise<FNote[]> {
         noteIds = Array.from(new Set(noteIds)); // make unique
         const missingNoteIds = noteIds.filter(noteId => !this.notes[noteId]);
 
@@ -246,18 +256,16 @@ class Froca {
             } else {
                 return this.notes[noteId];
             }
-        }).filter(note => !!note);
+        }).filter(note => !!note) as FNote[];
     }
 
-    /** @returns {Promise<boolean>} */
-    async noteExists(noteId) {
+    async noteExists(noteId: string) {
         const notes = await this.getNotes([noteId], true);
 
         return notes.length === 1;
     }
 
-    /** @returns {Promise<FNote>} */
-    async getNote(noteId, silentNotFoundError = false) {
+    async getNote(noteId: string, silentNotFoundError = false) {
         if (noteId === 'none') {
             console.trace(`No 'none' note.`);
             return null;
@@ -270,8 +278,7 @@ class Froca {
         return (await this.getNotes([noteId], silentNotFoundError))[0];
     }
 
-    /** @returns {FNote|null} */
-    getNoteFromCache(noteId) {
+    getNoteFromCache(noteId: string) {
         if (!noteId) {
             throw new Error("Empty noteId");
         }
@@ -279,15 +286,13 @@ class Froca {
         return this.notes[noteId];
     }
 
-    /** @returns {FBranch[]} */
-    getBranches(branchIds, silentNotFoundError = false) {
+    getBranches(branchIds: string[], silentNotFoundError = false): FBranch[] {
         return branchIds
             .map(branchId => this.getBranch(branchId, silentNotFoundError))
-            .filter(b => !!b);
+            .filter(b => !!b) as FBranch[];
     }
 
-    /** @returns {FBranch} */
-    getBranch(branchId, silentNotFoundError = false) {
+    getBranch(branchId: string, silentNotFoundError = false) {
         if (!(branchId in this.branches)) {
             if (!silentNotFoundError) {
                 logError(`Not existing branch '${branchId}'`);
@@ -298,7 +303,7 @@ class Froca {
         }
     }
 
-    async getBranchId(parentNoteId, childNoteId) {
+    async getBranchId(parentNoteId: string, childNoteId: string) {
         if (childNoteId === 'root') {
             return 'none_root';
         }
@@ -314,8 +319,7 @@ class Froca {
         return child.parentToBranch[parentNoteId];
     }
 
-    /** @returns {Promise<FAttachment>} */
-    async getAttachment(attachmentId, silentNotFoundError = false) {
+    async getAttachment(attachmentId: string, silentNotFoundError = false) {
         const attachment = this.attachments[attachmentId];
         if (attachment) {
             return attachment;
@@ -324,9 +328,9 @@ class Froca {
         // load all attachments for the given note even if one is requested, don't load one by one
         let attachmentRows;
         try {
-            attachmentRows = await server.getWithSilentNotFound(`attachments/${attachmentId}/all`);
+            attachmentRows = await server.getWithSilentNotFound<FAttachmentRow[]>(`attachments/${attachmentId}/all`);
         }
-        catch (e) {
+        catch (e: any) {
             if (silentNotFoundError) {
                 logInfo(`Attachment '${attachmentId}' not found, but silentNotFoundError is enabled: ` + e.message);
                 return null;
@@ -344,14 +348,12 @@ class Froca {
         return this.attachments[attachmentId];
     }
 
-    /** @returns {Promise<FAttachment[]>} */
-    async getAttachmentsForNote(noteId) {
-        const attachmentRows = await server.get(`notes/${noteId}/attachments`);
+    async getAttachmentsForNote(noteId: string): Promise<FAttachment[]> {
+        const attachmentRows = await server.get<FAttachmentRow[]>(`notes/${noteId}/attachments`);
         return this.processAttachmentRows(attachmentRows);
     }
 
-    /** @returns {FAttachment[]} */
-    processAttachmentRows(attachmentRows) {
+    processAttachmentRows(attachmentRows: FAttachmentRow[]): FAttachment[] {
         return attachmentRows.map(attachmentRow => {
             let attachment;
 
@@ -367,22 +369,21 @@ class Froca {
         });
     }
 
-    /** @returns {Promise<FBlob>} */
-    async getBlob(entityType, entityId) {
+    async getBlob(entityType: string, entityId: string) {
         // I'm not sure why we're not using blobIds directly, it would save us this composite key ...
         // perhaps one benefit is that we're always requesting the latest blob, not relying on perhaps faulty/slow
         // websocket update?
         const key = `${entityType}-${entityId}`;
 
         if (!this.blobPromises[key]) {
-            this.blobPromises[key] = server.get(`${entityType}/${entityId}/blob`)
+            this.blobPromises[key] = server.get<FBlobRow>(`${entityType}/${entityId}/blob`)
                 .then(row => new FBlob(row))
                 .catch(e => console.error(`Cannot get blob for ${entityType} '${entityId}'`, e));
 
             // we don't want to keep large payloads forever in memory, so we clean that up quite quickly
             // this cache is more meant to share the data between different components within one business transaction (e.g. loading of the note into the tab context and all the components)
             // if the blob is updated within the cache lifetime, it should be invalidated by froca_updater
-            this.blobPromises[key].then(
+            this.blobPromises[key]?.then(
                 () => setTimeout(() => this.blobPromises[key] = null, 1000)
             );
         }
@@ -391,6 +392,6 @@ class Froca {
     }
 }
 
-const froca = new Froca();
+const froca = new FrocaImpl();
 
 export default froca;

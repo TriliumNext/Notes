@@ -20,7 +20,11 @@ async function touchProtectedSession() {
     }
 }
 
-function touchProtectedSessionIfNecessary(note) {
+// TODO: Replace with fnote when ported.
+interface FNote {
+    isProtected: boolean;    
+}
+function touchProtectedSessionIfNecessary(note: FNote) {
     if (note && note.isProtected && isProtectedSessionAvailable()) {
         touchProtectedSession();
     }

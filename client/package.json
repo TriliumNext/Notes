@@ -13,17 +13,21 @@
   "dependencies": {
     "@excalidraw/excalidraw": "0.17.3",
     "boxicons": "2.1.4",
-    "dayjs-plugin-utc": "0.1.2",
     "dayjs": "1.11.10",
+    "dayjs-plugin-utc": "0.1.2",
     "force-graph": "1.43.5",
-    "jquery-hotkeys": "0.2.2",
     "jquery": "3.7.1",
+    "jquery-hotkeys": "0.2.2",
     "katex": "0.16.9",
     "mermaid": "10.9.0",
     "panzoom": "9.4.3",
     "print-this": "2.0.0",
-    "react-dom": "18.2.0",
     "react": "18.2.0",
+    "react-dom": "18.2.0",
     "split.js": "1.6.5"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
+    "@types/jquery": "^3.5.30"
   }
 }

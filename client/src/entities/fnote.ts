@@ -4,6 +4,10 @@ import ws from "../services/ws.js";
 import froca from "../services/froca.js";
 import protectedSessionHolder from "../services/protected_session_holder.js";
 import cssClassManager from "../services/css_class_manager.js";
+import FAttachment from './fattachment.js';
+import FBranch from './fbranch.js';
+import FAttribute, { AttributeType } from './fattribute.js';
+import { Froca } from '../services/froca-interface.js';
 
 const LABEL = 'label';
 const RELATION = 'relation';
@@ -29,68 +33,74 @@ const NOTE_TYPE_ICONS = {
  * There are many different Note types, some of which are entirely opaque to the
  * end user. Those types should be used only for checking against, they are
  * not for direct use.
- * @typedef {"file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code"} NoteType
  */
+type NoteType = "file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code";
 
-/**
- * @typedef {Object} NotePathRecord
- * @property {boolean} isArchived
- * @property {boolean} isInHoistedSubTree
- * @property {boolean} isSearch
- * @property {Array<string>} notePath
- * @property {boolean} isHidden
- */
+interface NotePathRecord {
+    isArchived: boolean;
+    isInHoistedSubTree: boolean;
+    isSearch: boolean;
+    notePath: string[];
+    isHidden: boolean;
+}
+
+export interface FNoteRow {
+    noteId: string;
+    title: string;
+    isProtected: boolean;
+    type: NoteType;
+    mime: string;
+    blobId: string;
+}
 
 /**
  * Note is the main node and concept in Trilium.
  */
-class FNote {
-    /**
-     * @param {Froca} froca
-     * @param {Object.<string, Object>} row
-     */
-    constructor(froca, row) {
-        /** @type {Froca} */
+class FNote {    
+    private froca: Froca;
+
+    noteId!: string;
+    title!: string;
+    isProtected!: boolean;
+    type!: NoteType;
+    mime!: string;
+    blobId!: string;
+
+    attributes: string[];
+    targetRelations: string[];
+    parents: string[];
+    children: string[];
+
+    parentToBranch: Record<string, string>;
+    childToBranch: Record<string, string>;
+    attachments: FAttachment[] | null;
+
+    // Managed by Froca.
+    searchResultsLoaded?: boolean;
+    highlightedTokens?: unknown;
+
+    constructor(froca: Froca, row: FNoteRow) {
         this.froca = froca;
 
-        /** @type {string[]} */
         this.attributes = [];
-
-        /** @type {string[]} */
         this.targetRelations = [];
-
-        /** @type {string[]} */
         this.parents = [];
-        /** @type {string[]} */
         this.children = [];
 
-        /** @type {Object.<string, string>} */
         this.parentToBranch = {};
-
-        /** @type {Object.<string, string>} */
         this.childToBranch = {};
-
-        /** @type {FAttachment[]|null} */
         this.attachments = null; // lazy loaded
 
         this.update(row);
     }
 
-    update(row) {
-        /** @type {string} */
+    update(row: FNoteRow) {
         this.noteId = row.noteId;
-        /** @type {string} */
         this.title = row.title;
-        /** @type {boolean} */
         this.isProtected = !!row.isProtected;
-        /**
-         * See {@see NoteType} for info on values.
-         * @type {NoteType}
-         */
         this.type = row.type;
         /**
          * content-type, e.g. "application/json"
-         * @type {string}
          */
         this.mime = row.mime;
 
@@ -98,7 +108,7 @@ class FNote {
         this.blobId = row.blobId;
     }
 
-    addParent(parentNoteId, branchId, sort = true) {
+    addParent(parentNoteId: string, branchId: string, sort = true) {
         if (parentNoteId === 'none') {
             return;
         }
@@ -114,7 +124,7 @@ class FNote {
         }
     }
 
-    addChild(childNoteId, branchId, sort = true) {
+    addChild(childNoteId: string, branchId: string, sort = true) {
         if (!(childNoteId in this.childToBranch)) {
             this.children.push(childNoteId);
         }
@@ -127,16 +137,18 @@ class FNote {
     }
 
     sortChildren() {
-        const branchIdPos = {};
+        const branchIdPos: Record<string, number> = {};
 
         for (const branchId of Object.values(this.childToBranch)) {
-            branchIdPos[branchId] = this.froca.getBranch(branchId).notePosition;
+            const notePosition = this.froca.getBranch(branchId)?.notePosition;
+            if (notePosition) {
+                branchIdPos[branchId] = notePosition;
+            }
         }
 
         this.children.sort((a, b) => branchIdPos[this.childToBranch[a]] - branchIdPos[this.childToBranch[b]]);
     }
 
-    /** @returns {boolean} */
     isJson() {
         return this.mime === "application/json";
     }
@@ -149,69 +161,60 @@ class FNote {
 
     async getJsonContent() {
         const content = await this.getContent();
+        if (typeof content !== "string") {
+            return null;
+        }
 
         try {
             return JSON.parse(content);
         }
-        catch (e) {
+        catch (e: any) {
             console.log(`Cannot parse content of note '${this.noteId}': `, e.message);
 
             return null;
         }
     }
 
-    /**
-     * @returns {string[]}
-     */
     getParentBranchIds() {
         return Object.values(this.parentToBranch);
     }
 
     /**
-     * @returns {string[]}
      * @deprecated use getParentBranchIds() instead
      */
     getBranchIds() {
         return this.getParentBranchIds();
     }
 
-    /**
-     * @returns {FBranch[]}
-     */
-    getParentBranches() {
+    getParentBranches(): FBranch[] {
         const branchIds = Object.values(this.parentToBranch);
 
         return this.froca.getBranches(branchIds);
     }
 
     /**
-     * @returns {FBranch[]}
      * @deprecated use getParentBranches() instead
      */
     getBranches() {
         return this.getParentBranches();
     }
 
-    /** @returns {boolean} */
     hasChildren() {
         return this.children.length > 0;
     }
 
-    /** @returns {FBranch[]} */
-    getChildBranches() {
+    getChildBranches(): FBranch[] {
         // don't use Object.values() to guarantee order
         const branchIds = this.children.map(childNoteId => this.childToBranch[childNoteId]);
 
         return this.froca.getBranches(branchIds);
     }
 
-    /** @returns {string[]} */
     getParentNoteIds() {
         return this.parents;
     }
 
-    /** @returns {FNote[]} */
-    getParentNotes() {
+    getParentNotes(): FNote[] {
         return this.froca.getNotesFromCache(this.parents);
     }
 
@@ -239,18 +242,15 @@ class FNote {
         return this.hasAttribute('label', 'archived');
     }
 
-    /** @returns {string[]} */
     getChildNoteIds() {
         return this.children;
     }
 
-    /** @returns {Promise<FNote[]>} */
-    async getChildNotes() {
+    async getChildNotes(): Promise<FNote[]> {
         return await this.froca.getNotes(this.children);
     }
 
-    /** @returns {Promise<FAttachment[]>} */
-    async getAttachments() {
+    async getAttachments(): Promise<FAttachment[]> {
         if (!this.attachments) {
             this.attachments = await this.froca.getAttachmentsForNote(this.noteId);
         }
@@ -258,14 +258,12 @@ class FNote {
         return this.attachments;
     }
 
-    /** @returns {Promise<FAttachment[]>} */
-    async getAttachmentsByRole(role) {
+    async getAttachmentsByRole(role: string): Promise<FAttachment[]> {
         return (await this.getAttachments())
             .filter(attachment => attachment.role === role);
     }
 
-    /** @returns {Promise<FAttachment>} */
-    async getAttachmentById(attachmentId) {
+    async getAttachmentById(attachmentId: string) {
         const attachments = await this.getAttachments();
 
         return attachments.find(att => att.attachmentId === attachmentId);
@@ -295,33 +293,28 @@ class FNote {
     }
 
     /**
-     * @param {string} [type] - (optional) attribute type to filter
-     * @param {string} [name] - (optional) attribute name to filter
-     * @returns {FAttribute[]} all note's attributes, including inherited ones
+     * @param type - (optional) attribute type to filter
+     * @param name - (optional) attribute name to filter
+     * @returns all note's attributes, including inherited ones
      */
-    getOwnedAttributes(type, name) {
+    getOwnedAttributes(type?: AttributeType, name?: string) {
         const attrs = this.attributes
             .map(attributeId => this.froca.attributes[attributeId])
             .filter(Boolean); // filter out nulls;
 
-        return this.__filterAttrs(attrs, type, name);
+        return this.__filterAttrs(attrs, type, name) || [];
     }
 
     /**
-     * @param {string} [type] - (optional) attribute type to filter
-     * @param {string} [name] - (optional) attribute name to filter
-     * @returns {FAttribute[]} all note's attributes, including inherited ones
+     * @param type - (optional) attribute type to filter
+     * @param name - (optional) attribute name to filter
+     * @returns all note's attributes, including inherited ones
      */
-    getAttributes(type, name) {
-        return this.__filterAttrs(this.__getCachedAttributes([]), type, name);
+    getAttributes(type?: AttributeType, name?: string) {
+        return this.__filterAttrs(this.__getCachedAttributes([]), type, name) || [];
     }
 
-    /**
-     * @param {string[]} path
-     * @return {FAttribute[]}
-     * @private
-     */
-    __getCachedAttributes(path) {
+    private __getCachedAttributes(path: string[]): FAttribute[] {
         // notes/clones cannot form tree cycles, it is possible to create attribute inheritance cycle via templates
         // when template instance is a parent of template itself
         if (path.includes(this.noteId)) {
@@ -342,7 +335,10 @@ class FNote {
                 }
             }
 
-            for (const templateAttr of attrArrs.flat().filter(attr => attr.type === 'relation' && ['template', 'inherit'].includes(attr.name))) {
+            for (const templateAttr of attrArrs.flat().filter(attr => attr?.type === 'relation' && ['template', 'inherit'].includes(attr.name))) {
+                if (!templateAttr) {
+                    continue;
+                }
                 const templateNote = this.froca.notes[templateAttr.value];
 
                 if (templateNote && templateNote.noteId !== this.noteId) {
@@ -358,7 +354,7 @@ class FNote {
             const addedAttributeIds = new Set();
 
             for (const attr of attrArrs.flat()) {
-                if (!addedAttributeIds.has(attr.attributeId)) {
+                if (attr && !addedAttributeIds.has(attr.attributeId)) {
                     addedAttributeIds.add(attr.attributeId);
 
                     noteAttributeCache.attributes[this.noteId].push(attr);
@@ -376,9 +372,9 @@ class FNote {
     /**
      * Gives all possible note paths leading to this note. Paths containing search note are ignored (could form cycles)
      *
-     * @returns {string[][]} - array of notePaths (each represented by array of noteIds constituting the particular note path)
+     * @returns array of notePaths (each represented by array of noteIds constituting the particular note path)
      */
-    getAllNotePaths() {
+    getAllNotePaths(): string[][] {
         if (this.noteId === 'root') {
             return [['root']];
         }
@@ -396,18 +392,14 @@ class FNote {
         return notePaths;
     }
 
-    /**
-     * @param {string} [hoistedNoteId='root']
-     * @return {Array<NotePathRecord>}
-     */
-    getSortedNotePathRecords(hoistedNoteId = 'root') {
+    getSortedNotePathRecords(hoistedNoteId: string = 'root'): NotePathRecord[] {
         const isHoistedRoot = hoistedNoteId === 'root';
 
-        const notePaths = this.getAllNotePaths().map(path => ({
+        const notePaths: NotePathRecord[] = this.getAllNotePaths().map(path => ({
             notePath: path,
             isInHoistedSubTree: isHoistedRoot || path.includes(hoistedNoteId),
             isArchived: path.some(noteId => froca.notes[noteId].isArchived),
-            isSearch: path.find(noteId => froca.notes[noteId].type === 'search'),
+            isSearch: !!path.find(noteId => froca.notes[noteId].type === 'search'),
             isHidden: path.includes('_hidden')
         }));
 
@@ -431,20 +423,18 @@ class FNote {
     /**
      * Returns the note path considered to be the "best"
      *
-     * @param {string} [hoistedNoteId='root']
-     * @return {string[]} array of noteIds constituting the particular note path
+     * @return array of noteIds constituting the particular note path
      */
-    getBestNotePath(hoistedNoteId = 'root') {
+    getBestNotePath(hoistedNoteId: string = 'root'): string[] {
         return this.getSortedNotePathRecords(hoistedNoteId)[0]?.notePath;
     }
 
     /**
      * Returns the note path considered to be the "best"
      *
-     * @param {string} [hoistedNoteId='root']
-     * @return {string} serialized note path (e.g. 'root/a1h315/js725h')
+     * @return serialized note path (e.g. 'root/a1h315/js725h')
      */
-    getBestNotePathString(hoistedNoteId = 'root') {
+    getBestNotePathString(hoistedNoteId: string = 'root') {
         const notePath = this.getBestNotePath(hoistedNoteId);
 
         return notePath?.join("/");
@@ -475,14 +465,7 @@ class FNote {
         return true;
     }
 
-    /**
-     * @param {FAttribute[]} attributes
-     * @param {AttributeType} type
-     * @param {string} name
-     * @return {FAttribute[]}
-     * @private
-     */
-    __filterAttrs(attributes, type, name) {
+    private __filterAttrs(attributes: FAttribute[], type?: AttributeType, name?: string): FAttribute[] | undefined {
         this.__validateTypeName(type, name);
 
         if (!type && !name) {
@@ -496,13 +479,13 @@ class FNote {
         }
     }
 
-    __getInheritableAttributes(path) {
+    __getInheritableAttributes(path: string[]) {
         const attrs = this.__getCachedAttributes(path);
 
         return attrs.filter(attr => attr.isInheritable);
     }
 
-    __validateTypeName(type, name) {
+    __validateTypeName(type?: string, name?: string) {
         if (type && type !== 'label' && type !== 'relation') {
             throw new Error(`Unrecognized attribute type '${type}'. Only 'label' and 'relation' are possible values.`);
         }
@@ -516,23 +499,23 @@ class FNote {
     }
 
     /**
-     * @param {string} [name] - label name to filter
-     * @returns {FAttribute[]} all note's labels (attributes with type label), including inherited ones
+     * @param name - label name to filter
+     * @returns all note's labels (attributes with type label), including inherited ones
      */
-    getOwnedLabels(name) {
+    getOwnedLabels(name: string) {
         return this.getOwnedAttributes(LABEL, name);
     }
 
     /**
-     * @param {string} [name] - label name to filter
-     * @returns {FAttribute[]} all note's labels (attributes with type label), including inherited ones
+     * @param name - label name to filter
+     * @returns all note's labels (attributes with type label), including inherited ones
      */
-    getLabels(name) {
+    getLabels(name: string) {
         return this.getAttributes(LABEL, name);
     }
 
     getIcon() {
-        const iconClassLabels = this.getLabels('iconClass');
+        const iconClassLabels = this.getLabels('iconClass') || [];
         const workspaceIconClass = this.getWorkspaceIconClass();
 
         if (iconClassLabels.length > 0) {
@@ -570,7 +553,7 @@ class FNote {
 
     isFolder() {
         return this.type === 'search'
-            || this.getFilteredChildBranches().length > 0;
+            || (this.getFilteredChildBranches()?.length || 0) > 0;
     }
 
     getFilteredChildBranches() {
@@ -590,102 +573,102 @@ class FNote {
     }
 
     /**
-     * @param {string} [name] - relation name to filter
-     * @returns {FAttribute[]} all note's relations (attributes with type relation), including inherited ones
+     * @param name - relation name to filter
+     * @returns all note's relations (attributes with type relation), including inherited ones
      */
-    getOwnedRelations(name) {
+    getOwnedRelations(name: string) {
         return this.getOwnedAttributes(RELATION, name);
     }
 
     /**
-     * @param {string} [name] - relation name to filter
-     * @returns {FAttribute[]} all note's relations (attributes with type relation), including inherited ones
+     * @param [name] - relation name to filter
+     * @returns all note's relations (attributes with type relation), including inherited ones
      */
-    getRelations(name) {
+    getRelations(name: string) {
         return this.getAttributes(RELATION, name);
     }
 
     /**
-     * @param {AttributeType} type - attribute type (label, relation, etc.)
-     * @param {string} name - attribute name
-     * @returns {boolean} true if note has an attribute with given type and name (including inherited)
+     * @param type - attribute type (label, relation, etc.)
+     * @param name - attribute name
+     * @returns true if note has an attribute with given type and name (including inherited)
      */
-    hasAttribute(type, name) {
+    hasAttribute(type: AttributeType, name: string) {
         const attributes = this.getAttributes();
 
         return attributes.some(attr => attr.name === name && attr.type === type);
     }
 
     /**
-     * @param {AttributeType} type - attribute type (label, relation, etc.)
-     * @param {string} name - attribute name
-     * @returns {boolean} true if note has an attribute with given type and name (including inherited)
+     * @param type - attribute type (label, relation, etc.)
+     * @param name - attribute name
+     * @returns true if note has an attribute with given type and name (including inherited)
      */
-    hasOwnedAttribute(type, name) {
+    hasOwnedAttribute(type: AttributeType, name: string) {
         return !!this.getOwnedAttribute(type, name);
     }
 
     /**
-     * @param {AttributeType} type - attribute type (label, relation, etc.)
-     * @param {string} name - attribute name
-     * @returns {FAttribute} attribute of the given type and name. If there are more such attributes, first is returned. Returns null if there's no such attribute belonging to this note.
+     * @param type - attribute type (label, relation, etc.)
+     * @param name - attribute name
+     * @returns attribute of the given type and name. If there are more such attributes, first is returned. Returns null if there's no such attribute belonging to this note.
      */
-    getOwnedAttribute(type, name) {
+    getOwnedAttribute(type: AttributeType, name: string) {
         const attributes = this.getOwnedAttributes();
 
         return attributes.find(attr => attr.name === name && attr.type === type);
     }
 
     /**
-     * @param {AttributeType} type - attribute type (label, relation, etc.)
-     * @param {string} name - attribute name
-     * @returns {FAttribute} attribute of the given type and name. If there are more such attributes, first is returned. Returns null if there's no such attribute belonging to this note.
+     * @param type - attribute type (label, relation, etc.)
+     * @param name - attribute name
+     * @returns attribute of the given type and name. If there are more such attributes, first is returned. Returns null if there's no such attribute belonging to this note.
      */
-    getAttribute(type, name) {
+    getAttribute(type: AttributeType, name: string) {
         const attributes = this.getAttributes();
 
         return attributes.find(attr => attr.name === name && attr.type === type);
     }
 
     /**
-     * @param {AttributeType} type - attribute type (label, relation, etc.)
-     * @param {string} name - attribute name
-     * @returns {string} attribute value of the given type and name or null if no such attribute exists.
+     * @param type - attribute type (label, relation, etc.)
+     * @param name - attribute name
+     * @returns attribute value of the given type and name or null if no such attribute exists.
      */
-    getOwnedAttributeValue(type, name) {
+    getOwnedAttributeValue(type: AttributeType, name: string) {
         const attr = this.getOwnedAttribute(type, name);
 
         return attr ? attr.value : null;
     }
 
     /**
-     * @param {AttributeType} type - attribute type (label, relation, etc.)
-     * @param {string} name - attribute name
-     * @returns {string} attribute value of the given type and name or null if no such attribute exists.
+     * @param type - attribute type (label, relation, etc.)
+     * @param name - attribute name
+     * @returns attribute value of the given type and name or null if no such attribute exists.
      */
-    getAttributeValue(type, name) {
+    getAttributeValue(type: AttributeType, name: string) {
         const attr = this.getAttribute(type, name);
 
         return attr ? attr.value : null;
     }
 
     /**
-     * @param {string} name - label name
-     * @returns {boolean} true if label exists (excluding inherited)
+     * @param name - label name
+     * @returns true if label exists (excluding inherited)
      */
-    hasOwnedLabel(name) { return this.hasOwnedAttribute(LABEL, name); }
+    hasOwnedLabel(name: string) { return this.hasOwnedAttribute(LABEL, name); }
 
     /**
-     * @param {string} name - label name
-     * @returns {boolean} true if label exists (including inherited)
+     * @param name - label name
+     * @returns true if label exists (including inherited)
      */
-    hasLabel(name) { return this.hasAttribute(LABEL, name); }
+    hasLabel(name: string) { return this.hasAttribute(LABEL, name); }
 
     /**
-     * @param {string} name - label name
-     * @returns {boolean} true if label exists (including inherited) and does not have "false" value.
+     * @param name - label name
+     * @returns true if label exists (including inherited) and does not have "false" value.
      */
-    isLabelTruthy(name) {
+    isLabelTruthy(name: string) {
         const label = this.getLabel(name);
 
         if (!label) {
@@ -696,94 +679,93 @@ class FNote {
     }
 
     /**
-     * @param {string} name - relation name
-     * @returns {boolean} true if relation exists (excluding inherited)
+     * @param name - relation name
+     * @returns true if relation exists (excluding inherited)
      */
-    hasOwnedRelation(name) { return this.hasOwnedAttribute(RELATION, name); }
+    hasOwnedRelation(name: string) { return this.hasOwnedAttribute(RELATION, name); }
 
     /**
-     * @param {string} name - relation name
-     * @returns {boolean} true if relation exists (including inherited)
+     * @param name - relation name
+     * @returns true if relation exists (including inherited)
      */
-    hasRelation(name) { return this.hasAttribute(RELATION, name); }
+    hasRelation(name: string) { return this.hasAttribute(RELATION, name); }
 
     /**
-     * @param {string} name - label name
-     * @returns {FAttribute} label if it exists, null otherwise
+     * @param name - label name
+     * @returns label if it exists, null otherwise
      */
-    getOwnedLabel(name) { return this.getOwnedAttribute(LABEL, name); }
+    getOwnedLabel(name: string) { return this.getOwnedAttribute(LABEL, name); }
 
     /**
-     * @param {string} name - label name
-     * @returns {FAttribute} label if it exists, null otherwise
+     * @param name - label name
+     * @returns label if it exists, null otherwise
      */
-    getLabel(name) { return this.getAttribute(LABEL, name); }
+    getLabel(name: string) { return this.getAttribute(LABEL, name); }
 
     /**
-     * @param {string} name - relation name
-     * @returns {FAttribute} relation if it exists, null otherwise
+     * @param name - relation name
+     * @returns relation if it exists, null otherwise
      */
-    getOwnedRelation(name) { return this.getOwnedAttribute(RELATION, name); }
+    getOwnedRelation(name: string) { return this.getOwnedAttribute(RELATION, name); }
 
     /**
-     * @param {string} name - relation name
-     * @returns {FAttribute} relation if it exists, null otherwise
+     * @param name - relation name
+     * @returns relation if it exists, null otherwise
      */
-    getRelation(name) { return this.getAttribute(RELATION, name); }
+    getRelation(name: string) { return this.getAttribute(RELATION, name); }
 
     /**
-     * @param {string} name - label name
-     * @returns {string} label value if label exists, null otherwise
+     * @param name - label name
+     * @returns label value if label exists, null otherwise
      */
-    getOwnedLabelValue(name) { return this.getOwnedAttributeValue(LABEL, name); }
+    getOwnedLabelValue(name: string) { return this.getOwnedAttributeValue(LABEL, name); }
 
     /**
-     * @param {string} name - label name
-     * @returns {string} label value if label exists, null otherwise
+     * @param name - label name
+     * @returns label value if label exists, null otherwise
      */
-    getLabelValue(name) { return this.getAttributeValue(LABEL, name); }
+    getLabelValue(name: string) { return this.getAttributeValue(LABEL, name); }
 
     /**
-     * @param {string} name - relation name
-     * @returns {string} relation value if relation exists, null otherwise
+     * @param name - relation name
+     * @returns relation value if relation exists, null otherwise
      */
-    getOwnedRelationValue(name) { return this.getOwnedAttributeValue(RELATION, name); }
+    getOwnedRelationValue(name: string) { return this.getOwnedAttributeValue(RELATION, name); }
 
     /**
-     * @param {string} name - relation name
-     * @returns {string} relation value if relation exists, null otherwise
+     * @param name - relation name
+     * @returns relation value if relation exists, null otherwise
      */
-    getRelationValue(name) { return this.getAttributeValue(RELATION, name); }
+    getRelationValue(name: string) { return this.getAttributeValue(RELATION, name); }
 
     /**
-     * @param {string} name
-     * @returns {Promise<FNote>|null} target note of the relation or null (if target is empty or note was not found)
+     * @param name
+     * @returns target note of the relation or null (if target is empty or note was not found)
      */
-    async getRelationTarget(name) {
+    async getRelationTarget(name: string): Promise<FNote | null> {
         const targets = await this.getRelationTargets(name);
 
         return targets.length > 0 ? targets[0] : null;
     }
 
     /**
-     * @param {string} [name] - relation name to filter
-     * @returns {Promise<FNote[]>}
+     * @param name - relation name to filter
      */
-    async getRelationTargets(name) {
+    async getRelationTargets(name: string): Promise<FNote[]> {
         const relations = this.getRelations(name);
         const targets = [];
 
         for (const relation of relations) {
-            targets.push(await this.froca.getNote(relation.value));
+            const note = await this.froca.getNote(relation.value);
+            if (note) {
+                targets.push(note);
+            }
         }
 
         return targets;
     }
 
-    /**
-     * @returns {FNote[]}
-     */
-    getNotesToInheritAttributesFrom() {
+    getNotesToInheritAttributesFrom(): FNote[] {
         const relations = [
             ...this.getRelations('template'),
             ...this.getRelations('inherit')
@@ -818,16 +800,20 @@ class FNote {
         return promotedAttrs;
     }
 
-    hasAncestor(ancestorNoteId, followTemplates = false, visitedNoteIds = null) {
+    hasAncestor(ancestorNoteId: string, followTemplates = false, _visitedNoteIds: Set<string> | null = null) {
         if (this.noteId === ancestorNoteId) {
             return true;
         }
 
-        if (!visitedNoteIds) {
+        let visitedNoteIds: Set<string>;
+        if (!_visitedNoteIds) {
             visitedNoteIds = new Set();
-        } else if (visitedNoteIds.has(this.noteId)) {
-            // to avoid infinite cycle when template is descendent of the instance
-            return false;
+        } else {
+            visitedNoteIds = _visitedNoteIds;
+            if (visitedNoteIds.has(this.noteId)) {
+                // to avoid infinite cycle when template is descendent of the instance
+                return false;
+            }
         }
 
         visitedNoteIds.add(this.noteId);
@@ -860,20 +846,16 @@ class FNote {
 
     /**
      * Get relations which target this note
-     *
-     * @returns {FAttribute[]}
      */
-    getTargetRelations() {
+    getTargetRelations(): FAttribute[] {
         return this.targetRelations
             .map(attributeId => this.froca.attributes[attributeId]);
     }
 
     /**
      * Get relations which target this note
-     *
-     * @returns {Promise<FNote[]>}
      */
-    async getTargetRelationSourceNotes() {
+    async getTargetRelationSourceNotes(): Promise<FNote[]> {
         const targetRelations = this.getTargetRelations();
 
         return await this.froca.getNotes(targetRelations.map(tr => tr.noteId));
@@ -881,13 +863,11 @@ class FNote {
 
     /**
      * @deprecated use getBlob() instead
-     * @return {Promise<FBlob>}
      */
     async getNoteComplement() {
         return this.getBlob();
     }
 
-    /** @return {Promise<FBlob>} */
     async getBlob() {
         return await this.froca.getBlob('notes', this.noteId);
     }
@@ -897,7 +877,7 @@ class FNote {
     }
 
     get dto() {
-        const dto = Object.assign({}, this);
+        const dto = Object.assign({}, this) as any;
         delete dto.froca;
 
         return dto;
@@ -918,7 +898,7 @@ class FNote {
         return labels.length > 0 ? labels[0].value : "";
     }
 
-    /** @returns {boolean} true if this note is JavaScript (code or file) */
+    /** @returns true if this note is JavaScript (code or file) */
     isJavaScript() {
         return (this.type === "code" || this.type === "file" || this.type === 'launcher')
             && (this.mime.startsWith("application/javascript")
@@ -926,12 +906,12 @@ class FNote {
                 || this.mime === "text/javascript");
     }
 
-    /** @returns {boolean} true if this note is HTML */
+    /** @returns true if this note is HTML */
     isHtml() {
         return (this.type === "code" || this.type === "file" || this.type === "render") && this.mime === "text/html";
     }
 
-    /** @returns {string|null} JS script environment - either "frontend" or "backend" */
+    /** @returns JS script environment - either "frontend" or "backend" */
     getScriptEnv() {
         if (this.isHtml() || (this.isJavaScript() && this.mime.endsWith('env=frontend'))) {
             return "frontend";
@@ -956,7 +936,9 @@ class FNote {
         const env = this.getScriptEnv();
 
         if (env === "frontend") {
-            const bundleService = (await import("../services/bundle.js")).default;
+            // TODO: Remove after porting the file
+            // @ts-ignore
+            const bundleService = (await import("../services/bundle.js")).default as any;
             return await bundleService.getAndExecuteBundle(this.noteId);
         }
         else if (env === "backend") {

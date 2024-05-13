@@ -11,7 +11,10 @@ class ZoomComponent extends Component {
 
         if (utils.isElectron()) {
             options.initializedPromise.then(() => {
-                this.setZoomFactor(options.getFloat('zoomFactor'));
+                const zoomFactor = options.getFloat('zoomFactor');
+                if (zoomFactor) {
+                    this.setZoomFactor(zoomFactor);
+                }
             });
 
             window.addEventListener("wheel", event => {
@@ -22,14 +25,14 @@ class ZoomComponent extends Component {
         }
     }
 
-    setZoomFactor(zoomFactor) {
-        zoomFactor = parseFloat(zoomFactor);
+    setZoomFactor(_zoomFactor: number | string) {
+        const zoomFactor = (typeof _zoomFactor !== "number" ? parseFloat(_zoomFactor) : _zoomFactor);
 
         const webFrame = utils.dynamicRequire('electron').webFrame;
         webFrame.setZoomFactor(zoomFactor);
     }
 
-    async setZoomFactorAndSave(zoomFactor) {
+    async setZoomFactorAndSave(zoomFactor: number) {
         if (zoomFactor >= MIN_ZOOM && zoomFactor <= MAX_ZOOM) {
             zoomFactor = Math.round(zoomFactor * 10) / 10;
 
@@ -57,7 +60,7 @@ class ZoomComponent extends Component {
         this.setZoomFactorAndSave(1);
     }
     
-    setZoomFactorAndSaveEvent({zoomFactor}) {
+    setZoomFactorAndSaveEvent({ zoomFactor }: { zoomFactor: number }) {
         this.setZoomFactorAndSave(zoomFactor);
     }
 }

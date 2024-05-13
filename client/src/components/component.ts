@@ -12,9 +12,13 @@ import utils from '../services/utils.js';
  *   event / command is executed in all components - by simply awaiting the `triggerEvent()`.
  */
 export default class Component {
+    private componentId: string;
+    private children: Component[];
+    private initialized: Promise<void> | null;
+    private parent?: Component;
+
     constructor() {
         this.componentId = `${this.sanitizedClassName}-${utils.randomString(8)}`;
-        /** @type Component[] */
         this.children = [];
         this.initialized = null;
     }
@@ -24,13 +28,12 @@ export default class Component {
         return this.constructor.name.replace(/[^A-Z0-9]/ig, "_");
     }
 
-    setParent(parent) {
-        /** @type Component */
+    setParent(parent: Component) {
         this.parent = parent;
         return this;
     }
 
-    child(...components) {
+    child(...components: Component[]) {
         for (const component of components) {
             component.setParent(this);
 
@@ -40,12 +43,11 @@ export default class Component {
         return this;
     }
 
-    /** @returns {Promise<void>} */
-    handleEvent(name, data) {
+    handleEvent(name: string, data: unknown): Promise<unknown> | null {
         try {
             const callMethodPromise = this.initialized
-                ? this.initialized.then(() => this.callMethod(this[`${name}Event`], data))
-                : this.callMethod(this[`${name}Event`], data);
+                ? this.initialized.then(() => this.callMethod((this as any)[`${name}Event`], data))
+                : this.callMethod((this as any)[`${name}Event`], data);
 
             const childrenPromise = this.handleEventInChildren(name, data);
 
@@ -54,20 +56,18 @@ export default class Component {
                 ? Promise.all([callMethodPromise, childrenPromise])
                 : (callMethodPromise || childrenPromise);
         }
-        catch (e) {
+        catch (e: any) {
             console.error(`Handling of event '${name}' failed in ${this.constructor.name} with error ${e.message} ${e.stack}`);
 
             return null;
         }
     }
 
-    /** @returns {Promise<void>} */
-    triggerEvent(name, data = {}) {
-        return this.parent.triggerEvent(name, data);
+    triggerEvent(name: string, data = {}): Promise<void> | undefined {
+        return this.parent?.triggerEvent(name, data);
     }
 
-    /** @returns {Promise<void>} */
-    handleEventInChildren(name, data = {}) {
+    handleEventInChildren(name: string, data: unknown = {}) {
         const promises = [];
 
         for (const child of this.children) {
@@ -82,19 +82,18 @@ export default class Component {
         return promises.length > 0 ? Promise.all(promises) : null;
     }
 
-    /** @returns {Promise<*>} */
-    triggerCommand(name, data = {}) {
-        const fun = this[`${name}Command`];
+    triggerCommand(name: string, data: unknown = {}): Promise<unknown> | undefined {
+        const fun = (this as any)[`${name}Command`];
 
         if (fun) {
             return this.callMethod(fun, data);
         }
         else {
-            return this.parent.triggerCommand(name, data);
+            return this.parent?.triggerCommand(name, data);
         }
     }
 
-    callMethod(fun, data) {
+    callMethod(fun: (arg: unknown) => Promise<unknown>, data: unknown) {
         if (typeof fun !== 'function') {
             return;
         }

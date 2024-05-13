@@ -1,51 +1,62 @@
+import { Froca } from "../services/froca-interface";
+import FNote from "./fnote";
+
+export interface FBranchRow {
+    branchId: string;
+    noteId: string;
+    parentNoteId: string;
+    notePosition: number;
+    prefix?: string;
+    isExpanded?: boolean;
+    fromSearchNote: boolean;
+}
+
 /**
  * Branch represents a relationship between a child note and its parent note. Trilium allows a note to have multiple
  * parents.
  */
 class FBranch {
-    constructor(froca, row) {
-        /** @type {Froca} */
+    private froca: Froca;
+
+    /**
+     * primary key
+     */
+    branchId!: string;
+    noteId!: string;
+    parentNoteId!: string;
+    notePosition!: number;
+    prefix?: string;
+    isExpanded?: boolean;
+    fromSearchNote!: boolean;
+
+    constructor(froca: Froca, row: FBranchRow) {
         this.froca = froca;
 
         this.update(row);
     }
 
-    update(row) {
-        /**
-         * primary key
-         * @type {string}
-         */
+    update(row: FBranchRow) {        
         this.branchId = row.branchId;
-        /** @type {string} */
         this.noteId = row.noteId;
-        /** @type {string} */
         this.parentNoteId = row.parentNoteId;
-        /** @type {int} */
         this.notePosition = row.notePosition;
-        /** @type {string} */
         this.prefix = row.prefix;
-        /** @type {boolean} */
         this.isExpanded = !!row.isExpanded;
-        /** @type {boolean} */
         this.fromSearchNote = !!row.fromSearchNote;
     }
 
-    /** @returns {FNote} */
     async getNote() {
         return this.froca.getNote(this.noteId);
     }
 
-    /** @returns {FNote} */
-    getNoteFromCache() {
+    getNoteFromCache(): FNote {
         return this.froca.getNoteFromCache(this.noteId);
     }
 
-    /** @returns {FNote} */
     async getParentNote() {
         return this.froca.getNote(this.parentNoteId);
     }
 
-    /** @returns {boolean} true if it's top level, meaning its parent is the root note */
     isTopLevel() {
         return this.parentNoteId === 'root';
     }
@@ -54,8 +65,8 @@ class FBranch {
         return `FBranch(branchId=${this.branchId})`;
     }
 
-    get pojo() {
-        const pojo = {...this};
+    get pojo(): Omit<FBranch, "froca"> {
+        const pojo: any = {...this};
         delete pojo.froca;
         return pojo;
     }
