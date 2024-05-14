@@ -2,12 +2,14 @@ import FNote from "./entities/fnote";
 
 interface ElectronProcess {
     type: string;
+    platform: string;
 }
 
 interface CustomGlobals {
     isDesktop: boolean;
     isMobile: boolean;
     isDev: boolean;
+    isMainWindow: boolean;
     device: "mobile" | "desktop";
     getComponentsByEl: (el: unknown) => unknown;
     getHeaders: Promise<Record<string, string>>;
@@ -50,4 +52,5 @@ declare global {
     declare var glob: CustomGlobals;
     declare var require: RequireMethod;
     declare var __non_webpack_require__: RequireMethod | undefined;
+    declare var process: ElectronProcess | undefined;
 }

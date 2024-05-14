@@ -23,6 +23,10 @@ interface RequestData {
     silentNotFound: boolean;
 }
 
+export interface StandardResponse {
+    success: boolean;
+}
+
 async function getHeaders(headers?: Headers) {
     // TODO: Remove after porting the file
     // @ts-ignore
@@ -64,7 +68,7 @@ async function post<T>(url: string, data?: unknown, componentId?: string) {
     return await call<T>('POST', url, componentId, { data });
 }
 
-async function put<T>(url: string, data: unknown, componentId?: string) {
+async function put<T>(url: string, data?: unknown, componentId?: string) {
     return await call<T>('PUT', url, componentId, { data });
 }
 
