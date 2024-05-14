@@ -4,10 +4,15 @@ import froca from './froca.js';
 import hoistedNoteService from '../services/hoisted_note.js';
 import appContext from "../components/app_context.js";
 
-/**
- * @returns {string|null}
- */
-async function resolveNotePath(notePath, hoistedNoteId = 'root') {
+export interface Node {
+    getParent(): Node;
+    data: {
+        noteId?: string;
+        isProtected?: boolean;
+    }
+}
+
+async function resolveNotePath(notePath: string, hoistedNoteId: string = 'root') {
     const runPath = await resolveNotePathToSegments(notePath, hoistedNoteId);
 
     return runPath ? runPath.join("/") : null;
@@ -17,10 +22,8 @@ async function resolveNotePath(notePath, hoistedNoteId = 'root') {
  * Accepts notePath which might or might not be valid and returns an existing path as close to the original
  * notePath as possible. Part of the path might not be valid because of note moving (which causes
  * path change) or other corruption, in that case, this will try to get some other valid path to the correct note.
- *
- * @returns {Promise<string[]>}
  */
-async function resolveNotePathToSegments(notePath, hoistedNoteId = 'root', logErrors = true) {
+async function resolveNotePathToSegments(notePath: string, hoistedNoteId: string = 'root', logErrors = true) {
     utils.assertArguments(notePath);
 
     // we might get notePath with the params suffix, remove it if present
@@ -103,7 +106,10 @@ async function resolveNotePathToSegments(notePath, hoistedNoteId = 'root', logEr
         return effectivePathSegments;
     }
     else {
-        const note = await froca.getNote(getNoteIdFromUrl(notePath));
+        const noteId = getNoteIdFromUrl(notePath);
+        if (!noteId) throw new Error(`Unable to find note with ID: ${noteId}`);
+        const note = await froca.getNote(noteId);
+        if (!note) throw new Error(`Unable to find note: ${notePath}`);
 
         const bestNotePath = note.getBestNotePath(hoistedNoteId);
 
@@ -128,11 +134,11 @@ ws.subscribeToMessages(message => {
    }
 });
 
-function getParentProtectedStatus(node) {
+function getParentProtectedStatus(node: Node) {
     return hoistedNoteService.isHoistedNode(node) ? false : node.getParent().data.isProtected;
 }
 
-function getNoteIdFromUrl(urlOrNotePath) {
+function getNoteIdFromUrl(urlOrNotePath: string) {
     if (!urlOrNotePath) {
         return null;
     }
@@ -143,13 +149,16 @@ function getNoteIdFromUrl(urlOrNotePath) {
     return segments[segments.length - 1];
 }
 
-async function getBranchIdFromUrl(urlOrNotePath) {
+async function getBranchIdFromUrl(urlOrNotePath: string) {
     const {noteId, parentNoteId} = getNoteIdAndParentIdFromUrl(urlOrNotePath);
-
+    if (!parentNoteId) {
+        return null;
+    }
+    
     return await froca.getBranchId(parentNoteId, noteId);
 }
 
-function getNoteIdAndParentIdFromUrl(urlOrNotePath) {
+function getNoteIdAndParentIdFromUrl(urlOrNotePath: string) {
     if (!urlOrNotePath) {
         return {};
     }
@@ -182,7 +191,7 @@ function getNoteIdAndParentIdFromUrl(urlOrNotePath) {
     };
 }
 
-function getNotePath(node) {
+function getNotePath(node: Node) {
     if (!node) {
         logError("Node is null");
         return "";
@@ -201,7 +210,7 @@ function getNotePath(node) {
     return path.reverse().join("/");
 }
 
-async function getNoteTitle(noteId, parentNoteId = null) {
+async function getNoteTitle(noteId: string, parentNoteId: string | null = null) {
     utils.assertArguments(noteId);
 
     const note = await froca.getNote(noteId);
@@ -226,7 +235,7 @@ async function getNoteTitle(noteId, parentNoteId = null) {
     return title;
 }
 
-async function getNotePathTitleComponents(notePath) {
+async function getNotePathTitleComponents(notePath: string) {
     const titleComponents = [];
 
     if (notePath.startsWith('root/')) {
@@ -249,7 +258,7 @@ async function getNotePathTitleComponents(notePath) {
     return titleComponents;
 }
 
-async function getNotePathTitle(notePath) {
+async function getNotePathTitle(notePath: string) {
     utils.assertArguments(notePath);
 
     const titlePath = await getNotePathTitleComponents(notePath);
@@ -257,7 +266,7 @@ async function getNotePathTitle(notePath) {
     return titlePath.join(' / ');
 }
 
-async function getNoteTitleWithPathAsSuffix(notePath) {
+async function getNoteTitleWithPathAsSuffix(notePath: string) {
     utils.assertArguments(notePath);
 
     const titleComponents = await getNotePathTitleComponents(notePath);
@@ -280,7 +289,7 @@ async function getNoteTitleWithPathAsSuffix(notePath) {
     return $titleWithPath;
 }
 
-function isNotePathInHiddenSubtree(notePath) {
+function isNotePathInHiddenSubtree(notePath: string) {
     return notePath?.includes("root/_hidden");
 }
 
