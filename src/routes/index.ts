@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import sql = require('../services/sql');
 import attributeService = require('../services/attributes');
@@ -11,14 +11,12 @@ import protectedSessionService = require('../services/protected_session');
 import packageJson = require('../../package.json');
 import assetPath = require('../services/asset_path');
 import appPath = require('../services/app_path');
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 
 function index(req: Request, res: Response) {
     const options = optionService.getOptionMap();
 
-    const view = (!utils.isElectron() && req.cookies['trilium-device'] === 'mobile')
-        ? 'mobile'
-        : 'desktop';
+    const view = !utils.isElectron() && req.cookies['trilium-device'] === 'mobile' ? 'mobile' : 'desktop';
 
     const csrfToken = req.csrfToken();
     log.info(`Generated CSRF token ${csrfToken} with secret ${res.getHeader('set-cookie')}`);
@@ -30,8 +28,8 @@ function index(req: Request, res: Response) {
         mainFontSize: parseInt(options.mainFontSize),
         treeFontSize: parseInt(options.treeFontSize),
         detailFontSize: parseInt(options.detailFontSize),
-        maxEntityChangeIdAtLoad: sql.getValue("SELECT COALESCE(MAX(id), 0) FROM entity_changes"),
-        maxEntityChangeSyncIdAtLoad: sql.getValue("SELECT COALESCE(MAX(id), 0) FROM entity_changes WHERE isSynced = 1"),
+        maxEntityChangeIdAtLoad: sql.getValue('SELECT COALESCE(MAX(id), 0) FROM entity_changes'),
+        maxEntityChangeSyncIdAtLoad: sql.getValue('SELECT COALESCE(MAX(id), 0) FROM entity_changes WHERE isSynced = 1'),
         instanceName: config.General ? config.General.instanceName : null,
         appCssNoteIds: getAppCssNoteIds(),
         isDev: env.isDev(),
@@ -61,7 +59,7 @@ function getThemeCssUrl(theme: string) {
 }
 
 function getAppCssNoteIds() {
-    return attributeService.getNotesWithLabel('appCss').map(note => note.noteId);
+    return attributeService.getNotesWithLabel('appCss').map((note) => note.noteId);
 }
 
 export = {

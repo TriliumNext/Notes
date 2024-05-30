@@ -1,6 +1,6 @@
 import assetPath = require('../services/asset_path');
-import path = require("path");
-import express = require("express");
+import path = require('path');
+import express = require('express');
 import env = require('../services/env');
 import serveStatic = require('serve-static');
 
@@ -37,20 +37,12 @@ function register(app: express.Application) {
     app.use(`/${assetPath}/node_modules/@excalidraw/excalidraw/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/@excalidraw/excalidraw/dist/')));
 
     // KaTeX
-    app.use(
-      `/${assetPath}/node_modules/katex/dist/katex.min.js`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/katex.min.js')));
-    app.use(
-      `/${assetPath}/node_modules/katex/dist/contrib/mhchem.min.js`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/mhchem.min.js')));
-    app.use(
-      `/${assetPath}/node_modules/katex/dist/contrib/auto-render.min.js`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/auto-render.min.js')));
+    app.use(`/${assetPath}/node_modules/katex/dist/katex.min.js`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/katex.min.js')));
+    app.use(`/${assetPath}/node_modules/katex/dist/contrib/mhchem.min.js`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/mhchem.min.js')));
+    app.use(`/${assetPath}/node_modules/katex/dist/contrib/auto-render.min.js`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/auto-render.min.js')));
     // expose the whole dist folder
-    app.use(`/node_modules/katex/dist/`,
-      express.static(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
-    app.use(`/${assetPath}/node_modules/katex/dist/`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
+    app.use(`/node_modules/katex/dist/`, express.static(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
+    app.use(`/${assetPath}/node_modules/katex/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
 
     app.use(`/${assetPath}/node_modules/dayjs/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/dayjs/')));
     app.use(`/${assetPath}/node_modules/force-graph/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/force-graph/dist/')));

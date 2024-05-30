@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import utils = require('../services/utils');
 import multer = require('multer');
@@ -10,8 +10,8 @@ import cls = require('../services/cls');
 import sql = require('../services/sql');
 import entityChangesService = require('../services/entity_changes');
 import csurf = require('csurf');
-import { createPartialContentHandler } from "express-partial-content";
-import rateLimit = require("express-rate-limit");
+import {createPartialContentHandler} from 'express-partial-content';
+import rateLimit = require('express-rate-limit');
 import AbstractBeccaEntity = require('../becca/entities/abstract_becca_entity');
 import NotFoundError = require('../errors/not_found_error');
 import ValidationError = require('../errors/validation_error');
@@ -70,32 +70,33 @@ import etapiNoteRoutes = require('../etapi/notes');
 import etapiSpecialNoteRoutes = require('../etapi/special_notes');
 import etapiSpecRoute = require('../etapi/spec');
 import etapiBackupRoute = require('../etapi/backup');
-import { AppRequest, AppRequestHandler } from './route-interface';
+import {AppRequest, AppRequestHandler} from './route-interface';
 
 const csrfMiddleware = csurf({
     cookie: {
-        path: ""       // empty, so cookie is valid only for the current path
+        path: '' // empty, so cookie is valid only for the current path
     }
 });
 
 const MAX_ALLOWED_FILE_SIZE_MB = 250;
-const GET = 'get', PST = 'post', PUT = 'put', PATCH = 'patch', DEL = 'delete';
+const GET = 'get',
+    PST = 'post',
+    PUT = 'put',
+    PATCH = 'patch',
+    DEL = 'delete';
 
 type ApiResultHandler = (req: express.Request, res: express.Response, result: unknown) => number;
 
 // TODO: Deduplicate with etapi_utils.ts afterwards.
-type HttpMethod = "all" | "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
+type HttpMethod = 'all' | 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head';
 
 const uploadMiddleware = createUploadMiddleware();
 
 const uploadMiddlewareWithErrorHandling = function (req: express.Request, res: express.Response, next: express.NextFunction) {
     uploadMiddleware(req, res, function (err) {
         if (err?.code === 'LIMIT_FILE_SIZE') {
-            res.setHeader("Content-Type", "text/plain")
-                .status(400)
-                .send(`Cannot upload file because it excceeded max allowed file size of ${MAX_ALLOWED_FILE_SIZE_MB} MiB`);
-        }
-        else {
+            res.setHeader('Content-Type', 'text/plain').status(400).send(`Cannot upload file because it excceeded max allowed file size of ${MAX_ALLOWED_FILE_SIZE_MB} MiB`);
+        } else {
             next();
         }
     });
@@ -137,13 +138,18 @@ function register(app: express.Application) {
     apiRoute(PUT, '/api/notes/:noteId/toggle-in-parent/:parentNoteId/:present', cloningApiRoute.toggleNoteInParent);
     apiRoute(PUT, '/api/notes/:noteId/clone-to-note/:parentNoteId', cloningApiRoute.cloneNoteToParentNote);
     apiRoute(PUT, '/api/notes/:noteId/clone-after/:afterBranchId', cloningApiRoute.cloneNoteAfter);
-    route(PUT, '/api/notes/:noteId/file', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware],
-        filesRoute.updateFile, apiResultHandler);
+    route(PUT, '/api/notes/:noteId/file', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], filesRoute.updateFile, apiResultHandler);
     route(GET, '/api/notes/:noteId/open', [auth.checkApiAuthOrElectron], filesRoute.openFile);
-    route(GET, '/api/notes/:noteId/open-partial', [auth.checkApiAuthOrElectron],
+    route(
+        GET,
+        '/api/notes/:noteId/open-partial',
+        [auth.checkApiAuthOrElectron],
         createPartialContentHandler(filesRoute.fileContentProvider, {
-            debug: (string, extra) => { console.log(string, extra); }
-        }));
+            debug: (string, extra) => {
+                console.log(string, extra);
+            }
+        })
+    );
     route(GET, '/api/notes/:noteId/download', [auth.checkApiAuthOrElectron], filesRoute.downloadFile);
     // this "hacky" path is used for easier referencing of CSS resources
     route(GET, '/api/notes/download/:noteId', [auth.checkApiAuthOrElectron], filesRoute.downloadFile);
@@ -170,17 +176,22 @@ function register(app: express.Application) {
     apiRoute(GET, '/api/attachments/:attachmentId/blob', attachmentsApiRoute.getAttachmentBlob);
     route(GET, '/api/attachments/:attachmentId/image/:filename', [auth.checkApiAuthOrElectron], imageRoute.returnAttachedImage);
     route(GET, '/api/attachments/:attachmentId/open', [auth.checkApiAuthOrElectron], filesRoute.openAttachment);
-    route(GET, '/api/attachments/:attachmentId/open-partial', [auth.checkApiAuthOrElectron],
+    route(
+        GET,
+        '/api/attachments/:attachmentId/open-partial',
+        [auth.checkApiAuthOrElectron],
         createPartialContentHandler(filesRoute.attachmentContentProvider, {
-            debug: (string, extra) => { console.log(string, extra); }
-        }));
+            debug: (string, extra) => {
+                console.log(string, extra);
+            }
+        })
+    );
     route(GET, '/api/attachments/:attachmentId/download', [auth.checkApiAuthOrElectron], filesRoute.downloadAttachment);
     // this "hacky" path is used for easier referencing of CSS resources
     route(GET, '/api/attachments/download/:attachmentId', [auth.checkApiAuthOrElectron], filesRoute.downloadAttachment);
     apiRoute(PST, '/api/attachments/:attachmentId/save-to-tmp-dir', filesRoute.saveAttachmentToTmpDir);
     apiRoute(PST, '/api/attachments/:attachmentId/upload-modified-file', filesRoute.uploadModifiedFileToAttachment);
-    route(PUT, '/api/attachments/:attachmentId/file', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware],
-        filesRoute.updateAttachment, apiResultHandler);
+    route(PUT, '/api/attachments/:attachmentId/file', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], filesRoute.updateAttachment, apiResultHandler);
 
     apiRoute(GET, '/api/notes/:noteId/revisions', revisionsApiRoute.getRevisions);
     apiRoute(DEL, '/api/notes/:noteId/revisions', revisionsApiRoute.eraseAllRevisions);
@@ -191,7 +202,6 @@ function register(app: express.Application) {
     route(GET, '/api/revisions/:revisionId/image/:filename', [auth.checkApiAuthOrElectron], imageRoute.returnImageFromRevision);
 
     route(GET, '/api/revisions/:revisionId/download', [auth.checkApiAuthOrElectron], revisionsApiRoute.downloadRevision);
-
 
     route(GET, '/api/branches/:branchId/export/:type/:format/:version/:taskId', [auth.checkApiAuthOrElectron], exportRoute.exportBranch);
     route(PST, '/api/notes/:parentNoteId/notes-import', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], importRoute.importNotesToBranch, apiResultHandler);
@@ -237,7 +247,7 @@ function register(app: express.Application) {
     apiRoute(GET, '/api/app-info', appInfoRoute.getAppInfo);
 
     // docker health check
-    route(GET, '/api/health-check', [], () => ({ "status": "ok" }), apiResultHandler);
+    route(GET, '/api/health-check', [], () => ({status: 'ok'}), apiResultHandler);
 
     // group of the services below are meant to be executed from the outside
     route(GET, '/api/setup/status', [], setupApiRoute.getStatus, apiResultHandler);
@@ -363,25 +373,24 @@ function register(app: express.Application) {
 function convertEntitiesToPojo(result: unknown) {
     if (result instanceof AbstractBeccaEntity) {
         result = result.getPojo();
-    }
-    else if (Array.isArray(result)) {
+    } else if (Array.isArray(result)) {
         for (const idx in result) {
             if (result[idx] instanceof AbstractBeccaEntity) {
                 result[idx] = result[idx].getPojo();
             }
         }
-    }
-    else if (result && typeof result === "object") {
-        if ("note" in result && result.note instanceof AbstractBeccaEntity) {
+    } else if (result && typeof result === 'object') {
+        if ('note' in result && result.note instanceof AbstractBeccaEntity) {
             result.note = result.note.getPojo();
         }
 
-        if ("branch" in result && result.branch instanceof AbstractBeccaEntity) {
+        if ('branch' in result && result.branch instanceof AbstractBeccaEntity) {
             result.branch = result.branch.getPojo();
         }
     }
 
-    if (result && typeof result === "object" && "executionResult" in result) { // from runOnBackend()
+    if (result && typeof result === 'object' && 'executionResult' in result) {
+        // from runOnBackend()
         result.executionResult = convertEntitiesToPojo(result.executionResult);
     }
 
@@ -402,11 +411,9 @@ function apiResultHandler(req: express.Request, res: express.Response, result: u
         }
 
         return send(res, statusCode, response);
-    }
-    else if (result === undefined) {
-        return send(res, 204, "");
-    }
-    else {
+    } else if (result === undefined) {
+        return send(res, 204, '');
+    } else {
         return send(res, 200, result);
     }
 }
@@ -414,17 +421,16 @@ function apiResultHandler(req: express.Request, res: express.Response, result: u
 function send(res: express.Response, statusCode: number, response: unknown) {
     if (typeof response === 'string') {
         if (statusCode >= 400) {
-            res.setHeader("Content-Type", "text/plain");
+            res.setHeader('Content-Type', 'text/plain');
         }
 
         res.status(statusCode).send(response);
 
         return response.length;
-    }
-    else {
+    } else {
         const json = JSON.stringify(response);
 
-        res.setHeader("Content-Type", "application/json");
+        res.setHeader('Content-Type', 'application/json');
         res.status(statusCode).send(json);
 
         return json.length;
@@ -435,7 +441,14 @@ function apiRoute(method: HttpMethod, path: string, routeHandler: express.Handle
     route(method, path, [auth.checkApiAuth, csrfMiddleware], routeHandler, apiResultHandler);
 }
 
-function route(method: HttpMethod, path: string, middleware: (express.Handler | AppRequestHandler)[], routeHandler: AppRequestHandler, resultHandler: ApiResultHandler | null = null, transactional = true) {
+function route(
+    method: HttpMethod,
+    path: string,
+    middleware: (express.Handler | AppRequestHandler)[],
+    routeHandler: AppRequestHandler,
+    resultHandler: ApiResultHandler | null = null,
+    transactional = true
+) {
     router[method](path, ...(middleware as express.Handler[]), (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const start = Date.now();
 
@@ -457,15 +470,13 @@ function route(method: HttpMethod, path: string, middleware: (express.Handler | 
                 return;
             }
 
-            if (result?.then) { // promise
-                result
-                    .then((promiseResult: unknown) => handleResponse(resultHandler, req, res, promiseResult, start))
-                    .catch((e: any) => handleException(e, method, path, res));
+            if (result?.then) {
+                // promise
+                result.then((promiseResult: unknown) => handleResponse(resultHandler, req, res, promiseResult, start)).catch((e: any) => handleException(e, method, path, res));
             } else {
-                handleResponse(resultHandler, req, res, result, start)
+                handleResponse(resultHandler, req, res, result, start);
             }
-        }
-        catch (e) {
+        } catch (e) {
             handleException(e, method, path, res);
         }
     });
@@ -481,20 +492,17 @@ function handleException(e: any, method: HttpMethod, path: string, res: express.
     log.error(`${method} ${path} threw exception: '${e.message}', stack: ${e.stack}`);
 
     if (e instanceof ValidationError) {
-        res.status(400)
-            .json({
-                message: e.message
-            });
+        res.status(400).json({
+            message: e.message
+        });
     } else if (e instanceof NotFoundError) {
-        res.status(404)
-            .json({
-                message: e.message
-            });
+        res.status(404).json({
+            message: e.message
+        });
     } else {
-        res.status(500)
-            .json({
-                message: e.message
-            });
+        res.status(500).json({
+            message: e.message
+        });
     }
 }
 
@@ -503,7 +511,7 @@ function createUploadMiddleware() {
         fileFilter: (req: express.Request, file, cb) => {
             // UTF-8 file names are not well decoded by multer/busboy, so we handle the conversion on our side.
             // See https://github.com/expressjs/multer/pull/1102.
-            file.originalname = Buffer.from(file.originalname, "latin1").toString("utf-8");
+            file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf-8');
             cb(null, true);
         }
     };
