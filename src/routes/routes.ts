@@ -6,6 +6,9 @@ import log = require('../services/log');
 import express = require('express');
 const router = express.Router();
 import auth = require('../services/auth');
+import openID = require('../services/open_id');
+import totp = require('./api/totp');
+import recoveryCodes = require('./api/recovery_codes');
 import cls = require('../services/cls');
 import sql = require('../services/sql');
 import entityChangesService = require('../services/entity_changes');
@@ -116,6 +119,24 @@ function register(app: express.Application) {
     route(PST, '/logout', [csrfMiddleware, auth.checkAuth], loginRoute.logout);
     route(PST, '/set-password', [auth.checkAppInitialized, auth.checkPasswordNotSet], loginRoute.setPassword);
     route(GET, '/setup', [], setupRoute.setupPage);
+
+    apiRoute(GET, '/api/totp/generate', totp.generateSecret);
+    apiRoute(GET, '/api/totp/status', totp.getTOTPStatus);
+    apiRoute(PST, '/api/totp/enable', totp.enableTOTP);
+    apiRoute(PST, '/api/totp/disable', totp.disableTOTP);
+    apiRoute(GET, '/api/totp/get', totp.getSecret);
+
+    apiRoute(GET, '/api/oauth/status', openID.getOAuthStatus);
+    apiRoute(PST, '/api/oauth/enable', openID.enableOAuth);
+    apiRoute(PST, '/api/oauth/disable', openID.disableOAuth);
+    apiRoute(GET, '/api/oauth/authenticate', openID.authenticateUser);
+    apiRoute(GET, '/api/oauth/validate', openID.isTokenValid);
+
+    apiRoute(PST, '/api/totp_recovery/set', recoveryCodes.setRecoveryCodes);
+    apiRoute(PST, '/api/totp_recovery/verify', recoveryCodes.veryifyRecoveryCode);
+    apiRoute(GET, '/api/totp_recovery/generate', recoveryCodes.generateRecoveryCodes);
+    apiRoute(GET, '/api/totp_recovery/enabled', recoveryCodes.checkForRecoveryKeys);
+    apiRoute(GET, '/api/totp_recovery/used', recoveryCodes.getUsedRecoveryCodes);
 
     apiRoute(GET, '/api/tree', treeApiRoute.getTree);
     apiRoute(PST, '/api/tree/load', treeApiRoute.load);

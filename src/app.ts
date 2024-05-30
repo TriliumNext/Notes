@@ -6,9 +6,12 @@ import helmet = require('helmet');
 import compression = require('compression');
 import sessionParser = require('./routes/session_parser');
 import utils = require('./services/utils');
+import oidc = require('express-openid-connect');
+import openID = require('./services/open_id');
 
 require('./services/handlers');
 require('./becca/becca_loader');
+require('dotenv').config();
 
 const app = express();
 
@@ -36,6 +39,9 @@ app.use(`/manifest.webmanifest`, express.static(path.join(__dirname, 'public/man
 app.use(`/robots.txt`, express.static(path.join(__dirname, 'public/robots.txt')));
 app.use(sessionParser);
 app.use(favicon(`${__dirname}/../images/app-icons/win/icon.ico`));
+
+if (openID.checkOpenIDRequirements()) 
+    app.use(oidc.auth(openID.generateOAuthConfig()));
 
 require('./routes/assets').register(app);
 require('./routes/routes').register(app);

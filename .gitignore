@@ -14,3 +14,4 @@ data/
 data-test/
 tmp/
 .eslintcache
+.env

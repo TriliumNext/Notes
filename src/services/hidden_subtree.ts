@@ -249,6 +249,7 @@ const HIDDEN_SUBTREE_DEFINITION: Item = {
                 { id: '_optionsImages', title: 'Images', type: 'contentWidget', icon: 'bx-image' },
                 { id: '_optionsSpellcheck', title: 'Spellcheck', type: 'contentWidget', icon: 'bx-check-double' },
                 { id: '_optionsPassword', title: 'Password', type: 'contentWidget', icon: 'bx-lock' },
+                { id: '_optionsMFA', title: 'MFA', type: 'contentWidget', icon: 'bx-lock'},
                 { id: '_optionsEtapi', title: 'ETAPI', type: 'contentWidget', icon: 'bx-extension' },
                 { id: '_optionsBackup', title: 'Backup', type: 'contentWidget', icon: 'bx-data' },
                 { id: '_optionsSync', title: 'Sync', type: 'contentWidget', icon: 'bx-wifi' },

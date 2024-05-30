@@ -22,7 +22,35 @@ function getScryptHash(password: crypto.BinaryLike, salt: crypto.BinaryLike) {
     return hashed;
 }
 
+function getTotpSecretVerificationHash(secret: crypto.BinaryLike) {
+    const salt = optionService.getOption('totpSecretVerificationSalt');
+
+    return getScryptHash(secret, salt);
+}
+
+function getTotpSecretDerivedKey(secret: crypto.BinaryLike) {
+    const salt = optionService.getOption('totpSecretDerivedKeySalt');
+
+    return getScryptHash(secret, salt);
+}
+
+function getSubjectIdentifierVerificationHash(password: crypto.BinaryLike) {
+    const salt = optionService.getOption('subjectIdentifierVerificationSalt');
+
+    return getScryptHash(password, salt);
+}
+
+function getSubjectIdentifierDerivedKey(subjectIdentifer: crypto.BinaryLike) {
+    const salt = optionService.getOption('subjectIdentifierDerivedKeySalt');
+
+    return getScryptHash(subjectIdentifer, salt);
+}
+
 export = {
     getVerificationHash,
-    getPasswordDerivedKey
+    getPasswordDerivedKey,
+    getTotpSecretVerificationHash,
+    getTotpSecretDerivedKey,
+    getSubjectIdentifierVerificationHash,
+    getSubjectIdentifierDerivedKey,
 };
