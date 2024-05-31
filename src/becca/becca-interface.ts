@@ -8,7 +8,7 @@ import BAttribute = require('./entities/battribute');
 import BBranch = require('./entities/bbranch');
 import BRevision = require('./entities/brevision');
 import BAttachment = require('./entities/battachment');
-import {AttachmentRow, RevisionRow} from './entities/rows';
+import { AttachmentRow, RevisionRow } from './entities/rows';
 import BBlob = require('./entities/bblob');
 import BRecentNote = require('./entities/brecent_note');
 import AbstractBeccaEntity = require('./entities/abstract_becca_entity');
@@ -44,7 +44,7 @@ export default class Becca {
         this.notes = {};
         this.branches = {};
         this.childParentToBranch = {};
-        this.attributes = {};
+        this.attributes = {};        
         this.attributeIndex = {};
         this.options = {};
         this.etapiTokens = {};
@@ -155,7 +155,7 @@ export default class Becca {
     }
 
     getRevision(revisionId: string): BRevision | null {
-        const row = sql.getRow('SELECT * FROM revisions WHERE revisionId = ?', [revisionId]);
+        const row = sql.getRow("SELECT * FROM revisions WHERE revisionId = ?", [revisionId]);
 
         const BRevision = require('./entities/brevision'); // avoiding circular dependency problems
         return row ? new BRevision(row) : null;
@@ -181,7 +181,8 @@ export default class Becca {
 
         const BAttachment = require('./entities/battachment'); // avoiding circular dependency problems
 
-        return sql.getRows(query, [attachmentId]).map((row) => new BAttachment(row))[0];
+        return sql.getRows(query, [attachmentId])
+            .map(row => new BAttachment(row))[0];
     }
 
     getAttachmentOrThrow(attachmentId: string, opts: AttachmentOpts = {}): BAttachment {
@@ -194,15 +195,16 @@ export default class Becca {
 
     getAttachments(attachmentIds: string[]): BAttachment[] {
         const BAttachment = require('./entities/battachment'); // avoiding circular dependency problems
-        return sql.getManyRows<AttachmentRow>('SELECT * FROM attachments WHERE attachmentId IN (???) AND isDeleted = 0', attachmentIds).map((row) => new BAttachment(row));
+        return sql.getManyRows<AttachmentRow>("SELECT * FROM attachments WHERE attachmentId IN (???) AND isDeleted = 0", attachmentIds)
+            .map(row => new BAttachment(row));
     }
 
-    getBlob(entity: {blobId?: string}): BBlob | null {
+    getBlob(entity: { blobId?: string }): BBlob | null {
         if (!entity.blobId) {
             return null;
         }
 
-        const row = sql.getRow('SELECT *, LENGTH(content) AS contentLength FROM blobs WHERE blobId = ?', [entity.blobId]);
+        const row = sql.getRow("SELECT *, LENGTH(content) AS contentLength FROM blobs WHERE blobId = ?", [entity.blobId]);
 
         const BBlob = require('./entities/bblob'); // avoiding circular dependency problems
         return row ? new BBlob(row) : null;
@@ -231,7 +233,12 @@ export default class Becca {
             return this.getAttachment(entityId);
         }
 
-        const camelCaseEntityName = entityName.toLowerCase().replace(/(_[a-z])/g, (group) => group.toUpperCase().replace('_', ''));
+        const camelCaseEntityName = entityName.toLowerCase().replace(/(_[a-z])/g,
+            group =>
+                group
+                    .toUpperCase()
+                    .replace('_', '')
+        );
 
         if (!(camelCaseEntityName in this)) {
             throw new Error(`Unknown entity name '${camelCaseEntityName}' (original argument '${entityName}')`);
@@ -244,14 +251,14 @@ export default class Becca {
         const rows = sql.getRows(query, params);
 
         const BRecentNote = require('./entities/brecent_note'); // avoiding circular dependency problems
-        return rows.map((row) => new BRecentNote(row));
+        return rows.map(row => new BRecentNote(row));
     }
 
     getRevisionsFromQuery(query: string, params: string[] = []): BRevision[] {
         const rows = sql.getRows<RevisionRow>(query, params);
 
         const BRevision = require('./entities/brevision'); // avoiding circular dependency problems
-        return rows.map((row) => new BRevision(row));
+        return rows.map(row => new BRevision(row));
     }
 
     /** Should be called when the set of all non-skeleton notes changes (added/removed) */
@@ -283,7 +290,7 @@ export default class Becca {
 
 /**
  * This interface contains the data that is shared across all the objects of a given derived class of {@link AbstractBeccaEntity}.
- * For example, all BAttributes will share their content, but all BBranches will have another set of this data.
+ * For example, all BAttributes will share their content, but all BBranches will have another set of this data. 
  */
 export interface ConstructorData<T extends AbstractBeccaEntity<T>> {
     primaryKeyName: string;

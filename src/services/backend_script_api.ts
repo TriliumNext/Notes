@@ -30,10 +30,11 @@ import BAttachment = require('../becca/entities/battachment');
 import BRevision = require('../becca/entities/brevision');
 import BEtapiToken = require('../becca/entities/betapi_token');
 import BOption = require('../becca/entities/boption');
-import {AttributeRow, AttributeType, NoteType} from '../becca/entities/rows';
+import { AttributeRow, AttributeType, NoteType } from '../becca/entities/rows';
 import Becca from '../becca/becca-interface';
-import {NoteParams} from './note-interface';
-import {ApiParams} from './backend_script_api_interface';
+import { NoteParams } from './note-interface';
+import { ApiParams } from './backend_script_api_interface';
+
 
 /**
  * A whole number
@@ -76,7 +77,7 @@ interface Api {
      * Entity whose event triggered this execution
      */
     originEntity?: AbstractBeccaEntity<any>;
-
+    
     /**
      * Axios library for HTTP requests. See {@link https://axios-http.com} for documentation
      * @deprecated use native (browser compatible) fetch() instead
@@ -93,13 +94,13 @@ interface Api {
      */
 
     xml2js: typeof xml2js;
-
+    
     /**
      * Instance name identifies particular Trilium instance. It can be useful for scripts
      * if some action needs to happen on only one specific instance.
      */
     getInstanceName(): string | null;
-
+    
     getNote(noteId: string): BNote | null;
     getBranch(branchId: string): BBranch | null;
     getAttribute(attachmentId: string): BAttribute | null;
@@ -110,19 +111,19 @@ interface Api {
     getOption(optionName: string): BOption | null;
     getOptions(): BOption[];
     getAttribute(attributeId: string): BAttribute | null;
-
+    
     /**
      * This is a powerful search method - you can search by attributes and their values, e.g.:
      * "#dateModified =* MONTH AND #log". See {@link https://github.com/zadam/trilium/wiki/Search} for full documentation for all options
      */
     searchForNotes(query: string, searchParams: SearchParams): BNote[];
-
+    
     /**
      * This is a powerful search method - you can search by attributes and their values, e.g.:
      * "#dateModified =* MONTH AND #log". See {@link https://github.com/zadam/trilium/wiki/Search} for full documentation for all options
      */
     searchForNote(query: string, searchParams: SearchParams): BNote | null;
-
+    
     /**
      * Retrieves notes with given label name & value
      *
@@ -144,12 +145,8 @@ interface Api {
      *
      * @param prefix - if branch is created between note and parent note, set this prefix
      */
-    ensureNoteIsPresentInParent(
-        noteId: string,
-        parentNoteId: string,
-        prefix: string
-    ): {
-        branch: BBranch | null;
+    ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefix: string): {
+        branch: BBranch | null
     };
 
     /**
@@ -186,16 +183,11 @@ interface Api {
      * @param parentNoteId - create new note under this parent
      * @returns object contains newly created entities note and branch
      */
-    createNote(
-        parentNoteId: string,
-        title: string,
-        content: string,
-        extraOptions: Omit<NoteParams, 'title' | 'content' | 'type' | 'parentNoteId'> & {
-            /** should the note be JSON */
-            json?: boolean;
-            attributes?: AttributeRow[];
-        }
-    ): NoteAndBranch;
+    createNote(parentNoteId: string, title: string, content: string, extraOptions: Omit<NoteParams, "title" | "content" | "type" | "parentNoteId"> & {
+        /** should the note be JSON */
+        json?: boolean;
+        attributes?: AttributeRow[]
+    }): NoteAndBranch;
 
     logMessages: Record<string, string[]>;
     logSpacedUpdates: Record<string, SpacedUpdate>;
@@ -221,7 +213,7 @@ interface Api {
 
     /**
      * Returns today's day note. If such note doesn't exist, it is created.
-     *
+     * 
      * @param rootNote specify calendar root note, normally leave empty to use the default calendar
      */
     getTodayNote(rootNote?: BNote): BNote | null;
@@ -232,15 +224,11 @@ interface Api {
      * @param date in YYYY-MM-DD format
      * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
      */
-    getWeekNote(
-        date: string,
-        options: {
-            // TODO: Deduplicate type with date_notes.ts once ES modules are added.
-            /** either "monday" (default) or "sunday" */
-            startOfTheWeek: 'monday' | 'sunday';
-        },
-        rootNote: BNote
-    ): BNote | null;
+    getWeekNote(date: string, options: {
+        // TODO: Deduplicate type with date_notes.ts once ES modules are added.
+        /** either "monday" (default) or "sunday" */
+        startOfTheWeek: "monday" | "sunday";
+    }, rootNote: BNote): BNote | null;
 
     /**
      * Returns month note for given date. If such a note doesn't exist, it is created.
@@ -261,16 +249,13 @@ interface Api {
     /**
      * Sort child notes of a given note.
      */
-    sortNotes(
-        parentNoteId: string,
-        sortConfig: {
-            /** 'title', 'dateCreated', 'dateModified' or a label name
-             * See {@link https://github.com/zadam/trilium/wiki/Sorting} for details. */
-            sortBy?: string;
-            reverse?: boolean;
-            foldersFirst?: boolean;
-        }
-    ): void;
+    sortNotes(parentNoteId: string, sortConfig: {
+        /** 'title', 'dateCreated', 'dateModified' or a label name
+          * See {@link https://github.com/zadam/trilium/wiki/Sorting} for details. */
+        sortBy?: string;
+        reverse?: boolean;
+        foldersFirst?: boolean;
+    }): void;
 
     /**
      * This method finds note by its noteId and prefix and either sets it to the given parentNoteId
@@ -330,7 +315,7 @@ interface Api {
          * - "script" -  activating the launcher will execute the script (specified in scriptNoteId param)
          * - "customWidget" - the launcher will be rendered with a custom widget (specified in widgetNoteId param)
          */
-        type: 'note' | 'script' | 'customWidget';
+        type: "note" | "script" | "customWidget";
         title: string;
         /** if true, will be created in the "Visible launchers", otherwise in "Available launchers" */
         isVisible: boolean;
@@ -344,12 +329,12 @@ interface Api {
         scriptNoteId: string;
         /** for type "customWidget" */
         widgetNoteId?: string;
-    }): {note: BNote};
+    }): { note: BNote };
 
     /**
      * @param format - either 'html' or 'markdown'
      */
-    exportSubtreeToZipFile(noteId: string, format: 'markdown' | 'html', zipFilePath: string): Promise<void>;
+    exportSubtreeToZipFile(noteId: string, format: "markdown" | "html", zipFilePath: string): Promise<void>;
 
     /**
      * Executes given anonymous function on the frontend(s).
@@ -382,7 +367,7 @@ interface Api {
      */
     backupNow(backupName: string): Promise<string>;
 
-    /**
+     /**
      * This object contains "at your risk" and "no BC guarantees" objects for advanced use cases.
      */
     __private: {
@@ -400,9 +385,9 @@ interface Api {
  */
 function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.startNote = apiParams.startNote;
-
+    
     this.currentNote = currentNote;
-
+    
     this.originEntity = apiParams.originEntity;
 
     for (const key in apiParams) {
@@ -412,18 +397,18 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.axios = axios;
     this.dayjs = dayjs;
     this.xml2js = xml2js;
-    this.getInstanceName = () => (config.General ? config.General.instanceName : null);
-    this.getNote = (noteId) => becca.getNote(noteId);
-    this.getBranch = (branchId) => becca.getBranch(branchId);
-    this.getAttribute = (attributeId) => becca.getAttribute(attributeId);
-    this.getAttachment = (attachmentId) => becca.getAttachment(attachmentId);
-    this.getRevision = (revisionId) => becca.getRevision(revisionId);
-    this.getEtapiToken = (etapiTokenId) => becca.getEtapiToken(etapiTokenId);
+    this.getInstanceName = () => config.General ? config.General.instanceName : null;
+    this.getNote = noteId => becca.getNote(noteId);
+    this.getBranch = branchId => becca.getBranch(branchId);
+    this.getAttribute = attributeId => becca.getAttribute(attributeId);
+    this.getAttachment = attachmentId => becca.getAttachment(attachmentId);
+    this.getRevision = revisionId => becca.getRevision(revisionId);
+    this.getEtapiToken = etapiTokenId => becca.getEtapiToken(etapiTokenId);
     this.getEtapiTokens = () => becca.getEtapiTokens();
-    this.getOption = (optionName) => becca.getOption(optionName);
+    this.getOption = optionName => becca.getOption(optionName);
     this.getOptions = () => optionsService.getOptions();
-    this.getAttribute = (attributeId) => becca.getAttribute(attributeId);
-
+    this.getAttribute = attributeId => becca.getAttribute(attributeId);
+    
     this.searchForNotes = (query, searchParams = {}) => {
         if (searchParams.includeArchivedNotes === undefined) {
             searchParams.includeArchivedNotes = true;
@@ -433,42 +418,42 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
             searchParams.ignoreHoistedNote = true;
         }
 
-        const noteIds = searchService.findResultsWithQuery(query, new SearchContext(searchParams)).map((sr) => sr.noteId);
+        const noteIds = searchService.findResultsWithQuery(query, new SearchContext(searchParams))
+            .map(sr => sr.noteId);
 
         return becca.getNotes(noteIds);
     };
 
+    
     this.searchForNote = (query, searchParams = {}) => {
         const notes = this.searchForNotes(query, searchParams);
 
         return notes.length > 0 ? notes[0] : null;
     };
 
-    this.getNotesWithLabel = attributeService.getNotesWithLabel;
+    this.getNotesWithLabel = attributeService.getNotesWithLabel;    
     this.getNoteWithLabel = attributeService.getNoteWithLabel;
     this.ensureNoteIsPresentInParent = cloningService.ensureNoteIsPresentInParent;
     this.ensureNoteIsAbsentFromParent = cloningService.ensureNoteIsAbsentFromParent;
     this.toggleNoteInParent = cloningService.toggleNoteInParent;
-    this.createTextNote = (parentNoteId, title, content = '') =>
-        noteService.createNewNote({
-            parentNoteId,
-            title,
-            content,
-            type: 'text'
-        });
+    this.createTextNote = (parentNoteId, title, content = '') => noteService.createNewNote({
+        parentNoteId,
+        title,
+        content,
+        type: 'text'
+    });
 
-    this.createDataNote = (parentNoteId, title, content = {}) =>
-        noteService.createNewNote({
-            parentNoteId,
-            title,
-            content: JSON.stringify(content, null, '\t'),
-            type: 'code',
-            mime: 'application/json'
-        });
-
+    this.createDataNote = (parentNoteId, title, content = {}) => noteService.createNewNote({
+        parentNoteId,
+        title,
+        content: JSON.stringify(content, null, '\t'),
+        type: 'code',
+        mime: 'application/json'
+    });
+    
     this.createNewNote = noteService.createNewNote;
-
-    this.createNote = (parentNoteId, title, content = '', _extraOptions = {}) => {
+    
+    this.createNote = (parentNoteId, title, content = "", _extraOptions = {}) => {
         const parentNote = becca.getNote(parentNoteId);
         if (!parentNote) {
             throw new Error(`Unable to find parent note with ID ${parentNote}.`);
@@ -476,8 +461,8 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
 
         let extraOptions: NoteParams = {
             ..._extraOptions,
-            content: '',
-            type: 'text',
+            content: "",
+            type: "text",
             parentNoteId,
             title
         };
@@ -490,12 +475,13 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
             extraOptions.content = JSON.stringify(content || {}, null, '\t');
             extraOptions.type = 'code';
             extraOptions.mime = 'application/json';
-        } else {
+        }
+        else {
             extraOptions.content = content;
         }
 
         return sql.transactional(() => {
-            const {note, branch} = noteService.createNewNote(extraOptions);
+            const { note, branch } = noteService.createNewNote(extraOptions);
 
             for (const attr of _extraOptions.attributes || []) {
                 attributeService.createAttribute({
@@ -507,35 +493,33 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
                 });
             }
 
-            return {note, branch};
+            return { note, branch };
         });
     };
 
     this.logMessages = {};
     this.logSpacedUpdates = {};
-
-    this.log = (message) => {
+    
+    this.log = message => {
         log.info(message);
 
         if (!this.startNote) {
             return;
         }
 
-        const {noteId} = this.startNote;
+        const { noteId } = this.startNote;
 
         this.logMessages[noteId] = this.logMessages[noteId] || [];
-        this.logSpacedUpdates[noteId] =
-            this.logSpacedUpdates[noteId] ||
-            new SpacedUpdate(() => {
-                const messages = this.logMessages[noteId];
-                this.logMessages[noteId] = [];
+        this.logSpacedUpdates[noteId] = this.logSpacedUpdates[noteId] || new SpacedUpdate(() => {
+            const messages = this.logMessages[noteId];
+            this.logMessages[noteId] = [];
 
-                ws.sendMessageToAllClients({
-                    type: 'api-log-messages',
-                    noteId,
-                    messages
-                });
-            }, 100);
+            ws.sendMessageToAllClients({
+                type: 'api-log-messages',
+                noteId,
+                messages
+            });
+        }, 100);
 
         this.logMessages[noteId].push(message);
         this.logSpacedUpdates[noteId].scheduleUpdate();
@@ -548,7 +532,12 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.getMonthNote = dateNoteService.getMonthNote;
     this.getYearNote = dateNoteService.getYearNote;
 
-    this.sortNotes = (parentNoteId, sortConfig = {}) => treeService.sortNotes(parentNoteId, sortConfig.sortBy || 'title', !!sortConfig.reverse, !!sortConfig.foldersFirst);
+    this.sortNotes = (parentNoteId, sortConfig = {}) => treeService.sortNotes(
+        parentNoteId,
+        sortConfig.sortBy || "title",
+        !!sortConfig.reverse,
+        !!sortConfig.foldersFirst
+    );
 
     this.setNoteToParent = treeService.setNoteToParent;
     this.transactional = sql.transactional;
@@ -558,31 +547,16 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.sql = sql;
     this.getAppInfo = () => appInfo;
 
-    this.createOrUpdateLauncher = (opts) => {
-        if (!opts.id) {
-            throw new Error('ID is a mandatory parameter for api.createOrUpdateLauncher(opts)');
-        }
-        if (!opts.id.match(/[a-z0-9]{6,1000}/i)) {
-            throw new Error(`ID must be an alphanumeric string at least 6 characters long.`);
-        }
-        if (!opts.type) {
-            throw new Error('Launcher Type is a mandatory parameter for api.createOrUpdateLauncher(opts)');
-        }
-        if (!['note', 'script', 'customWidget'].includes(opts.type)) {
-            throw new Error(`Given launcher type '${opts.type}'`);
-        }
-        if (!opts.title?.trim()) {
-            throw new Error('Title is a mandatory parameter for api.createOrUpdateLauncher(opts)');
-        }
-        if (opts.type === 'note' && !opts.targetNoteId) {
-            throw new Error("targetNoteId is mandatory for launchers of type 'note'");
-        }
-        if (opts.type === 'script' && !opts.scriptNoteId) {
-            throw new Error("scriptNoteId is mandatory for launchers of type 'script'");
-        }
-        if (opts.type === 'customWidget' && !opts.widgetNoteId) {
-            throw new Error("widgetNoteId is mandatory for launchers of type 'customWidget'");
-        }
+    
+    this.createOrUpdateLauncher = opts => {
+        if (!opts.id) { throw new Error("ID is a mandatory parameter for api.createOrUpdateLauncher(opts)"); }
+        if (!opts.id.match(/[a-z0-9]{6,1000}/i)) { throw new Error(`ID must be an alphanumeric string at least 6 characters long.`); }
+        if (!opts.type) { throw new Error("Launcher Type is a mandatory parameter for api.createOrUpdateLauncher(opts)"); }
+        if (!["note", "script", "customWidget"].includes(opts.type)) { throw new Error(`Given launcher type '${opts.type}'`); }
+        if (!opts.title?.trim()) { throw new Error("Title is a mandatory parameter for api.createOrUpdateLauncher(opts)"); }
+        if (opts.type === 'note' && !opts.targetNoteId) { throw new Error("targetNoteId is mandatory for launchers of type 'note'"); }
+        if (opts.type === 'script' && !opts.scriptNoteId) { throw new Error("scriptNoteId is mandatory for launchers of type 'script'"); }
+        if (opts.type === 'customWidget' && !opts.widgetNoteId) { throw new Error("widgetNoteId is mandatory for launchers of type 'customWidget'"); }
 
         const parentNoteId = opts.isVisible ? '_lbVisibleLaunchers' : '_lbAvailableLaunchers';
         const noteId = 'al_' + opts.id;
@@ -592,7 +566,7 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
             specialNotesService.createLauncher({
                 noteId: noteId,
                 parentNoteId: parentNoteId,
-                launcherType: opts.type
+                launcherType: opts.type,
             }).note;
 
         if (launcherNote.title !== opts.title) {
@@ -630,14 +604,14 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
             launcherNote.removeLabel('iconClass');
         }
 
-        return {note: launcherNote};
+        return { note: launcherNote };
     };
 
     this.exportSubtreeToZipFile = async (noteId, format, zipFilePath) => await exportService.exportToZipFile(noteId, format, zipFilePath);
 
     this.runOnFrontend = async (_script, params = []) => {
         let script: string;
-        if (typeof _script === 'string') {
+        if (typeof _script === "string") {
             script = _script;
         } else {
             script = _script.toString();
@@ -649,8 +623,8 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
             params: prepareParams(params),
             startNoteId: this.startNote?.noteId,
             currentNoteId: this.currentNote.noteId,
-            originEntityName: 'notes', // currently there's no other entity on the frontend which can trigger event
-            originEntityId: (this.originEntity && 'noteId' in this.originEntity && (this.originEntity as BNote)?.noteId) || null
+            originEntityName: "notes", // currently there's no other entity on the frontend which can trigger event
+            originEntityId: (this.originEntity && "noteId" in this.originEntity && (this.originEntity as BNote)?.noteId) || null
         });
 
         function prepareParams(params: any[]) {
@@ -658,24 +632,25 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
                 return params;
             }
 
-            return params.map((p) => {
-                if (typeof p === 'function') {
+            return params.map(p => {
+                if (typeof p === "function") {
                     return `!@#Function: ${p.toString()}`;
-                } else {
+                }
+                else {
                     return p;
                 }
             });
         }
     };
-
+    
     this.runOutsideOfSync = syncMutex.doExclusively;
     this.backupNow = backupService.backupNow;
-
+   
     this.__private = {
         becca
-    };
+    }
 }
 
 export = BackendScriptApi as any as {
-    new (currentNote: BNote, apiParams: ApiParams): Api;
+    new (currentNote: BNote, apiParams: ApiParams): Api
 };

@@ -1,17 +1,17 @@
 import BUILTIN_ATTRIBUTES = require('./builtin_attributes');
-import fs = require('fs-extra');
+import fs = require("fs-extra");
 import dataDir = require('./data_dir');
 import dateUtils = require('./date_utils');
-import Database = require('better-sqlite3');
+import Database = require("better-sqlite3");
 import sql = require('./sql');
-import path = require('path');
+import path = require("path");
 
 function getFullAnonymizationScript() {
     // we want to delete all non-builtin attributes because they can contain sensitive names and values
     // on the other hand builtin/system attrs should not contain any sensitive info
-    const builtinAttrNames = BUILTIN_ATTRIBUTES.filter((attr) => !['shareCredentials', 'shareAlias'].includes(attr.name))
-        .map((attr) => `'${attr.name}'`)
-        .join(', ');
+    const builtinAttrNames = BUILTIN_ATTRIBUTES
+        .filter(attr => !["shareCredentials", "shareAlias"].includes(attr.name))
+        .map(attr => `'${attr.name}'`).join(', ');
 
     const anonymizeScript = `
 UPDATE etapi_tokens SET tokenHash = 'API token hash value';
@@ -48,7 +48,7 @@ function getLightAnonymizationScript() {
               AND value != '';`;
 }
 
-async function createAnonymizedCopy(type: 'full' | 'light') {
+async function createAnonymizedCopy(type: "full" | "light") {
     if (!['full', 'light'].includes(type)) {
         throw new Error(`Unrecognized anonymization type '${type}'`);
     }
@@ -63,7 +63,9 @@ async function createAnonymizedCopy(type: 'full' | 'light') {
 
     const db = new Database(anonymizedFile);
 
-    const anonymizationScript = type === 'light' ? getLightAnonymizationScript() : getFullAnonymizationScript();
+    const anonymizationScript = type === 'light'
+        ? getLightAnonymizationScript()
+        : getFullAnonymizationScript();
 
     db.exec(anonymizationScript);
 
@@ -80,10 +82,9 @@ function getExistingAnonymizedDatabases() {
         return [];
     }
 
-    return fs
-        .readdirSync(dataDir.ANONYMIZED_DB_DIR)
-        .filter((fileName) => fileName.includes('anonymized'))
-        .map((fileName) => ({
+    return fs.readdirSync(dataDir.ANONYMIZED_DB_DIR)
+        .filter(fileName => fileName.includes("anonymized"))
+        .map(fileName => ({
             fileName: fileName,
             filePath: path.resolve(dataDir.ANONYMIZED_DB_DIR, fileName)
         }));
@@ -93,4 +94,4 @@ export = {
     getFullAnonymizationScript,
     createAnonymizedCopy,
     getExistingAnonymizedDatabases
-};
+}
