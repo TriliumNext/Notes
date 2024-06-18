@@ -1,4 +1,4 @@
-import utils from "./utils.js";
+const utils = require("./utils.js");
 
 function lex(str) {
     str = str.trim();
@@ -222,7 +222,7 @@ function lexAndParse(str, allowEmptyRelations = false) {
     return parse(tokens, str, allowEmptyRelations);
 }
 
-export default {
+module.exports = {
     lex,
     parse,
     lexAndParse

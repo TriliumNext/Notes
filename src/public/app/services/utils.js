@@ -505,7 +505,7 @@ function createImageSrcUrl(note) {
     return `api/images/${note.noteId}/${encodeURIComponent(note.title)}?timestamp=${Date.now()}`;
 }
 
-export default {
+module.exports = {
     reloadFrontendApp,
     parseDate,
     formatDateISO,

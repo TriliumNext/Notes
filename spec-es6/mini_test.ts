@@ -1,10 +1,10 @@
-export function describe(name, cb) {
+export function describe(name: string, cb: () => any) {
     console.log(`Running ${name}`);
 
     cb();
 }
 
-export async function it(name, cb) {
+export async function it(name: string, cb: () => any) {
     console.log(`      Running ${name}`);
 
     cb();
@@ -12,9 +12,9 @@ export async function it(name, cb) {
 
 let errorCount = 0;
 
-export function expect(val) {
+export function expect(val: any) {
     return {
-        toEqual: comparedVal => {
+        toEqual: (comparedVal: any) => {
             const jsonVal = JSON.stringify(val);
             const comparedJsonVal = JSON.stringify(comparedVal);
 
@@ -44,11 +44,11 @@ export function expect(val) {
                 errorCount++;
             }
         },
-        toThrow: errorMessage => {
+        toThrow: (errorMessage: any) => {
             try {
                 val();
             }
-            catch (e) {
+            catch (e: any) {
                 if (e.message !== errorMessage) {
                     console.trace("toThrow caught exception, but messages differ");
                     console.error(`expected: ${errorMessage}`);
