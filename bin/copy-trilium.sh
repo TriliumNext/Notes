@@ -24,7 +24,7 @@ done
 for f in 'package.json' 'package-lock.json' 'README.md' 'LICENSE' 'config-sample.ini' 'electron.js'; do
     cp "$f" "$DIR"/
 done
-cp webpack-* "$DIR"/      # here warning because there is no 'webpack-*', but webpack.config.js only
+cp webpack-* "$DIR"/      # here warning because there is no 'webpack-*', but webpack.config.ts only
 
 # run in subshell (so we return to original dir)
 (cd $DIR && n exec 18.18.2 npm install --only=prod)

@@ -3,8 +3,20 @@ const assetPath = require('./src/services/asset_path');
 
 module.exports = {
     mode: 'production',
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
+    },
     entry: {
-        setup: './src/public/app/setup.ts',
+        setup: './src/public/app/setup.js',
         mobile: './src/public/app/mobile.js',
         desktop: './src/public/app/desktop.js',
     },
