@@ -48,10 +48,10 @@ export default class Entrypoints extends Component {
         const noteToHoist = await froca.getNote(noteId);
         const activeNoteContext = appContext.tabManager.getActiveContext();
 
-        if (noteToHoist.noteId === activeNoteContext.hoistedNoteId) {
+        if (noteToHoist?.noteId === activeNoteContext.hoistedNoteId) {
             await activeNoteContext.unhoist();
         }
-        else if (noteToHoist.type !== 'search') {
+        else if (noteToHoist?.type !== 'search') {
             await activeNoteContext.setHoistedNoteId(noteId);
         }
     }

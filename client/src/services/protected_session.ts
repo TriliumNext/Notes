@@ -1,4 +1,4 @@
-import server from './server.js';
+import server, { StandardResponse } from './server.js';
 import protectedSessionHolder from './protected_session_holder.js';
 import toastService from "./toast.js";
 import ws from "./ws.js";
@@ -7,7 +7,7 @@ import froca from "./froca.js";
 import utils from "./utils.js";
 import options from "./options.js";
 
-let protectedSessionDeferred = null;
+let protectedSessionDeferred: JQuery.Deferred<unknown, unknown, unknown> | null;
 
 async function leaveProtectedSession() {
     if (protectedSessionHolder.isProtectedSessionAvailable()) {
@@ -43,11 +43,11 @@ async function reloadData() {
     await froca.loadInitialTree();
 
     // make sure that all notes used in the application are loaded, including the ones not shown in the tree
-    await froca.reloadNotes(allNoteIds, true);
+    await froca.reloadNotes(allNoteIds);
 }
 
-async function setupProtectedSession(password) {
-    const response = await server.post('login/protected', { password: password });
+async function setupProtectedSession(password: string) {
+    const response = await server.post<StandardResponse>('login/protected', { password: password });
 
     if (!response.success) {
         toastService.showError("Wrong password.", 3000);
@@ -85,7 +85,7 @@ async function protectNote(noteId, protect, includingSubtree) {
     await server.put(`notes/${noteId}/protect/${protect ? 1 : 0}?subtree=${includingSubtree ? 1 : 0}`);
 }
 
-function makeToast(message, protectingLabel, text) {
+function makeToast(message: string, protectingLabel: string, text: string) {
     return {
         id: message.taskId,
         title: `${protectingLabel} status`,

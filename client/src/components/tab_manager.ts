@@ -197,7 +197,7 @@ export default class TabManager extends Component {
      *
      * @returns {NoteContext}
      */
-    getActiveContext() {
+    getActiveContext(): NoteContext {
         return this.activeNtxId
             ? this.getNoteContextById(this.activeNtxId)
             : null;

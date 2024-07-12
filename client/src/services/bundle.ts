@@ -4,8 +4,12 @@ import toastService from "./toast.js";
 import froca from "./froca.js";
 import utils from "./utils.js";
 
-async function getAndExecuteBundle(noteId, originEntity = null, script = null, params = null) {
-    const bundle = await server.post(`script/bundle/${noteId}`, {
+interface Bundle {
+
+}
+
+async function getAndExecuteBundle(noteId: string, originEntity = null, script = null, params = null) {
+    const bundle = await server.post<Bundle>(`script/bundle/${noteId}`, {
         script,
         params
     });
@@ -13,7 +17,7 @@ async function getAndExecuteBundle(noteId, originEntity = null, script = null, p
     return await executeBundle(bundle, originEntity);
 }
 
-async function executeBundle(bundle, originEntity, $container) {
+async function executeBundle(bundle: Bundle, originEntity?: unknown, $container?: JQuery<HTMLElement>) {
     const apiContext = await ScriptContext(bundle.noteId, bundle.allNoteIds, originEntity, $container);
 
     try {
@@ -66,7 +70,7 @@ class WidgetsByParent {
 }
 
 async function getWidgetBundlesByParent() {
-    const scriptBundles = await server.get("script/widgets");
+    const scriptBundles = await server.get<Bundle[]>("script/widgets");
 
     const widgetsByParent = new WidgetsByParent();
 

@@ -9,6 +9,8 @@ import hoistedNoteService from "../services/hoisted_note.js";
 import options from "../services/options.js";
 
 class NoteContext extends Component {
+    hoistedNoteId: string;
+
     constructor(ntxId = null, hoistedNoteId = 'root', mainNtxId = null) {
         super();
 
@@ -111,7 +113,7 @@ class NoteContext extends Component {
      * In such a scenario, A context is the main context (also representing the tab as a whole), and B, C are the children
      * of context A.
      *
-     * @returns {boolean} true if the context is main (= tab)
+     * @returns true if the context is main (= tab)
      */
     isMainContext() {
         // if null, then this is a main context
@@ -120,10 +122,8 @@ class NoteContext extends Component {
 
     /**
      * See docs for isMainContext() for better explanation.
-     *
-     * @returns {NoteContext}
      */
-    getMainContext() {
+    getMainContext(): NoteContext {
         if (this.mainNtxId) {
             try {
                 return appContext.tabManager.getNoteContextById(this.mainNtxId);

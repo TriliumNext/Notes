@@ -5,8 +5,20 @@ import ws from "./ws.js";
 import froca from "./froca.js";
 import treeService from "./tree.js";
 import toastService from "./toast.js";
+import { FNoteRow } from "../entities/fnote.js";
 
-async function createNote(parentNotePath, options = {}) {
+interface CreateNoteOptions {
+    isProtected?: boolean;
+    saveSelection?: boolean;
+    type?: string;
+    content?: string;
+}
+
+interface DuplicateResponse {
+    note: FNoteRow;
+}
+
+async function createNote(parentNotePath: string, options: CreateNoteOptions = {}) {
     options = Object.assign({
         activate: true,
         focus: 'title',
@@ -80,7 +92,7 @@ async function chooseNoteType() {
     });
 }
 
-async function createNoteWithTypePrompt(parentNotePath, options = {}) {
+async function createNoteWithTypePrompt(parentNotePath: string, options = {}) {
     const {success, noteType, templateNoteId} = await chooseNoteType();
 
     if (!success) {
@@ -94,7 +106,7 @@ async function createNoteWithTypePrompt(parentNotePath, options = {}) {
 }
 
 /* If the first element is heading, parse it out and use it as a new heading. */
-function parseSelectedHtml(selectedHtml) {
+function parseSelectedHtml(selectedHtml: string) {
     const dom = $.parseHTML(selectedHtml);
 
     if (dom.length > 0 && dom[0].tagName && dom[0].tagName.match(/h[1-6]/i)) {
@@ -109,9 +121,9 @@ function parseSelectedHtml(selectedHtml) {
     }
 }
 
-async function duplicateSubtree(noteId, parentNotePath) {
+async function duplicateSubtree(noteId: string, parentNotePath: string) {
     const parentNoteId = treeService.getNoteIdFromUrl(parentNotePath);
-    const {note} = await server.post(`notes/${noteId}/duplicate/${parentNoteId}`);
+    const {note} = await server.post<DuplicateResponse>(`notes/${noteId}/duplicate/${parentNoteId}`);
 
     await ws.waitForMaxKnownEntityChangeId();
 
@@ -119,7 +131,7 @@ async function duplicateSubtree(noteId, parentNotePath) {
     activeNoteContext.setNote(`${parentNotePath}/${note.noteId}`);
 
     const origNote = await froca.getNote(noteId);
-    toastService.showMessage(`Note "${origNote.title}" has been duplicated`);
+    toastService.showMessage(`Note "${origNote?.title}" has been duplicated`);
 }
 
 export default {
