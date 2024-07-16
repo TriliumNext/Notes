@@ -23,8 +23,6 @@ rm -r $PKG_DIR/node_modules/electron*
 rm -r $PKG_DIR/webpack*
 rm -r $PKG_DIR/electron.js
 
-cp -r bin/better-sqlite3/linux-server-better_sqlite3.node $PKG_DIR/node_modules/better-sqlite3/build/Release/better_sqlite3.node
-
 printf "#!/bin/sh\n./node/bin/node src/www" > $PKG_DIR/trilium.sh
 chmod 755 $PKG_DIR/trilium.sh
 
