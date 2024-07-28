@@ -96,7 +96,7 @@ export default class DesktopLayout {
                 .css("width", "53px")
                 .child(new GlobalMenuWidget())
                 .child(new LauncherContainer())
-                .child(new LeftPaneToggleWidget())
+                .child(new LeftPaneToggleWidget(false))
             )
             .child(new LeftPaneContainer()
                 .child(new QuickSearchWidget())

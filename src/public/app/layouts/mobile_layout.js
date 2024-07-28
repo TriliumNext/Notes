@@ -23,6 +23,8 @@ import LauncherContainer from "../widgets/containers/launcher_container.js";
 import RootContainer from "../widgets/containers/root_container.js";
 import SharedInfoWidget from "../widgets/shared_info.js";
 import PromotedAttributesWidget from "../widgets/ribbon_widgets/promoted_attributes.js";
+import LeftPaneToggleWidget from "../widgets/buttons/left_pane_toggle.js";
+import LeftPaneContainer from "../widgets/containers/left_pane_container.js";
 
 const MOBILE_CSS = `
 <style>
@@ -58,7 +60,7 @@ const FANCYTREE_CSS = `
     margin-top: 0px;
     overflow-y: auto;
     contain: content;
-    padding-left: 10px;
+    padding-left: 4px;
 }
 
 .fancytree-custom-icon {
@@ -66,12 +68,12 @@ const FANCYTREE_CSS = `
 }
 
 .fancytree-title {
-    font-size: 1.5em;
-    margin-left: 0.6em !important;
+    font-size: 1em;
+    margin-left: 0.4em !important;
 }
 
 .fancytree-node {
-    padding: 5px;
+    padding: 4px;
 }
 
 .fancytree-node .fancytree-expander:before {
@@ -119,10 +121,13 @@ export default class MobileLayout {
                 .css("width", "53px")
                 .child(new GlobalMenuWidget())
                 .child(new LauncherContainer())
+                .child(new LeftPaneToggleWidget(true))
             )
             .child(new FlexContainer("row")
                 .filling()
-                .child(new ScreenContainer("tree", 'column')
+                .child(
+                    new LeftPaneContainer()
+                    .child(new ScreenContainer("tree", 'column'))
                     .class("d-sm-flex d-md-flex d-lg-flex d-xl-flex col-12 col-sm-5 col-md-4 col-lg-3 col-xl-3")
                     .css("max-height", "100%")
                     .css('padding-left', "0")
