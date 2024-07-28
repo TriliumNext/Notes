@@ -629,11 +629,17 @@ function readContent(zipfile: yauzl.ZipFile, entry: yauzl.Entry): Promise<Buffer
 function readZipFile(buffer: Buffer, processEntryCallback: (zipfile: yauzl.ZipFile, entry: yauzl.Entry) => void) {
     return new Promise((res, rej) => {
         yauzl.fromBuffer(buffer, {lazyEntries: true, validateEntrySizes: false}, function(err, zipfile) {
-            if (err) throw err;
+            if (err) rej(err);
             if (!zipfile) throw new Error("Unable to read zip file.");
 
             zipfile.readEntry();
-            zipfile.on("entry", entry => processEntryCallback(zipfile, entry));
+            zipfile.on("entry", async entry => {
+                try {
+                    await processEntryCallback(zipfile, entry);
+                } catch (e) {
+                    rej(e);
+                }
+            });
             zipfile.on("end", res);
         });
     });
