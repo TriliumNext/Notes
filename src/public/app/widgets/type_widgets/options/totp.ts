@@ -108,7 +108,21 @@ let $envEnabledOAuth: any;
 let $recoveryKeys: any;
 let $protectedSessionTimeout: any;
 
+interface totpHttpResponse {
+  success: boolean,
+  recoveryCodes: string,
+  message: string,
+  keysExist: boolean,
+  usedRecoveryCodes: string,
+  enabled: boolean,
+}
+
 export default class MultiFactorAuthenticationOptions extends OptionsWidget {
+  
+  constructor(A:String){
+    super();
+  }
+  
   doRender() {
     $widget = $(TPL);
 
@@ -166,7 +180,7 @@ export default class MultiFactorAuthenticationOptions extends OptionsWidget {
       ".protected-session-timeout-in-seconds"
     );
     $protectedSessionTimeout.on("change", () =>
-      updateOption(
+      this.updateOption(
         "protectedSessionTimeout",
         $protectedSessionTimeout.val()
       )
@@ -186,27 +200,36 @@ export default class MultiFactorAuthenticationOptions extends OptionsWidget {
   }
 
   async setRecoveryKeys() {
-    get("totp_recovery/generate").then((result) => {
+    get("totp_recovery/generate").then((result: totpHttpResponse) => {
       if (!result.success) {
         showError("Error in revevery code generation!");
         return;
       }
-      keyFiller(result.recoveryCodes);
+      this.keyFiller(result.recoveryCodes);
       post("totp_recovery/set", {
-        recoveryCodes: result.recoveryCodes,
+        recoveryCodes: result.recoveryCodes
       });
     });
+
   }
 
-  async keyFiller(values) {
+  async keyFiller(values: string | string[]) {
     // Forces values to be a string so it doesn't error out when I split.
     // Will be a non-issue when I update everything to typescript.
-    const keys = (values + "").split(",");
-    for (let i = 0; i < keys.length; i++) $recoveryKeys[i].text(keys[i]);
+    if ( typeof values == "string")
+    {
+      const keys = (values + "").split(",");
+      for (let i = 0; i < keys.length; i++) $recoveryKeys[i].text(keys[i]);
+    }
+    else
+    {
+      for (let i = 0; i < values.length; i++) $recoveryKeys[i].text(values[i]);
+    }
+
   }
 
   async generateKey() {
-    get("totp/generate").then((result) => {
+    get("totp/generate").then((result: totpHttpResponse) => {
       if (result.success) {
         $totpSecret.text(result.message);
       } else {
@@ -254,7 +277,7 @@ export default class MultiFactorAuthenticationOptions extends OptionsWidget {
     //   }
     // });
 
-    get("totp/status").then((result) => {
+    get("totp/status").then((result: totpHttpResponse) => {
       if (result.enabled)
         if (result.success) {
           $totpEnabled.prop("checked", result.message);
@@ -284,20 +307,20 @@ export default class MultiFactorAuthenticationOptions extends OptionsWidget {
   }
 
   displayRecoveryKeys() {
-    get("totp_recovery/enabled").then((result) => {
+    get("totp_recovery/enabled").then((result: totpHttpResponse) => {
       if (!result.success) {
-        keyFiller(Array(8).fill("Error generating recovery keys!"));
+        this.keyFiller(Array(8).fill("Error generating recovery keys!"));
         return;
       }
 
       if (!result.keysExist) {
-        keyFiller(Array(8).fill("No key set"));
+        this.keyFiller(Array(8).fill("No key set"));
         $generateRecoveryCodeButton.text("Generate Recovery Codes");
         return;
       }
     });
-    get("totp_recovery/used").then((result) => {
-      keyFiller((result.usedRecoveryCodes + "").split(","));
+    get("totp_recovery/used").then((result: totpHttpResponse) => {
+      this.keyFiller((result.usedRecoveryCodes + "").split(","));
       $generateRecoveryCodeButton.text("Regenerate Recovery Codes");
     });
   }
