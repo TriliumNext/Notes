@@ -140,5 +140,6 @@ export default {
     getOptions,
     updateOption,
     updateOptions,
-    getUserThemes
+    getUserThemes,
+    ALLOWED_OPTIONS
 };

@@ -1,7 +1,7 @@
 import { get, post, server_response } from "../../../services/server.js";
 import { showMessage, showError } from "../../../services/toast.js";
 import OptionsWidget from "./options_widget.js";
-
+import { Options } from "ejs"
 const TPL = `
 <div class="options-section">
     <h2 class=""><b>What is Multi-Factor Authentication?</b></h2>
@@ -89,6 +89,11 @@ const TPL = `
     </div>
 </div>
 `;
+
+interface totpOptions extends Options{
+  protectedSessionTimeout: string
+}
+
 let $widget:any;
 
 let $regenerateTotpButton: any;
@@ -238,7 +243,7 @@ export default class MultiFactorAuthenticationOptions extends OptionsWidget {
     });
   }
 
-  optionsLoaded(options) {
+  optionsLoaded(options: totpOptions) {
     // TODO: Rework the logic since I've changed how OAuth works
 
     // get("oauth/status").then((result) => {
