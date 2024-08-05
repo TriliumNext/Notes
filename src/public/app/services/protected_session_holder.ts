@@ -1,3 +1,4 @@
+import FNote from "../entities/fnote.js";
 import server from "./server.js";
 
 function enableProtectedSession() {
@@ -20,7 +21,7 @@ async function touchProtectedSession() {
     }
 }
 
-function touchProtectedSessionIfNecessary(note) {
+function touchProtectedSessionIfNecessary(note: FNote) {
     if (note && note.isProtected && isProtectedSessionAvailable()) {
         touchProtectedSession();
     }

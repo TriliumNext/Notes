@@ -1,25 +1,32 @@
 import utils from "./utils.js";
 import server from "./server.js";
 
-function checkType(type) {
+type OpenType = "notes" | "attachments";
+type ExecFunction = (command: string, cb: ((err: string, stdout: string, stderror: string) => void)) => void;
+
+interface TmpResponse {
+    tmpFilePath: string;
+}
+
+function checkType(type: string) {
     if (type !== 'notes' && type !== 'attachments') {
         throw new Error(`Unrecognized type '${type}', should be 'notes' or 'attachments'`);
     }
 }
 
-function getFileUrl(type, noteId) {
+function getFileUrl(type: string, noteId?: string) {
     checkType(type);
 
     return getUrlForDownload(`api/${type}/${noteId}/download`);
 }
 
-function getOpenFileUrl(type, noteId) {
+function getOpenFileUrl(type: string, noteId: string) {
     checkType(type);
 
     return getUrlForDownload(`api/${type}/${noteId}/open`);
 }
 
-function download(url) {
+function download(url: string) {
     if (utils.isElectron()) {
         const remote = utils.dynamicRequire('@electron/remote');
 
@@ -29,33 +36,33 @@ function download(url) {
     }
 }
 
-function downloadFileNote(noteId) {
+function downloadFileNote(noteId: string) {
     const url = `${getFileUrl('notes', noteId)}?${Date.now()}`; // don't use cache
 
     download(url);
 }
 
-function downloadAttachment(attachmentId) {
+function downloadAttachment(attachmentId: string) {
     const url = `${getFileUrl('attachments', attachmentId)}?${Date.now()}`; // don't use cache
 
     download(url);
 }
 
-async function openCustom(type, entityId, mime) {
+async function openCustom(type: string, entityId: string, mime: string) {
     checkType(type);
     if (!utils.isElectron() || utils.isMac()) {
         return;
     }
 
-    const resp = await server.post(`${type}/${entityId}/save-to-tmp-dir`);
+    const resp = await server.post<TmpResponse>(`${type}/${entityId}/save-to-tmp-dir`);
     let filePath = resp.tmpFilePath;
-    const {exec} = utils.dynamicRequire('child_process');
+    const exec = utils.dynamicRequire('child_process').exec as ExecFunction;
     const platform = process.platform;
 
     if (platform === 'linux') {
         // we don't know which terminal is available, try in succession
         const terminals = ['x-terminal-emulator', 'gnome-terminal', 'konsole', 'xterm', 'xfce4-terminal', 'mate-terminal', 'rxvt', 'terminator', 'terminology'];
-        const openFileWithTerminal = (terminal) => {
+        const openFileWithTerminal = (terminal: string) => {
             const command = `${terminal} -e 'mimeopen -d "${filePath}"'`;
             console.log(`Open Note custom: ${command} `);
             exec(command, (error, stdout, stderr) => {
@@ -68,11 +75,13 @@ async function openCustom(type, entityId, mime) {
             });
         };
 
-        const searchTerminal = (index) => {
+        const searchTerminal = (index: number) => {
             const terminal = terminals[index];
             if (!terminal) {
                 console.error('Open Note custom: No terminal found!');
-                open(getFileUrl(entityId), {url: true});
+                // TODO: This appears to be broken, since getFileUrl expects two arguments, with the first one being the type.
+                // Also don't know why {url: true} is passed.
+                (open as any)(getFileUrl(entityId), {url: true});
                 return;
             }
             exec(`which ${terminal}`, (error, stdout, stderr) => {
@@ -93,21 +102,27 @@ async function openCustom(type, entityId, mime) {
         exec(command, (err, stdout, stderr) => {
             if (err) {
                 console.error("Open Note custom: ", err);
-                open(getFileUrl(entityId), {url: true});
+                // TODO: This appears to be broken, since getFileUrl expects two arguments, with the first one being the type.
+                // Also don't know why {url: true} is passed.
+                (open as any)(getFileUrl(entityId), {url: true});
                 return;
             }
         });
     } else {
         console.log('Currently "Open Note custom" only supports linux and windows systems');
-        open(getFileUrl(entityId), {url: true});
+        // TODO: This appears to be broken, since getFileUrl expects two arguments, with the first one being the type.
+        // Also don't know why {url: true} is passed.
+        (open as any)(getFileUrl(entityId), {url: true});
     }
 }
 
-const openNoteCustom = async (noteId, mime) => await openCustom('notes', noteId, mime);
-const openAttachmentCustom = async (attachmentId, mime) => await openCustom('attachments', attachmentId, mime);
+const openNoteCustom = 
+    async (noteId: string, mime: string) => await openCustom('notes', noteId, mime);
+const openAttachmentCustom = 
+    async (attachmentId: string, mime: string) => await openCustom('attachments', attachmentId, mime);
 
 
-function downloadRevision(noteId, revisionId) {
+function downloadRevision(noteId: string, revisionId: string) {
     const url = getUrlForDownload(`api/revisions/${revisionId}/download`);
 
     download(url);
@@ -116,7 +131,7 @@ function downloadRevision(noteId, revisionId) {
 /**
  * @param url - should be without initial slash!!!
  */
-function getUrlForDownload(url) {
+function getUrlForDownload(url: string) {
     if (utils.isElectron()) {
         // electron needs absolute URL, so we extract current host, port, protocol
         return `${getHost()}/${url}`;
@@ -127,18 +142,18 @@ function getUrlForDownload(url) {
     }
 }
 
-function canOpenInBrowser(mime) {
+function canOpenInBrowser(mime: string) {
     return mime === "application/pdf"
         || mime.startsWith("image")
         || mime.startsWith("audio")
         || mime.startsWith("video");
 }
 
-async function openExternally(type, entityId, mime) {
+async function openExternally(type: string, entityId: string, mime: string) {
     checkType(type);
 
     if (utils.isElectron()) {
-        const resp = await server.post(`${type}/${entityId}/save-to-tmp-dir`);
+        const resp = await server.post<TmpResponse>(`${type}/${entityId}/save-to-tmp-dir`);
 
         const electron = utils.dynamicRequire('electron');
         const res = await electron.shell.openPath(resp.tmpFilePath);
@@ -158,8 +173,10 @@ async function openExternally(type, entityId, mime) {
     }
 }
 
-const openNoteExternally = async (noteId, mime) => await openExternally('notes', noteId, mime);
-const openAttachmentExternally = async (attachmentId, mime) => await openExternally('attachments', attachmentId, mime);
+const openNoteExternally =
+    async (noteId: string, mime: string) => await openExternally('notes', noteId, mime);
+const openAttachmentExternally = 
+    async (attachmentId: string, mime: string) => await openExternally('attachments', attachmentId, mime);
 
 function getHost() {
     const url = new URL(window.location.href);

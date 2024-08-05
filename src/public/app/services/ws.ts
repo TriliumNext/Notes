@@ -4,17 +4,19 @@ import server from "./server.js";
 import options from "./options.js";
 import frocaUpdater from "./froca_updater.js";
 import appContext from "../components/app_context.js";
+import { EntityChange } from '../../../services/entity_changes_interface.js';
 
-const messageHandlers = [];
+type MessageHandler = (message: any) => void;
+const messageHandlers: MessageHandler[] = [];
 
-let ws;
+let ws: WebSocket;
 let lastAcceptedEntityChangeId = window.glob.maxEntityChangeIdAtLoad;
 let lastAcceptedEntityChangeSyncId = window.glob.maxEntityChangeSyncIdAtLoad;
 let lastProcessedEntityChangeId = window.glob.maxEntityChangeIdAtLoad;
-let lastPingTs;
-let frontendUpdateDataQueue = [];
+let lastPingTs: number;
+let frontendUpdateDataQueue: EntityChange[] = [];
 
-function logError(message) {
+function logError(message: string) {
     console.error(utils.now(), message); // needs to be separate from .trace()
 
     if (ws && ws.readyState === 1) {
@@ -26,7 +28,7 @@ function logError(message) {
     }
 }
 
-function logInfo(message) {
+function logInfo(message: string) {
     console.log(utils.now(), message);
 
     if (ws && ws.readyState === 1) {
@@ -40,17 +42,17 @@ function logInfo(message) {
 window.logError = logError;
 window.logInfo = logInfo;
 
-function subscribeToMessages(messageHandler) {
+function subscribeToMessages(messageHandler: MessageHandler) {
     messageHandlers.push(messageHandler);
 }
 
 // used to serialize frontend update operations
-let consumeQueuePromise = null;
+let consumeQueuePromise: Promise<void> | null = null;
 
 // to make sure each change event is processed only once. Not clear if this is still necessary
 const processedEntityChangeIds = new Set();
 
-function logRows(entityChanges) {
+function logRows(entityChanges: EntityChange[]) {
     const filteredRows = entityChanges.filter(row =>
         !processedEntityChangeIds.has(row.id)
         && (row.entityName !== 'options' || row.entityId !== 'openNoteContexts'));
@@ -60,7 +62,7 @@ function logRows(entityChanges) {
     }
 }
 
-async function executeFrontendUpdate(entityChanges) {
+async function executeFrontendUpdate(entityChanges: EntityChange[]) {
     lastPingTs = Date.now();
 
     if (entityChanges.length > 0) {
@@ -71,6 +73,10 @@ async function executeFrontendUpdate(entityChanges) {
         // we set lastAcceptedEntityChangeId even before frontend update processing and send ping so that backend can start sending more updates
 
         for (const entityChange of entityChanges) {
+            if (!entityChange.id) {
+                continue;
+            }
+
             lastAcceptedEntityChangeId = Math.max(lastAcceptedEntityChangeId, entityChange.id);
 
             if (entityChange.isSynced) {
@@ -97,7 +103,7 @@ async function executeFrontendUpdate(entityChanges) {
     }
 }
 
-async function handleMessage(event) {
+async function handleMessage(event: MessageEvent<any>) {
     const message = JSON.parse(event.data);
 
     for (const messageHandler of messageHandlers) {
@@ -126,24 +132,32 @@ async function handleMessage(event) {
         toastService.showMessage(message.message);
     }
     else if (message.type === 'execute-script') {
-        const bundleService = (await import("../services/bundle.js")).default;
-        const froca = (await import("../services/froca.js")).default;
+        // TODO: Remove after porting the file
+        // @ts-ignore
+        const bundleService = (await import("../services/bundle.js")).default as any;
+        // TODO: Remove after porting the file
+        // @ts-ignore
+        const froca = (await import("../services/froca.js")).default as any;
         const originEntity = message.originEntityId ? await froca.getNote(message.originEntityId) : null;
 
         bundleService.getAndExecuteBundle(message.currentNoteId, originEntity, message.script, message.params);
     }
 }
 
-let entityChangeIdReachedListeners = [];
+let entityChangeIdReachedListeners: {
+    desiredEntityChangeId: number;
+    resolvePromise: () => void;
+    start: number;
+}[] = [];
 
-function waitForEntityChangeId(desiredEntityChangeId) {
+function waitForEntityChangeId(desiredEntityChangeId: number) {
     if (desiredEntityChangeId <= lastProcessedEntityChangeId) {
         return Promise.resolve();
     }
 
     console.debug(`Waiting for ${desiredEntityChangeId}, last processed is ${lastProcessedEntityChangeId}, last accepted ${lastAcceptedEntityChangeId}`);
 
-    return new Promise((res, rej) => {
+    return new Promise<void>((res, rej) => {
         entityChangeIdReachedListeners.push({
             desiredEntityChangeId: desiredEntityChangeId,
             resolvePromise: res,
@@ -178,7 +192,7 @@ async function consumeFrontendUpdateData() {
         try {
             await utils.timeLimit(frocaUpdater.processEntityChanges(nonProcessedEntityChanges), 30000);
         }
-        catch (e) {
+        catch (e: any) {
             logError(`Encountered error ${e.message}: ${e.stack}, reloading frontend.`);
 
             if (!glob.isDev && !options.is('debugModeEnabled')) {
@@ -196,7 +210,9 @@ async function consumeFrontendUpdateData() {
         for (const entityChange of nonProcessedEntityChanges) {
             processedEntityChangeIds.add(entityChange.id);
 
-            lastProcessedEntityChangeId = Math.max(lastProcessedEntityChangeId, entityChange.id);
+            if (entityChange.id) {
+                lastProcessedEntityChangeId = Math.max(lastProcessedEntityChangeId, entityChange.id);
+            }
         }
     }
 
@@ -248,3 +264,4 @@ export default {
     waitForMaxKnownEntityChangeId,
     getMaxKnownEntityChangeSyncId: () => lastAcceptedEntityChangeSyncId
 };
+
