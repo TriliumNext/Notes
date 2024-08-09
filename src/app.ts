@@ -48,7 +48,7 @@ app.use(express.static(path.join(scriptDir, 'public/root')));
 app.use(`/manifest.webmanifest`, express.static(path.join(scriptDir, 'public/manifest.webmanifest')));
 app.use(`/robots.txt`, express.static(path.join(scriptDir, 'public/robots.txt')));
 app.use(sessionParser);
-app.use(favicon(`${scriptDir}/../images/app-icons/win/icon.ico`));
+app.use(favicon(`${scriptDir}/../images/app-icons/icon.ico`));
 
 assets.register(app);
 routes.register(app);

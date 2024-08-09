@@ -39,7 +39,7 @@ done
 icnsutil compose -f "mac/icon.icns" ./mac/*.png
 
 # Build Windows icon
-magick -background none "../icon-color.svg" -define icon:auto-resize=16,32,48,64,128,256 "./win/icon.ico"
+magick -background none "../icon-color.svg" -define icon:auto-resize=16,32,48,64,128,256 "./icon.ico"
 
 # Build Squirrel splash image
 magick "./png/256x256.png" -background "#ffffff" -gravity center -extent 640x480 "./win/setup-banner.gif"
