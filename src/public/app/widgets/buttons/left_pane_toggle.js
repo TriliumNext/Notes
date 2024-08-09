@@ -3,9 +3,9 @@ import splitService from "../../services/resizer.js";
 import CommandButtonWidget from "./command_button.js";
 
 export default class LeftPaneToggleWidget extends CommandButtonWidget {
-    constructor() {
+    constructor(isMobile) {
         super();
-
+        this.isMobile = isMobile;
         this.class("launcher-button");
 
         this.settings.icon = () => options.is('leftPaneVisible')
@@ -24,7 +24,7 @@ export default class LeftPaneToggleWidget extends CommandButtonWidget {
     refreshIcon() {
         super.refreshIcon();
 
-        splitService.setupLeftPaneResizer(options.is('leftPaneVisible'));
+        splitService.setupLeftPaneResizer(options.is('leftPaneVisible'), this.isMobile);
     }
 
     entitiesReloadedEvent({loadResults}) {

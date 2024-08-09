@@ -3,7 +3,7 @@ import options from "./options.js";
 let leftInstance;
 let rightInstance;
 
-function setupLeftPaneResizer(leftPaneVisible) {
+function setupLeftPaneResizer(leftPaneVisible, isMobile) {
     if (leftInstance) {
         leftInstance.destroy();
         leftInstance = null;
@@ -22,7 +22,7 @@ function setupLeftPaneResizer(leftPaneVisible) {
         leftPaneWidth = 5;
     }
 
-    if (leftPaneVisible) {
+    if (leftPaneVisible && !isMobile) {
         leftInstance = Split(['#left-pane', '#rest-pane'], {
             sizes: [leftPaneWidth, 100 - leftPaneWidth],
             gutterSize: 5,
