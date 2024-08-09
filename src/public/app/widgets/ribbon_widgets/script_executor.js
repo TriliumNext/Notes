@@ -1,5 +1,6 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import keyboardActionService from "../../services/keyboard_actions.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="script-runner-widget">
@@ -37,7 +38,7 @@ export default class ScriptExecutorWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             activate: true,
-            title: this.isTriliumSqlite() ? 'Query' : 'Script',
+            title: this.isTriliumSqlite() ? t('script_executor.query') : t('script_executor.script'),
             icon: 'bx bx-run'
         };
     }
@@ -52,7 +53,7 @@ export default class ScriptExecutorWidget extends NoteContextAwareWidget {
 
     async refreshWithNote(note) {
         const executeTitle = note.getLabelValue('executeButton')
-            || (this.isTriliumSqlite() ? 'Execute Query' : 'Execute Script');
+            || (this.isTriliumSqlite() ? t('script_executor.execute_query') : t('script_executor.execute_script'));
 
         this.$executeButton.text(executeTitle);
         this.$executeButton.attr('title', executeTitle);

@@ -3,34 +3,35 @@ import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import toastService from "../../services/toast.js";
 import openService from "../../services/open.js";
 import utils from "../../services/utils.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="image-properties">
     <div style="display: flex; justify-content: space-evenly; margin: 10px;">
         <span>
-            <strong>Original file name:</strong>
+            <strong>${t("image_properties.original_file_name")}:</strong>
             <span class="image-filename"></span>
         </span>
 
         <span>
-            <strong>File type:</strong>
+            <strong>${t("image_properties.file_type")}:</strong>
             <span class="image-filetype"></span>
         </span>
 
         <span>
-            <strong>File size:</strong>
+            <strong>${t("image_properties.file_size")}:</strong>
             <span class="image-filesize"></span>
         </span>
     </div>
     
     <div class="no-print" style="display: flex; justify-content: space-evenly; margin: 10px;">
-        <button class="image-download btn btn-sm btn-primary" type="button">Download</button>
+        <button class="image-download btn btn-sm btn-primary" type="button">${t("image_properties.download")}</button>
 
-        <button class="image-open btn btn-sm btn-primary" type="button">Open</button>
+        <button class="image-open btn btn-sm btn-primary" type="button">${t("image_properties.open")}</button>
 
-        <button class="image-copy-reference-to-clipboard btn btn-sm btn-primary" type="button">Copy reference to clipboard</button>
+        <button class="image-copy-reference-to-clipboard btn btn-sm btn-primary" type="button">${t("image_properties.copy_reference_to_clipboard")}</button>
 
-        <button class="image-upload-new-revision btn btn-sm btn-primary" type="button">Upload new revision</button>
+        <button class="image-upload-new-revision btn btn-sm btn-primary" type="button">${t("image_properties.upload_new_revision")}</button>
     </div>
 
     <input type="file" class="image-upload-new-revision-input" style="display: none">
@@ -53,7 +54,7 @@ export default class ImagePropertiesWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             activate: true,
-            title: 'Image',
+            title: t("image_properties.title"),
             icon: 'bx bx-image'
         };
     }
@@ -89,14 +90,13 @@ export default class ImagePropertiesWidget extends NoteContextAwareWidget {
             const result = await server.upload(`images/${this.noteId}`, fileToUpload);
 
             if (result.uploaded) {
-                toastService.showMessage("New image revision has been uploaded.");
+                toastService.showMessage(t("image_properties.upload_success"));
 
                 await utils.clearBrowserCache();
 
                 this.refresh();
-            }
-            else {
-                toastService.showError(`Upload of a new image revision failed: ${result.message}`);
+            } else {
+                toastService.showError(t("image_properties.upload_failed", { message: result.message }));
             }
         });
     }

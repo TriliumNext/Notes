@@ -1,4 +1,5 @@
 import AbstractButtonWidget from "./abstract_button.js";
+import { t } from "../../services/i18n.js";
 
 export default class OnClickButtonWidget extends AbstractButtonWidget {
     doRender() {
@@ -12,7 +13,7 @@ export default class OnClickButtonWidget extends AbstractButtonWidget {
                 this.settings.onClick(this, e);
             });
         } else {
-            console.warn(`Button widget '${this.componentId}' has no defined click handler`, this.settings);
+            console.warn(t("onclick_button.no_click_handler", { componentId: this.componentId }), this.settings);
         }
 
         if (this.settings.onAuxClick) {

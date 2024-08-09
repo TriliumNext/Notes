@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 
@@ -7,8 +8,7 @@ const TPL = `
         <div class="modal-content">
             <form class="prompt-dialog-form">
                 <div class="modal-header">
-                    <h5 class="prompt-title modal-title mr-auto">Prompt</h5>
-
+                    <h5 class="prompt-title modal-title mr-auto">${t("prompt.title")}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -16,7 +16,7 @@ const TPL = `
                 <div class="modal-body">
                 </div>
                 <div class="modal-footer">
-                    <button class="prompt-dialog-ok-button btn btn-primary btn-sm">OK <kbd>enter</kbd></button>
+                    <button class="prompt-dialog-ok-button btn btn-primary btn-sm">${t("prompt.ok")}</button>
                 </div>
             </form>
         </div>
@@ -69,7 +69,7 @@ export default class PromptDialog extends BasicWidget {
         this.shownCb = shown;
         this.resolve = callback;
 
-        this.$widget.find(".prompt-title").text(title || "Prompt");
+        this.$widget.find(".prompt-title").text(title || t("prompt.defaultTitle"));
 
         this.$question = $("<label>")
             .prop("for", "prompt-dialog-answer")

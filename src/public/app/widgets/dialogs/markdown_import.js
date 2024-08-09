@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import toastService from "../../services/toast.js";
 import utils from "../../services/utils.js";
 import appContext from "../../components/app_context.js";
@@ -10,18 +11,18 @@ const TPL = `
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Markdown import</h5>
+                <h5 class="modal-title">${t("markdown_import.dialog_title")}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Because of browser sandbox it's not possible to directly read clipboard from JavaScript. Please paste the Markdown to import to textarea below and click on Import button</p>
+                <p>${t("markdown_import.modal_body_text")}</p>
 
                 <textarea class="markdown-import-textarea" style="height: 340px; width: 100%"></textarea>
             </div>
             <div class="modal-footer">
-                <button class="markdown-import-button btn btn-primary">Import <kbd>Ctrl+Enter</kbd></button>
+                <button class="markdown-import-button btn btn-primary">${t("markdown_import.import_button")}</button>
             </div>
         </div>
     </div>
@@ -56,7 +57,7 @@ export default class MarkdownImportDialog extends BasicWidget {
 
         textEditor.model.insertContent(modelFragment, textEditor.model.document.selection);
 
-        toastService.showMessage("Markdown content has been imported into the document.");
+        toastService.showMessage(t("markdown_import.import_success"));
     }
 
     async pasteMarkdownIntoTextEvent() {

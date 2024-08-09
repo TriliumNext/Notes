@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import libraryLoader from "../../services/library_loader.js";
 import utils from "../../services/utils.js";
 import dateNoteService from "../../services/date_notes.js";
@@ -23,7 +24,7 @@ const DROPDOWN_TPL = `
   </div>
 
   <div class="calendar-week">
-    <span>Mon</span> <span>Tue</span><span>Wed</span> <span>Thu</span> <span>Fri</span> <span>Sat</span> <span>Sun</span>
+    <span>${t("calendar.mon")}</span> <span>${t("calendar.tue")}</span><span>${t("calendar.wed")}</span> <span>${t("calendar.thu")}</span> <span>${t("calendar.fri")}</span> <span>${t("calendar.sat")}</span> <span>${t("calendar.sun")}</span>
   </div>
   <div class="calendar-body" data-calendar-area="month"></div>
 </div>`;
@@ -63,7 +64,7 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
                 this.hideDropdown();
             }
             else {
-                toastService.showError("Cannot find day note");
+                toastService.showError(t("calendar.cannot_find_day_note"));
             }
         });
     }
@@ -153,23 +154,23 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         this.date.setDate(1);
         this.date.setMonth(this.date.getMonth() - 1);
 
-        this.$label.html(`${this.monthsAsString(this.date.getMonth())} ${this.date.getFullYear()}`);
+        this.$label.html(`${t(this.monthsAsString(this.date.getMonth()).toLowerCase())} ${this.date.getFullYear()}`);
     }
 
     monthsAsString(monthIndex) {
         return [
-            'January',
-            'Febuary',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
+            t("calendar.january"),
+            t("calendar.febuary"),
+            t("calendar.march"),
+            t("calendar.april"),
+            t("calendar.may"),
+            t("calendar.june"),
+            t("calendar.july"),
+            t("calendar.august"),
+            t("calendar.september"),
+            t("calendar.october"),
+            t("calendar.november"),
+            t("calendar.december")
         ][monthIndex];
     }
 }

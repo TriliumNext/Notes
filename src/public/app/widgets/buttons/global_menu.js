@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import BasicWidget from "../basic_widget.js";
 import utils from "../../services/utils.js";
 import UpdateAvailableWidget from "./update_available.js";
@@ -103,7 +104,7 @@ const TPL = `
 
     <button type="button" data-toggle="dropdown" data-placement="right"
             aria-haspopup="true" aria-expanded="false" 
-            class="icon-action global-menu-button" title="Menu">
+            class="icon-action global-menu-button" title="${t('global_menu.menu')}">
         <svg viewBox="0 0 256 256">
             <g>
                 <path class="st0" d="m202.9 112.7c-22.5 16.1-54.5 12.8-74.9 6.3l14.8-11.8 14.1-11.3 49.1-39.3-51.2 35.9-14.3 10-14.9 10.5c0.7-21.2 7-49.9 28.6-65.4 1.8-1.3 3.9-2.6 6.1-3.8 2.7-1.5 5.7-2.9 8.8-4.1 27.1-11.1 68.5-15.3 85.2-9.5 0.1 16.2-15.9 45.4-33.9 65.9-2.4 2.8-4.9 5.4-7.4 7.8-3.4 3.5-6.8 6.4-10.1 8.8z"/>
@@ -126,112 +127,112 @@ const TPL = `
     <ul class="dropdown-menu dropdown-menu-right">
         <li class="dropdown-item" data-trigger-command="showOptions">
             <span class="bx bx-slider"></span>
-            Options
+            ${t('global_menu.options')}
         </li>
 
         <li class="dropdown-item" data-trigger-command="openNewWindow">
             <span class="bx bx-window-open"></span>
-            Open New Window
+            ${t('global_menu.open_new_window')}
             <kbd data-command="openNewWindow"></kbd>
         </li>
 
         <li class="dropdown-item switch-to-mobile-version-button" data-trigger-command="switchToMobileVersion">
             <span class="bx bx-mobile"></span>
-            Switch to Mobile Version
+            ${t('global_menu.switch_to_mobile_version')}
         </li>
         
         <li class="dropdown-item switch-to-desktop-version-button" data-trigger-command="switchToDesktopVersion">
             <span class="bx bx-desktop"></span>
-            Switch to Desktop Version
+            ${t('global_menu.switch_to_desktop_version')}
         </li>
         
         <span class="zoom-container dropdown-item">
             <div>
                 <span class="bx bx-empty"></span>
-                Zoom
+                ${t('global_menu.zoom')}
             </div>
             
             <div class="zoom-buttons">
-                <a data-trigger-command="toggleFullscreen" title="Toggle Fullscreen" class="bx bx-expand-alt"></a>
+                <a data-trigger-command="toggleFullscreen" title="${t('global_menu.toggle_fullscreen')}" class="bx bx-expand-alt"></a>
                 
                 &nbsp;
                 
-                <a data-trigger-command="zoomOut" title="Zoom Out" class="bx bx-minus"></a>
+                <a data-trigger-command="zoomOut" title="${t('global_menu.zoom_out')}" class="bx bx-minus"></a>
                 
-                <span data-trigger-command="zoomReset" title="Reset Zoom Level" class="zoom-state"></span>
+                <span data-trigger-command="zoomReset" title="${t('global_menu.reset_zoom_level')}" class="zoom-state"></span>
                 
-                <a data-trigger-command="zoomIn" title="Zoom In" class="bx bx-plus"></a>
+                <a data-trigger-command="zoomIn" title="${t('global_menu.zoom_in')}" class="bx bx-plus"></a>
             </div>
         </span>
 
         <li class="dropdown-item" data-trigger-command="showLaunchBarSubtree">
             <span class="bx bx-sidebar"></span>
-            Configure Launchbar
+            ${t('global_menu.configure_launchbar')}
         </li>
         
         <li class="dropdown-item" data-trigger-command="showShareSubtree">
             <span class="bx bx-share-alt"></span>
-            Show Shared Notes Subtree
+            ${t('global_menu.show_shared_notes_subtree')}
         </li>
         
         <li class="dropdown-item dropdown-submenu">
             <span class="dropdown-toggle">
                 <span class="bx bx-empty"></span>
-                Advanced
+                ${t('global_menu.advanced')}
             </span>
             
             <ul class="dropdown-menu">
                 <li class="dropdown-item open-dev-tools-button" data-trigger-command="openDevTools">
                     <span class="bx bx-bug-alt"></span>
-                    Open Dev Tools
+                    ${t('global_menu.open_dev_tools')}
                     <kbd data-command="openDevTools"></kbd>
                 </li>
         
                 <li class="dropdown-item" data-trigger-command="showSQLConsole">
                     <span class="bx bx-data"></span>
-                    Open SQL Console
+                    ${t('global_menu.open_sql_console')}
                     <kbd data-command="showSQLConsole"></kbd>
                 </li>
                 
                 <li class="dropdown-item" data-trigger-command="showSQLConsoleHistory">
                     <span class="bx bx-empty"></span>
-                    Open SQL Console History
+                    ${t('global_menu.open_sql_console_history')}
                 </li>
                 
                 <li class="dropdown-item" data-trigger-command="showSearchHistory">
                     <span class="bx bx-empty"></span>
-                    Open Search History
+                    ${t('global_menu.open_search_history')}
                 </li>
         
                 <li class="dropdown-item" data-trigger-command="showBackendLog">
                     <span class="bx bx-empty"></span>
-                    Show Backend Log
+                    ${t('global_menu.show_backend_log')}
                     <kbd data-command="showBackendLog"></kbd>
                 </li>
                 
                 <li class="dropdown-item" data-trigger-command="reloadFrontendApp" 
-                    title="Reload can help with some visual glitches without restarting the whole app.">
+                    title="${t('global_menu.reload_hint')}">
                     <span class="bx bx-empty"></span>
-                    Reload Frontend
+                    ${t('global_menu.reload_frontend')}
                     <kbd data-command="reloadFrontendApp"></kbd>
                 </li>
                 
                 <li class="dropdown-item" data-trigger-command="showHiddenSubtree">
                     <span class="bx bx-empty"></span>
-                    Show Hidden Subtree
+                    ${t('global_menu.show_hidden_subtree')}
                 </li>
             </ul>
         </li>
 
         <li class="dropdown-item show-help-button" data-trigger-command="showHelp">
             <span class="bx bx-info-circle"></span>
-            Show Help
+            ${t('global_menu.show_help')}
             <kbd data-command="showHelp"></kbd>
         </li>
 
         <li class="dropdown-item show-about-dialog-button">
             <span class="bx bx-empty"></span>
-            About TriliumNext Notes
+            ${t('global_menu.about')}
         </li>
 
         <li class="dropdown-item update-to-latest-version-button" data-trigger-command="downloadLatestVersion">
@@ -242,7 +243,7 @@ const TPL = `
 
         <li class="dropdown-item logout-button" data-trigger-command="logout">
             <span class="bx bx-log-out"></span>
-            Logout
+            ${t('global_menu.logout')}
         </li>
     </ul>
 </div>

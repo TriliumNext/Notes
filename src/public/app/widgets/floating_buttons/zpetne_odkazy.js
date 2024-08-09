@@ -2,6 +2,7 @@
  * !!! Filename is intentionally mangled, because some adblockers don't like the word "backlinks".
  */
 
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import linkService from "../../services/link.js";
 import server from "../../services/server.js";
@@ -100,8 +101,8 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
 
         this.toggle(true);
         this.$count.text(
-            `${resp.count} backlink`
-            + (resp.count === 1 ? '' : 's')
+            // i18next plural
+            `${t('zpetne_odkazy.backlink', {count: resp.count})}`
         );
     }
 
@@ -138,7 +139,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
             }));
 
             if (backlink.relationName) {
-                $item.append($("<p>").text(`relation: ${backlink.relationName}`));
+                $item.append($("<p>").text(`${t('zpetne_odkazy.relation')}: ${backlink.relationName}`));
             }
             else {
                 $item.append(...backlink.excerpts);

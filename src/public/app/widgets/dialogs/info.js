@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 
@@ -6,9 +7,9 @@ const TPL = `
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Info message</h5>
+                <h5 class="modal-title mr-auto">${t("info.modalTitle")}</h5>
 
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="${t("info.closeButton")}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -16,7 +17,7 @@ const TPL = `
                 <div class="info-dialog-content"></div>
             </div>
             <div class="modal-footer">
-                <button class="info-dialog-ok-button btn btn-primary btn-sm">OK</button>
+                <button class="info-dialog-ok-button btn btn-primary btn-sm">${t("info.okButton")}</button>
             </div>
         </div>
     </div>

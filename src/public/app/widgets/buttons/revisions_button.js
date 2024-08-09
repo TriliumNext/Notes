@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import CommandButtonWidget from "./command_button.js";
 
 export default class RevisionsButton extends CommandButtonWidget {
@@ -5,7 +6,7 @@ export default class RevisionsButton extends CommandButtonWidget {
         super();
 
         this.icon('bx-history')
-            .title("Note Revisions")
+            .title(t("revisions_button.note_revisions"))
             .command("showRevisions")
             .titlePlacement("bottom")
             .class("icon-action");

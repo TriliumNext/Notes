@@ -10,7 +10,7 @@ await i18next
         debug: true,
         backend: {
             loadPath: `/${window.glob.assetPath}/translations/{{lng}}/{{ns}}.json`
-        }        
+        }
     });
 
 export const t = i18next.t;

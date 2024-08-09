@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import protectedSessionHolder from "../../services/protected_session_holder.js";
 import CommandButtonWidget from "./command_button.js";
 
@@ -12,8 +13,8 @@ export default class ProtectedSessionStatusWidget extends CommandButtonWidget {
             : "bx-shield-quarter";
 
         this.settings.title = () => protectedSessionHolder.isProtectedSessionAvailable()
-            ? "Protected session is active. Click to leave protected session."
-            : "Click to enter protected session";
+            ? t("protected_session_status.active")
+            : t("protected_session_status.inactive");
 
         this.settings.command = () => protectedSessionHolder.isProtectedSessionAvailable()
             ? "leaveProtectedSession"

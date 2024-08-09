@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import utils from '../../services/utils.js';
 import treeService from "../../services/tree.js";
 import importService from "../../services/import.js";
@@ -9,7 +10,7 @@ const TPL = `
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Upload attachments to note</h5>
+                <h5 class="modal-title">${t("upload_attachments.upload_attachments_to_note")}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -17,25 +18,22 @@ const TPL = `
             <form class="upload-attachment-form">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="upload-attachment-file-upload-input"><strong>Choose files</strong></label>
-
+                        <label for="upload-attachment-file-upload-input"><strong>${t("upload_attachments.choose_files")}</strong></label>
                         <input type="file" class="upload-attachment-file-upload-input form-control-file" multiple />
-
-                        <p>Files will be uploaded as attachments into <strong class="upload-attachment-note-title"></strong>.
+                        <p>${t("upload_attachments.files_will_be_uploaded")} <strong class="upload-attachment-note-title"></strong>.</p>
                     </div>
 
                     <div class="form-group">
-                        <strong>Options:</strong>
-
+                        <strong>${t("upload_attachments.options")}:</strong>
                         <div class="checkbox">
-                            <label data-toggle="tooltip" title="<p>If you check this option, Trilium will attempt to shrink the uploaded images by scaling and optimization which may affect the perceived image quality. If unchecked, images will be uploaded without changes.</p>">
-                                <input class="shrink-images-checkbox" value="1" type="checkbox" checked> <span>Shrink images</span>
+                            <label data-toggle="tooltip" title="${t("upload_attachments.tooltip")}">
+                                <input class="shrink-images-checkbox" value="1" type="checkbox" checked> <span>${t("upload_attachments.shrink_images")}</span>
                             </label>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="upload-attachment-button btn btn-primary">Upload</button>
+                    <button class="upload-attachment-button btn btn-primary">${t("upload_attachments.upload")}</button>
                 </div>
             </form>
         </div>
@@ -60,9 +58,7 @@ export default class UploadAttachmentsDialog extends BasicWidget {
         this.$form.on('submit', () => {
             // disabling so that import is not triggered again.
             this.$uploadButton.attr("disabled", "disabled");
-
             this.uploadAttachments(this.parentNoteId);
-
             return false;
         });
 

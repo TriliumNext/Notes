@@ -1,12 +1,13 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Native Title Bar (requires app restart)</h4>
+    <h4>${t("native_title_bar.title")}</h4>
     
     <select class="native-title-bar-select form-control">
-        <option value="show">enabled</option>
-        <option value="hide">disabled</option>
+        <option value="show">${t("native_title_bar.enabled")}</option>
+        <option value="hide">${t("native_title_bar.disabled")}</option>
     </select>
 </div>`;
 

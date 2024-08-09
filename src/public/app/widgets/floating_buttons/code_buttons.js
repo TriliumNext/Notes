@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import server from "../../services/server.js";
 import ws from "../../services/ws.js";
 import appContext from "../../components/app_context.js";
@@ -15,15 +16,15 @@ const TPL = `
         }
     </style>
 
-    <button data-trigger-command="runActiveNote" class="execute-button floating-button btn" title="Execute script">
+    <button data-trigger-command="runActiveNote" class="execute-button floating-button btn" title="${t('code_buttons.execute_button_title')}">
         <span class="bx bx-run"></span>
     </button>
     
-    <button class="trilium-api-docs-button floating-button btn" title="Open Trilium API docs">
+    <button class="trilium-api-docs-button floating-button btn" title="${t('code_buttons.trilium_api_docs_button_title')}">
         <span class="bx bx-help-circle"></span>
     </button>
     
-    <button class="save-to-note-button floating-button btn">
+    <button class="save-to-note-button floating-button btn" title="${t('code_buttons.save_to_note_button_title')}">
         <span class="bx bx-save"></span>
     </button>
 </div>`;
@@ -39,7 +40,7 @@ export default class CodeButtonsWidget extends NoteContextAwareWidget {
         this.$widget = $(TPL);
         this.$openTriliumApiDocsButton = this.$widget.find(".trilium-api-docs-button");
         this.$openTriliumApiDocsButton.on("click", () => {
-            toastService.showMessage("Opening API docs...");
+            toastService.showMessage(t('code_buttons.opening_api_docs_message'));
 
             if (this.note.mime.endsWith("frontend")) {
                 window.open("https://zadam.github.io/trilium/frontend_api/FrontendScriptApi.html", "_blank");
@@ -58,7 +59,7 @@ export default class CodeButtonsWidget extends NoteContextAwareWidget {
 
             await appContext.tabManager.getActiveContext().setNote(notePath);
 
-            toastService.showMessage(`SQL Console note has been saved into ${await treeService.getNotePathTitle(notePath)}`);
+            toastService.showMessage(t('code_buttons.sql_console_saved_message', { notePath: await treeService.getNotePathTitle(notePath) }));
         });
 
         keyboardActionService.updateDisplayedShortcuts(this.$widget);

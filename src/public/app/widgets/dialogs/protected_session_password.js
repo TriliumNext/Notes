@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import protectedSessionService from "../../services/protected_session.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
@@ -7,11 +8,11 @@ const TPL = `
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Protected session</h5>
+                <h5 class="modal-title mr-auto">${t("protected_session_password.modal_title")}</h5>
 
-                <button class="help-button" type="button" data-help-page="protected-notes.md" title="Help on Protected notes">?</button>
+                <button class="help-button" type="button" data-help-page="protected-notes.md" title="${t("protected_session_password.help_title")}">?</button>
 
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="${t("protected_session_password.close_label")}" style="margin-left: 0;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -19,13 +20,13 @@ const TPL = `
                 <div class="modal-body">
                     <div class="form-group">
                         <label>
-                            To proceed with requested action you need to start protected session by entering password:
+                            ${t("protected_session_password.form_label")}
                             <input class="form-control protected-session-password" type="password">
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary">Start protected session <kbd>enter</kbd></button>
+                    <button class="btn btn-primary">${t("protected_session_password.start_button")}</button>
                 </div>
             </form>
         </div>

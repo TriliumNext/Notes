@@ -3,6 +3,7 @@ import server from "../../services/server.js";
 import froca from "../../services/froca.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import options from "../../services/options.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="edited-notes-widget">
@@ -15,7 +16,7 @@ const TPL = `
         }
     </style>
     
-    <div class="no-edited-notes-found">No edited notes on this day yet ...</div>
+    <div class="no-edited-notes-found">${t("edited_notes.no_edited_notes_found")}</div>
     
     <div class="edited-notes-list"></div>
 </div>
@@ -38,7 +39,7 @@ export default class EditedNotesWidget extends NoteContextAwareWidget {
             activate:
                 (this.note.getPromotedDefinitionAttributes().length === 0 || !options.is('promotedAttributesOpenInRibbon'))
                 && options.is('editedNotesOpenInRibbon'),
-            title: 'Edited Notes',
+            title: t("edited_notes.title"),
             icon: 'bx bx-calendar-edit'
         };
     }
@@ -72,7 +73,7 @@ export default class EditedNotesWidget extends NoteContextAwareWidget {
             const $item = $('<span class="edited-note-line">');
 
             if (editedNote.isDeleted) {
-                const title = `${editedNote.title} (deleted)`;
+                const title = `${editedNote.title} ${t("edited_notes.deleted")}`;
                 $item.append(
                     $("<i>")
                         .text(title)

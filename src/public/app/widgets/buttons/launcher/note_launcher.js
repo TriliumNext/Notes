@@ -1,3 +1,4 @@
+import { t } from "../../../services/i18n.js";
 import AbstractLauncher from "./abstract_launcher.js";
 import dialogService from "../../../services/dialog.js";
 import appContext from "../../../components/app_context.js";
@@ -58,7 +59,7 @@ export default class NoteLauncher extends AbstractLauncher {
         const targetNoteId = this.launcherNote.getRelationValue('target');
 
         if (!targetNoteId) {
-            dialogService.info("This launcher doesn't define target note.");
+            dialogService.info(t("note_launcher.this_launcher_doesnt_define_target_note"));
             return;
         }
 

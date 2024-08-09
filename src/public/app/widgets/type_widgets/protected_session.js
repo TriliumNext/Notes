@@ -1,5 +1,6 @@
 import protectedSessionService from '../../services/protected_session.js';
 import TypeWidget from "./type_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="protected-session-password-component note-detail-printable">
@@ -12,11 +13,11 @@ const TPL = `
 
     <form class="protected-session-password-form">
         <div class="form-group">
-            <label for="protected-session-password-in-detail">Showing protected note requires entering your password:</label>
+            <label for="protected-session-password-in-detail">${t('protected_session.enter_password_instruction')}</label>
             <input class="protected-session-password-in-detail form-control protected-session-password" type="password">
         </div>
 
-        <button class="btn btn-primary">Start protected session <kbd>enter</kbd></button>
+        <button class="btn btn-primary">${t('protected_session.start_session_button')} <kbd>enter</kbd></button>
     </form>
 </div>`;
 

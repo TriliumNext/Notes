@@ -1,6 +1,7 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import treeService from "../../services/tree.js";
 import linkService from "../../services/link.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-paths-widget">
@@ -32,7 +33,7 @@ const TPL = `
     
     <ul class="note-path-list"></ul>
     
-    <button class="btn btn-sm" data-trigger-command="cloneNoteIdsTo">Clone note to new location...</button>
+    <button class="btn btn-sm" data-trigger-command="cloneNoteIdsTo">${t("note_paths.clone_button")}</button>
 </div>`;
 
 export default class NotePathsWidget extends NoteContextAwareWidget {
@@ -47,7 +48,7 @@ export default class NotePathsWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: true,
-            title: 'Note Paths',
+            title: t("note_paths.title"),
             icon: 'bx bx-collection'
         };
     }
@@ -76,10 +77,9 @@ export default class NotePathsWidget extends NoteContextAwareWidget {
             .filter(notePath => !notePath.isHidden);
 
         if (sortedNotePaths.length > 0) {
-            this.$notePathIntro.text("This note is placed into the following paths:");
-        }
-        else {
-            this.$notePathIntro.text("This note is not yet placed into the note tree.");
+            this.$notePathIntro.text(t("note_paths.intro_placed"));
+        } else {
+            this.$notePathIntro.text(t("note_paths.intro_not_placed"));
         }
 
         const renderedPaths = [];
@@ -110,21 +110,20 @@ export default class NotePathsWidget extends NoteContextAwareWidget {
 
         if (!notePathRecord || notePathRecord.isInHoistedSubTree) {
             $noteLink.addClass("path-in-hoisted-subtree");
-        }
-        else {
-            icons.push(`<span class="bx bx-trending-up" title="This path is outside of hoisted note and you would have to unhoist."></span>`);
+        } else {
+            icons.push(`<span class="bx bx-trending-up" title="${t("note_paths.outside_hoisted")}"></span>`);
         }
 
         if (notePathRecord?.isArchived) {
             $noteLink.addClass("path-archived");
 
-            icons.push(`<span class="bx bx-archive" title="Archived"></span>`);
+            icons.push(`<span class="bx bx-archive" title="${t("note_paths.archived")}"></span>`);
         }
 
         if (notePathRecord?.isSearch) {
             $noteLink.addClass("path-search");
 
-            icons.push(`<span class="bx bx-search" title="Search"></span>`);
+            icons.push(`<span class="bx bx-search" title="${t("note_paths.search")}"></span>`);
         }
 
         if (icons.length > 0) {

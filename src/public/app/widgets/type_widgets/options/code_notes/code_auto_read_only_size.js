@@ -1,13 +1,14 @@
+import { t } from "../../../../services/i18n.js";
 import OptionsWidget from "../options_widget.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Automatic Read-Only Size</h4>
+    <h4>${t('code_auto_read_only_size.title')}</h4>
 
-    <p>Automatic read-only note size is the size after which notes will be displayed in a read-only mode (for performance reasons).</p>
+    <p>${t('code_auto_read_only_size.description')}</p>
 
     <div class="form-group">
-        <label>Automatic read-only size (code notes)</label>
+        <label>${t('code_auto_read_only_size.label')}</label>
         <input class="auto-readonly-size-code form-control options-number-input" type="number" min="0">
     </div>
 </div>`;

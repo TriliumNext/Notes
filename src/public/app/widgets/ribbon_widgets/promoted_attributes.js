@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import server from "../../services/server.js";
 import ws from "../../services/ws.js";
 import treeService from "../../services/tree.js";
@@ -76,7 +77,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
         return {
             show: true,
             activate: options.is('promotedAttributesOpenInRibbon'),
-            title: "Promoted Attributes",
+            title: t('promoted_attributes.promoted_attributes'),
             icon: "bx bx-table"
         };
     }
@@ -221,11 +222,11 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 $input.prop('type', 'datetime-local')
             }
             else if (definition.labelType === 'url') {
-                $input.prop("placeholder", "http://website...");
+                $input.prop("placeholder", t("promoted_attributes.url_placeholder"));
 
                 const $openButton = $("<span>")
                     .addClass("input-group-text open-external-link-button bx bx-window-open")
-                    .prop("title", "Open external link")
+                    .prop("title", t("promoted_attributes.open_external_link"))
                     .on('click', () => window.open($input.val(), '_blank'));
 
                 $input.after($("<div>")
@@ -233,7 +234,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                     .append($openButton));
             }
             else {
-                ws.logError(`Unknown labelType '${definitionAttr.labelType}'`);
+                ws.logError(t("promoted_attributes.unknown_label_type", { type: definitionAttr.labelType }));
             }
         }
         else if (valueAttr.type === 'relation') {
@@ -256,14 +257,14 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
             }
         }
         else {
-            ws.logError(`Unknown attribute type '${valueAttr.type}'`);
+            ws.logError(t(`promoted_attributes.unknown_attribute_type`, {type: valueAttr.type}));
             return;
         }
 
         if (definition.multiplicity === "multi") {
             const $addButton = $("<span>")
                 .addClass("bx bx-plus pointer")
-                .prop("title", "Add new attribute")
+                .prop("title", t("promoted_attributes.add_new_attribute"))
                 .on('click', async () => {
                     const $new = await this.createPromotedAttributeCell(definitionAttr, {
                         attributeId: "",
@@ -279,7 +280,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
 
             const $removeButton = $("<span>")
                 .addClass("bx bx-trash pointer")
-                .prop("title", "Remove this attribute")
+                .prop("title", t("promoted_attributes.remove_this_attribute"))
                 .on('click', async () => {
                     const attributeId = $input.attr("data-attribute-id");
 

@@ -6,6 +6,7 @@ import server from "../../services/server.js";
 import toastService from "../../services/toast.js";
 import ws from "../../services/ws.js";
 import appContext from "../../components/app_context.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="dropdown note-actions">
@@ -30,22 +31,22 @@ const TPL = `
         aria-expanded="false" class="icon-action bx bx-dots-vertical-rounded"></button>
 
     <div class="dropdown-menu dropdown-menu-right">
-        <a data-trigger-command="convertNoteIntoAttachment" class="dropdown-item">Convert into attachment</a>
-        <a data-trigger-command="renderActiveNote" class="dropdown-item render-note-button"><kbd data-command="renderActiveNote"></kbd> Re-render note</a>
-        <a data-trigger-command="findInText" class="dropdown-item find-in-text-button">Search in note <kbd data-command="findInText"></a>
-        <a data-trigger-command="showNoteSource" class="dropdown-item show-source-button"><kbd data-command="showNoteSource"></kbd> Note source</a>
-        <a data-trigger-command="showAttachments" class="dropdown-item"><kbd data-command="showAttachments"></kbd> Note attachments</a>
+        <a data-trigger-command="convertNoteIntoAttachment" class="dropdown-item">${t('note_actions.convert_into_attachment')}</a>
+        <a data-trigger-command="renderActiveNote" class="dropdown-item render-note-button"><kbd data-command="renderActiveNote"></kbd> ${t('note_actions.re_render_note')}</a>
+        <a data-trigger-command="findInText" class="dropdown-item find-in-text-button">${t('note_actions.search_in_note')} <kbd data-command="findInText"></kbd></a>
+        <a data-trigger-command="showNoteSource" class="dropdown-item show-source-button"><kbd data-command="showNoteSource"></kbd> ${t('note_actions.note_source')}</a>
+        <a data-trigger-command="showAttachments" class="dropdown-item"><kbd data-command="showAttachments"></kbd> ${t('note_actions.note_attachments')}</a>
         <a data-trigger-command="openNoteExternally" class="dropdown-item open-note-externally-button"
-           title="File will be open in an external application and watched for changes. You'll then be able to upload the modified version back to Trilium.">
+           title="${t('note_actions.open_note_externally_title')}">
             <kbd data-command="openNoteExternally"></kbd> 
-            Open note externally
+            ${t('note_actions.open_note_externally')}
         </a>
-        <a data-trigger-command="openNoteCustom" class="dropdown-item open-note-custom-button"><kbd data-command="openNoteCustom"></kbd> Open note custom</a>
-        <a class="dropdown-item import-files-button">Import files</a>
-        <a class="dropdown-item export-note-button">Export note</a>
-        <a class="dropdown-item delete-note-button">Delete note</a>
-        <a data-trigger-command="printActiveNote" class="dropdown-item print-active-note-button"><kbd data-command="printActiveNote"></kbd> Print note</a>
-        <a data-trigger-command="forceSaveRevision" class="dropdown-item save-revision-button"><kbd data-command="forceSaveRevision"></kbd> Save revision</a>
+        <a data-trigger-command="openNoteCustom" class="dropdown-item open-note-custom-button"><kbd data-command="openNoteCustom"></kbd> ${t('note_actions.open_note_custom')}</a>
+        <a class="dropdown-item import-files-button">${t('note_actions.import_files')}</a>
+        <a class="dropdown-item export-note-button">${t('note_actions.export_note')}</a>
+        <a class="dropdown-item delete-note-button">${t('note_actions.delete_note')}</a>
+        <a data-trigger-command="printActiveNote" class="dropdown-item print-active-note-button"><kbd data-command="printActiveNote"></kbd> ${t('note_actions.print_note')}</a>
+        <a data-trigger-command="forceSaveRevision" class="dropdown-item save-revision-button"><kbd data-command="forceSaveRevision"></kbd> ${t('note_actions.save_revision')}</a>
     </div>
 </div>`;
 

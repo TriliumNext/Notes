@@ -4,6 +4,7 @@ import ProtectedNoteSwitchWidget from "../protected_note_switch.js";
 import EditabilitySelectWidget from "../editability_select.js";
 import BookmarkSwitchWidget from "../bookmark_switch.js";
 import SharedSwitchWidget from "../shared_switch.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="basic-properties-widget">
@@ -28,13 +29,13 @@ const TPL = `
     </style>
     
     <div class="note-type-container">
-        <span>Note type:</span> &nbsp;
+        <span>${t("basic_properties.note_type")}:</span> &nbsp;
     </div>
     
     <div class="protected-note-switch-container"></div>
     
     <div class="editability-select-container">
-        <span>Editable:</span> &nbsp;
+        <span>${t("basic_properties.editable")}:</span> &nbsp;
     </div>
     
     <div class="bookmark-switch-container"></div>
@@ -72,7 +73,7 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: !this.note.isLaunchBarConfig(),
-            title: 'Basic Properties',
+            title: t("basic_properties.basic_properties"),
             icon: 'bx bx-slider'
         };
     }

@@ -9,6 +9,7 @@ import appContext from "../../components/app_context.js";
 import utils from "../../services/utils.js";
 import froca from "../../services/froca.js";
 import dialogService from "../../services/dialog.js";
+import { t } from "../../services/i18n.js";
 
 const uniDirectionalOverlays = [
     [ "Arrow", {
@@ -113,9 +114,9 @@ export default class RelationMapTypeWidget extends TypeWidget {
                 x: e.pageX,
                 y: e.pageY,
                 items: [
-                    {title: "Open in new tab", command: "openInNewTab", uiIcon: "bx bx-empty"},
-                    {title: "Remove note", command: "remove", uiIcon: "bx bx-trash"},
-                    {title: "Edit title", command: "editTitle", uiIcon: "bx bx-pencil"},
+                    { title: t("relation_map.open_in_new_tab"), command: "openInNewTab", uiIcon: "bx bx-empty" },
+                    { title: t("relation_map.remove_note"), command: "remove", uiIcon: "bx bx-trash" },
+                    { title: t("relation_map.edit_title"), command: "editTitle", uiIcon: "bx bx-pencil" }
                 ],
                 selectMenuItemHandler: ({command}) => this.contextMenuHandler(command, e.target)
             });
@@ -168,8 +169,8 @@ export default class RelationMapTypeWidget extends TypeWidget {
         }
         else if (command === "editTitle") {
             const title = await dialogService.prompt({
-                title: "Rename note",
-                message: "Enter new note title:",
+                title: t("relation_map.rename_note"),
+                message: t("relation_map.enter_new_title"),
                 defaultValue: $title.text()
             });
 
@@ -392,10 +393,10 @@ export default class RelationMapTypeWidget extends TypeWidget {
                 contextMenu.show({
                     x: event.pageX,
                     y: event.pageY,
-                    items: [ {title: "Remove relation", command: "remove", uiIcon: "bx bx-trash"} ],
+                    items: [{title: t("relation_map.remove_relation"), command: "remove", uiIcon: "bx bx-trash"}],
                     selectMenuItemHandler: async ({command}) => {
                         if (command === 'remove') {
-                            if (!await dialogService.confirm("Are you sure you want to remove the relation?")) {
+                            if (!await dialogService.confirm(t("relation_map.confirm_remove_relation"))) {
                                 return;
                             }
 
@@ -418,7 +419,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         }
 
         let name = await dialogService.prompt({
-            message: "Specify new relation name (allowed characters: alphanumeric, colon and underscore):",
+            message: t("relation_map.specify_new_relation_name"),
             shown: ({ $answer }) => {
                 $answer.on('keyup', () => {
                     // invalid characters are simply ignored (from user perspective they are not even entered)
@@ -452,7 +453,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
             && rel.name === name);
 
         if (relationExists) {
-            await dialogService.info(`Connection '${name}' between these notes already exists.`);
+            await dialogService.info(t("relation_map.connection_exists", {name}));
 
             this.jsPlumbInstance.deleteConnection(connection);
 
@@ -479,7 +480,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
             .addClass(note.getCssClass())
             .prop("id", this.noteIdToId(noteId))
             .append($("<span>").addClass("title").append($link))
-            .append($("<div>").addClass("endpoint").attr("title", "Start dragging relations from here and drop them on another note."))
+            .append($("<div>").addClass("endpoint").attr("title", t("relation_map.start_dragging_relations")))
             .css("left", `${x}px`)
             .css("top", `${y}px`);
 
@@ -494,7 +495,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
                 const note = this.mapData.notes.find(note => note.noteId === noteId);
 
                 if (!note) {
-                    logError(`Note ${noteId} not found!`);
+                    logError(t("relation_map.note_not_found", {noteId}));
                     return;
                 }
 
@@ -533,7 +534,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         const matches = transform.match(matrixRegex);
 
         if (!matches) {
-            throw new Error(`Cannot match transform: ${transform}`);
+            throw new Error(t("relation_map.cannot_match_transform", {transform}));
         }
 
         return matches[1];
@@ -550,8 +551,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
             const exists = this.mapData.notes.some(n => n.noteId === note.noteId);
 
             if (exists) {
-                toastService.showError(`Note "${note.title}" is already in the diagram.`);
-
+                toastService.showError(t("relation_map.note_already_in_diagram", {title: note.title}));
                 continue;
             }
 
@@ -593,7 +593,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
             return;
         }
 
-        const title = await dialogService.prompt({ message: "Enter title of new note",  defaultValue: "new note" });
+        const title = await dialogService.prompt({ message: t("relation_map.enter_title_of_new_note"), defaultValue: t("relation_map.default_new_note_title") });
 
         if (!title.trim()) {
             return;
@@ -605,7 +605,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
             type: 'text'
         });
 
-        toastService.showMessage("Click on canvas to place new note");
+        toastService.showMessage(t("relation_map.click_on_canvas_to_place_new_note"));
 
         this.clipboard = { noteId: note.noteId, title };
     }

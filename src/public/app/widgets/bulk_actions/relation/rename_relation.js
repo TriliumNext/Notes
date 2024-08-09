@@ -1,25 +1,26 @@
 import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
+import { t } from "../../../services/i18n.js";
 
 const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px; flex-shrink: 0;">Rename relation from:</div> 
+            <div style="margin-right: 10px; flex-shrink: 0;">${t('rename_relation.rename_relation_from')}</div> 
             
             <input type="text" 
                 class="form-control old-relation-name" 
-                placeholder="old name" 
+                placeholder="${t('rename_relation.old_name')}" 
                 pattern="[\\p{L}\\p{N}_:]+"
-                title="Alphanumeric characters, underscore and colon are allowed characters."/>
+                title="${t('rename_relation.allowed_characters')}"/>
             
-            <div style="margin-right: 10px; margin-left: 10px;">To:</div> 
+            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t('rename_relation.to')}</div> 
             
             <input type="text" 
                 class="form-control new-relation-name" 
-                placeholder="new name"
+                placeholder="${t('rename_relation.new_name')}"
                 pattern="[\\p{L}\\p{N}_:]+"
-                title="Alphanumeric characters, underscore and colon are allowed characters."/>
+                title="${t('rename_relation.allowed_characters')}"/>
         </div>
     </td>
     <td class="button-column">
@@ -29,7 +30,7 @@ const TPL = `
 
 export default class RenameRelationBulkAction extends AbstractBulkAction {
     static get actionName() { return "renameRelation"; }
-    static get actionTitle() { return "Rename relation"; }
+    static get actionTitle() { return t('rename_relation.rename_relation'); }
 
     doRender() {
         const $action = $(TPL);
@@ -45,7 +46,7 @@ export default class RenameRelationBulkAction extends AbstractBulkAction {
                 oldRelationName: $oldRelationName.val(),
                 newRelationName: $newRelationName.val()
             });
-        }, 1000)
+        }, 1000);
 
         $oldRelationName.on('input', () => spacedUpdate.scheduleUpdate());
         $newRelationName.on('input', () => spacedUpdate.scheduleUpdate());

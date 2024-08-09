@@ -1,5 +1,6 @@
 import NoteContextAwareWidget from "../../note_context_aware_widget.js";
 import server from "../../../services/server.js";
+import { t } from "../../../services/i18n.js";
 
 const TPL = `<div style="height: 100%; display: flex; flex-direction: column;">
     <style>
@@ -13,7 +14,7 @@ const TPL = `<div style="height: 100%; display: flex; flex-direction: column;">
     <textarea class="backend-log-textarea" readonly="readonly"></textarea>
     
     <div style="display: flex; justify-content: space-around; margin-top: 10px;">
-        <button class="refresh-backend-log-button btn btn-primary">Refresh</button>
+        <button class="refresh-backend-log-button btn btn-primary">${t("backend_log.refresh")}</button>
     </div>
 </div>`;
 

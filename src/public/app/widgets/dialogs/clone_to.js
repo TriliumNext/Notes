@@ -6,15 +6,16 @@ import froca from "../../services/froca.js";
 import branchService from "../../services/branches.js";
 import appContext from "../../components/app_context.js";
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="clone-to-dialog modal mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" style="max-width: 1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Clone notes to ...</h5>
+                <h5 class="modal-title mr-auto">${t('clone_to.clone_notes_to')}</h5>
 
-                <button type="button" class="help-button" title="Help on links" data-help-page="cloning-notes.md">?</button>
+                <button type="button" class="help-button" title="${t('clone_to.help_on_links')}" data-help-page="cloning-notes.md">?</button>
 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0 !important;">
                     <span aria-hidden="true">&times;</span>
@@ -22,28 +23,28 @@ const TPL = `
             </div>
             <form class="clone-to-form">
                 <div class="modal-body">
-                    <h5>Notes to clone</h5>
+                    <h5>${t('clone_to.notes_to_clone')}</h5>
 
                     <ul class="clone-to-note-list" style="max-height: 200px; overflow: auto;"></ul>
 
                     <div class="form-group">
                         <label style="width: 100%">
-                            Target parent note
+                            ${t('clone_to.target_parent_note')}
                             <div class="input-group">
-                                <input class="clone-to-note-autocomplete form-control" placeholder="search for note by its name">
+                                <input class="clone-to-note-autocomplete form-control" placeholder="${t('clone_to.search_for_note_by_its_name')}">
                             </div>
                         </label>
                     </div>
 
-                    <div class="form-group" title="Cloned note will be shown in note tree with given prefix">
+                    <div class="form-group" title="${t('clone_to.cloned_note_prefix_title')}">
                         <label style="width: 100%">
-                            Prefix (optional)
+                            ${t('clone_to.prefix_optional')}
                             <input class="clone-prefix form-control" style="width: 100%;">
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Clone to selected note <kbd>enter</kbd></button>
+                    <button type="submit" class="btn btn-primary">${t('clone_to.clone_to_selected_note')}</button>
                 </div>
             </form>
         </div>
@@ -73,7 +74,7 @@ export default class CloneToDialog extends BasicWidget {
                 this.cloneNotesTo(notePath);
             }
             else {
-                logError("No path to clone to.");
+                logError(t('clone_to.no_path_to_clone_to'));
             }
 
             return false;
@@ -119,7 +120,7 @@ export default class CloneToDialog extends BasicWidget {
             const clonedNote = await froca.getNote(cloneNoteId);
             const targetNote = await froca.getBranch(targetBranchId).getNote();
 
-            toastService.showMessage(`Note "${clonedNote.title}" has been cloned into ${targetNote.title}`);
+            toastService.showMessage(t('clone_to.note_cloned', {clonedTitle: clonedNote.title, targetTitle: targetNote.title}));
         }
     }
 }

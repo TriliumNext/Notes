@@ -1,4 +1,5 @@
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const DELETE_NOTE_BUTTON_CLASS = "confirm-dialog-delete-note";
 
@@ -7,7 +8,7 @@ const TPL = `
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Confirmation</h5>
+                <h5 class="modal-title mr-auto">${t('confirm.confirmation')}</h5>
 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -19,11 +20,11 @@ const TPL = `
                 <div class="confirm-dialog-custom"></div>
             </div>
             <div class="modal-footer">
-                <button class="confirm-dialog-cancel-button btn btn-sm">Cancel</button>
+                <button class="confirm-dialog-cancel-button btn btn-sm">${t('confirm.cancel')}</button>
 
                 &nbsp;
 
-                <button class="confirm-dialog-ok-button btn btn-primary btn-sm">OK</button>
+                <button class="confirm-dialog-ok-button btn btn-primary btn-sm">${t('confirm.ok')}</button>
             </div>
         </div>
     </div>
@@ -82,7 +83,7 @@ export default class ConfirmDialog extends BasicWidget {
     showConfirmDeleteNoteBoxWithNoteDialogEvent({title, callback}) {
         glob.activeDialog = this.$widget;
 
-        this.$confirmContent.text(`Are you sure you want to remove the note "${title}" from relation map?`);
+        this.$confirmContent.text(`${t('confirm.are_you_sure_remove_note', {title: title})}`);
 
         this.$custom.empty()
             .append("<br/>")
@@ -92,13 +93,13 @@ export default class ConfirmDialog extends BasicWidget {
                     $("<label>")
                         .addClass("form-check-label")
                         .attr("style", "text-decoration: underline dotted var(--main-text-color)")
-                        .attr("title", "If you don't check this, the note will be only removed from the relation map.")
+                        .attr("title", `${t('confirm.if_you_dont_check')}`)
                         .append(
                             $("<input>")
                                 .attr("type", "checkbox")
                                 .addClass(`form-check-input ${DELETE_NOTE_BUTTON_CLASS}`)
                         )
-                        .append("Also delete the note")
+                        .append(`${t('confirm.also_delete_note')}`)
                 ));
 
         this.$custom.show();

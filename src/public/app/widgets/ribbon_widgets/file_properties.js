@@ -4,6 +4,7 @@ import toastService from "../../services/toast.js";
 import openService from "../../services/open.js";
 import utils from "../../services/utils.js";
 import protectedSessionHolder from "../../services/protected_session_holder.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="file-properties-widget">
@@ -27,26 +28,26 @@ const TPL = `
 
     <table class="file-table">
         <tr>
-            <th>Note ID:</th>
+            <th class="text-nowrap">${t("file_properties.note_id")}:</th>
             <td class="file-note-id"></td>
-            <th>Original file name:</th>
+            <th class="text-nowrap">${t("file_properties.original_file_name")}:</th>
             <td class="file-filename"></td>
         </tr>
         <tr>
-            <th>File type:</th>
+            <th class="text-nowrap">${t("file_properties.file_type")}:</th>
             <td class="file-filetype"></td>
-            <th>File size:</th>
+            <th class="text-nowrap">${t("file_properties.file_size")}:</th>
             <td class="file-filesize"></td>
         </tr>
         
         <tr>
             <td colspan="4">
                 <div class="file-buttons">
-                    <button class="file-download btn btn-sm btn-primary" type="button">Download</button>
+                    <button class="file-download btn btn-sm btn-primary" type="button">${t("file_properties.download")}</button>
                     &nbsp;
-                    <button class="file-open btn btn-sm btn-primary" type="button">Open</button>
+                    <button class="file-open btn btn-sm btn-primary" type="button">${t("file_properties.open")}</button>
                     &nbsp;
-                    <button class="file-upload-new-revision btn btn-sm btn-primary">Upload new revision</button>
+                    <button class="file-upload-new-revision btn btn-sm btn-primary">${t("file_properties.upload_new_revision")}</button>
                 
                     <input type="file" class="file-upload-new-revision-input" style="display: none">
                 </div>
@@ -72,7 +73,7 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             activate: true,
-            title: 'File',
+            title: t("file_properties.title"),
             icon: 'bx bx-file'
         };
     }
@@ -103,12 +104,11 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
             const result = await server.upload(`notes/${this.noteId}/file`, fileToUpload);
 
             if (result.uploaded) {
-                toastService.showMessage("New file revision has been uploaded.");
+                toastService.showMessage(t("file_properties.upload_success"));
 
                 this.refresh();
-            }
-            else {
-                toastService.showError("Upload of a new file revision failed.");
+            } else {
+                toastService.showError(t("file_properties.upload_failed"));
             }
         });
     }
@@ -126,7 +126,7 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
 
         // open doesn't work for protected notes since it works through a browser which isn't in protected session
         this.$openButton.toggle(!note.isProtected);
-        this.$downloadButton.toggle(!note.isProtected || protectedSessionHolder.isProtectedSessionAvailable())
-        this.$uploadNewRevisionButton.toggle(!note.isProtected || protectedSessionHolder.isProtectedSessionAvailable())
+        this.$downloadButton.toggle(!note.isProtected || protectedSessionHolder.isProtectedSessionAvailable());
+        this.$uploadNewRevisionButton.toggle(!note.isProtected || protectedSessionHolder.isProtectedSessionAvailable());
     }
 }

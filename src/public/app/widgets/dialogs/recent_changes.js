@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import linkService from '../../services/link.js';
 import utils from '../../services/utils.js';
 import server from '../../services/server.js';
@@ -14,10 +15,10 @@ const TPL = `
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Recent changes</h5>
+                <h5 class="modal-title mr-auto">${t('recent_changes.title')}</h5>
                 
                 <button class="erase-deleted-notes-now-button btn btn-sm" style="padding: 0 10px">
-                    Erase deleted notes now</button>
+                    ${t('recent_changes.erase_notes_button')}</button>
                 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0 !important;">
                     <span aria-hidden="true">&times;</span>
@@ -39,7 +40,7 @@ export default class RecentChangesDialog extends BasicWidget {
             server.post('notes/erase-deleted-notes-now').then(() => {
                 this.refresh();
 
-                toastService.showMessage("Deleted notes have been erased.");
+                toastService.showMessage(t('recent_changes.deleted_notes_message'));
             });
         });
     }
@@ -65,7 +66,7 @@ export default class RecentChangesDialog extends BasicWidget {
         this.$content.empty();
 
         if (recentChangesRows.length === 0) {
-            this.$content.append("No changes yet ...");
+            this.$content.append(t('recent_changes.no_changes_message'));
         }
 
         const groupedByDate = this.groupByDate(recentChangesRows);
@@ -85,9 +86,9 @@ export default class RecentChangesDialog extends BasicWidget {
 
                     if (change.canBeUndeleted) {
                         const $undeleteLink = $(`<a href="javascript:">`)
-                            .text("undelete")
+                            .text(t('recent_changes.undelete_link'))
                             .on('click', async () => {
-                                const text = 'Do you want to undelete this note and its sub-notes?';
+                                const text = t('recent_changes.confirm_undelete');
 
                                 if (await dialogService.confirm(text)) {
                                     await server.put(`notes/${change.noteId}/undelete`);

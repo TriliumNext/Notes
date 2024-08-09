@@ -1,12 +1,13 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Tray</h4>
+    <h4>${t("tray.title")}</h4>
 
     <label>
         <input type="checkbox" class="tray-enabled">
-        Enable tray (Trilium needs to be restarted for this change to take effect)
+        ${t("tray.enable_tray")}
     </label>
 </div>`;
 

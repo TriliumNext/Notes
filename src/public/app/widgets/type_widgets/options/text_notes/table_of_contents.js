@@ -1,18 +1,19 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Table of Contents</h4>
+    <h4>${t("table_of_contents.title")}</h4>
     
-    Table of contents will appear in text notes when the note has more than a defined number of headings. You can customize this number:
+    ${t("table_of_contents.description")}
     
     <div class="form-group">
         <input type="number" class="min-toc-headings form-control options-number-input options-number-input" min="0" max="9999999999999999" step="1" />
     </div>
     
-    <p>You can also use this option to effectively disable TOC by setting a very high number.</p>
+    <p>${t("table_of_contents.disable_info")}</p>
     
-    <p>You can configure a keyboard shortcut for quickly toggling the right pane (including TOC) in the Options -> Shortcuts (name "toggleRightPane").</p>
+    <p>${t("table_of_contents.shortcut_info")}</p>
 </div>`;
 
 export default class TableOfContentsOptions extends OptionsWidget {

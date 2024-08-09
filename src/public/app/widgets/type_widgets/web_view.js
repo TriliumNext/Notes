@@ -1,18 +1,19 @@
+import { t } from "../../services/i18n.js";
 import TypeWidget from "./type_widget.js";
 import attributeService from "../../services/attributes.js";
 
 const TPL = `
 <div class="note-detail-web-view note-detail-printable" style="height: 100%">
     <div class="note-detail-web-view-help alert alert-warning" style="margin: 50px; padding: 20px 20px 0px 20px;">
-        <h4>Web View</h4>
+        <h4>${t("web_view.web_view")}</h4>
         
-        <p>Note of type Web View allow you to embed websites into Trilium.</p>
+        <p>${t("web_view.embed_websites")}</p>
 
-        <p>To start, please create a label with a URL address you want to embed, e.g. <code>#webViewSrc="http://www.google.com"</code></p>
+        <p>${t("web_view.create_label")}</p>
 
-        <h4>Disclaimer on the experimental status</h4>
+        <h4>${t("web_view.disclaimer")}</h4>
         
-        <p>Web View is an experimental note type, and it might be removed or substantially changed in the future. Web View works also only in the desktop build.</p>
+        <p>${t("web_view.experimental_note")}</p>
     </div>
 
     <webview class="note-detail-web-view-content"></webview>
@@ -42,8 +43,7 @@ export default class WebViewTypeWidget extends TypeWidget {
             this.$noteDetailWebViewContent
                 .show()
                 .attr("src", webViewSrc);
-        }
-        else {
+        } else {
             this.$noteDetailWebViewContent.hide();
             this.$noteDetailWebViewHelp.show();
         }

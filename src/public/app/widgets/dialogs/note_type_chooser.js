@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import noteTypesService from "../../services/note_types.js";
 import BasicWidget from "../basic_widget.js";
 
@@ -22,17 +23,17 @@ const TPL = `
     <div class="modal-dialog" style="max-width: 500px;" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Choose note type</h5>
+                <h5 class="modal-title mr-auto">${t("note_type_chooser.modal_title")}</h5>
 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0 !important;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Choose note type / template of the new note:
+                ${t("note_type_chooser.modal_body")}
 
                 <div class="dropdown">
-                    <button class="note-type-dropdown-trigger" type="button" style="display: none;" data-toggle="dropdown">Dropdown trigger</button>
+                    <button class="note-type-dropdown-trigger" type="button" style="display: none;" data-toggle="dropdown">${t("note_type_chooser.dropdown_trigger")}</button>
 
                     <div class="note-type-dropdown dropdown-menu"></div>
                 </div>
@@ -102,7 +103,7 @@ export default class NoteTypeChooserDialog extends BasicWidget {
 
         for (const noteType of noteTypes) {
             if (noteType.title === '----') {
-                this.$noteTypeDropdown.append($('<h6 class="dropdown-header">').append("Templates:"));
+                this.$noteTypeDropdown.append($('<h6 class="dropdown-header">').append(t("note_type_chooser.templates")));
             }
             else {
                 this.$noteTypeDropdown.append(

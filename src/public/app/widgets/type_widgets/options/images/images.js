@@ -1,4 +1,5 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
@@ -9,28 +10,28 @@ const TPL = `
         }
     </style>
 
-    <h4>Images</h4>
+    <h4>${t("images.images_section_title")}</h4>
     
     <label>
         <input class="download-images-automatically" type="checkbox" name="download-images-automatically">
-        Download images automatically for offline use.
+        ${t("images.download_images_automatically")}
     </label>
     
-    <p>(pasted HTML can contain references to online images, Trilium will find those references and download the images so that they are available offline)</p>
+    <p>${t("images.download_images_description")}</p>
     
     <label>
         <input class="image-compresion-enabled" type="checkbox" name="image-compression-enabled">
-        Enable image compression
+        ${t("images.enable_image_compression")}
     </label>
 
     <div class="image-compression-enabled-wraper">
         <div class="form-group">
-            <label>Max width / height of an image in pixels (image will be resized if it exceeds this setting).</label>
+            <label>${t("images.max_image_dimensions")}</label>
             <input class="image-max-width-height form-control options-number-input" type="number" min="1">
         </div>
     
         <div class="form-group">
-            <label>JPEG quality (10 - worst quality, 100 best quality, 50 - 85 is recommended)</label>
+            <label>${t("images.jpeg_quality_description")}</label>
             <input class="image-jpeg-quality form-control options-number-input" min="10" max="100" type="number">
         </div>
     </div>

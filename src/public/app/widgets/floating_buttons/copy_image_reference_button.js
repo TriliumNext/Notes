@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import utils from "../../services/utils.js";
 import imageService from "../../services/image.js";
@@ -5,7 +6,7 @@ import imageService from "../../services/image.js";
 const TPL = `
 <button type="button"
         class="copy-image-reference-button"
-        title="Copy image reference to the clipboard, can be pasted into a text note.">
+        title="${t('copy_image_reference_button.button_title')}">
         <span class="bx bx-copy"></span>
         
         <div class="hidden-image-copy"></div>

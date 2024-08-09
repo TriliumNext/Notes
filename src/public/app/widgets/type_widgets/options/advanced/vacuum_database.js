@@ -1,14 +1,15 @@
 import OptionsWidget from "../options_widget.js";
 import toastService from "../../../../services/toast.js";
 import server from "../../../../services/server.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Vacuum Database</h4>
+    <h4>${t("vacuum_database.title")}</h4>
     
-    <p>This will rebuild the database which will typically result in a smaller database file. No data will be actually changed.</p>
+    <p>${t("vacuum_database.description")}</p>
     
-    <button class="vacuum-database-button btn">Vacuum database</button>
+    <button class="vacuum-database-button btn">${t("vacuum_database.button_text")}</button>
 </div>`;
 
 export default class VacuumDatabaseOptions extends OptionsWidget {
@@ -16,11 +17,11 @@ export default class VacuumDatabaseOptions extends OptionsWidget {
         this.$widget = $(TPL);
         this.$vacuumDatabaseButton = this.$widget.find(".vacuum-database-button");
         this.$vacuumDatabaseButton.on('click', async () => {
-            toastService.showMessage("Vacuuming database...");
+            toastService.showMessage(t("vacuum_database.vacuuming_database"));
 
             await server.post('database/vacuum-database');
 
-            toastService.showMessage("Database has been vacuumed");
+            toastService.showMessage(t("vacuum_database.database_vacuumed"));
         });
     }
 }

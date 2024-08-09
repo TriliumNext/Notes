@@ -15,7 +15,7 @@ const TPL = `
                 </button>
             </div>
             <div class="modal-body">
-                <table class="table table-borderless">
+                <table class="table table-borderless text-nowrap">
                     <tr>
                         <th>${t("about.homepage")}</th>
                         <td><a href="https://github.com/TriliumNext/Notes" class="external">https://github.com/TriliumNext/Notes</a></td>

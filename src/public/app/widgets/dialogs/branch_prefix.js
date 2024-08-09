@@ -5,6 +5,7 @@ import toastService from "../../services/toast.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 import appContext from "../../components/app_context.js";
+import { t } from "../../services/i18n.js";
 
 let branchId;
 
@@ -13,17 +14,17 @@ const TPL = `<div class="branch-prefix-dialog modal fade mx-auto" tabindex="-1" 
         <form class="branch-prefix-form">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title mr-auto">Edit branch prefix</h5>
+                    <h5 class="modal-title mr-auto">${t('branch_prefix.edit_branch_prefix')}</h5>
 
-                    <button class="help-button" type="button" data-help-page="tree-concepts.md#prefix" title="Help on Tree prefix">?</button>
+                    <button class="help-button" type="button" data-help-page="tree-concepts.md#prefix" title="${t('branch_prefix.help_on_tree_prefix')}">?</button>
 
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="${t('branch_prefix.close')}" style="margin-left: 0;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="branch-prefix-input">Prefix: </label> &nbsp;
+                        <label for="branch-prefix-input">${t('branch_prefix.prefix')}</label> &nbsp;
 
                         <div class="input-group">
                             <input class="branch-prefix-input form-control">
@@ -35,7 +36,7 @@ const TPL = `<div class="branch-prefix-dialog modal fade mx-auto" tabindex="-1" 
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary btn-sm">Save</button>
+                    <button class="btn btn-primary btn-sm">${t('branch_prefix.save')}</button>
                 </div>
             </div>
         </form>
@@ -100,6 +101,6 @@ export default class BranchPrefixDialog extends BasicWidget {
 
         this.$widget.modal('hide');
 
-        toastService.showMessage("Branch prefix has been saved.");
+        toastService.showMessage(t('branch_prefix.branch_prefix_saved'));
     }
 }
