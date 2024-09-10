@@ -166,7 +166,7 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
 
             return editor;
         });
-
+        await libraryLoader.requireLibrary(libraryLoader.KATEX);
         await this.watchdog.create(this.$editor[0], {
             placeholder: t('editable_text.placeholder'),
             mention: mentionSetup,
@@ -176,9 +176,10 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
             math: {
                 engine: 'katex',
                 outputType: 'span', // or script
-                lazyLoad: async () => await libraryLoader.requireLibrary(libraryLoader.KATEX),
+                // lazyLoad: async () => await libraryLoader.requireLibrary(libraryLoader.KATEX),
                 forceOutputType: false, // forces output to use outputType
-                enablePreview: true // Enable preview view
+                enablePreview: true, // Enable preview view
+                previewClassName: ["math-preview-popup"], // Class names to add to previews
             }
         });
     }
