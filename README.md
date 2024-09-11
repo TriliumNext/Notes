@@ -33,6 +33,7 @@ Feel free to join our official conversations. We would love to hear what feature
 * Fast and easy [navigation between notes](https://triliumnext.github.io/Docs/Wiki/note-navigation), full text search and [note hoisting](https://triliumnext.github.io/Docs/Wiki/note-hoisting)
 * Seamless [note versioning](https://triliumnext.github.io/Docs/Wiki/note-revisions)
 * Note [attributes](https://triliumnext.github.io/Docs/Wiki/attributes) can be used for note organization, querying and advanced [scripting](https://triliumnext.github.io/Docs/Wiki/scripts)
+* Direct OpenID and TOTP integration for more secure login
 * [Synchronization](https://triliumnext.github.io/Docs/Wiki/synchronization) with self-hosted sync server
   * there's a [3rd party service for hosting synchronisation server](https://trilium.cc/paid-hosting)
 * [Sharing](https://triliumnext.github.io/Docs/Wiki/sharing) (publishing) notes to public internet

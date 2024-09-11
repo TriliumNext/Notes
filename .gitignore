@@ -32,3 +32,5 @@ images/app-icons/mac/*.png
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+.env

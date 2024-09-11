@@ -33,6 +33,7 @@ import BackendLogWidget from "./content/backend_log.js";
 import AttachmentErasureTimeoutOptions from "./options/other/attachment_erasure_timeout.js";
 import RibbonOptions from "./options/appearance/ribbon.js";
 import LocalizationOptions from "./options/appearance/i18n.js";
+import MultiFactorAuthenticationOptions from './options/multi_factor_authentication.js';
 
 const TPL = `<div class="note-detail-content-widget note-detail-printable">
     <style>
@@ -79,6 +80,7 @@ const CONTENT_WIDGETS = {
     _optionsImages: [ ImageOptions ],
     _optionsSpellcheck: [ SpellcheckOptions ],
     _optionsPassword: [ PasswordOptions ],
+    _optionsMFA: [ MultiFactorAuthenticationOptions ],
     _optionsEtapi: [ EtapiOptions ],
     _optionsBackup: [ BackupOptions ],
     _optionsSync: [ SyncOptions ],

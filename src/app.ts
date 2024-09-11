@@ -14,6 +14,9 @@ import custom from "./routes/custom.js";
 import error_handlers from "./routes/error_handlers.js";
 import { startScheduledCleanup } from "./services/erase.js";
 import sql_init from "./services/sql_init.js";
+import oidc from "express-openid-connect";
+import openID from "./services/open_id.js";
+import * as dotenv from "dotenv";
 import { t } from "i18next";
 
 await import('./services/handlers.js');
@@ -22,6 +25,9 @@ await import('./becca/becca_loader.js');
 const app = express();
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
+
+// Configure environment variables
+dotenv.config();
 
 // Initialize DB
 sql_init.initializeDb();
@@ -55,6 +61,9 @@ app.use(`/manifest.webmanifest`, express.static(path.join(scriptDir, 'public/man
 app.use(`/robots.txt`, express.static(path.join(scriptDir, 'public/robots.txt')));
 app.use(sessionParser);
 app.use(favicon(`${scriptDir}/../images/app-icons/icon.ico`));
+
+if (openID.checkOpenIDRequirements()) 
+    app.use(oidc.auth(openID.generateOAuthConfig()));
 
 assets.register(app);
 routes.register(app);

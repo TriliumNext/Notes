@@ -95,6 +95,10 @@ const defaultOptions: DefaultOption[] = [
     { name: 'customSearchEngineUrl', value: 'https://duckduckgo.com/?q={keyword}', isSynced: true },
     { name: 'promotedAttributesOpenInRibbon', value: 'true', isSynced: true },
     { name: 'editedNotesOpenInRibbon', value: 'true', isSynced: true },
+    { name: 'totpEnabled', value: 'false', isSynced: true},
+    { name: 'encryptedRecoveryCodes', value: 'false', isSynced: true},
+    { name: 'userSubjectIdentifierSaved', value: 'false', isSynced: true},
+    { name: 'oAuthEnabled', value: 'false', isSynced: true},
 
     // Internationalization
     { name: 'locale', value: 'en', isSynced: true },

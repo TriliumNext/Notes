@@ -9,17 +9,32 @@ import config from "./config.js";
 import passwordService from "./encryption/password.js";
 import type { NextFunction, Request, Response } from 'express';
 import { AppRequest } from '../routes/route-interface.js';
+import openID from './open_id.js';
+import open_id_encryption from './encryption/open_id_encryption.js';
 
 const noAuthentication = config.General && config.General.noAuthentication === true;
 
 function checkAuth(req: AppRequest, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {
-        res.redirect("setup");
-    }
-    else if (!req.session.loggedIn && !utils.isElectron() && !noAuthentication) {
-        res.redirect("login");
-    }
-    else {
+        res.redirect('setup');
+    } else if (openID.checkOpenIDRequirements()) {
+        if (
+            req.oidc.isAuthenticated() &&
+            open_id_encryption.verifyOpenIDSubjectIdentifier(req.oidc.user?.sub)
+        ) {
+            req.session.loggedIn = true;
+            next();
+        } else {
+            req.session.loggedIn = false;
+            res.oidc.login({});
+        }
+    } else if (
+        !req.session.loggedIn &&
+        !utils.isElectron() &&
+        !noAuthentication
+    ) {
+        res.redirect('login');
+    } else {
         next();
     }
 }
