@@ -1,22 +1,23 @@
 import OptionsWidget from "../options_widget.js";
 import utils from "../../../../services/utils.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Content Width</h4>
+    <h4>${t("max_content_width.title")}</h4>
     
-    <p>Trilium by default limits max content width to improve readability for maximized screens on wide screens.</p>
+    <p>${t("max_content_width.default_description")}</p>
     
     <div class="form-group row">
-        <div class="col-4">
-            <label>Max content width in pixels</label>
+        <div class="col-6">
+            <label>${t("max_content_width.max_width_label")}</label>
             <input type="number" min="200" step="10" class="max-content-width form-control options-number-input">
         </div>
     </div>
     
     <p>
-        To apply content width changes, click on 
-        <button class="btn btn-micro reload-frontend-button">reload frontend</button>
+        ${t("max_content_width.apply_changes_description")}
+        <button class="btn btn-micro reload-frontend-button">${t("max_content_width.reload_button")}</button>
     </p>
 </div>`;
 
@@ -29,7 +30,7 @@ export default class MaxContentWidthOptions extends OptionsWidget {
         this.$maxContentWidth.on('change', async () =>
             this.updateOption('maxContentWidth', this.$maxContentWidth.val()))
 
-        this.$widget.find(".reload-frontend-button").on("click", () => utils.reloadFrontendApp("changes from appearance options"));
+        this.$widget.find(".reload-frontend-button").on("click", () => utils.reloadFrontendApp(t("max_content_width.reload_description")));
     }
 
     async optionsLoaded(options) {

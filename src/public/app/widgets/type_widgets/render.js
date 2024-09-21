@@ -1,5 +1,6 @@
 import renderService from "../../services/render.js";
 import TypeWidget from "./type_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-detail-render note-detail-printable">
@@ -10,9 +11,9 @@ const TPL = `
     </style>
 
     <div class="note-detail-render-help alert alert-warning" style="margin: 50px; padding: 20px;">
-        <p><strong>This help note is shown because this note of type Render HTML doesn't have required relation to function properly.</strong></p>
+        <p><strong>${t("render.note_detail_render_help_1")}</strong></p>
 
-        <p>Render HTML note type is used for <a class="external" href="https://github.com/zadam/trilium/wiki/Scripts">scripting</a>. In short, you have a HTML code note (optionally with some JavaScript) and this note will render it. To make it work, you need to define a <a class="external" href="https://github.com/zadam/trilium/wiki/Attributes">relation</a> called "renderNote" pointing to the HTML note to render.</p>
+        <p>${t("render.note_detail_render_help_2")}</p>
     </div>
 
     <div class="note-detail-render-content"></div>

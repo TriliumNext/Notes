@@ -4,23 +4,25 @@ import server from "../services/server.js";
 import utils from "../services/utils.js";
 import syncService from "../services/sync.js";
 import dialogService from "../services/dialog.js";
+import { t } from "../services/i18n.js";
 
 export default class SharedSwitchWidget extends SwitchWidget {
     isEnabled() {
         return super.isEnabled()
-            && !['root', '_share', '_hidden'].includes(this.noteId);
+            && !['root', '_share', '_hidden'].includes(this.noteId)
+            && !this.noteId.startsWith('_options');
     }
 
     doRender() {
         super.doRender();
 
-        this.$switchOnName.text("Shared");
-        this.$switchOnButton.attr("title", "Share the note");
+        this.$switchOnName.text(t("shared_switch.shared"));
+        this.$switchOnButton.attr("title", t("shared_switch.toggle-on-title"));
 
-        this.$switchOffName.text("Shared");
-        this.$switchOffButton.attr("title", "Unshare the note");
+        this.$switchOffName.text(t("shared_switch.shared"));
+        this.$switchOffButton.attr("title", t("shared_switch.toggle-off-title"));
 
-        this.$helpButton.attr("data-help-page", "Sharing").show();
+        this.$helpButton.attr("data-help-page", "sharing.html").show();
         this.$helpButton.on('click', e => utils.openHelp($(e.target)));
     }
 
@@ -38,9 +40,7 @@ export default class SharedSwitchWidget extends SwitchWidget {
         }
 
         if (this.note.getParentBranches().length === 1) {
-            const text = "This note exists only as a shared note, unsharing would delete it. Do you want to continue and thus delete this note?";
-
-            if (!await dialogService.confirm(text)) {
+            if (!await dialogService.confirm(t("shared_switch.shared-branch"))) {
                 return;
             }
         }
@@ -59,7 +59,7 @@ export default class SharedSwitchWidget extends SwitchWidget {
         this.$switchOff.toggle(!!isShared);
 
         if (switchDisabled) {
-            this.$widget.attr("title", "Note cannot be unshared here because it is shared through inheritance from an ancestor.");
+            this.$widget.attr("title", t("shared_switch.inherited"));
             this.$switchOff.addClass("switch-disabled");
         }
         else {

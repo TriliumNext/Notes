@@ -1,10 +1,10 @@
-import log = require('./log');
-import becca = require('../becca/becca');
-import cloningService = require('./cloning');
-import branchService = require('./branches');
-import utils = require('./utils');
-import eraseService = require("./erase");
-import BNote = require('../becca/entities/bnote');
+import log from "./log.js";
+import becca from "../becca/becca.js";
+import cloningService from "./cloning.js";
+import branchService from "./branches.js";
+import utils from "./utils.js";
+import eraseService from "./erase.js";
+import BNote from "../becca/entities/bnote.js";
 
 interface Action {
     labelName: string;
@@ -111,7 +111,7 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
             res = branchService.moveBranchToNote(note.getParentBranches()[0], action.targetParentNoteId);
         }
 
-        if (!res.success) {
+        if ("success" in res && !res.success) {
             log.info(`Moving/cloning note ${note.noteId} to ${action.targetParentNoteId} failed with error ${JSON.stringify(res)}`);
         }
     },
@@ -172,6 +172,6 @@ function executeActions(note: BNote, searchResultNoteIds: string[] | Set<string>
     }
 }
 
-export = {
+export default {
     executeActions
 };

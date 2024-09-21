@@ -6,6 +6,7 @@ import appContext from "../components/app_context.js";
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import linkContextMenuService from "../menus/link_context_menu.js";
 import utils from "../services/utils.js";
+import { t } from "../services/i18n.js";
 
 const esc = utils.escapeHtml;
 
@@ -30,8 +31,8 @@ const TPL = `<div class="note-map-widget" style="position: relative;">
     </style>
     
     <div class="btn-group btn-group-sm map-type-switcher" role="group">
-      <button type="button" class="btn bx bx-network-chart" title="Link Map" data-type="link"></button>
-      <button type="button" class="btn bx bx-sitemap" title="Tree map" data-type="tree"></button>
+      <button type="button" class="btn bx bx-network-chart" title="${t("note-map.button-link-map")}" data-type="link"></button>
+      <button type="button" class="btn bx bx-sitemap" title="${t("note-map.button-tree-map")}" data-type="tree"></button>
     </div>
 
     <div class="style-resolver"></div>

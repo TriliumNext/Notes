@@ -1,3 +1,4 @@
+import { t } from "../../../services/i18n.js";
 import server from "../../../services/server.js";
 import toastService from "../../../services/toast.js";
 import NoteContextAwareWidget from "../../note_context_aware_widget.js";
@@ -24,8 +25,8 @@ export default class OptionsWidget extends NoteContextAwareWidget {
     showUpdateNotification() {
         toastService.showPersistent({
             id: "options-change-saved",
-            title: "Options status",
-            message: "Options change have been saved.",
+            title: t("options_widget.options_status"),
+            message: t("options_widget.options_change_saved"),
             icon: "slider",
             closeAfter: 2000
         });

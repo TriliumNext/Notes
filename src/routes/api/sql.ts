@@ -1,9 +1,9 @@
 "use strict";
 
-import sql = require('../../services/sql');
-import becca = require('../../becca/becca');
+import sql from "../../services/sql.js";
+import becca from "../../becca/becca.js";
 import { Request } from 'express';
-import ValidationError = require('../../errors/validation_error');
+import ValidationError from "../../errors/validation_error.js";
 
 function getSchema() {
     const tableNames = sql.getColumn(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`);
@@ -66,7 +66,7 @@ function execute(req: Request) {
     }
 }
 
-export = {
+export default {
     getSchema,
     execute
 };

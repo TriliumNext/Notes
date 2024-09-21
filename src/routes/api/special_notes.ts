@@ -1,10 +1,10 @@
 "use strict";
 
-import dateNoteService = require('../../services/date_notes');
-import sql = require('../../services/sql');
-import cls = require('../../services/cls');
-import specialNotesService = require('../../services/special_notes');
-import becca = require('../../becca/becca');
+import dateNoteService from "../../services/date_notes.js";
+import sql from "../../services/sql.js";
+import cls from "../../services/cls.js";
+import specialNotesService from "../../services/special_notes.js";
+import becca from "../../becca/becca.js";
 import { Request } from 'express';
 
 function getInboxNote(req: Request) {
@@ -82,7 +82,7 @@ function createOrUpdateScriptLauncherFromApi(req: Request) {
     return specialNotesService.createOrUpdateScriptLauncherFromApi(req.body);
 }
 
-export = {
+export default {
     getInboxNote,
     getDayNote,
     getWeekNote,

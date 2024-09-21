@@ -1,9 +1,9 @@
 import { JSDOM } from "jsdom";
-import shaca = require('./shaca/shaca');
-import assetPath = require('../services/asset_path');
-import shareRoot = require('./share_root');
-import escapeHtml = require('escape-html');
-import SNote = require("./shaca/entities/snote");
+import shaca from "./shaca/shaca.js";
+import assetPath from "../services/asset_path.js";
+import shareRoot from "./share_root.js";
+import escapeHtml from "escape-html";
+import SNote from "./shaca/entities/snote.js";
 
 interface Result {
     header: string;
@@ -32,7 +32,7 @@ function getContent(note: SNote) {
         renderCode(result);
     } else if (note.type === 'mermaid') {
         renderMermaid(result, note);
-    } else if (note.type === 'image' || note.type === 'canvas') {
+    } else if ([ "image", "canvas", "mindMap"].includes(note.type)) {
         renderImage(result, note);
     } else if (note.type === 'file') {
         renderFile(note, result);
@@ -170,6 +170,6 @@ function renderFile(note: SNote, result: Result) {
     }
 }
 
-export = {
+export default {
     getContent
 };

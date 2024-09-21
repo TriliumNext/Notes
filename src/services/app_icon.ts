@@ -1,16 +1,17 @@
 "use strict";
 
-import path = require('path');
-import resourceDir = require('./resource_dir');
-import log = require('./log');
-import os = require('os');
-import fs = require('fs');
-import config = require('./config');
-import utils = require('./utils');
+import path from "path";
+import resourceDir from "./resource_dir.js";
+import log from "./log.js";
+import os from "os";
+import fs from "fs";
+import config from "./config.js";
+import utils from "./utils.js";
 
 const template = `[Desktop Entry]
 Type=Application
-Name=Trilium Notes
+Name=TriliumNext Notes
+StartupWMClass=TriliumNext Notes
 Icon=#APP_ROOT_DIR#/icon.png
 Exec=#EXE_PATH#
 Categories=Office
@@ -68,6 +69,6 @@ function getExePath() {
      return path.resolve(resourceDir.ELECTRON_APP_ROOT_DIR, 'trilium');
 }
 
-export = {
+export default {
     installLocalAppIcon
 };

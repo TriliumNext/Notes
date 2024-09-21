@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import server from "../../services/server.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import froca from "../../services/froca.js";
@@ -73,54 +74,54 @@ const TPL = `
     <div class="search-settings">
         <table class="search-setting-table">
             <tr>
-                <td class="title-column">Add search option:</td>
+                <td class="title-column">${t('search_definition.add_search_option')}</td>
                 <td colspan="2" class="add-search-option">
                     <button type="button" class="btn btn-sm" data-search-option-add="searchString">
                         <span class="bx bx-text"></span> 
-                        search string
+                        ${t('search_definition.search_string')}
                     </button>
                     
                     <button type="button" class="btn btn-sm" data-search-option-add="searchScript">
                         <span class="bx bx-code"></span> 
-                        search script
+                        ${t('search_definition.search_script')}
                     </button>
                     
                     <button type="button" class="btn btn-sm" data-search-option-add="ancestor">
                         <span class="bx bx-filter-alt"></span> 
-                        ancestor
+                        ${t('search_definition.ancestor')}
                     </button>
                     
                     <button type="button" class="btn btn-sm" data-search-option-add="fastSearch"
-                        title="Fast search option disables full text search of note contents which might speed up searching in large databases.">
+                        title="${t('search_definition.fast_search_description')}">
                         <span class="bx bx-run"></span>
-                        fast search
+                        ${t('search_definition.fast_search')}
                     </button>
                     
                     <button type="button" class="btn btn-sm" data-search-option-add="includeArchivedNotes"
-                        title="Archived notes are by default excluded from search results, with this option they will be included.">
+                        title="${t('search_definition.include_archived_notes_description')}">
                         <span class="bx bx-archive"></span>
-                        include archived
+                        ${t('search_definition.include_archived')}
                     </button>
                     
                     <button type="button" class="btn btn-sm" data-search-option-add="orderBy">
                         <span class="bx bx-arrow-from-top"></span>
-                        order by
+                        ${t('search_definition.order_by')}
                     </button>
                     
-                    <button type="button" class="btn btn-sm" data-search-option-add="limit" title="Limit number of results">
+                    <button type="button" class="btn btn-sm" data-search-option-add="limit" title="${t('search_definition.limit_description')}">
                         <span class="bx bx-stop"></span>
-                        limit
+                        ${t('search_definition.limit')}
                     </button>
                     
-                    <button type="button" class="btn btn-sm" data-search-option-add="debug" title="Debug will print extra debugging information into the console to aid in debugging complex queries">
+                    <button type="button" class="btn btn-sm" data-search-option-add="debug" title="${t('search_definition.debug_description')}">
                         <span class="bx bx-bug"></span>
-                        debug
+                        ${t('search_definition.debug')}
                     </button>
                     
                     <div class="dropdown" style="display: inline-block;">
-                      <button class="btn btn-sm dropdown-toggle action-add-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button class="btn btn-sm dropdown-toggle action-add-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="bx bxs-zap"></span>
-                        action
+                        ${t('search_definition.action')}
                       </button>
                       <div class="dropdown-menu action-list"></div>
                     </div>
@@ -134,19 +135,19 @@ const TPL = `
                         <div style="display: flex; justify-content: space-evenly">
                             <button type="button" class="btn btn-sm search-button">
                                 <span class="bx bx-search"></span>
-                                Search
+                                ${t('search_definition.search')}
                                 
-                                <kbd>enter</kbd>
+                                <kbd>${t('search_definition.enter')}</kbd>
                             </button>
         
                             <button type="button" class="btn btn-sm search-and-execute-button">
                                 <span class="bx bxs-zap"></span>
-                                Search & Execute actions
+                                ${t('search_definition.search_execute')}
                             </button>
                             
                             <button type="button" class="btn btn-sm save-to-note-button">
                                 <span class="bx bx-save"></span>
-                                Save to note
+                                ${t('search_definition.save_to_note')}
                             </button>
                         </div>
                     </td>
@@ -180,7 +181,7 @@ export default class SearchDefinitionWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             activate: true,
-            title: 'Search Parameters',
+            title: t('search_definition.search_parameters'),
             icon: 'bx bx-search'
         };
     }
@@ -211,14 +212,14 @@ export default class SearchDefinitionWidget extends NoteContextAwareWidget {
                 await clazz.create(this.noteId);
             }
             else {
-                logError(`Unknown search option ${searchOptionName}`);
+                logError(t('search_definition.unknown_search_option', { searchOptionName }));
             }
 
             this.refresh();
         });
 
         this.$widget.on('click', '[data-action-add]', async event => {
-            this.$widget.find('.action-add-toggle').dropdown('toggle');
+            bootstrap.Dropdown.getOrCreateInstance(this.$widget.find('.action-add-toggle'));
 
             const actionName = $(event.target).attr('data-action-add');
 
@@ -243,8 +244,9 @@ export default class SearchDefinitionWidget extends NoteContextAwareWidget {
             await ws.waitForMaxKnownEntityChangeId();
 
             await appContext.tabManager.getActiveContext().setNote(notePath);
-
-            toastService.showMessage(`Search note has been saved into ${await treeService.getNotePathTitle(notePath)}`);
+            // Note the {{- notePathTitle}} in json file is not typo, it's unescaping
+            // See https://www.i18next.com/translation-function/interpolation#unescape
+            toastService.showMessage(t('search_definition.search_note_saved', { notePathTitle: await treeService.getNotePathTitle(notePath) }));
         });
     }
 
@@ -307,7 +309,7 @@ export default class SearchDefinitionWidget extends NoteContextAwareWidget {
 
         this.triggerCommand('refreshResults');
 
-        toastService.showMessage('Actions have been executed.', 3000);
+        toastService.showMessage(t('search_definition.actions_executed'), 3000);
     }
 
     entitiesReloadedEvent({loadResults}) {

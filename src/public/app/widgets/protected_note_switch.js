@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import protectedSessionService from "../services/protected_session.js";
 import SwitchWidget from "./switch.js";
 
@@ -5,11 +6,11 @@ export default class ProtectedNoteSwitchWidget extends SwitchWidget {
     doRender() {
         super.doRender();
 
-        this.$switchOnName.text("Protect the note");
-        this.$switchOnButton.attr("title", "Note is not protected, click to make it protected");
+        this.$switchOnName.text(t("protect_note.toggle-on"));
+        this.$switchOnButton.attr("title", t("protect_note.toggle-on-hint"));
 
-        this.$switchOffName.text("Unprotect the note");
-        this.$switchOffButton.attr("title", "Note is protected, click to make it unprotected");
+        this.$switchOffName.text(t("protect_note.toggle-off"));
+        this.$switchOffButton.attr("title", t("protect_note.toggle-off-hint"));
     }
 
     switchOn() {

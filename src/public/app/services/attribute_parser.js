@@ -121,7 +121,7 @@ function parse(tokens, str, allowEmptyRelations = false) {
     const attrs = [];
 
     function context(i) {
-        let {startIndex, endIndex} = tokens[i];
+        let { startIndex, endIndex } = tokens[i];
         startIndex = Math.max(0, startIndex - 20);
         endIndex = Math.min(str.length, endIndex + 20);
 
@@ -129,7 +129,7 @@ function parse(tokens, str, allowEmptyRelations = false) {
     }
 
     for (let i = 0; i < tokens.length; i++) {
-        const {text, startIndex} = tokens[i];
+        const { text, startIndex } = tokens[i];
 
         function isInheritable() {
             if (tokens.length > i + 3

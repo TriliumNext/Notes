@@ -1,35 +1,36 @@
 import OptionsWidget from "../options_widget.js";
 import utils from "../../../../services/utils.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Search Engine</h4>
+    <h4>${t("search_engine.title")}</h4>
     
-    <p>Custom search engine requires both a name and a URL to be set. If either of these is not set, DuckDuckGo will be used as the default search engine.</p>
+    <p>${t("search_engine.custom_search_engine_info")}</p>
     
     <form class="sync-setup-form">
         <div class="form-group">
-            <label>Predefined search engine templates</label>
+            <label>${t("search_engine.predefined_templates_label")}</label>
             <select class="predefined-search-engine-select form-control">
-                <option value="Bing">Bing</option>
-                <option value="Baidu">Baidu</option>
-                <option value="DuckDuckGo">Duckduckgo</option>
-                <option value="Google">Google</option>
+                <option value="Bing">${t("search_engine.bing")}</option>
+                <option value="Baidu">${t("search_engine.baidu")}</option>
+                <option value="DuckDuckGo">${t("search_engine.duckduckgo")}</option>
+                <option value="Google">${t("search_engine.google")}</option>
             </select>
         </div>
         
         <div class="form-group">
-            <label>Custom search engine name</label>
-            <input type="text" class="custom-search-engine-name form-control" placeholder="Customize search engine name">
+            <label>${t("search_engine.custom_name_label")}</label>
+            <input type="text" class="custom-search-engine-name form-control" placeholder="${t("search_engine.custom_name_placeholder")}">
         </div>
         
         <div class="form-group">
-            <label>Custom search engine URL should include <code>{keyword}</code> as a placeholder for the search term.</label>
-            <input type="text" class="custom-search-engine-url form-control" placeholder="Customize search engine url">
+            <label>${t("search_engine.custom_url_label")}</label>
+            <input type="text" class="custom-search-engine-url form-control" placeholder="${t("search_engine.custom_url_placeholder")}">
         </div>
         
         <div style="display: flex; justify-content: space-between;">
-            <button class="btn btn-primary">Save</button>
+            <button class="btn btn-primary">${t("search_engine.save_button")}</button>
         </div>
     </form>
 </div>`;

@@ -1,28 +1,28 @@
 "use strict";
 
-import dayjs = require("dayjs");
-import AndExp = require('../expressions/and');
-import OrExp = require('../expressions/or');
-import NotExp = require('../expressions/not');
-import ChildOfExp = require('../expressions/child_of');
-import DescendantOfExp = require('../expressions/descendant_of');
-import ParentOfExp = require('../expressions/parent_of');
-import RelationWhereExp = require('../expressions/relation_where');
-import PropertyComparisonExp = require('../expressions/property_comparison');
-import AttributeExistsExp = require('../expressions/attribute_exists');
-import LabelComparisonExp = require('../expressions/label_comparison');
-import NoteFlatTextExp = require('../expressions/note_flat_text');
-import NoteContentFulltextExp = require('../expressions/note_content_fulltext');
-import OrderByAndLimitExp = require('../expressions/order_by_and_limit');
-import AncestorExp = require('../expressions/ancestor');
-import buildComparator = require('./build_comparator');
-import ValueExtractor = require('../value_extractor');
-import utils = require('../../utils');
-import TrueExp = require('../expressions/true');
-import IsHiddenExp = require('../expressions/is_hidden');
-import SearchContext = require("../search_context");
-import { TokenData } from "./types";
-import Expression = require("../expressions/expression");
+import dayjs from "dayjs";
+import AndExp from "../expressions/and.js";
+import OrExp from "../expressions/or.js";
+import NotExp from "../expressions/not.js";
+import ChildOfExp from "../expressions/child_of.js";
+import DescendantOfExp from "../expressions/descendant_of.js";
+import ParentOfExp from "../expressions/parent_of.js";
+import RelationWhereExp from "../expressions/relation_where.js";
+import PropertyComparisonExp from "../expressions/property_comparison.js";
+import AttributeExistsExp from "../expressions/attribute_exists.js";
+import LabelComparisonExp from "../expressions/label_comparison.js";
+import NoteFlatTextExp from "../expressions/note_flat_text.js";
+import NoteContentFulltextExp from "../expressions/note_content_fulltext.js";
+import OrderByAndLimitExp from "../expressions/order_by_and_limit.js";
+import AncestorExp from "../expressions/ancestor.js";
+import buildComparator from "./build_comparator.js";
+import ValueExtractor from "../value_extractor.js";
+import utils from "../../utils.js";
+import TrueExp from "../expressions/true.js";
+import IsHiddenExp from "../expressions/is_hidden.js";
+import SearchContext from "../search_context.js";
+import { TokenData, TokenStructure } from "./types.js";
+import Expression from "../expressions/expression.js";
 
 function getFulltext(_tokens: TokenData[], searchContext: SearchContext) {
     const tokens: string[] = _tokens.map(t => utils.removeDiacritic(t.token));
@@ -448,7 +448,7 @@ function getExpression(tokens: TokenData[], searchContext: SearchContext, level 
 
 function parse({fulltextTokens, expressionTokens, searchContext}: {
     fulltextTokens: TokenData[],
-    expressionTokens: (TokenData | TokenData[])[],
+    expressionTokens: TokenStructure,
     searchContext: SearchContext,
     originalQuery: string
 }) {
@@ -494,4 +494,4 @@ function getAncestorExp({ancestorNoteId, ancestorDepth, includeHiddenNotes}: Sea
     }
 }
 
-export = parse;
+export default parse;

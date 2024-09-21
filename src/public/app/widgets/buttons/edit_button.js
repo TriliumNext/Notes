@@ -2,6 +2,7 @@ import OnClickButtonWidget from "./onclick_button.js";
 import appContext from "../../components/app_context.js";
 import attributeService from "../../services/attributes.js";
 import protectedSessionHolder from "../../services/protected_session_holder.js";
+import { t } from "../../services/i18n.js";
 
 export default class EditButton extends OnClickButtonWidget {
     isEnabled() {
@@ -14,7 +15,7 @@ export default class EditButton extends OnClickButtonWidget {
         super();
 
         this.icon("bx-edit-alt")
-            .title("Edit this note")
+            .title(t("edit_button.edit_this_note"))
             .titlePlacement("bottom")
             .onClick(widget => {
                 this.noteContext.viewScope.readOnlyTemporarilyDisabled = true;

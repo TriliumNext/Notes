@@ -3,59 +3,51 @@ import froca from "../../services/froca.js";
 import linkService from "../../services/link.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="delete-notes-dialog modal mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title mr-auto">Delete notes preview</h4>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h4 class="modal-title">${t('delete_notes.delete_notes_preview')}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="checkbox">
-                    <label>
-                        <input class="delete-all-clones" value="1" type="checkbox">
-
-                        delete also all clones (can be undone in recent changes)
-                    </label>
+                <div class="form-checkbox">
+                    <input class="delete-all-clones form-check-input" value="1" type="checkbox">
+                    <label class="form-check-label">${t('delete_notes.delete_all_clones_description')}</label>
                 </div>
 
-                <div class="checkbox">
-                    <label title="Normal (soft) deletion only marks the notes as deleted and they can be undeleted (in recent changes dialog) within a period of time. Checking this option will erase the notes immediately and it won't be possible to undelete the notes.">
-                        <input class="erase-notes" value="1" type="checkbox">
-
-                        erase notes permanently (can't be undone), including all clones. This will force application reload.
-                    </label>
+                <div class="form-checkbox" style="margin-bottom: 1rem">
+                    <input class="erase-notes form-check-input" value="1" type="checkbox">
+                    <label class="form-check-label">${t('delete_notes.erase_notes_warning')}</label>
                 </div>
 
                 <div class="delete-notes-list-wrapper">
-                    <h4>Following notes will be deleted (<span class="deleted-notes-count"></span>)</h4>
+                    <h4>${t('delete_notes.notes_to_be_deleted')} (<span class="deleted-notes-count"></span>)</h4>
 
                     <ul class="delete-notes-list" style="max-height: 200px; overflow: auto;"></ul>
                 </div>
 
                 <div class="no-note-to-delete-wrapper alert alert-info">
-                    No note will be deleted (only clones).
+                    ${t('delete_notes.no_note_to_delete')}
                 </div>
 
                 <div class="broken-relations-wrapper">
                     <div class="alert alert-danger">
-                        <h4>Following relations will be broken and deleted (<span class="broke-relations-count"></span>)</h4>
+                        <h4>${t('delete_notes.broken_relations_to_be_deleted')} (<span class="broke-relations-count"></span>)</h4>
 
                         <ul class="broken-relations-list" style="max-height: 200px; overflow: auto;"></ul>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="delete-notes-dialog-cancel-button btn btn-sm">Cancel</button>
+                <button class="delete-notes-dialog-cancel-button btn btn-sm">${t('delete_notes.cancel')}</button>
 
                 &nbsp;
 
-                <button class="delete-notes-dialog-ok-button btn btn-primary btn-sm">OK</button>
+                <button class="delete-notes-dialog-ok-button btn btn-primary btn-sm">${t('delete_notes.ok')}</button>
             </div>
         </div>
     </div>
@@ -135,9 +127,9 @@ export default class DeleteNotesDialog extends BasicWidget {
         for (const attr of response.brokenRelations) {
             this.$brokenRelationsList.append(
                 $("<li>")
-                    .append(`Note `)
+                    .append(`${t('delete_notes.note')} `)
                     .append(await linkService.createLink(attr.value))
-                    .append(` (to be deleted) is referenced by relation <code>${attr.name}</code> originating from `)
+                    .append(` ${t('delete_notes.to_be_deleted', {attrName: attr.name})} `)
                     .append(await linkService.createLink(attr.noteId))
             );
         }

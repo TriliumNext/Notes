@@ -2,6 +2,7 @@ import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import AttributeDetailWidget from "../attribute_widgets/attribute_detail.js";
 import attributeRenderer from "../../services/attribute_renderer.js";
 import attributeService from "../../services/attributes.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="inherited-attributes-widget">
@@ -44,7 +45,7 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: !this.note.isLaunchBarConfig(),
-            title: "Inherited Attributes",
+            title: t("inherited_attribute_list.title"),
             icon: "bx bx-list-plus"
         };
     }
@@ -63,7 +64,7 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
         const inheritedAttributes = this.getInheritedAttributes(note);
 
         if (inheritedAttributes.length === 0) {
-            this.$container.append("No inherited attributes.");
+            this.$container.append(t("inherited_attribute_list.no_inherited_attributes"));
             return;
         }
 

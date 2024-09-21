@@ -34,7 +34,7 @@ async function getRenderedContent(entity, options = {}) {
     else if (type === 'code') {
         await renderCode(entity, $renderedContent);
     }
-    else if (type === 'image' || type === 'canvas') {
+    else if (['image', 'canvas', 'mindMap'].includes(type)) {
         renderImage(entity, $renderedContent, options);
     }
     else if (!options.tooltip && ['file', 'pdf', 'audio', 'video'].includes(type)) {

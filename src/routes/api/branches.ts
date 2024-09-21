@@ -1,16 +1,16 @@
 "use strict";
 
-import sql = require('../../services/sql');
-import utils = require('../../services/utils');
-import entityChangesService = require('../../services/entity_changes');
-import treeService = require('../../services/tree');
-import eraseService = require('../../services/erase');
-import becca = require('../../becca/becca');
-import TaskContext = require('../../services/task_context');
-import branchService = require('../../services/branches');
-import log = require('../../services/log');
-import ValidationError = require('../../errors/validation_error');
-import eventService = require("../../services/events");
+import sql from "../../services/sql.js";
+import utils from "../../services/utils.js";
+import entityChangesService from "../../services/entity_changes.js";
+import treeService from "../../services/tree.js";
+import eraseService from "../../services/erase.js";
+import becca from "../../becca/becca.js";
+import TaskContext from "../../services/task_context.js";
+import branchService from "../../services/branches.js";
+import log from "../../services/log.js";
+import ValidationError from "../../errors/validation_error.js";
+import eventService from "../../services/events.js";
 import { Request } from 'express';
 
 /**
@@ -224,7 +224,7 @@ function setPrefix(req: Request) {
     branch.save();
 }
 
-export = {
+export default {
     moveBranchToParent,
     moveBranchBeforeNote,
     moveBranchAfterNote,

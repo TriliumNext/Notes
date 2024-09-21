@@ -1,14 +1,15 @@
 "use strict";
 
-import sql = require('../sql');
-import shaca = require('./shaca');
-import log = require('../../services/log');
-import SNote = require('./entities/snote');
-import SBranch = require('./entities/sbranch');
-import SAttribute = require('./entities/sattribute');
-import SAttachment = require('./entities/sattachment');
-import shareRoot = require('../share_root');
-import eventService = require('../../services/events');
+import sql from "../sql.js";
+import shaca from "./shaca.js";
+import log from "../../services/log.js";
+import SNote from "./entities/snote.js";
+import SBranch from "./entities/sbranch.js";
+import SAttribute from "./entities/sattribute.js";
+import SAttachment from "./entities/sattachment.js";
+import shareRoot from "../share_root.js";
+import eventService from "../../services/events.js";
+import { SAttachmentRow, SAttributeRow, SBranchRow, SNoteRow } from './entities/rows.js';
 
 function load() {
     const start = Date.now();
@@ -91,7 +92,7 @@ eventService.subscribe([eventService.ENTITY_CREATED, eventService.ENTITY_CHANGED
     shaca.reset();
 });
 
-export = {
+export default {
     load,
     ensureLoad
 };

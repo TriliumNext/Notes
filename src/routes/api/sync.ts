@@ -1,19 +1,20 @@
 "use strict";
 
-import syncService = require('../../services/sync');
-import syncUpdateService = require('../../services/sync_update');
-import entityChangesService = require('../../services/entity_changes');
-import sql = require('../../services/sql');
-import sqlInit = require('../../services/sql_init');
-import optionService = require('../../services/options');
-import contentHashService = require('../../services/content_hash');
-import log = require('../../services/log');
-import syncOptions = require('../../services/sync_options');
-import utils = require('../../services/utils');
-import ws = require('../../services/ws');
+import syncService from "../../services/sync.js";
+import syncUpdateService from "../../services/sync_update.js";
+import entityChangesService from "../../services/entity_changes.js";
+import sql from "../../services/sql.js";
+import sqlInit from "../../services/sql_init.js";
+import optionService from "../../services/options.js";
+import contentHashService from "../../services/content_hash.js";
+import log from "../../services/log.js";
+import syncOptions from "../../services/sync_options.js";
+import utils from "../../services/utils.js";
+import ws from "../../services/ws.js";
 import { Request } from 'express';
-import { EntityChange, EntityChangeRecord } from '../../services/entity_changes_interface';
-import ValidationError = require('../../errors/validation_error');
+import { EntityChange, EntityChangeRecord } from '../../services/entity_changes_interface.js';
+import ValidationError from "../../errors/validation_error.js";
+import consistencyChecksService from "../../services/consistency_checks.js";
 
 async function testSync() {
     try {
@@ -206,10 +207,10 @@ function queueSector(req: Request) {
 }
 
 function checkEntityChanges() {
-    require('../../services/consistency_checks').runEntityChangesChecks();
+    consistencyChecksService.runEntityChangesChecks();
 }
 
-export = {
+export default {
     testSync,
     checkSync,
     syncNow,

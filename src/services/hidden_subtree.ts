@@ -1,10 +1,10 @@
-import BAttribute = require("../becca/entities/battribute");
-import { AttributeType, NoteType } from "../becca/entities/rows";
+import BAttribute from "../becca/entities/battribute.js";
+import { AttributeType, NoteType } from "../becca/entities/rows.js";
 
-import becca = require('../becca/becca');
-import noteService = require('./notes');
-import log = require('./log');
-import migrationService = require('./migration');
+import becca from "../becca/becca.js";
+import noteService from "./notes.js";
+import log from "./log.js";
+import migrationService from "./migration.js";
 
 const LBTPL_ROOT = "_lbTplRoot";
 const LBTPL_BASE = "_lbTplBase";
@@ -48,7 +48,7 @@ const HIDDEN_SUBTREE_DEFINITION: Item = {
     id: '_hidden',
     title: 'Hidden Notes',
     type: 'doc',
-    icon: 'bx bx-chip',
+    icon: 'bx bx-hide',
     // we want to keep the hidden subtree always last, otherwise there will be problems with e.g., keyboard navigation
     // over tree when it's in the middle
     notePosition: 999_999_999,
@@ -222,7 +222,7 @@ const HIDDEN_SUBTREE_DEFINITION: Item = {
                         { id: '_lbJumpTo', title: 'Jump to Note', type: 'launcher', command: 'jumpToNote', icon: 'bx bx-send', attributes: [
                                 { type: 'label', name: 'desktopOnly' }
                             ] },
-                        { id: '_lbNoteMap', title: 'Note Map', type: 'launcher', targetNoteId: '_globalNoteMap', icon: 'bx bx-map-alt' },
+                        { id: '_lbNoteMap', title: 'Note Map', type: 'launcher', targetNoteId: '_globalNoteMap', icon: 'bx bxs-network-chart' },
                         { id: '_lbCalendar', title: 'Calendar', type: 'launcher', builtinWidget: 'calendar', icon: 'bx bx-calendar' },
                         { id: '_lbRecentChanges', title: 'Recent Changes', type: 'launcher', command: 'showRecentChanges', icon: 'bx bx-history', attributes: [
                                 { type: 'label', name: 'desktopOnly' }
@@ -241,6 +241,7 @@ const HIDDEN_SUBTREE_DEFINITION: Item = {
             id: '_options',
             title: 'Options',
             type: 'book',
+            icon: 'bx-cog',
             children: [
                 { id: '_optionsAppearance', title: 'Appearance', type: 'contentWidget', icon: 'bx-layout' },
                 { id: '_optionsShortcuts', title: 'Shortcuts', type: 'contentWidget', icon: 'bxs-keyboard' },
@@ -362,7 +363,7 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item) {
     }
 }
 
-export = {
+export default {
     checkHiddenSubtree,
     LBTPL_ROOT,
     LBTPL_BASE,

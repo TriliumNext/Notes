@@ -14,10 +14,10 @@ npm install
 
 ## Running
 
-See output of `node dump-db.js --help`:
+See output of `npx esrun dump.ts --help`:
 
 ```
-dump-db.js <path_to_document> <target_directory>
+dump-db.ts <path_to_document> <target_directory>
 
 dump the contents of document.db into the target directory
 

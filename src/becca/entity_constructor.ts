@@ -1,14 +1,14 @@
-import { ConstructorData } from './becca-interface';
-import AbstractBeccaEntity = require('./entities/abstract_becca_entity');
-import BAttachment = require('./entities/battachment');
-import BAttribute = require('./entities/battribute');
-import BBlob = require('./entities/bblob');
-import BBranch = require('./entities/bbranch');
-import BEtapiToken = require('./entities/betapi_token');
-import BNote = require('./entities/bnote');
-import BOption = require('./entities/boption');
-import BRecentNote = require('./entities/brecent_note');
-import BRevision = require('./entities/brevision');
+import { ConstructorData } from './becca-interface.js';
+import AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
+import BAttachment from "./entities/battachment.js";
+import BAttribute from "./entities/battribute.js";
+import BBlob from "./entities/bblob.js";
+import BBranch from "./entities/bbranch.js";
+import BEtapiToken from "./entities/betapi_token.js";
+import BNote from "./entities/bnote.js";
+import BOption from "./entities/boption.js";
+import BRecentNote from "./entities/brecent_note.js";
+import BRevision from "./entities/brevision.js";
 
 type EntityClass = new (row?: any) => AbstractBeccaEntity<any>;
 
@@ -32,6 +32,6 @@ function getEntityFromEntityName(entityName: keyof typeof ENTITY_NAME_TO_ENTITY)
     return ENTITY_NAME_TO_ENTITY[entityName];
 }
 
-export = {
+export default {
     getEntityFromEntityName
 };

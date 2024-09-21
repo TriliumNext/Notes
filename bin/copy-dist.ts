@@ -1,37 +1,51 @@
-const fs = require("fs-extra");
-const path = require("path");
+import fs from "fs-extra";
+import path from "path";
 
 const DEST_DIR = "./dist";
 const DEST_DIR_SRC = path.join(DEST_DIR, "src");
 const DEST_DIR_NODE_MODULES = path.join(DEST_DIR, "node_modules");
 
+const VERBOSE = process.env.VERBOSE;
+
+function log(...args) {
+  if (VERBOSE) {
+    console.log(args);
+  }
+}
+
 async function copyNodeModuleFileOrFolder(source: string) {
   const adjustedSource = source.substring(13);
   const destination = path.join(DEST_DIR_NODE_MODULES, adjustedSource);
 
-  console.log(`Copying ${source} to ${destination}`);
+  log(`Copying ${source} to ${destination}`);
   await fs.ensureDir(path.dirname(destination));
   await fs.copy(source, destination);
 }
 
 const copy = async () => {
+  for (const srcFile of fs.readdirSync("build")) {    
+    const destFile = path.join(DEST_DIR, path.basename(srcFile));
+    log(`Copying source ${srcFile} -> ${destFile}.`);
+    fs.copySync(path.join("build", srcFile), destFile, { recursive: true });
+  }
+
   const filesToCopy = ["config-sample.ini"];
   for (const file of filesToCopy) {
-    console.log(`Copying ${file}`);
+    log(`Copying ${file}`);
     await fs.copy(file, path.join(DEST_DIR, file));
   }
 
   const dirsToCopy = ["images", "libraries", "db"];
   for (const dir of dirsToCopy) {
-    console.log(`Copying ${dir}`);
+    log(`Copying ${dir}`);
     await fs.copy(dir, path.join(DEST_DIR, dir));
   }
 
-  const srcDirsToCopy = ["./src/public", "./src/views"];
+  const srcDirsToCopy = ["./src/public", "./src/views", "./build"];
   for (const dir of srcDirsToCopy) {
-    console.log(`Copying ${dir}`);
+    log(`Copying ${dir}`);
     await fs.copy(dir, path.join(DEST_DIR_SRC, path.basename(dir)));
-  }
+  }  
 
   const nodeModulesFile = [
     "node_modules/react/umd/react.production.min.js",
@@ -60,6 +74,22 @@ const copy = async () => {
     "node_modules/print-this/",
     "node_modules/split.js/dist/",
     "node_modules/panzoom/dist/",
+    "node_modules/i18next/",
+    "node_modules/i18next-http-backend/",
+    "node_modules/eslint/bin/",
+    "node_modules/jsplumb/dist/",
+    "node_modules/vanilla-js-wheel-zoom/dist/",
+    "node_modules/mark.js/dist/",
+    "node_modules/knockout/build/output/",
+    "node_modules/normalize.css/",
+    "node_modules/jquery.fancytree/dist/",
+    "node_modules/bootstrap/dist/",
+    "node_modules/autocomplete.js/dist/",
+    "node_modules/codemirror/lib/",
+    "node_modules/codemirror/addon/",
+    "node_modules/codemirror/mode/",
+    "node_modules/codemirror/keymap/",
+    "node_modules/mind-elixir/dist/"
   ];
 
   for (const folder of nodeModulesFolder) {

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import etapiTokenService = require('../../services/etapi_tokens');
+import etapiTokenService from "../../services/etapi_tokens.js";
 
 function getTokens() {
     const tokens = etapiTokenService.getTokens();
@@ -21,7 +21,7 @@ function deleteToken(req: Request) {
     etapiTokenService.deleteToken(req.params.etapiTokenId);
 }
 
-export = {
+export default {
     getTokens,
     createToken,
     patchToken,

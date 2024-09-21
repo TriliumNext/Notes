@@ -1,20 +1,23 @@
 import OptionsWidget from "../options_widget.js";
 import server from "../../../../services/server.js";
 import utils from "../../../../services/utils.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Theme</h4>
+    <h4>${t("theme.title")}</h4>
     
     <div class="form-group row">
         <div class="col-6">
-            <label>Theme</label>
-            <select class="theme-select form-control"></select>
+            <label>${t("theme.theme_label")}</label>
+            <select class="theme-select form-select"></select>
         </div>
         
         <div class="col-6">
-            <label>Override theme fonts</label>
-            <input type="checkbox" class="override-theme-fonts form-control">
+            <label>${t("theme.override_theme_fonts_label")}</label>
+            <div class="form-check">
+                <input type="checkbox" class="override-theme-fonts form-check-input">
+            </div>
         </div>
     </div>
 </div>`;
@@ -38,8 +41,8 @@ export default class ThemeOptions extends OptionsWidget {
 
     async optionsLoaded(options) {
         const themes = [
-            { val: 'light', title: 'Light' },
-            { val: 'dark', title: 'Dark' }
+            { val: 'light', title: t('theme.light_theme') },
+            { val: 'dark', title: t('theme.dark_theme') }
         ].concat(await server.get('options/user-themes'));
 
         this.$themeSelect.empty();

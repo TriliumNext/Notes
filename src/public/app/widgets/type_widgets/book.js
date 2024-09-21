@@ -1,4 +1,5 @@
 import TypeWidget from "./type_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-detail-book note-detail-printable">
@@ -13,7 +14,7 @@ const TPL = `
     </style>
 
     <div class="note-detail-book-empty-help alert alert-warning" style="margin: 50px; padding: 20px;">
-        This note of type Book doesn't have any child notes so there's nothing to display. See <a href="https://github.com/zadam/trilium/wiki/Book-note">wiki</a> for details.
+        ${t('book.no_children_help')}
     </div>
 </div>`;
 

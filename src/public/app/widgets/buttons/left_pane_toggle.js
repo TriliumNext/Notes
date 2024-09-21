@@ -1,6 +1,7 @@
 import options from "../../services/options.js";
 import splitService from "../../services/resizer.js";
 import CommandButtonWidget from "./command_button.js";
+import { t } from "../../services/i18n.js";
 
 export default class LeftPaneToggleWidget extends CommandButtonWidget {
     constructor() {
@@ -13,8 +14,8 @@ export default class LeftPaneToggleWidget extends CommandButtonWidget {
             : "bx-chevrons-right";
 
         this.settings.title = () => options.is('leftPaneVisible')
-            ? "Hide panel"
-            : "Open panel";
+            ? t("left_pane_toggle.hide_panel")
+            : t("left_pane_toggle.show_panel");
 
         this.settings.command = () => options.is('leftPaneVisible')
             ? "hideLeftPane"

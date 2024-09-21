@@ -1,6 +1,6 @@
 "use strict";
 
-import { AttributeRow } from "../becca/entities/rows";
+import { AttributeRow } from "../becca/entities/rows.js";
 
 function formatAttrForSearch(attr: AttributeRow, searchWithValue: boolean) {
     let searchStr = '';
@@ -47,6 +47,6 @@ function formatValue(val: string) {
     }
 }
 
-export = {
+export default {
     formatAttrForSearch
 };

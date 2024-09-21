@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
 const TPL = `
@@ -11,20 +12,20 @@ const TPL = `
 
     <button type="button"
             class="relation-map-create-child-note floating-button btn bx bx-folder-plus"
-            title="Create new child note and add it into this relation map"></button>
+            title="${t('relation_map_buttons.create_child_note_title')}"></button>
     
     <button type="button"
             class="relation-map-reset-pan-zoom floating-button btn bx bx-crop"
-            title="Reset pan & zoom to initial coordinates and magnification"></button>
+            title="${t('relation_map_buttons.reset_pan_zoom_title')}"></button>
     
     <div class="btn-group">
         <button type="button"
                 class="relation-map-zoom-in floating-button btn bx bx-zoom-in"
-                title="Zoom In"></button>
+                title="${t('relation_map_buttons.zoom_in_title')}"></button>
     
         <button type="button"
                 class="relation-map-zoom-out floating-button btn bx bx-zoom-out"
-                title="Zoom Out"></button>
+                title="${t('relation_map_buttons.zoom_out_title')}"></button>
     </div>
 </div>`;
 

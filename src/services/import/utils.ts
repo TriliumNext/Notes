@@ -11,6 +11,6 @@ function handleH1(content: string, title: string) {
     return content;
 }
 
-export = {
+export default {
     handleH1
 };

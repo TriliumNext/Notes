@@ -1,4 +1,5 @@
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const DELETE_NOTE_BUTTON_CLASS = "confirm-dialog-delete-note";
 
@@ -7,11 +8,8 @@ const TPL = `
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Confirmation</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t('confirm.confirmation')}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="confirm-dialog-content"></div>
@@ -19,11 +17,11 @@ const TPL = `
                 <div class="confirm-dialog-custom"></div>
             </div>
             <div class="modal-footer">
-                <button class="confirm-dialog-cancel-button btn btn-sm">Cancel</button>
+                <button class="confirm-dialog-cancel-button btn btn-sm">${t('confirm.cancel')}</button>
 
                 &nbsp;
 
-                <button class="confirm-dialog-ok-button btn btn-primary btn-sm">OK</button>
+                <button class="confirm-dialog-ok-button btn btn-primary btn-sm">${t('confirm.ok')}</button>
             </div>
         </div>
     </div>
@@ -39,6 +37,7 @@ export default class ConfirmDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
         this.$confirmContent = this.$widget.find(".confirm-dialog-content");
         this.$okButton = this.$widget.find(".confirm-dialog-ok-button");
         this.$cancelButton = this.$widget.find(".confirm-dialog-cancel-button");
@@ -61,7 +60,7 @@ export default class ConfirmDialog extends BasicWidget {
         this.$okButton.on('click', () => this.doResolve(true));
     }
 
-    showConfirmDialogEvent({message, callback}) {
+    showConfirmDialogEvent({ message, callback }) {
         this.$originallyFocused = $(':focus');
 
         this.$custom.hide();
@@ -74,15 +73,15 @@ export default class ConfirmDialog extends BasicWidget {
 
         this.$confirmContent.empty().append(message);
 
-        this.$widget.modal();
+        this.modal.show();
 
         this.resolve = callback;
     }
 
-    showConfirmDeleteNoteBoxWithNoteDialogEvent({title, callback}) {
+    showConfirmDeleteNoteBoxWithNoteDialogEvent({ title, callback }) {
         glob.activeDialog = this.$widget;
 
-        this.$confirmContent.text(`Are you sure you want to remove the note "${title}" from relation map?`);
+        this.$confirmContent.text(`${t('confirm.are_you_sure_remove_note', { title: title })}`);
 
         this.$custom.empty()
             .append("<br/>")
@@ -92,18 +91,18 @@ export default class ConfirmDialog extends BasicWidget {
                     $("<label>")
                         .addClass("form-check-label")
                         .attr("style", "text-decoration: underline dotted var(--main-text-color)")
-                        .attr("title", "If you don't check this, the note will be only removed from the relation map.")
+                        .attr("title", `${t('confirm.if_you_dont_check')}`)
                         .append(
                             $("<input>")
                                 .attr("type", "checkbox")
                                 .addClass(`form-check-input ${DELETE_NOTE_BUTTON_CLASS}`)
                         )
-                        .append("Also delete the note")
+                        .append(`${t('confirm.also_delete_note')}`)
                 ));
 
         this.$custom.show();
 
-        this.$widget.modal();
+        this.modal.show();
 
         this.resolve = callback;
     }
@@ -116,6 +115,6 @@ export default class ConfirmDialog extends BasicWidget {
 
         this.resolve = null;
 
-        this.$widget.modal("hide");
+        this.modal.hide();
     }
 }

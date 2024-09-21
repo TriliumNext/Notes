@@ -27,7 +27,7 @@ function setupGlobs() {
     window.glob.importMarkdownInline = async () => appContext.triggerCommand("importMarkdownInline");
 
     window.glob.SEARCH_HELP_TEXT = `
-    <strong>Search tips</strong> - also see <button class="btn btn-sm" type="button" data-help-page="Search">complete help on search</button>
+    <strong>Search tips</strong> - also see <button class="btn btn-sm" type="button" data-help-page="search.html">complete help on search</button>
     <p>
     <ul>
         <li>Just enter any text for full text search</li>

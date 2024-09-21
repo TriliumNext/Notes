@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import attributeService from "../services/attributes.js";
 import server from "../services/server.js";
@@ -66,12 +67,12 @@ const TPL = `
     }
     </style>
     
-    <button class="btn dropdown-toggle note-icon" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Change note icon"></button>
+    <button class="btn dropdown-toggle note-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="${t("note_icon.change_note_icon")}"></button>
     <div class="dropdown-menu" aria-labelledby="note-path-list-button" style="width: 610px;">
         <div class="filter-row">
-            <span>Category:</span> <select name="icon-category" class="form-control"></select>
+            <span>${t("note_icon.category")}</span> <select name="icon-category" class="form-control"></select>
             
-            <span>Search:</span> <input type="text" name="icon-search" class="form-control" />
+            <span>${t("note_icon.search")}</span> <input type="text" name="icon-search" class="form-control" />
         </div>
         
         <div class="icon-list"></div>
@@ -150,7 +151,7 @@ export default class NoteIconWidget extends NoteContextAwareWidget {
             this.$iconList.append(
                 $(`<div style="text-align: center">`)
                     .append(
-                        $('<button class="btn btn-sm">Reset to default icon</button>')
+                        $(`<button class="btn btn-sm">${t("note_icon.reset-default")}</button>`)
                             .on('click', () => this.getIconLabels()
                                 .forEach(label => attributeService.removeAttributeById(this.noteId, label.attributeId))
                             )

@@ -1,18 +1,18 @@
 "use strict";
 
-import noteService = require('../../services/notes');
-import eraseService = require('../../services/erase');
-import treeService = require('../../services/tree');
-import sql = require('../../services/sql');
-import utils = require('../../services/utils');
-import log = require('../../services/log');
-import TaskContext = require('../../services/task_context');
-import becca = require('../../becca/becca');
-import ValidationError = require('../../errors/validation_error');
-import blobService = require('../../services/blob');
+import noteService from "../../services/notes.js";
+import eraseService from "../../services/erase.js";
+import treeService from "../../services/tree.js";
+import sql from "../../services/sql.js";
+import utils from "../../services/utils.js";
+import log from "../../services/log.js";
+import TaskContext from "../../services/task_context.js";
+import becca from "../../becca/becca.js";
+import ValidationError from "../../errors/validation_error.js";
+import blobService from "../../services/blob.js";
 import { Request } from 'express';
-import BBranch = require('../../becca/entities/bbranch');
-import { AttributeRow } from '../../becca/entities/rows';
+import BBranch from "../../becca/entities/bbranch.js";
+import { AttributeRow } from '../../becca/entities/rows.js';
 
 function getNote(req: Request) {
     return becca.getNoteOrThrow(req.params.noteId);
@@ -250,7 +250,7 @@ function convertNoteToAttachment(req: Request) {
     };
 }
 
-export = {
+export default {
     getNote,
     getNoteBlob,
     getNoteMetadata,

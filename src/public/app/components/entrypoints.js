@@ -102,7 +102,7 @@ export default class Entrypoints extends Component {
         if (utils.isElectron()) {
             // standard JS version does not work completely correctly in electron
             const webContents = utils.dynamicRequire('@electron/remote').getCurrentWebContents();
-            const activeIndex = parseInt(webContents.getActiveIndex());
+            const activeIndex = parseInt(webContents.navigationHistory.getActiveIndex());
 
             webContents.goToIndex(activeIndex - 1);
         }
@@ -115,7 +115,7 @@ export default class Entrypoints extends Component {
         if (utils.isElectron()) {
             // standard JS version does not work completely correctly in electron
             const webContents = utils.dynamicRequire('@electron/remote').getCurrentWebContents();
-            const activeIndex = parseInt(webContents.getActiveIndex());
+            const activeIndex = parseInt(webContents.navigationHistory.getActiveIndex());
 
             webContents.goToIndex(activeIndex + 1);
         }

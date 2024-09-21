@@ -2,6 +2,7 @@ import server from "../../services/server.js";
 import ws from "../../services/ws.js";
 import Component from "../../components/component.js";
 import utils from "../../services/utils.js";
+import { t } from "../../services/i18n.js"; // 新增的导入
 
 export default class AbstractSearchOption extends Component {
     constructor(attribute, note) {
@@ -27,14 +28,14 @@ export default class AbstractSearchOption extends Component {
 
             $rendered.find('.search-option-del')
                 .on('click', () => this.deleteOption())
-                .attr('title', 'Remove this search option');
+                .attr('title', t('abstract_search_option.remove_this_search_option')); // 使用 t 函数处理 i18n 字符串
 
             utils.initHelpDropdown($rendered);
 
             return $rendered;
         }
         catch (e) {
-            logError(`Failed rendering search option: ${JSON.stringify(this.attribute.dto)} with error: ${e.message} ${e.stack}`);
+            logError(t('abstract_search_option.failed_rendering', { dto: JSON.stringify(this.attribute.dto), error: e.message, stack: e.stack })); // 使用 t 函数处理 i18n 字符串
             return null;
         }
     }

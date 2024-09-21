@@ -1,12 +1,11 @@
-import sql = require("./sql");
-import revisionService = require("./revisions");
-import log = require("./log");
-import entityChangesService = require("./entity_changes");
-import optionService = require("./options");
-import dateUtils = require("./date_utils");
-import sqlInit = require("./sql_init");
-import cls = require("./cls");
-import { EntityChange } from "./entity_changes_interface";
+import sql from "./sql.js";
+import log from "./log.js";
+import entityChangesService from "./entity_changes.js";
+import optionService from "./options.js";
+import dateUtils from "./date_utils.js";
+import sqlInit from "./sql_init.js";
+import cls from "./cls.js";
+import { EntityChange } from "./entity_changes_interface.js";
 
 function eraseNotes(noteIdsToErase: string[]) {
     if (noteIdsToErase.length === 0) {
@@ -177,20 +176,22 @@ function eraseScheduledAttachments(eraseUnusedAttachmentsAfterSeconds: number | 
     eraseAttachments(attachmentIdsToErase);
 }
 
-sqlInit.dbReady.then(() => {
-    // first cleanup kickoff 5 minutes after startup
-    setTimeout(cls.wrap(() => eraseDeletedEntities()), 5 * 60 * 1000);
-    setTimeout(cls.wrap(() => eraseScheduledAttachments()), 6 * 60 * 1000);
+export function startScheduledCleanup() {
+    sqlInit.dbReady.then(() => {
+        // first cleanup kickoff 5 minutes after startup
+        setTimeout(cls.wrap(() => eraseDeletedEntities()), 5 * 60 * 1000);
+        setTimeout(cls.wrap(() => eraseScheduledAttachments()), 6 * 60 * 1000);
+    
+        setInterval(cls.wrap(() => eraseDeletedEntities()), 4 * 3600 * 1000);
+        setInterval(cls.wrap(() => eraseScheduledAttachments()), 3600 * 1000);
+    });
+}
 
-    setInterval(cls.wrap(() => eraseDeletedEntities()), 4 * 3600 * 1000);
-    setInterval(cls.wrap(() => eraseScheduledAttachments()), 3600 * 1000);
-});
-
-export = {
+export default {
     eraseDeletedNotesNow,
     eraseUnusedAttachmentsNow,
     eraseNotesWithDeleteId,
     eraseUnusedBlobs,
     eraseAttachments,
-    eraseRevisions
+    eraseRevisions,
 };

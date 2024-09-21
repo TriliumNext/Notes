@@ -1,10 +1,11 @@
-import becca = require('../becca/becca');
-import eu = require('./etapi_utils');
-import mappers = require('./mappers');
-import v = require('./validators');
-import utils = require('../services/utils');
+import becca from "../becca/becca.js";
+import eu from "./etapi_utils.js";
+import mappers from "./mappers.js";
+import v from "./validators.js";
+import utils from "../services/utils.js";
 import { Router } from 'express';
-import { AttachmentRow } from '../becca/entities/rows';
+import { AttachmentRow } from '../becca/entities/rows.js';
+import { ValidatorMap } from './etapi-interface.js';
 
 function register(router: Router) {
     const ALLOWED_PROPERTIES_FOR_CREATE_ATTACHMENT: ValidatorMap = {
@@ -103,6 +104,6 @@ function register(router: Router) {
     });
 }
 
-export = {
+export default {
     register
 };

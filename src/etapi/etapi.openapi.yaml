@@ -48,7 +48,7 @@ paths:
         - name: search
           in: query
           required: true
-          description: search query string as described in https://github.com/zadam/trilium/wiki/Search
+          description: search query string as described in https://triliumnext.github.io/Docs/Wiki/search.html
           schema:
             type: string
           examples:

@@ -10,4 +10,4 @@ Description above is a general rule and may be altered on case by case basis.
 
 ## Reporting a Vulnerability
 
-You can report low severity vulnerabilities as GitHub issues, more severe vulnerabilities should be reported to the email zadam.apps@gmail.com
+You can report low severity vulnerabilities as GitHub issues, more severe vulnerabilities should be reported to the email [contact@eliandoran.me](mailto:contact@eliandoran.me)

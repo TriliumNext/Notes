@@ -1,10 +1,11 @@
 "use strict";
 
-import sql = require('../../sql');
-import utils = require('../../../services/utils');
-import AbstractShacaEntity = require('./abstract_shaca_entity');
-import SNote = require('./snote');
-import { Blob } from '../../../services/blob-interface';
+import sql from "../../sql.js";
+import utils from "../../../services/utils.js";
+import AbstractShacaEntity from "./abstract_shaca_entity.js";
+import SNote from "./snote.js";
+import { Blob } from '../../../services/blob-interface.js';
+import { SAttachmentRow } from './rows.js';
 
 class SAttachment extends AbstractShacaEntity {
     private attachmentId: string;
@@ -76,4 +77,4 @@ class SAttachment extends AbstractShacaEntity {
     }
 }
 
-export = SAttachment;
+export default SAttachment;

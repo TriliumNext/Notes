@@ -5,3 +5,6 @@
 /docs
 /npm-debug.log
 node_modules
+
+src/**/*.ts
+!src/services/asset_path.ts

@@ -1,7 +1,7 @@
 import { Request } from "express";
 
-import becca = require('../../becca/becca');
-import markdownService = require('../../services/import/markdown');
+import becca from "../../becca/becca.js";
+import markdownService from "../../services/import/markdown.js";
 
 function getIconUsage() {
     const iconClassToCountMap: Record<string, number> = {};
@@ -35,7 +35,7 @@ function renderMarkdown(req: Request) {
     };
 }
 
-export = {
+export default {
     getIconUsage,
     renderMarkdown
 };

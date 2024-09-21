@@ -1,20 +1,20 @@
-import becca = require('../becca/becca');
-import utils = require('../services/utils');
-import eu = require('./etapi_utils');
-import mappers = require('./mappers');
-import noteService = require('../services/notes');
-import TaskContext = require('../services/task_context');
-import v = require('./validators');
-import searchService = require('../services/search/services/search');
-import SearchContext = require('../services/search/search_context');
-import zipExportService = require('../services/export/zip');
-import zipImportService = require('../services/import/zip');
+import becca from "../becca/becca.js";
+import utils from "../services/utils.js";
+import eu from "./etapi_utils.js";
+import mappers from "./mappers.js";
+import noteService from "../services/notes.js";
+import TaskContext from "../services/task_context.js";
+import v from "./validators.js";
+import searchService from "../services/search/services/search.js";
+import SearchContext from "../services/search/search_context.js";
+import zipExportService from "../services/export/zip.js";
+import zipImportService from "../services/import/zip.js";
 import { Router } from 'express';
-import { AppRequest } from '../routes/route-interface';
+import { AppRequest } from '../routes/route-interface.js';
 import { ParsedQs } from 'qs';
-import { NoteParams } from '../services/note-interface';
-import BNote = require('../becca/entities/bnote');
-import { SearchParams } from '../services/search/services/types';
+import { NoteParams } from '../services/note-interface.js';
+import { SearchParams } from '../services/search/services/types.js';
+import { ValidatorMap } from './etapi-interface.js';
 
 function register(router: Router) {
     eu.route(router, 'get', '/etapi/notes', (req, res, next) => {
@@ -266,6 +266,6 @@ function parseInteger(obj: any, name: string) {
     return integer;
 }
 
-export = {
+export default {
     register
 };

@@ -1,16 +1,16 @@
 "use strict";
 
-import sql = require('../services/sql');
-import attributeService = require('../services/attributes');
-import config = require('../services/config');
-import optionService = require('../services/options');
-import log = require('../services/log');
-import env = require('../services/env');
-import utils = require('../services/utils');
-import protectedSessionService = require('../services/protected_session');
-import packageJson = require('../../package.json');
-import assetPath = require('../services/asset_path');
-import appPath = require('../services/app_path');
+import sql from "../services/sql.js";
+import attributeService from "../services/attributes.js";
+import config from "../services/config.js";
+import optionService from "../services/options.js";
+import log from "../services/log.js";
+import env from "../services/env.js";
+import utils from "../services/utils.js";
+import protectedSessionService from "../services/protected_session.js";
+import packageJson from "../../package.json" with { type: "json" };
+import assetPath from "../services/asset_path.js";
+import appPath from "../services/app_path.js";
 import { Request, Response } from 'express';
 
 function index(req: Request, res: Response) {
@@ -22,6 +22,11 @@ function index(req: Request, res: Response) {
 
     const csrfToken = req.csrfToken();
     log.info(`Generated CSRF token ${csrfToken} with secret ${res.getHeader('set-cookie')}`);
+
+    // We force the page to not be cached since on mobile the CSRF token can be
+    // broken when closing the browser and coming back in to the page.
+    // The page is restored from cache, but the API call fail.
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.render(view, {
         csrfToken: csrfToken,
@@ -64,6 +69,6 @@ function getAppCssNoteIds() {
     return attributeService.getNotesWithLabel('appCss').map(note => note.noteId);
 }
 
-export = {
+export default {
     index
 };

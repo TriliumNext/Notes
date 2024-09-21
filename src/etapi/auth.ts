@@ -1,7 +1,7 @@
-import becca = require('../becca/becca');
-import eu = require('./etapi_utils');
-import passwordEncryptionService = require('../services/encryption/password_encryption');
-import etapiTokenService = require('../services/etapi_tokens');
+import becca from "../becca/becca.js";
+import eu from "./etapi_utils.js";
+import passwordEncryptionService from "../services/encryption/password_encryption.js";
+import etapiTokenService from "../services/etapi_tokens.js";
 import { RequestHandler, Router } from 'express';
 
 function register(router: Router, loginMiddleware: RequestHandler[]) {
@@ -39,6 +39,6 @@ function register(router: Router, loginMiddleware: RequestHandler[]) {
     });
 }
 
-export = {
+export default {
     register
 }

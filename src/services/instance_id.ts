@@ -1,5 +1,5 @@
-import utils = require('./utils');
+import utils from "./utils.js";
 
 const instanceId = utils.randomString(12);
 
-export = instanceId;
+export default instanceId;

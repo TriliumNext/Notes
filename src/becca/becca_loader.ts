@@ -1,26 +1,30 @@
 "use strict";
 
-import sql = require('../services/sql');
-import eventService = require('../services/events');
-import becca = require('./becca');
-import sqlInit = require('../services/sql_init');
-import log = require('../services/log');
-import BNote = require('./entities/bnote');
-import BBranch = require('./entities/bbranch');
-import BAttribute = require('./entities/battribute');
-import BOption = require('./entities/boption');
-import BEtapiToken = require('./entities/betapi_token');
-import cls = require('../services/cls');
-import entityConstructor = require('../becca/entity_constructor');
-import { AttributeRow, BranchRow, EtapiTokenRow, NoteRow, OptionRow } from './entities/rows';
-import AbstractBeccaEntity = require('./entities/abstract_becca_entity');
+import sql from "../services/sql.js";
+import eventService from "../services/events.js";
+import becca from "./becca.js";
+import log from "../services/log.js";
+import BNote from "./entities/bnote.js";
+import BBranch from "./entities/bbranch.js";
+import BAttribute from "./entities/battribute.js";
+import BOption from "./entities/boption.js";
+import BEtapiToken from "./entities/betapi_token.js";
+import cls from "../services/cls.js";
+import entityConstructor from "../becca/entity_constructor.js";
+import { AttributeRow, BranchRow, EtapiTokenRow, NoteRow, OptionRow } from './entities/rows.js';
+import AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
+import ws from "../services/ws.js";
 
-const beccaLoaded = new Promise<void>((res, rej) => {
+const beccaLoaded = new Promise<void>(async (res, rej) => {
+    const sqlInit = (await import("../services/sql_init.js")).default;
+    // We have to import async since options init requires keyboard actions which require translations.
+    const options_init = (await import("../services/options_init.js")).default;
+
     sqlInit.dbReady.then(() => {
         cls.init(() => {
             load();
 
-            require('../services/options_init').initStartupOptions();
+            options_init.initStartupOptions();
 
             res();
         });
@@ -73,7 +77,7 @@ function load() {
 function reload(reason: string) {
     load();
 
-    require('../services/ws').reloadFrontend(reason || "becca reloaded");
+    ws.reloadFrontend(reason || "becca reloaded");
 }
 
 eventService.subscribeBeccaLoader([eventService.ENTITY_CHANGE_SYNCED], ({ entityName, entityRow }) => {
@@ -286,7 +290,7 @@ eventService.subscribeBeccaLoader(eventService.ENTER_PROTECTED_SESSION, () => {
 
 eventService.subscribeBeccaLoader(eventService.LEAVE_PROTECTED_SESSION, load);
 
-export = {
+export default {
     load,
     reload,
     beccaLoaded

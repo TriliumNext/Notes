@@ -1,15 +1,10 @@
-import Shaca from "../shaca-interface";
-
-let shaca: Shaca;
+import shaca from "../shaca.js";
+import Shaca from "../shaca-interface.js";
 
 class AbstractShacaEntity {
     get shaca(): Shaca {
-        if (!shaca) {
-            shaca = require('../shaca');
-        }
-
         return shaca;
     }
 }
 
-export = AbstractShacaEntity;
+export default AbstractShacaEntity;

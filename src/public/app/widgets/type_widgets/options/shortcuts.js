@@ -2,6 +2,7 @@ import server from "../../../services/server.js";
 import utils from "../../../services/utils.js";
 import dialogService from "../../../services/dialog.js";
 import OptionsWidget from "./options_widget.js";
+import { t } from "../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section shortcuts-options-section">
@@ -25,25 +26,25 @@ const TPL = `
         }
     </style>
 
-    <h4>Keyboard Shortcuts</h4>
+    <h4>${t('shortcuts.keyboard_shortcuts')}</h4>
     
     <p>
-      Multiple shortcuts for the same action can be separated by comma.
-      See <a href="https://www.electronjs.org/docs/latest/api/accelerator">Electron documentation</a> for available modifiers and key codes.
+      ${t('shortcuts.multiple_shortcuts')}
+      ${t('shortcuts.electron_documentation')}
     </p>
     
     <div class="form-group">
-        <input type="text" class="keyboard-shortcut-filter form-control" placeholder="Type text to filter shortcuts...">
+        <input type="text" class="keyboard-shortcut-filter form-control" placeholder="${t('shortcuts.type_text_to_filter')}">
     </div>
     
     <div class="shortcuts-table-container">
         <table class="keyboard-shortcut-table" cellpadding="10">
         <thead>
-            <tr>
-                <th>Action name</th>
-                <th>Shortcuts</th>
-                <th>Default shortcuts</th>
-                <th>Description</th>
+            <tr class="text-nowrap">
+                <th>${t('shortcuts.action_name')}</th>
+                <th>${t('shortcuts.shortcuts')}</th>
+                <th>${t('shortcuts.default_shortcuts')}</th>
+                <th>${t('shortcuts.description')}</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -51,9 +52,9 @@ const TPL = `
     </div>
     
     <div class="shortcuts-options-buttons">
-        <button class="options-keyboard-shortcuts-reload-app btn btn-primary">Reload app to apply changes</button>
+        <button class="options-keyboard-shortcuts-reload-app btn btn-primary">${t('shortcuts.reload_app')}</button>
         
-        <button class="options-keyboard-shortcuts-set-all-to-default btn">Set all shortcuts to the default</button>
+        <button class="options-keyboard-shortcuts-set-all-to-default btn">${t('shortcuts.set_all_to_default')}</button>
     </div>
 </div>`;
 
@@ -79,14 +80,13 @@ export default class KeyboardShortcutsOptions extends OptionsWidget {
                             .attr("style","background-color: var(--accented-background-color); font-weight: bold;")
                             .text(action.separator)
                     )
-                }
-                else {
+                } else if (action.defaultShortcuts) {
                     $tr.append($("<td>").text(action.actionName))
                         .append($("<td>").append(
-                            $(`<input type="text" class="form-control">`)
-                                .val(action.effectiveShortcuts.join(", "))
-                                .attr('data-keyboard-action-name', action.actionName)
-                                .attr('data-default-keyboard-shortcuts', action.defaultShortcuts.join(", "))
+                                $(`<input type="text" class="form-control">`)
+                                    .val(action.effectiveShortcuts.join(", "))
+                                    .attr('data-keyboard-action-name', action.actionName)
+                                    .attr('data-default-keyboard-shortcuts', action.defaultShortcuts.join(", "))
                             )
                         )
                         .append($("<td>").text(action.defaultShortcuts.join(", ")))
@@ -101,10 +101,10 @@ export default class KeyboardShortcutsOptions extends OptionsWidget {
             const $input = this.$widget.find(e.target);
             const actionName = $input.attr('data-keyboard-action-name');
             const shortcuts = $input.val()
-                              .replace('+,', "+Comma")
-                              .split(",")
-                              .map(shortcut => shortcut.replace("+Comma", "+,"))
-                              .filter(shortcut => !!shortcut);
+                .replace('+,', "+Comma")
+                .split(",")
+                .map(shortcut => shortcut.replace("+Comma", "+,"))
+                .filter(shortcut => !!shortcut);
 
             const optionName = `keyboardShortcuts${actionName.substr(0, 1).toUpperCase()}${actionName.substr(1)}`;
 
@@ -112,7 +112,7 @@ export default class KeyboardShortcutsOptions extends OptionsWidget {
         });
 
         this.$widget.find(".options-keyboard-shortcuts-set-all-to-default").on('click', async () => {
-            if (!await dialogService.confirm("Do you really want to reset all keyboard shortcuts to the default?")) {
+            if (!await dialogService.confirm(t('shortcuts.confirm_reset'))) {
                 return;
             }
 
@@ -152,7 +152,7 @@ export default class KeyboardShortcutsOptions extends OptionsWidget {
                     return;
                 }
 
-                this.$widget.find(el).toggle(!!( // !! to avoid toggle overloads with different behavior
+                this.$widget.find(el).toggle(!!(
                     action.actionName.toLowerCase().includes(filter)
                     || action.defaultShortcuts.some(shortcut => shortcut.toLowerCase().includes(filter))
                     || action.effectiveShortcuts.some(shortcut => shortcut.toLowerCase().includes(filter))

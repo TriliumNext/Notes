@@ -1,6 +1,6 @@
 "use strict";
 
-import BNote = require("../../becca/entities/bnote");
+import BNote from "../../becca/entities/bnote.js";
 
 /**
  * Search string is lower cased for case-insensitive comparison. But when retrieving properties,
@@ -134,4 +134,4 @@ class ValueExtractor {
     }
 }
 
-export = ValueExtractor;
+export default ValueExtractor;

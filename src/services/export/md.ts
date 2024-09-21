@@ -1,7 +1,7 @@
 "use strict";
 
-import TurndownService = require('turndown');
-import turndownPluginGfm = require('joplin-turndown-plugin-gfm');
+import TurndownService from "turndown";
+import turndownPluginGfm from "joplin-turndown-plugin-gfm";
 
 let instance: TurndownService | null = null;
 
@@ -14,6 +14,6 @@ function toMarkdown(content: string) {
     return instance.turndown(content);
 }
 
-export = {
+export default {
     toMarkdown
 };

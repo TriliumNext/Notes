@@ -105,27 +105,22 @@ function initNoteAutocomplete($el, options) {
 
     $el.addClass("note-autocomplete-input");
 
-    const $clearTextButton = $("<a>")
-            .addClass("input-group-text input-clearer-button bx bxs-tag-x")
-            .prop("title", "Clear text field");
+    const $clearTextButton = $("<button>")
+        .addClass("input-group-text input-clearer-button bx bxs-tag-x")
+        .prop("title", "Clear text field");
 
-    const $showRecentNotesButton = $("<a>")
-            .addClass("input-group-text show-recent-notes-button bx bx-time")
-            .prop("title", "Show recent notes");
+    const $showRecentNotesButton = $("<button>")
+        .addClass("input-group-text show-recent-notes-button bx bx-time")
+        .prop("title", "Show recent notes");
 
-    const $goToSelectedNoteButton = $("<a>")
+    const $goToSelectedNoteButton = $("<button>")
         .addClass("input-group-text go-to-selected-note-button bx bx-arrow-to-right");
 
-    const $sideButtons = $("<div>")
-        .addClass("input-group-append")
-        .append($clearTextButton)
-        .append($showRecentNotesButton);
+    $el.after($clearTextButton).after($showRecentNotesButton);
 
     if (!options.hideGoToSelectedNoteButton) {
-        $sideButtons.append($goToSelectedNoteButton);
+        $el.after($goToSelectedNoteButton);
     }
-
-    $el.after($sideButtons);
 
     $clearTextButton.on('click', () => clearText($el));
 
@@ -180,13 +175,13 @@ function initNoteAutocomplete($el, options) {
         }
 
         if (suggestion.action === 'create-note') {
-            const {success, noteType, templateNoteId} = await noteCreateService.chooseNoteType();
+            const { success, noteType, templateNoteId } = await noteCreateService.chooseNoteType();
 
             if (!success) {
                 return;
             }
 
-            const {note} = await noteCreateService.createNote(suggestion.parentNoteId, {
+            const { note } = await noteCreateService.createNote(suggestion.parentNoteId, {
                 title: suggestion.noteTitle,
                 activate: false,
                 type: noteType,

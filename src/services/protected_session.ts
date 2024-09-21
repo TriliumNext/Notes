@@ -1,7 +1,9 @@
 "use strict";
 
-import log = require('./log');
-import dataEncryptionService = require('./encryption/data_encryption');
+import log from "./log.js";
+import dataEncryptionService from "./encryption/data_encryption.js";
+import options from "./options.js";
+import ws from "./ws.js";
 
 let dataKey: Buffer | null = null;
 
@@ -56,7 +58,6 @@ function touchProtectedSession() {
 }
 
 function checkProtectedSessionExpiration() {
-    const options = require('./options');
     const protectedSessionTimeout = options.getOptionInt('protectedSessionTimeout');
     if (isProtectedSessionAvailable()
         && lastProtectedSessionOperationDate
@@ -66,11 +67,11 @@ function checkProtectedSessionExpiration() {
 
         log.info("Expiring protected session");
 
-        require('./ws').reloadFrontend("leaving protected session");
+        ws.reloadFrontend("leaving protected session");
     }
 }
 
-export = {
+export default {
     setDataKey,
     resetDataKey,
     isProtectedSessionAvailable,

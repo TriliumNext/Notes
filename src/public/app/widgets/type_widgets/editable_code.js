@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import libraryLoader from "../../services/library_loader.js";
 import TypeWidget from "./type_widget.js";
 import keyboardActionService from "../../services/keyboard_actions.js";
@@ -44,7 +45,9 @@ export default class EditableCodeTypeWidget extends TypeWidget {
         delete CodeMirror.keyMap.default["Alt-Left"];
         delete CodeMirror.keyMap.default["Alt-Right"];
 
-        CodeMirror.modeURL = `${window.glob.assetPath}/libraries/codemirror/mode/%N/%N.js`;
+        CodeMirror.modeURL = `${window.glob.assetPath}/node_modules/codemirror/mode/%N/%N.js`;
+        CodeMirror.modeInfo.find(mode=>mode.name === "JavaScript").mimes.push(...["application/javascript;env=frontend", "application/javascript;env=backend"]);
+        CodeMirror.modeInfo.find(mode=>mode.name === "SQLite").mimes=["text/x-sqlite", "text/x-sqlite;schema=trilium"];
 
         this.codeEditor = CodeMirror(this.$editor[0], {
             value: "",
@@ -62,7 +65,7 @@ export default class EditableCodeTypeWidget extends TypeWidget {
             // all the way to the bottom of the note. With line wrap, there's no horizontal scrollbar so no problem
             lineWrapping: options.is('codeLineWrapEnabled'),
             dragDrop: false, // with true the editor inlines dropped files which is not what we expect
-            placeholder: "Type the content of your code note here...",
+            placeholder: t('editable_code.placeholder'),
         });
 
         this.codeEditor.on('change', () => this.spacedUpdate.scheduleUpdate());

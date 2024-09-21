@@ -20,6 +20,6 @@ function scheduleExecution(name: string, milliseconds: number, cb: () => void) {
     }, milliseconds);
 }
 
-export = {
+export default {
     scheduleExecution
 };

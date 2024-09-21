@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import libraryLoader from "../../services/library_loader.js";
 import utils from "../../services/utils.js";
 import dateNoteService from "../../services/date_notes.js";
@@ -5,28 +6,66 @@ import server from "../../services/server.js";
 import appContext from "../../components/app_context.js";
 import RightDropdownButtonWidget from "./right_dropdown_button.js";
 import toastService from "../../services/toast.js";
+import options from "../../services/options.js";
+
+const MONTHS = [
+    t("calendar.january"),
+    t("calendar.febuary"),
+    t("calendar.march"),
+    t("calendar.april"),
+    t("calendar.may"),
+    t("calendar.june"),
+    t("calendar.july"),
+    t("calendar.august"),
+    t("calendar.september"),
+    t("calendar.october"),
+    t("calendar.november"),
+    t("calendar.december")
+];
 
 const DROPDOWN_TPL = `
 <div class="calendar-dropdown-widget">
-  <style>
-  .calendar-dropdown-widget {
-      width: 350px;
-  }
-  </style>
+    <style>
+        .calendar-dropdown-widget {
+            width: 350px;
+        }
+    </style>
 
-  <div class="calendar-header">
-    <button class="calendar-btn bx bx-left-arrow-alt" data-calendar-toggle="previous"></button>
+    <div class="calendar-header">
+        <div class="calendar-month-selector">
+            <button class="calendar-btn bx bx-left-arrow-alt" data-calendar-toggle="previous"></button>
 
-    <div class="calendar-header-label" data-calendar-label="month"></div>
+            <select data-calendar-input="month">
+                ${Object.entries(MONTHS).map(([i, month]) => `<option value=${i}>${month}</option>`)}
+            </select>
 
-    <button class="calendar-btn bx bx-right-arrow-alt" data-calendar-toggle="next"></button>
-  </div>
+            <button class="calendar-btn bx bx-right-arrow-alt" data-calendar-toggle="next"></button>
+        </div>
 
-  <div class="calendar-week">
-    <span>Mon</span> <span>Tue</span><span>Wed</span> <span>Thu</span> <span>Fri</span> <span>Sat</span> <span>Sun</span>
-  </div>
-  <div class="calendar-body" data-calendar-area="month"></div>
+        <div class="calendar-year-selector">
+            <button class="calendar-btn bx bx-left-arrow-alt" data-calendar-toggle="previousYear"></button>
+
+            <input type="number" min="1900" max="2999" step="1" data-calendar-input="year" />
+
+            <button class="calendar-btn bx bx-right-arrow-alt" data-calendar-toggle="nextYear"></button>
+        </div>
+    </div>
+
+    <div class="calendar-week">
+    </div>
+
+    <div class="calendar-body" data-calendar-area="month"></div>
 </div>`;
+
+const DAYS_OF_WEEK = [
+    t("calendar.sun"),
+    t("calendar.mon"),
+    t("calendar.tue"),
+    t("calendar.wed"),
+    t("calendar.thu"),
+    t("calendar.fri"),
+    t("calendar.sat")
+];
 
 export default class CalendarWidget extends RightDropdownButtonWidget {
     constructor(title, icon) {
@@ -37,17 +76,41 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         super.doRender();
 
         this.$month = this.$dropdownContent.find('[data-calendar-area="month"]');
-        this.$next = this.$dropdownContent.find('[data-calendar-toggle="next"]');
-        this.$previous = this.$dropdownContent.find('[data-calendar-toggle="previous"]');
-        this.$label = this.$dropdownContent.find('[data-calendar-label="month"]');
+        this.$weekHeader = this.$dropdownContent.find(".calendar-week");
 
+        this.manageFirstDayOfWeek();
+
+        // Month navigation
+        this.$monthSelect = this.$dropdownContent.find('[data-calendar-input="month"]');
+        this.$monthSelect.on("input", (e) => {
+            this.date.setMonth(e.target.value);
+            this.createMonth();
+        });
+        this.$next = this.$dropdownContent.find('[data-calendar-toggle="next"]');
         this.$next.on('click', () => {
             this.date.setMonth(this.date.getMonth() + 1);
             this.createMonth();
         });
-
+        this.$previous = this.$dropdownContent.find('[data-calendar-toggle="previous"]');
         this.$previous.on('click', e => {
             this.date.setMonth(this.date.getMonth() - 1);
+            this.createMonth();
+        });
+
+        // Year navigation
+        this.$yearSelect = this.$dropdownContent.find('[data-calendar-input="year"]');
+        this.$yearSelect.on("input", (e) => {
+            this.date.setFullYear(e.target.value);
+            this.createMonth();
+        });
+        this.$nextYear = this.$dropdownContent.find('[data-calendar-toggle="nextYear"]');
+        this.$nextYear.on('click', () => {
+            this.date.setFullYear(this.date.getFullYear() + 1);
+            this.createMonth();
+        });
+        this.$previousYear = this.$dropdownContent.find('[data-calendar-toggle="previousYear"]');
+        this.$previousYear.on('click', e => {
+            this.date.setFullYear(this.date.getFullYear() - 1);
             this.createMonth();
         });
 
@@ -60,12 +123,27 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
 
             if (note) {
                 appContext.tabManager.getActiveContext().setNote(note.noteId);
-                this.hideDropdown();
+                this.dropdown.hide();
             }
             else {
-                toastService.showError("Cannot find day note");
+                toastService.showError(t("calendar.cannot_find_day_note"));
             }
-        });
+
+            ev.stopPropagation();
+        });  
+        
+        // Prevent dismissing the calendar popup by clicking on an empty space inside it.
+        this.$dropdownContent.on("click", (e) => e.stopPropagation());
+    }
+
+    manageFirstDayOfWeek() {
+        this.firstDayOfWeek = options.getInt("firstDayOfWeek");
+
+        // Generate the list of days of the week taking into consideration the user's selected first day of week.
+        let localeDaysOfWeek = [...DAYS_OF_WEEK];
+        const daysToBeAddedAtEnd = localeDaysOfWeek.splice(0, this.firstDayOfWeek);
+        localeDaysOfWeek = [...localeDaysOfWeek, ...daysToBeAddedAtEnd];
+        this.$weekHeader.html(localeDaysOfWeek.map((el) => `<span>${el}</span>`));
     }
 
     async dropdownShown() {
@@ -94,18 +172,21 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
 
         // if it's the first day of the month
         if (num === 1) {
-            if (day === 0) {
-                $newDay.css("marginLeft", (6 * 14.28) + '%');
-            } else {
-                $newDay.css("marginLeft", `${(day - 1) * 14.28}%`);
-            }
+            // 0  1  2  3  4  5  6
+            // Su Mo Tu We Th Fr Sa
+            // 1  2  3  4  5  6  0
+            // Mo Tu We Th Fr Sa Su
+            let dayOffset = day - this.firstDayOfWeek;
+            if (dayOffset < 0)
+                dayOffset = 7 + dayOffset;
+            $newDay.css("marginLeft", (dayOffset * 14.28) + '%');
         }
 
         const dateNoteId = dateNotesForMonth[utils.formatDateISO(this.date)];
 
         if (dateNoteId) {
             $newDay.addClass('calendar-date-exists');
-            $newDay.attr("href", `#root/${dateNoteId}`);
+            $newDay.attr("data-href", `#root/${dateNoteId}`);
         }
 
         if (this.isEqual(this.date, this.activeDate)) {
@@ -153,23 +234,17 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         this.date.setDate(1);
         this.date.setMonth(this.date.getMonth() - 1);
 
-        this.$label.html(`${this.monthsAsString(this.date.getMonth())} ${this.date.getFullYear()}`);
+        this.$monthSelect.val(this.date.getMonth());
+        this.$yearSelect.val(this.date.getFullYear());
     }
 
-    monthsAsString(monthIndex) {
-        return [
-            'January',
-            'Febuary',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
-        ][monthIndex];
+    async entitiesReloadedEvent({ loadResults }) {
+        if (!loadResults.getOptionNames().includes("firstDayOfWeek")) {
+            return;
+        }
+
+        this.manageFirstDayOfWeek();
+        this.createMonth();
     }
+
 }

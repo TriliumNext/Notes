@@ -1,23 +1,36 @@
 "use strict";
 
-import normalizeString = require("normalize-strings");
-import lex = require('./lex');
-import handleParens = require('./handle_parens');
-import parse = require('./parse');
-import SearchResult = require('../search_result');
-import SearchContext = require('../search_context');
-import becca = require('../../../becca/becca');
-import beccaService = require('../../../becca/becca_service');
-import utils = require('../../utils');
-import log = require('../../log');
-import hoistedNoteService = require('../../hoisted_note');
-import BNote = require("../../../becca/entities/bnote");
-import BAttribute = require("../../../becca/entities/battribute");
-import { SearchParams, TokenData } from "./types";
-import Expression = require("../expressions/expression");
-import sql = require("../../sql");
+import normalizeString from "normalize-strings";
+import lex from "./lex.js";
+import handleParens from "./handle_parens.js";
+import parse from "./parse.js";
+import SearchResult from "../search_result.js";
+import SearchContext from "../search_context.js";
+import becca from "../../../becca/becca.js";
+import beccaService from "../../../becca/becca_service.js";
+import utils from "../../utils.js";
+import log from "../../log.js";
+import hoistedNoteService from "../../hoisted_note.js";
+import BNote from "../../../becca/entities/bnote.js";
+import BAttribute from "../../../becca/entities/battribute.js";
+import { SearchParams, TokenStructure } from "./types.js";
+import Expression from "../expressions/expression.js";
+import sql from "../../sql.js";
+import scriptService from "../../script.js";
 
-function searchFromNote(note: BNote) {
+export interface SearchNoteResult {
+    searchResultNoteIds: string[];
+    highlightedTokens: string[];
+    error: string | null;
+}
+
+export const EMPTY_RESULT: SearchNoteResult = {
+    searchResultNoteIds: [],
+    highlightedTokens: [],
+    error: null
+};
+
+function searchFromNote(note: BNote): SearchNoteResult {
     let searchResultNoteIds;
     let highlightedTokens: string[];
 
@@ -78,7 +91,6 @@ function searchFromRelation(note: BNote, relationName: string) {
         return [];
     }
 
-    const scriptService = require('../../script'); // TODO: to avoid circular dependency
     const result = scriptService.executeNote(scriptNote, {originEntity: note});
 
     if (!Array.isArray(result)) {
@@ -273,7 +285,7 @@ function parseQueryToExpression(query: string, searchContext: SearchContext) {
     const {fulltextQuery, fulltextTokens, expressionTokens} = lex(query);
     searchContext.fulltextQuery = fulltextQuery;
 
-    let structuredExpressionTokens: (TokenData | TokenData[])[];
+    let structuredExpressionTokens: TokenStructure;
 
     try {
         structuredExpressionTokens = handleParens(expressionTokens);
@@ -444,7 +456,7 @@ function formatAttribute(attr: BAttribute) {
     }
 }
 
-export = {
+export default {
     searchFromNote,
     searchNotesForAutocomplete,
     findResultsWithQuery,

@@ -1,17 +1,27 @@
 "use strict";
 
-import electron = require("electron");
-import sqlInit = require("./src/services/sql_init");
-import appIconService = require("./src/services/app_icon");
-import windowService = require("./src/services/window");
-import tray = require("./src/services/tray");
+import electron from "electron";
+import electronDebug from "electron-debug";
+import electronDl from "electron-dl";
+import sqlInit from "./src/services/sql_init.js";
+import appIconService from "./src/services/app_icon.js";
+import windowService from "./src/services/window.js";
+import tray from "./src/services/tray.js";
+
+import sourceMapSupport from "source-map-support";
+sourceMapSupport.install();
+
+// Prevent Trilium starting twice on first install and on uninstall for the Windows installer.
+if ((await import('electron-squirrel-startup')).default) {
+  process.exit(0);
+}
 
 // Adds debug features like hotkeys for triggering dev tools and reload
-require("electron-debug")();
+electronDebug();
 
 appIconService.installLocalAppIcon();
 
-require("electron-dl")({ saveAs: true });
+electronDl({ saveAs: true });
 
 // needed for excalidraw export https://github.com/zadam/trilium/issues/4271
 electron.app.commandLine.appendSwitch(
@@ -60,4 +70,4 @@ electron.app.on("will-quit", () => {
 // this is to disable electron warning spam in the dev console (local development only)
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
-require("./src/www.js");
+await import('./src/main.js');

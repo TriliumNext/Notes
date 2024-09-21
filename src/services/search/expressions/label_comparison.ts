@@ -1,9 +1,9 @@
 "use strict";
 
-import Expression = require('./expression');
-import NoteSet = require('../note_set');
-import becca = require('../../../becca/becca');
-import SearchContext = require('../search_context');
+import Expression from "./expression.js";
+import NoteSet from "../note_set.js";
+import becca from "../../../becca/becca.js";
+import SearchContext from "../search_context.js";
 
 type Comparator = (value: string) => boolean;
 
@@ -46,4 +46,4 @@ class LabelComparisonExp extends Expression {
     }
 }
 
-export = LabelComparisonExp;
+export default LabelComparisonExp;

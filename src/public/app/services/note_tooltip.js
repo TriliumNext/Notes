@@ -16,8 +16,12 @@ function setupGlobalTooltip() {
             return;
         }
 
-        $('.note-tooltip').remove();
+        cleanUpTooltips();
     });
+}
+
+function cleanUpTooltips() {
+    $('.note-tooltip').remove();
 }
 
 function setupElementTooltip($el) {
@@ -85,22 +89,22 @@ async function mouseEnterHandler() {
             customClass: linkId
         });
 
+        cleanUpTooltips();
         $(this).tooltip('show');
+        
+        // Dismiss the tooltip immediately if a link was clicked inside the tooltip.
+        $(`.${tooltipClass} a`).on("click", (e) => {
+            cleanUpTooltips();
+        });
 
         // the purpose of the code below is to:
         // - allow user to go from hovering the link to hovering the tooltip to be able to scroll,
         //   click on links within tooltip etc. without tooltip disappearing
         // - once the user moves the cursor away from both link and the tooltip, hide the tooltip
         const checkTooltip = () => {
-            if (!$(`.${tooltipClass}`).is(':visible')) {
-                console.log("Not visible anymore");
-
-                return;
-            }
-
             if (!$(this).filter(":hover").length && !$(`.${linkId}:hover`).length) {
                 // cursor is neither over the link nor over the tooltip, user likely is not interested
-                $(this).tooltip('dispose');
+                cleanUpTooltips();
             } else {
                 setTimeout(checkTooltip, 1000);
             }

@@ -4,6 +4,10 @@
     display: none;
 }
 
+.ck-content li p {
+    margin: 0 !important;
+}
+
 /*
  * CKEditor 5 (v41.0.0) content styles.
  * Generated on Fri, 26 Jan 2024 10:23:49 GMT.

@@ -1,20 +1,19 @@
 import AbstractSearchOption from "./abstract_search_option.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <tr data-search-option-conf="fastSearch">
     <td colSpan="2">
         <span class="bx bx-run"></span>
-
-        Fast search
+        ${t('fast_search.fast_search')}
     </td>
     <td class="button-column">
         <div class="dropdown help-dropdown">
-            <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+            <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
-                Fast search option disables full text search of note contents which might speed up searching in large databases.
+                ${t('fast_search.description')}
             </div> 
         </div>
-    
         <span class="bx bx-x icon-action search-option-del"></span>
     </td>
 </tr>`;

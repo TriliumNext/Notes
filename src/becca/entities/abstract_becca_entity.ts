@@ -1,17 +1,16 @@
 "use strict";
 
-import utils = require('../../services/utils');
-import sql = require('../../services/sql');
-import entityChangesService = require('../../services/entity_changes');
-import eventService = require('../../services/events');
-import dateUtils = require('../../services/date_utils');
-import cls = require('../../services/cls');
-import log = require('../../services/log');
-import protectedSessionService = require('../../services/protected_session');
-import blobService = require('../../services/blob');
-import Becca, { ConstructorData } from '../becca-interface';
-
-let becca: Becca;
+import utils from "../../services/utils.js";
+import sql from "../../services/sql.js";
+import entityChangesService from "../../services/entity_changes.js";
+import eventService from "../../services/events.js";
+import dateUtils from "../../services/date_utils.js";
+import cls from "../../services/cls.js";
+import log from "../../services/log.js";
+import protectedSessionService from "../../services/protected_session.js";
+import blobService from "../../services/blob.js";
+import Becca, { ConstructorData } from '../becca-interface.js';
+import becca from "../becca.js";
 
 interface ContentOpts {
     forceSave?: boolean;
@@ -35,7 +34,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     isSynced?: boolean;
     blobId?: string;
 
-    protected beforeSaving() {
+    protected beforeSaving(opts?: {}) {
         const constructorData = (this.constructor as unknown as ConstructorData<T>);
         if (!(this as any)[constructorData.primaryKeyName]) {
             (this as any)[constructorData.primaryKeyName] = utils.newEntityId();
@@ -47,11 +46,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     protected get becca(): Becca {
-        if (!becca) {
-            becca = require('../becca');
-        }
-
-        return becca as Becca;
+        return becca;
     }
 
     protected putEntityChange(isDeleted: boolean) {
@@ -106,7 +101,6 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     /**
      * Saves entity - executes SQL, but doesn't commit the transaction on its own
      */
-    // TODO: opts not used but called a few times, maybe should be used by derived classes or passed to beforeSaving.
     save(opts?: {}): this {
         const constructorData = (this.constructor as unknown as ConstructorData<T>);
         const entityName = constructorData.entityName;
@@ -114,7 +108,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
 
         const isNewEntity = !(this as any)[primaryKeyName];
         
-        this.beforeSaving();
+        this.beforeSaving(opts);
 
         const pojo = this.getPojoToSave();
 
@@ -327,4 +321,4 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 }
 
-export = AbstractBeccaEntity;
+export default AbstractBeccaEntity;

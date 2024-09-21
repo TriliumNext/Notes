@@ -1,14 +1,14 @@
-import eventService = require('./events');
-import scriptService = require('./script');
-import treeService = require('./tree');
-import noteService = require('./notes');
-import becca = require('../becca/becca');
-import BAttribute = require('../becca/entities/battribute');
-import hiddenSubtreeService = require('./hidden_subtree');
-import oneTimeTimer = require('./one_time_timer');
-import BNote = require('../becca/entities/bnote');
-import AbstractBeccaEntity = require('../becca/entities/abstract_becca_entity');
-import { DefinitionObject } from './promoted_attribute_definition_interface';
+import eventService from "./events.js";
+import scriptService from "./script.js";
+import treeService from "./tree.js";
+import noteService from "./notes.js";
+import becca from "../becca/becca.js";
+import BAttribute from "../becca/entities/battribute.js";
+import hiddenSubtreeService from "./hidden_subtree.js";
+import oneTimeTimer from "./one_time_timer.js";
+import BNote from "../becca/entities/bnote.js";
+import AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
+import { DefinitionObject } from './promoted_attribute_definition_interface.js';
 
 type Handler = (definition: DefinitionObject, note: BNote, targetNote: BNote) => void;
 
@@ -249,6 +249,6 @@ eventService.subscribe(eventService.ENTITY_DELETED, ({ entityName, entity }) => 
     }
 });
 
-export = {
+export default {
     runAttachedRelations
 };

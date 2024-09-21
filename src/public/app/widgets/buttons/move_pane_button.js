@@ -1,5 +1,6 @@
 import OnClickButtonWidget from "./onclick_button.js";
 import appContext from "../../components/app_context.js";
+import { t } from "../../services/i18n.js";
 
 export default class MovePaneButton extends OnClickButtonWidget {
     constructor(isMovingLeft) {
@@ -8,7 +9,7 @@ export default class MovePaneButton extends OnClickButtonWidget {
         this.isMovingLeft = isMovingLeft;
 
         this.icon(isMovingLeft ? "bx-chevron-left" : "bx-chevron-right")
-            .title(isMovingLeft ? "Move left" : "Move right")
+            .title(isMovingLeft ? t("move_pane_button.move_left") : t("move_pane_button.move_right"))
             .titlePlacement("bottom")
             .onClick(async (widget, e) => {
                 e.stopPropagation();

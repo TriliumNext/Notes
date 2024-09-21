@@ -1,9 +1,9 @@
 "use strict";
 
-import NoteSet = require('../note_set');
-import SearchContext = require('../search_context');
-import Expression = require('./expression');
-import TrueExp = require('./true');
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
+import Expression from "./expression.js";
+import TrueExp from "./true.js";
 
 class AndExp extends Expression {
     private subExpressions: Expression[];
@@ -34,4 +34,4 @@ class AndExp extends Expression {
     }
 }
 
-export = AndExp;
+export default AndExp;

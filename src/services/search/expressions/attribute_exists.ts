@@ -1,10 +1,10 @@
 "use strict";
 
-import NoteSet = require("../note_set");
-import SearchContext = require("../search_context");
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
 
-import becca = require('../../../becca/becca');
-import Expression = require('./expression');
+import becca from "../../../becca/becca.js";
+import Expression from "./expression.js";
 
 class AttributeExistsExp extends Expression {
 
@@ -48,4 +48,4 @@ class AttributeExistsExp extends Expression {
     }
 }
 
-export = AttributeExistsExp;
+export default AttributeExistsExp;

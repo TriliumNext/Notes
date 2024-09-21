@@ -1,11 +1,12 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Use vim keybindings in code notes (no ex mode)</h4>
+    <h4>${t('vim_key_bindings.use_vim_keybindings_in_code_notes')}</h4>
     <label>
-        <input type="checkbox" class="vim-keymap-enabled">
-        Enable Vim Keybindings
+        <input type="checkbox" class="vim-keymap-enabled form-check-input">
+        ${t('vim_key_bindings.enable_vim_keybindings')}
     </label>
 </div>`;
 

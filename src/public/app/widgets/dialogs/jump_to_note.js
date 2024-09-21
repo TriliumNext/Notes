@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import noteAutocompleteService from '../../services/note_autocomplete.js';
 import utils from "../../services/utils.js";
 import appContext from "../../components/app_context.js";
@@ -9,18 +10,15 @@ const TPL = `<div class="jump-to-note-dialog modal mx-auto" tabindex="-1" role="
         <div class="modal-content">
             <div class="modal-header">
                 <div class="input-group">
-                    <input class="jump-to-note-autocomplete form-control" placeholder="search for note by its name">
+                    <input class="jump-to-note-autocomplete form-control" placeholder="${t('jump_to_note.search_placeholder')}">
                 </div>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="algolia-autocomplete-container jump-to-note-results"></div>
             </div>
             <div class="modal-footer">
-                <button class="show-in-full-text-button btn btn-sm">Search in full text <kbd>Ctrl+Enter</kbd></button>
+                <button class="show-in-full-text-button btn btn-sm">${t('jump_to_note.search_button')}</button>
             </div>
         </div>
     </div>
@@ -37,6 +35,8 @@ export default class JumpToNoteDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+
         this.$autoComplete = this.$widget.find(".jump-to-note-autocomplete");
         this.$results = this.$widget.find(".jump-to-note-results");
         this.$showInFullTextButton = this.$widget.find(".show-in-full-text-button");
@@ -93,8 +93,8 @@ export default class JumpToNoteDialog extends BasicWidget {
 
         const searchString = this.$autoComplete.val();
 
-        this.triggerCommand('searchNotes', {searchString});
+        this.triggerCommand('searchNotes', { searchString });
 
-        this.$widget.modal('hide');
+        this.modal.hide();
     }
 }

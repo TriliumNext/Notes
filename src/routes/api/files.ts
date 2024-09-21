@@ -1,20 +1,20 @@
 "use strict";
 
-import protectedSessionService = require('../../services/protected_session');
-import utils = require('../../services/utils');
-import log = require('../../services/log');
-import noteService = require('../../services/notes');
-import tmp = require('tmp');
-import fs = require('fs');
+import protectedSessionService from "../../services/protected_session.js";
+import utils from "../../services/utils.js";
+import log from "../../services/log.js";
+import noteService from "../../services/notes.js";
+import tmp from "tmp";
+import fs from "fs";
 import { Readable } from 'stream';
-import chokidar = require('chokidar');
-import ws = require('../../services/ws');
-import becca = require('../../becca/becca');
-import ValidationError = require('../../errors/validation_error');
+import chokidar from "chokidar";
+import ws from "../../services/ws.js";
+import becca from "../../becca/becca.js";
+import ValidationError from "../../errors/validation_error.js";
 import { Request, Response } from 'express';
-import BNote = require('../../becca/entities/bnote');
-import BAttachment = require('../../becca/entities/battachment');
-import { AppRequest } from '../route-interface';
+import BNote from "../../becca/entities/bnote.js";
+import BAttachment from "../../becca/entities/battachment.js";
+import { AppRequest } from '../route-interface.js';
 
 function updateFile(req: AppRequest) {
     const note = becca.getNoteOrThrow(req.params.noteId);
@@ -169,6 +169,8 @@ function saveAttachmentToTmpDir(req: Request) {
     return saveToTmpDir(fileName, content, 'attachments', attachment.attachmentId);
 }
 
+const createdTemporaryFiles = new Set<string>();
+
 function saveToTmpDir(fileName: string, content: string | Buffer, entityType: string, entityId: string) {
     const tmpObj = tmp.fileSync({ postfix: fileName });
 
@@ -179,6 +181,8 @@ function saveToTmpDir(fileName: string, content: string | Buffer, entityType: st
     }
 
     fs.closeSync(tmpObj.fd);
+
+    createdTemporaryFiles.add(tmpObj.name);
 
     log.info(`Saved temporary file ${tmpObj.name}`);
 
@@ -202,6 +206,10 @@ function saveToTmpDir(fileName: string, content: string | Buffer, entityType: st
 function uploadModifiedFileToNote(req: Request) {
     const noteId = req.params.noteId;
     const {filePath} = req.body;
+
+    if (!createdTemporaryFiles.has(filePath)) {
+        throw new ValidationError(`File '${filePath}' is not a temporary file.`);
+    }
 
     const note = becca.getNoteOrThrow(noteId);
 
@@ -237,7 +245,7 @@ function uploadModifiedFileToAttachment(req: Request) {
     attachment.setContent(fileContent);
 }
 
-export = {
+export default {
     updateFile,
     updateAttachment,
     openFile,

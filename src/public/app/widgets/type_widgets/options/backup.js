@@ -1,45 +1,46 @@
+import { t } from "../../../services/i18n.js";
 import server from "../../../services/server.js";
 import toastService from "../../../services/toast.js";
 import OptionsWidget from "./options_widget.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Automatic backup</h4>
+    <h4>${t('backup.automatic_backup')}</h4>
     
-    <p>Trilium can back up the database automatically:</p>
+    <p>${t('backup.automatic_backup_description')}</p>
     
     <ul style="list-style: none">
         <li>
             <label>
-                <input type="checkbox" class="daily-backup-enabled">
-                Enable daily backup
+                <input type="checkbox" class="daily-backup-enabled form-check-input">
+                ${t('backup.enable_daily_backup')}
             </label>
         </li>
         <li>    
             <label>
-                <input type="checkbox" class="weekly-backup-enabled">
-                Enable weekly backup
+                <input type="checkbox" class="weekly-backup-enabled form-check-input">
+                ${t('backup.enable_weekly_backup')}
             </label>
         </li>
         <li>
         <label>
-            <input type="checkbox" class="monthly-backup-enabled">
-            Enable monthly backup
+            <input type="checkbox" class="monthly-backup-enabled form-check-input">
+            ${t('backup.enable_monthly_backup')}
             </label>
         </li>
     </ul>
     
-    <p>It's recommended to keep the backup turned on, but this can make application startup slow with large databases and/or slow storage devices.</p>
+    <p>${t('backup.backup_recommendation')}</p>
 </div>
 
 <div class="options-section">
-    <h4>Backup now</h4>
+    <h4>${t('backup.backup_now')}</h4>
     
-    <button class="backup-database-button btn">Backup database now</button>
+    <button class="backup-database-button btn">${t('backup.backup_database_now')}</button>
 </div>
 
 <div class="options-section">
-    <h4>Existing backups</h4>
+    <h4>${t('backup.existing_backups')}</h4>
     
     <ul class="existing-backup-list"></ul>
 </div>
@@ -54,7 +55,7 @@ export default class BackupOptions extends OptionsWidget {
         this.$backupDatabaseButton.on('click', async () => {
             const {backupFile} = await server.post('database/backup-database');
 
-            toastService.showMessage(`Database has been backed up to ${backupFile}`, 10000);
+            toastService.showMessage(`${t('backup.database_backed_up_to')} ${backupFile}`, 10000);
 
             this.refresh();
         });
@@ -84,7 +85,7 @@ export default class BackupOptions extends OptionsWidget {
             this.$existingBackupList.empty();
 
             if (!backupFiles.length) {
-                backupFiles = [{filePath: "no backup yet", mtime: ''}];
+                backupFiles = [{filePath: t('backup.no_backup_yet'), mtime: ''}];
             }
 
             for (const {filePath, mtime} of backupFiles) {

@@ -1,4 +1,4 @@
-import { AttributeType } from "../../becca/entities/rows";
+import { AttributeType } from "../../becca/entities/rows.js";
 
 interface AttributeMeta {
     noteId?: string;
@@ -9,4 +9,4 @@ interface AttributeMeta {
     position?: number;
 }
 
-export = AttributeMeta;
+export default AttributeMeta;

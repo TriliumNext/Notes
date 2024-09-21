@@ -1,3 +1,3 @@
-import packageJson = require('../../package.json');
+import packageJson from "../../package.json" with { type: "json" };
 
-export = `assets/v${packageJson.version}`;
+export default `assets/v${packageJson.version}`;

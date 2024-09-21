@@ -6,4 +6,4 @@ class NotFoundError {
     }
 }
 
-export = NotFoundError;
+export default NotFoundError;

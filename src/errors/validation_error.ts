@@ -6,4 +6,4 @@ class ValidationError {
     }
 }
 
-export = ValidationError;
+export default ValidationError;

@@ -1,7 +1,7 @@
 "use strict";
 
-import beccaService = require('../../becca/becca_service');
-import becca = require('../../becca/becca');
+import beccaService from "../../becca/becca_service.js";
+import becca from "../../becca/becca.js";
 
 class SearchResult {
     notePathArray: string[];
@@ -67,4 +67,4 @@ class SearchResult {
     }
 }
 
-export = SearchResult;
+export default SearchResult;

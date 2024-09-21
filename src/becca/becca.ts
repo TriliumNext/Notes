@@ -1,7 +1,7 @@
 "use strict";
 
-import Becca from "./becca-interface";
+import Becca from "./becca-interface.js";
 
 const becca = new Becca();
 
-export = becca;
+export default becca;

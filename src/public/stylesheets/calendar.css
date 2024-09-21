@@ -11,7 +11,9 @@
 .calendar-dropdown-widget .calendar-btn {
   -moz-user-select: none;
   -ms-user-select: none;
+  user-select: none;
   -webkit-appearance: button;
+  appearance: none;
   background: none;
   border: 0;
   color: inherit;
@@ -31,10 +33,24 @@
   padding: 0 0.5rem 0.5rem 0.5rem;
 }
 
-.calendar-dropdown-widget .calendar-header-label {
-  font-weight: bold;
+.calendar-dropdown-widget .calendar-header > div {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.calendar-dropdown-widget .calendar-header select {
+  cursor: pointer;
+}
+
+.calendar-dropdown-widget .calendar-header input,
+.calendar-dropdown-widget .calendar-header select {
+  appearance: none;
   text-align: center;
-  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--button-border-color);
+  background-color: var(--menu-background-color) !important;
+  outline: 0;
 }
 
 .calendar-dropdown-widget .calendar-week {
@@ -51,7 +67,6 @@
   padding-top: 5px;
   padding-bottom: 5px;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .calendar-dropdown-widget .calendar-body {
@@ -85,6 +100,10 @@
   font-weight: bold;
 }
 
+.calendar-dropdown-widget a {
+  text-decoration: none;
+}
+
 .calendar-dropdown-widget .calendar-date-exists {
   text-decoration: underline !important;
 }
@@ -92,3 +111,4 @@
 .calendar-dropdown-widget .calendar-date:not(.calendar-date-active) {
   cursor: pointer;
 }
+

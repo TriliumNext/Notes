@@ -1,14 +1,14 @@
-import SAttachment = require("./entities/sattachment");
-import SAttribute = require("./entities/sattribute");
-import SBranch = require("./entities/sbranch");
-import SNote = require("./entities/snote");
+import SAttachment from "./entities/sattachment.js";
+import SAttribute from "./entities/sattribute.js";
+import SBranch from "./entities/sbranch.js";
+import SNote from "./entities/snote.js";
 
 export default class Shaca {
 
     notes!: Record<string, SNote>;
     branches!: Record<string, SBranch>;
     childParentToBranch!: Record<string, SBranch>;
-    private attributes!: Record<string, SAttribute>;
+    attributes!: Record<string, SAttribute>;
     attachments!: Record<string, SAttachment>;
     aliasToNote!: Record<string, SNote>;
     shareRootNote!: SNote | null;

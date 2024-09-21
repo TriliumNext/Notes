@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import appInfo = require('../services/app_info');
-import eu = require('./etapi_utils');
+import appInfo from "../services/app_info.js";
+import eu from "./etapi_utils.js";
 
 function register(router: Router) {
     eu.route(router, 'get', '/etapi/app-info', (req, res, next) => {
@@ -8,6 +8,6 @@ function register(router: Router) {
     });
 }
 
-export = {
+export default {
     register
 };

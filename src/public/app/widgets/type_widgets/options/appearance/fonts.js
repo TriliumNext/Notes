@@ -1,8 +1,9 @@
 import OptionsWidget from "../options_widget.js";
 import utils from "../../../../services/utils.js";
+import { t } from "../../../../services/i18n.js";
 
 const FONT_FAMILIES = [
-    { value: "theme", label: "Theme defined" },
+    { value: "theme", label: t("fonts.theme_defined") },
     { value: "serif", label: "Serif" },
     { value: "sans-serif", label: "Sans Serif" },
     { value: "monospace", label: "Monospace" },
@@ -29,95 +30,87 @@ const FONT_FAMILIES = [
 
 const TPL = `
 <div class="options-section">
-    <h4>Fonts</h4>
+    <h4>${t("fonts.fonts")}</h4>
     
-    <h5>Main Font</h5>
+    <h5>${t("fonts.main_font")}</h5>
     
     <div class="form-group row">
         <div class="col-6">
-            <label>Font family</label>
-            <select class="main-font-family form-control"></select>
+            <label>${t("fonts.font_family")}</label>
+            <select class="main-font-family form-select"></select>
         </div>
     
         <div class="col-6">
-            <label>Size</label>
+            <label>${t("fonts.size")}</label>
 
             <div class="input-group">
                 <input type="number" class="main-font-size form-control options-number-input" min="50" max="200" step="10"/>
-                <div class="input-group-append">
-                    <span class="input-group-text">%</span>
-                </div>
+                <span class="input-group-text">%</span>
             </div>
         </div>
     </div>
 
-    <h5>Note Tree Font</h5>
+    <h5>${t("fonts.note_tree_font")}</h5>
 
     <div class="form-group row">
         <div class="col-4">
-            <label>Font family</label>
-            <select class="tree-font-family form-control"></select>
+            <label>${t("fonts.font_family")}</label>
+            <select class="tree-font-family form-select"></select>
         </div>
     
-        <div class="col-4">
-            <label>Size</label>
+        <div class="col-6">
+            <label>${t("fonts.size")}</label>
 
             <div class="input-group">
                 <input type="number" class="tree-font-size form-control options-number-input" min="50" max="200" step="10"/>
-                <div class="input-group-append">
-                    <span class="input-group-text">%</span>
-                </div>
+                <span class="input-group-text">%</span>
             </div>
         </div>
     </div>
     
-    <h5>Note Detail Font</h5>
+    <h5>${t("fonts.note_detail_font")}</h5>
     
     <div class="form-group row">
         <div class="col-4">
-            <label>Font family</label>
-            <select class="detail-font-family form-control"></select>
+            <label>${t("fonts.font_family")}</label>
+            <select class="detail-font-family form-select"></select>
         </div>
         
-        <div class="col-4">
-            <label>Size</label>
+        <div class="col-6">
+            <label>${t("fonts.size")}</label>
 
             <div class="input-group">
                 <input type="number" class="detail-font-size form-control options-number-input" min="50" max="200" step="10"/>
-                <div class="input-group-append">
-                    <span class="input-group-text">%</span>
-                </div>
+                <span class="input-group-text">%</span>
             </div>
         </div>
     </div>
     
-    <h5>Monospace (code) Font</h5>
+    <h5>${t("fonts.monospace_font")}</h5>
     
     <div class="form-group row">
         <div class="col-4">
-            <label>Font family</label>
-            <select class="monospace-font-family form-control"></select>
+            <label>${t("fonts.font_family")}</label>
+            <select class="monospace-font-family form-select"></select>
         </div>
     
-        <div class="col-4">
-            <label>Size</label>
+        <div class="col-6">
+            <label>${t("fonts.size")}</label>
 
             <div class="input-group">
                 <input type="number" class="monospace-font-size form-control options-number-input" min="50" max="200" step="10"/>
-                <div class="input-group-append">
-                    <span class="input-group-text">%</span>
-                </div>
+                <span class="input-group-text">%</span>
             </div>
         </div>
     </div>
 
-    <p>Note that tree and detail font sizing is relative to the main font size setting.</p>
+    <p>${t("fonts.note_tree_and_detail_font_sizing")}</p>
 
-    <p>Not all listed fonts may be available on your system.</p>
+    <p>${t("fonts.not_all_fonts_available")}</p>
     
     <p>
-        To apply font changes, click on 
-        <button class="btn btn-micro reload-frontend-button">reload frontend</button>
+        ${t("fonts.apply_font_changes")}
+        <button class="btn btn-micro reload-frontend-button">${t("fonts.reload_frontend")}</button>
     </p>
 </div>`;
 

@@ -1,8 +1,8 @@
 "use strict";
 
-import dateUtils = require('../../services/date_utils');
-import AbstractBeccaEntity = require('./abstract_becca_entity');
-import { OptionRow } from './rows';
+import dateUtils from "../../services/date_utils.js";
+import AbstractBeccaEntity from "./abstract_becca_entity.js";
+import { OptionRow } from './rows.js';
 
 /**
  * Option represents a name-value pair, either directly configurable by the user or some system property.
@@ -14,7 +14,6 @@ class BOption extends AbstractBeccaEntity<BOption> {
 
     name!: string;
     value!: string;
-    isSynced!: boolean;
 
     constructor(row?: OptionRow) {
         super();
@@ -48,4 +47,4 @@ class BOption extends AbstractBeccaEntity<BOption> {
     }
 }
 
-export = BOption;
+export default BOption;

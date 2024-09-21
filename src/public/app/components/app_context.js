@@ -13,6 +13,7 @@ import MobileScreenSwitcherExecutor from "./mobile_screen_switcher.js";
 import MainTreeExecutors from "./main_tree_executors.js";
 import toast from "../services/toast.js";
 import ShortcutComponent from "./shortcut_component.js";
+import { initLocale } from "../services/i18n.js";
 
 class AppContext extends Component {
     constructor(isMainWindow) {
@@ -24,16 +25,20 @@ class AppContext extends Component {
         this.beforeUnloadListeners = [];
     }
 
-    setLayout(layout) {
+    /**
+     * Must be called as soon as possible, before the creation of any components since this method is in charge of initializing the locale. Any attempts to read translation before this method is called will result in `undefined`.
+     */
+    async earlyInit() {
+        await options.initializedPromise;
+        await initLocale();
+    }
+
+    setLayout(layout) {        
         this.layout = layout;
     }
 
-    async start() {
+    async start() {        
         this.initComponents();
-
-        // options are often needed for isEnabled()
-        await options.initializedPromise;
-
         this.renderWidgets();
 
         await froca.initializedPromise;

@@ -1,10 +1,10 @@
 "use strict";
 
-import scriptService = require('../../services/script');
-import attributeService = require('../../services/attributes');
-import becca = require('../../becca/becca');
-import syncService = require('../../services/sync');
-import sql = require('../../services/sql');
+import scriptService from "../../services/script.js";
+import attributeService from "../../services/attributes.js";
+import becca from "../../becca/becca.js";
+import syncService from "../../services/sync.js";
+import sql from "../../services/sql.js";
 import { Request } from 'express';
 
 interface ScriptBody {
@@ -131,7 +131,7 @@ function getBundle(req: Request) {
     return scriptService.getScriptBundleForFrontend(note, script, params);
 }
 
-export = {
+export default {
     exec,
     run,
     getStartupBundles,

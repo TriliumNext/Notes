@@ -8,9 +8,9 @@
  * - as a fallback if the previous step fails, we'll use home dir
  */
 
-import os = require('os');
-import fs = require('fs');
-import path = require('path');
+import os from "os";
+import fs from "fs";
+import path from "path";
 
 function getAppDataDir() {
     let appDataDir = os.homedir(); // fallback if OS is not recognized
@@ -68,7 +68,7 @@ const LOG_DIR = process.env.TRILIUM_LOG_DIR || `${DIR_SEP}log`;
 const ANONYMIZED_DB_DIR = process.env.TRILIUM_ANONYMIZED_DB_DIR || `${DIR_SEP}anonymized-db`;
 const CONFIG_INI_PATH = process.env.TRILIUM_CONFIG_INI_PATH || `${DIR_SEP}config.ini`;
 
-export = {
+export default {
     TRILIUM_DATA_DIR,
     DOCUMENT_PATH,
     BACKUP_DIR,

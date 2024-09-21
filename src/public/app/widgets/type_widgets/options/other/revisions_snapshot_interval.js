@@ -1,13 +1,14 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Note Revisions Snapshot Interval</h4>
+    <h4>${t("revisions_snapshot_interval.note_revisions_snapshot_interval_title")}</h4>
 
-    <p>Note revision snapshot time interval is time in seconds after which a new note revision will be created for the note. See <a href="https://github.com/zadam/trilium/wiki/Note-revisions" class="external">wiki</a> for more info.</p>
+    <p>${t("revisions_snapshot_interval.note_revisions_snapshot_description")}</p>
 
     <div class="form-group">
-        <label>Note revision snapshot time interval (in seconds)</label>
+        <label>${t("revisions_snapshot_interval.snapshot_time_interval_label")}</label>
         <input class="revision-snapshot-time-interval-in-seconds form-control options-number-input" type="number" min="10">
     </div>
 </div>`;

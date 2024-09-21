@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import server from "../../services/server.js";
 import ws from "../../services/ws.js";
 import treeService from "../../services/tree.js";
@@ -70,13 +71,13 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
         const promotedDefAttrs = note.getPromotedDefinitionAttributes();
 
         if (promotedDefAttrs.length === 0) {
-            return {show: false};
+            return { show: false };
         }
 
         return {
             show: true,
             activate: options.is('promotedAttributesOpenInRibbon'),
-            title: "Promoted Attributes",
+            title: t('promoted_attributes.promoted_attributes'),
             icon: "bx bx-table"
         };
     }
@@ -166,7 +167,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                             return;
                         }
 
-                        attributeValues = attributeValues.map(attribute => ({value: attribute}));
+                        attributeValues = attributeValues.map(attribute => ({ value: attribute }));
 
                         $input.autocomplete({
                             appendTo: document.querySelector('body'),
@@ -221,19 +222,17 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 $input.prop('type', 'datetime-local')
             }
             else if (definition.labelType === 'url') {
-                $input.prop("placeholder", "http://website...");
+                $input.prop("placeholder", t("promoted_attributes.url_placeholder"));
 
                 const $openButton = $("<span>")
                     .addClass("input-group-text open-external-link-button bx bx-window-open")
-                    .prop("title", "Open external link")
+                    .prop("title", t("promoted_attributes.open_external_link"))
                     .on('click', () => window.open($input.val(), '_blank'));
 
-                $input.after($("<div>")
-                    .addClass("input-group-append")
-                    .append($openButton));
+                $input.after($openButton);
             }
             else {
-                ws.logError(`Unknown labelType '${definitionAttr.labelType}'`);
+                ws.logError(t("promoted_attributes.unknown_label_type", { type: definitionAttr.labelType }));
             }
         }
         else if (valueAttr.type === 'relation') {
@@ -243,7 +242,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
 
             if (utils.isDesktop()) {
                 // no need to wait for this
-                noteAutocompleteService.initNoteAutocomplete($input, {allowCreatingNotes: true});
+                noteAutocompleteService.initNoteAutocomplete($input, { allowCreatingNotes: true });
 
                 $input.on('autocomplete:noteselected', (event, suggestion, dataset) => {
                     this.promotedAttributeChanged(event);
@@ -256,14 +255,14 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
             }
         }
         else {
-            ws.logError(`Unknown attribute type '${valueAttr.type}'`);
+            ws.logError(t(`promoted_attributes.unknown_attribute_type`, { type: valueAttr.type }));
             return;
         }
 
         if (definition.multiplicity === "multi") {
             const $addButton = $("<span>")
                 .addClass("bx bx-plus pointer")
-                .prop("title", "Add new attribute")
+                .prop("title", t("promoted_attributes.add_new_attribute"))
                 .on('click', async () => {
                     const $new = await this.createPromotedAttributeCell(definitionAttr, {
                         attributeId: "",
@@ -279,7 +278,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
 
             const $removeButton = $("<span>")
                 .addClass("bx bx-trash pointer")
-                .prop("title", "Remove this attribute")
+                .prop("title", t("promoted_attributes.remove_this_attribute"))
                 .on('click', async () => {
                     const attributeId = $input.attr("data-attribute-id");
 
@@ -345,7 +344,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
         this.$widget.find(".promoted-attribute-input:first").focus();
     }
 
-    entitiesReloadedEvent({loadResults}) {
+    entitiesReloadedEvent({ loadResults }) {
         if (loadResults.getAttributeRows(this.componentId).find(attr => attributeService.isAffecting(attr, this.note))) {
             this.refresh();
         }

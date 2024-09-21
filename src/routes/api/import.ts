@@ -1,19 +1,19 @@
 "use strict";
 
-import enexImportService = require('../../services/import/enex');
-import opmlImportService = require('../../services/import/opml');
-import zipImportService = require('../../services/import/zip');
-import singleImportService = require('../../services/import/single');
-import cls = require('../../services/cls');
-import path = require('path');
-import becca = require('../../becca/becca');
-import beccaLoader = require('../../becca/becca_loader');
-import log = require('../../services/log');
-import TaskContext = require('../../services/task_context');
-import ValidationError = require('../../errors/validation_error');
+import enexImportService from "../../services/import/enex.js";
+import opmlImportService from "../../services/import/opml.js";
+import zipImportService from "../../services/import/zip.js";
+import singleImportService from "../../services/import/single.js";
+import cls from "../../services/cls.js";
+import path from "path";
+import becca from "../../becca/becca.js";
+import beccaLoader from "../../becca/becca_loader.js";
+import log from "../../services/log.js";
+import TaskContext from "../../services/task_context.js";
+import ValidationError from "../../errors/validation_error.js";
 import { Request } from 'express';
-import BNote = require('../../becca/entities/bnote');
-import { AppRequest } from '../route-interface';
+import BNote from "../../becca/entities/bnote.js";
+import { AppRequest } from '../route-interface.js';
 
 async function importNotesToBranch(req: AppRequest) {
     const { parentNoteId } = req.params;
@@ -136,7 +136,7 @@ async function importAttachmentsToNote(req: AppRequest) {
     }
 }
 
-export = {
+export default {
     importNotesToBranch,
     importAttachmentsToNote
 };

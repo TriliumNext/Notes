@@ -4,6 +4,8 @@ import ProtectedNoteSwitchWidget from "../protected_note_switch.js";
 import EditabilitySelectWidget from "../editability_select.js";
 import BookmarkSwitchWidget from "../bookmark_switch.js";
 import SharedSwitchWidget from "../shared_switch.js";
+import { t } from "../../services/i18n.js";
+import TemplateSwitchWidget from "../template_switch.js";
 
 const TPL = `
 <div class="basic-properties-widget">
@@ -15,12 +17,15 @@ const TPL = `
             flex-wrap: wrap;
         }
         
-        .basic-properties-widget > * {
-            margin-right: 30px;
+        .basic-properties-widget > * {            
             margin-top: 9px;
             margin-bottom: 2px;
         }
         
+        .basic-properties-widget > * > :last-child {
+            margin-right: 30px;
+        }
+
         .note-type-container, .editability-select-container {
             display: flex;
             align-items: center;
@@ -28,18 +33,20 @@ const TPL = `
     </style>
     
     <div class="note-type-container">
-        <span>Note type:</span> &nbsp;
+        <span>${t("basic_properties.note_type")}:</span> &nbsp;
     </div>
     
     <div class="protected-note-switch-container"></div>
     
     <div class="editability-select-container">
-        <span>Editable:</span> &nbsp;
+        <span>${t("basic_properties.editable")}:</span> &nbsp;
     </div>
     
     <div class="bookmark-switch-container"></div>
     
     <div class="shared-switch-container"></div>
+
+    <div class="template-switch-container"></div>
 </div>`;
 
 export default class BasicPropertiesWidget extends NoteContextAwareWidget {
@@ -51,13 +58,15 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
         this.editabilitySelectWidget = new EditabilitySelectWidget().contentSized();
         this.bookmarkSwitchWidget = new BookmarkSwitchWidget().contentSized();
         this.sharedSwitchWidget = new SharedSwitchWidget().contentSized();
+        this.templateSwitchWidget = new TemplateSwitchWidget().contentSized();
 
         this.child(
             this.noteTypeWidget,
             this.protectedNoteSwitchWidget,
             this.editabilitySelectWidget,
             this.bookmarkSwitchWidget,
-            this.sharedSwitchWidget
+            this.sharedSwitchWidget,
+            this.templateSwitchWidget
         );
     }
 
@@ -72,7 +81,7 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: !this.note.isLaunchBarConfig(),
-            title: 'Basic Properties',
+            title: t("basic_properties.basic_properties"),
             icon: 'bx bx-slider'
         };
     }
@@ -86,6 +95,7 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
         this.$widget.find(".editability-select-container").append(this.editabilitySelectWidget.render());
         this.$widget.find(".bookmark-switch-container").append(this.bookmarkSwitchWidget.render());
         this.$widget.find(".shared-switch-container").append(this.sharedSwitchWidget.render());
+        this.$widget.find(".template-switch-container").append(this.templateSwitchWidget.render());
     }
 
     async refreshWithNote(note) {

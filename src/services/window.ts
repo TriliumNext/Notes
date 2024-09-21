@@ -1,14 +1,17 @@
-import path = require('path');
-import url = require("url");
-import port = require('./port');
-import optionService = require('./options');
-import env = require('./env');
-import log = require('./log');
-import sqlInit = require('./sql_init');
-import cls = require('./cls');
-import keyboardActionsService = require('./keyboard_actions');
-import remoteMain = require("@electron/remote/main")
+import path from "path";
+import url from "url";
+import port from "./port.js";
+import optionService from "./options.js";
+import env from "./env.js";
+import log from "./log.js";
+import sqlInit from "./sql_init.js";
+import cls from "./cls.js";
+import keyboardActionsService from "./keyboard_actions.js";
+import remoteMain from "@electron/remote/main/index.js";
 import { App, BrowserWindow, WebContents, ipcMain } from 'electron';
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 // Prevent the window being garbage collected
 let mainWindow: BrowserWindow | null;
@@ -17,12 +20,12 @@ let setupWindow: BrowserWindow | null;
 async function createExtraWindow(extraWindowHash: string) {
     const spellcheckEnabled = optionService.getOptionBool('spellCheckEnabled');
 
-    const { BrowserWindow } = require('electron');
+    const { BrowserWindow } = await import('electron');
 
     const win = new BrowserWindow({
         width: 1000,
         height: 800,
-        title: 'Trilium Notes',
+        title: 'TriliumNext Notes',
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -43,7 +46,20 @@ ipcMain.on('create-extra-window', (event, arg) => {
 });
 
 async function createMainWindow(app: App) {
-    const windowStateKeeper = require('electron-window-state'); // should not be statically imported
+    if ("setUserTasks" in app) {
+        app.setUserTasks([
+            {
+                program: process.execPath,
+                arguments: '--new-window',
+                iconPath: process.execPath,
+                iconIndex: 0,
+                title: 'Open New Window',
+                description: 'Open new window'
+            }
+        ]);
+    }
+    
+    const windowStateKeeper = (await import('electron-window-state')).default; // should not be statically imported
 
     const mainWindowState = windowStateKeeper({
         // default window width & height, so it's usable on a 1600 * 900 display (including some extra panels etc.)
@@ -53,14 +69,14 @@ async function createMainWindow(app: App) {
 
     const spellcheckEnabled = optionService.getOptionBool('spellCheckEnabled');
 
-    const { BrowserWindow } = require('electron'); // should not be statically imported
+    const { BrowserWindow } = (await import('electron')); // should not be statically imported
 
     mainWindow = new BrowserWindow({
         x: mainWindowState.x,
         y: mainWindowState.y,
         width: mainWindowState.width,
         height: mainWindowState.height,
-        title: 'Trilium Notes',
+        title: 'TriliumNext Notes',
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -79,10 +95,12 @@ async function createMainWindow(app: App) {
 
     configureWebContents(mainWindow.webContents, spellcheckEnabled);
 
-    app.on('second-instance', () => {
-        // Someone tried to run a second instance, we should focus our window.
-        // see www.ts "requestSingleInstanceLock" for the rest of this logic with explanation
-        if (mainWindow) {
+    app.on('second-instance', (event, commandLine) => {
+        if (commandLine.includes('--new-window')) {
+            createExtraWindow("");  
+        } else if (mainWindow) {
+            // Someone tried to run a second instance, we should focus our window.
+            // see www.ts "requestSingleInstanceLock" for the rest of this logic with explanation
             if (mainWindow.isMinimized()) {
                 mainWindow.restore();
             }
@@ -100,7 +118,11 @@ function configureWebContents(webContents: WebContents, spellcheckEnabled: boole
     remoteMain.enable(webContents);
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
-        require("electron").shell.openExternal(details.url);
+        async function openExternal() {
+            (await import('electron')).shell.openExternal(details.url);
+        }
+        
+        openExternal();
         return { action: 'deny' }
     });
 
@@ -124,15 +146,15 @@ function configureWebContents(webContents: WebContents, spellcheckEnabled: boole
 }
 
 function getIcon() {
-    return path.join(__dirname, '../../images/app-icons/png/256x256' + (env.isDev() ? '-dev' : '') + '.png');
+    return path.join(dirname(fileURLToPath(import.meta.url)), '../../images/app-icons/png/256x256' + (env.isDev() ? '-dev' : '') + '.png');
 }
 
 async function createSetupWindow() {
-    const { BrowserWindow } = require('electron'); // should not be statically imported
+    const { BrowserWindow } = await import("electron"); // should not be statically imported
     setupWindow = new BrowserWindow({
         width: 800,
         height: 800,
-        title: 'Trilium Notes Setup',
+        title: 'TriliumNext Notes Setup',
         icon: getIcon(),
         webPreferences: {
             // necessary for e.g. utils.isElectron()
@@ -152,7 +174,7 @@ function closeSetupWindow() {
 }
 
 async function registerGlobalShortcuts() {
-    const { globalShortcut } = require('electron');
+    const { globalShortcut } = await import("electron");
 
     await sqlInit.dbReady;
 
@@ -193,7 +215,7 @@ function getMainWindow() {
     return mainWindow;
 }
 
-export = {
+export default {
     createMainWindow,
     createSetupWindow,
     closeSetupWindow,

@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import eu = require('./etapi_utils');
-import backupService = require('../services/backup');
+import eu from "./etapi_utils.js";
+import backupService from "../services/backup.js";
 
 function register(router: Router) {
     eu.route(router, 'put', '/etapi/backup/:backupName', async (req, res, next) => {
@@ -11,6 +11,6 @@ function register(router: Router) {
     });
 }
 
-export = {
+export default {
     register
 };

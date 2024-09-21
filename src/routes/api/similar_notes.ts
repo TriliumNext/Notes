@@ -2,8 +2,8 @@
 
 import { Request } from "express";
 
-import similarityService = require('../../becca/similarity');
-import becca = require('../../becca/becca');
+import similarityService from "../../becca/similarity.js";
+import becca from "../../becca/becca.js";
 
 async function getSimilarNotes(req: Request) {
     const noteId = req.params.noteId;
@@ -13,6 +13,6 @@ async function getSimilarNotes(req: Request) {
     return await similarityService.findSimilarNotes(noteId);
 }
 
-export = {
+export default {
     getSimilarNotes
 };

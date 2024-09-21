@@ -1,10 +1,10 @@
-import sql = require('./sql');
-import log = require('./log');
-import entityChangesService = require('./entity_changes');
-import eventService = require('./events');
-import entityConstructor = require('../becca/entity_constructor');
-import ws = require('./ws');
-import { EntityChange, EntityChangeRecord, EntityRow } from './entity_changes_interface';
+import sql from "./sql.js";
+import log from "./log.js";
+import entityChangesService from "./entity_changes.js";
+import eventService from "./events.js";
+import entityConstructor from "../becca/entity_constructor.js";
+import ws from "./ws.js";
+import { EntityChange, EntityChangeRecord, EntityRow } from './entity_changes_interface.js';
 
 interface UpdateContext {
     alreadyErased: number;
@@ -41,15 +41,13 @@ function updateEntities(entityChanges: EntityChangeRecord[], instanceId: string)
             atLeastOnePullApplied = true;
         }
 
-        if (entity) {
-            updateEntity(entityChange, entity, instanceId, updateContext);
-        }
+        updateEntity(entityChange, entity, instanceId, updateContext);
     }
 
     logUpdateContext(updateContext);
 }
 
-function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow, instanceId: string, updateContext: UpdateContext) {
+function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undefined, instanceId: string, updateContext: UpdateContext) {
     if (!remoteEntityRow && remoteEC.entityName === 'options') {
         return; // can be undefined for options with isSynced=false
     }
@@ -74,14 +72,13 @@ function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow, instan
     }
 }
 
-function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow, instanceId: string, updateContext: UpdateContext) {
-    const localEC = sql.getRow<EntityChange>(`SELECT * FROM entity_changes WHERE entityName = ? AND entityId = ?`, [remoteEC.entityName, remoteEC.entityId]);
+function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undefined, instanceId: string, updateContext: UpdateContext) {
+    const localEC = sql.getRow<EntityChange | undefined>(`SELECT * FROM entity_changes WHERE entityName = ? AND entityId = ?`, [remoteEC.entityName, remoteEC.entityId]);
+    const localECIsOlderOrSameAsRemote = (
+            localEC && localEC.utcDateChanged && remoteEC.utcDateChanged &&
+            localEC.utcDateChanged <= remoteEC.utcDateChanged);
 
-    if (!localEC.utcDateChanged || !remoteEC.utcDateChanged) {
-        throw new Error("Missing date changed.");
-    }
-
-    if (!localEC || localEC.utcDateChanged <= remoteEC.utcDateChanged) {
+    if (!localEC || localECIsOlderOrSameAsRemote) {
         if (remoteEC.isErased) {
             if (localEC?.isErased) {
                 eraseEntity(remoteEC); // make sure it's erased anyway
@@ -104,7 +101,7 @@ function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow, 
         }
 
         if (!localEC
-            || localEC.utcDateChanged < remoteEC.utcDateChanged
+            || localECIsOlderOrSameAsRemote
             || localEC.hash !== remoteEC.hash
             || localEC.isErased !== remoteEC.isErased
         ) {
@@ -113,7 +110,7 @@ function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow, 
 
         return true;
     } else if ((localEC.hash !== remoteEC.hash || localEC.isErased !== remoteEC.isErased)
-                && localEC.utcDateChanged > remoteEC.utcDateChanged) {
+                && !localECIsOlderOrSameAsRemote) {
         // the change on our side is newer than on the other side, so the other side should update
         entityChangesService.putEntityChangeForOtherInstances(localEC);
 
@@ -140,7 +137,7 @@ function preProcessContent(remoteEC: EntityChange, remoteEntityRow: EntityRow) {
     }
 }
 
-function updateNoteReordering(remoteEC: EntityChange, remoteEntityRow: EntityRow, instanceId: string) {
+function updateNoteReordering(remoteEC: EntityChange, remoteEntityRow: EntityRow | undefined, instanceId: string) {
     if (!remoteEntityRow) {
         throw new Error(`Empty note_reordering body for: ${JSON.stringify(remoteEC)}`);
     }
@@ -185,6 +182,6 @@ function logUpdateContext(updateContext: UpdateContext) {
     log.info(message.substr(1, message.length - 2));
 }
 
-export = {
+export default {
     updateEntities
 };

@@ -1,26 +1,26 @@
 {
 	"compilerOptions": {
-      "moduleResolution": "Node",
+	  "module": "NodeNext",
 	  "declaration": false,
 	  "sourceMap": true,
-	  "outDir": "./dist",
+	  "outDir": "./build",
 	  "strict": true,
 	  "noImplicitAny": true,
 	  "resolveJsonModule": true,
 	  "lib": ["ES2022"],
 	  "downlevelIteration": true,
-	  "skipLibCheck": true
+	  "skipLibCheck": true,
+	  "esModuleInterop": true
 	},
 	"include": [
-      "./src/**/*.js",
-	  "./src/**/*.ts",
-    "./*.ts"
+    "./src/**/*.js",
+	"./src/**/*.ts",
+    "./*.ts",
+    "./spec/**/*.ts",
+    "./spec-es6/**/*.ts"
 	],
 	"exclude": ["./node_modules/**/*"],
-	"ts-node": {
-		"files": true
-	},
 	"files": [
 		"src/types.d.ts"
 	]
-  }
+}

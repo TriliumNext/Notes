@@ -1,15 +1,15 @@
 "use strict";
 
-import utils = require('../services/utils');
-import optionService = require('../services/options');
-import myScryptService = require('../services/encryption/my_scrypt');
-import log = require('../services/log');
-import passwordService = require('../services/encryption/password');
-import assetPath = require('../services/asset_path');
-import appPath = require('../services/app_path');
-import ValidationError = require('../errors/validation_error');
+import utils from "../services/utils.js";
+import optionService from "../services/options.js";
+import myScryptService from "../services/encryption/my_scrypt.js";
+import log from "../services/log.js";
+import passwordService from "../services/encryption/password.js";
+import assetPath from "../services/asset_path.js";
+import appPath from "../services/app_path.js";
+import ValidationError from "../errors/validation_error.js";
 import { Request, Response } from 'express';
-import { AppRequest } from './route-interface';
+import { AppRequest } from './route-interface.js';
 
 function loginPage(req: Request, res: Response) {
     res.render('login', {
@@ -102,7 +102,7 @@ function logout(req: AppRequest, res: Response) {
 
 }
 
-export = {
+export default {
     loginPage,
     setPasswordPage,
     setPassword,

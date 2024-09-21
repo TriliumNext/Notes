@@ -4,15 +4,42 @@
  * @module sql
  */
 
-import log = require('./log');
+import log from "./log.js";
 import type { Statement, Database as DatabaseType, RunResult } from "better-sqlite3";
-import dataDir = require('./data_dir');
-import cls = require('./cls');
-import fs = require("fs-extra");
-import Database = require('better-sqlite3');
+import dataDir from "./data_dir.js";
+import cls from "./cls.js";
+import fs from "fs-extra";
+import Database from "better-sqlite3";
+import ws from "./ws.js";
+import becca_loader from "../becca/becca_loader.js";
+import entity_changes from "./entity_changes.js";
 
-const dbConnection: DatabaseType = new Database(dataDir.DOCUMENT_PATH);
-dbConnection.pragma('journal_mode = WAL');
+let dbConnection: DatabaseType = buildDatabase();
+let statementCache: Record<string, Statement> = {};
+
+function buildDatabase() {
+    if (process.env.TRILIUM_INTEGRATION_TEST === "memory") {
+        return buildIntegrationTestDatabase();        
+    }
+
+    return new Database(dataDir.DOCUMENT_PATH);
+}
+
+function buildIntegrationTestDatabase() {
+    const dbBuffer = fs.readFileSync(dataDir.DOCUMENT_PATH);
+    return new Database(dbBuffer);
+}
+
+function rebuildIntegrationTestDatabase() {
+    // This allows a database that is read normally but is kept in memory and discards all modifications.
+    dbConnection = buildIntegrationTestDatabase();
+    statementCache = {};
+}
+
+
+if (!process.env.TRILIUM_INTEGRATION_TEST) {
+    dbConnection.pragma('journal_mode = WAL');
+}
 
 const LOG_ALL_QUERIES = false;
 
@@ -79,8 +106,6 @@ function upsert<T extends {}>(tableName: string, primaryKey: string, rec: T) {
 
     execute(query, rec);
 }
-
-const statementCache: Record<string, Statement> = {};
 
 function stmt(sql: string) {
     if (!(sql in statementCache)) {
@@ -248,7 +273,7 @@ function transactional<T>(func: (statement: Statement) => T) {
         const ret = (dbConnection.transaction(func) as any).deferred();
 
         if (!dbConnection.inTransaction) { // i.e. transaction was really committed (and not just savepoint released)
-            require('./ws').sendTransactionEntityChangesToAllClients();
+            ws.sendTransactionEntityChangesToAllClients();
         }
 
         return ret;
@@ -259,11 +284,11 @@ function transactional<T>(func: (statement: Statement) => T) {
         if (entityChangeIds.length > 0) {
             log.info("Transaction rollback dirtied the becca, forcing reload.");
 
-            require('../becca/becca_loader').load();
+            becca_loader.load();
         }
 
         // the maxEntityChangeId has been incremented during failed transaction, need to recalculate
-        require('./entity_changes').recalculateMaxEntityChangeId();
+        entity_changes.recalculateMaxEntityChangeId();
 
         throw e;
     }
@@ -286,7 +311,7 @@ function fillParamList(paramIds: string[] | Set<string>, truncate = true) {
         paramIds = paramIds.slice(0, 30000);
     }
 
-    // doing it manually to avoid this showing up on the sloq query list
+    // doing it manually to avoid this showing up on the slow query list
     const s = stmt(`INSERT INTO param_list VALUES ${paramIds.map(paramId => `(?)`).join(',')}`);
 
     s.run(paramIds);
@@ -314,7 +339,7 @@ function disableSlowQueryLogging<T>(cb: () => T) {
     }
 }
 
-export = {
+export default {
     dbConnection,
     insert,
     replace,
@@ -387,5 +412,6 @@ export = {
     upsert,
     fillParamList,
     copyDatabase,
-    disableSlowQueryLogging
+    disableSlowQueryLogging,
+    rebuildIntegrationTestDatabase
 };

@@ -1,4 +1,4 @@
-import { DefinitionObject } from "./promoted_attribute_definition_interface";
+import { DefinitionObject } from "./promoted_attribute_definition_interface.js";
 
 function parse(value: string): DefinitionObject {
     const tokens = value.split(',').map(t => t.trim());
@@ -37,6 +37,6 @@ function parse(value: string): DefinitionObject {
     return defObj;
 }
 
-export = {
+export default {
     parse
 };

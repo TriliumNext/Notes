@@ -18,6 +18,7 @@ import options from "../services/options.js";
 import protectedSessionHolder from "../services/protected_session_holder.js";
 import dialogService from "../services/dialog.js";
 import shortcutService from "../services/shortcuts.js";
+import { t } from "../services/i18n.js";
 
 const TPL = `
 <div class="tree-wrapper">
@@ -99,15 +100,15 @@ const TPL = `
     
     <div class="tree-actions">
         <button class="tree-floating-button bx bx-layer-minus collapse-tree-button" 
-                title="Collapse note tree" 
+                title="${t("note_tree.collapse-title")}" 
                 data-trigger-command="collapseTree"></button>
         
         <button class="tree-floating-button bx bx-crosshair scroll-to-active-note-button" 
-                title="Scroll to active note" 
+                title="${t("note_tree.scroll-active-title")}" 
                 data-trigger-command="scrollToActiveNote"></button>
         
-        <button class="tree-floating-button bx bx-cog tree-settings-button" 
-                title="Tree settings"></button>
+        <button class="tree-floating-button bx bxs-tree tree-settings-button" 
+                title="${t("note_tree.tree-settings-title")}"></button>
     </div>
     
     
@@ -116,22 +117,22 @@ const TPL = `
             <label class="form-check-label">
                 <input class="form-check-input hide-archived-notes" type="checkbox" value="">
             
-                Hide archived notes
+                ${t("note_tree.hide-archived-notes")}
             </label>
         </div>
         <div class="form-check">
             <label class="form-check-label">
                 <input class="form-check-input auto-collapse-note-tree" type="checkbox" value="">
                 
-                Automatically collapse notes
+                ${t("note_tree.automatically-collapse-notes")}
                 <span class="bx bx-info-circle" 
-                      title="Notes will be collapsed after period of inactivity to declutter the tree."></span>
+                      title="${t("note_tree.automatically-collapse-notes-title")}"></span>
             </label>
         </div>
     
         <br/>
     
-        <button class="btn btn-sm btn-primary save-tree-settings-button" type="submit">Save & apply changes</button>
+        <button class="btn btn-sm btn-primary save-tree-settings-button" type="submit">${t("note_tree.save-changes")}</button>
     </div>
 </div>
 `;

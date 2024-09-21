@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 
 const TPL = `
@@ -32,7 +33,7 @@ const TPL = `
     }
     </style>
     
-    <div class="bx bx-x close-api-log-button" title="Close"></div>
+    <div class="bx bx-x close-api-log-button" title="${t('api_log.close')}"></div>
    
     <div class="api-log-container"></div>
 </div>`;

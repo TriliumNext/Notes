@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+set -e  # Fail on any command error
+
 PKG_DIR=dist/trilium-linux-x64-server
-NODE_VERSION=18.18.2
+NODE_VERSION=20.15.1
 
 if [ "$1" != "DONTCOPY" ]
 then
@@ -20,10 +22,7 @@ rm -r $PKG_DIR/node/lib/node_modules/npm
 rm -r $PKG_DIR/node/include/node
 
 rm -r $PKG_DIR/node_modules/electron*
-rm -r $PKG_DIR/webpack*
-rm -r $PKG_DIR/electron.js
-
-cp -r bin/better-sqlite3/linux-server-better_sqlite3.node $PKG_DIR/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+rm -r $PKG_DIR/electron*.js
 
 printf "#!/bin/sh\n./node/bin/node src/www" > $PKG_DIR/trilium.sh
 chmod 755 $PKG_DIR/trilium.sh

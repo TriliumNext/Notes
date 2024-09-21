@@ -1,11 +1,12 @@
-import cls = require('../services/cls');
-import sql = require('../services/sql');
-import log = require('../services/log');
-import becca = require('../becca/becca');
-import etapiTokenService = require('../services/etapi_tokens');
-import config = require('../services/config');
+import cls from "../services/cls.js";
+import sql from "../services/sql.js";
+import log from "../services/log.js";
+import becca from "../becca/becca.js";
+import etapiTokenService from "../services/etapi_tokens.js";
+import config from "../services/config.js";
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
-import { AppRequest, AppRequestHandler } from '../routes/route-interface';
+import { AppRequest, AppRequestHandler } from '../routes/route-interface.js';
+import { ValidatorMap } from './etapi-interface.js';
 const GENERIC_CODE = "GENERIC";
 
 type HttpMethod = "all" | "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
@@ -145,7 +146,7 @@ function validateAndPatch(target: any, source: any, allowedProperties: Validator
     }
 }
 
-export = {
+export default {
     EtapiError,
     sendError,
     route,

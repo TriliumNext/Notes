@@ -1,9 +1,9 @@
 "use strict";
 
 import { Request, Response } from "express";
-import fs = require("fs");
-import dataDir = require('./data_dir');
-import cls = require('./cls');
+import fs from "fs";
+import dataDir from "./data_dir.js";
+import cls from "./cls.js";
 
 if (!fs.existsSync(dataDir.LOG_DIR)) {
     fs.mkdirSync(dataDir.LOG_DIR, 0o700);
@@ -50,7 +50,7 @@ function checkDate(millisSinceMidnight: number) {
     return millisSinceMidnight;
 }
 
-function log(str: string) {
+function log(str: string | Error) {
     const bundleNoteId = cls.get("bundleNoteId");
 
     if (bundleNoteId) {
@@ -66,11 +66,11 @@ function log(str: string) {
     console.log(str);
 }
 
-function info(message: string) {
+function info(message: string | Error) {
     log(message);
 }
 
-function error(message: string) {
+function error(message: string | Error) {
     log(`ERROR: ${message}`);
 }
 
@@ -117,7 +117,7 @@ function formatDate() {
     return `${pad(todaysMidnight.getFullYear())}-${pad(todaysMidnight.getMonth() + 1)}-${pad(todaysMidnight.getDate())}`;
 }
 
-export = {
+export default {
     info,
     error,
     request

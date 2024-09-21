@@ -1,7 +1,7 @@
 "use strict";
 
-import NoteSet = require("../note_set");
-import SearchContext = require("../search_context");
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
 
 abstract class Expression {
     name: string;
@@ -13,4 +13,4 @@ abstract class Expression {
     abstract execute(inputNoteSet: NoteSet, executionContext: {}, searchContext: SearchContext): NoteSet;
 }
 
-export = Expression;
+export default Expression;

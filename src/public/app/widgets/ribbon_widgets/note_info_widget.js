@@ -1,6 +1,7 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-info-widget">
@@ -30,31 +31,27 @@ const TPL = `
 
     <table class="note-info-widget-table">
         <tr>
-            <th>Note ID:</th>
+            <th>${t("note_info_widget.note_id")}:</th>
             <td class="note-info-note-id"></td>
-            <th>Created:</th>
+            <th>${t("note_info_widget.created")}:</th>
             <td class="note-info-date-created"></td>
-            <th>Modified:</th>
+            <th>${t("note_info_widget.modified")}:</th>
             <td class="note-info-date-modified"></td>
         </tr>
         <tr>
-            <th>Type:</th>
+            <th>${t("note_info_widget.type")}:</th>
             <td>
                 <span class="note-info-type"></span>
-                
                 <span class="note-info-mime"></span>
             </td>
 
-            <th title="Note size provides rough estimate of storage requirements for this note. It takes into account note's content and content of its note revisions.">Note size:</th>
-           
+            <th title="${t("note_info_widget.note_size_info")}">${t("note_info_widget.note_size")}:</th>
             <td colspan="3">
                 <button class="btn btn-sm calculate-button" style="padding: 0px 10px 0px 10px;">
-                    <span class="bx bx-calculator"></span> calculate
+                    <span class="bx bx-calculator"></span> ${t("note_info_widget.calculate")}
                 </button>
-                
                 <span class="note-sizes-wrapper">
                     <span class="note-size"></span>
-                    
                     <span class="subtree-size"></span>
                 </span>
             </td>
@@ -62,6 +59,7 @@ const TPL = `
     </table>
 </div>
 `;
+
 export default class NoteInfoWidget extends NoteContextAwareWidget {
     get name() {
         return "noteInfo";
@@ -78,7 +76,7 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: this.isEnabled(),
-            title: 'Note Info',
+            title: t("note_info_widget.title"),
             icon: 'bx bx-info-circle'
         };
     }
@@ -111,9 +109,8 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
             const subTreeResp = await server.get(`stats/subtree-size/${this.noteId}`);
 
             if (subTreeResp.subTreeNoteCount > 1) {
-                this.$subTreeSize.text(`(subtree size: ${utils.formatSize(subTreeResp.subTreeSize)} in ${subTreeResp.subTreeNoteCount} notes)`);
-            }
-            else {
+                this.$subTreeSize.text(t("note_info_widget.subtree_size", { size: utils.formatSize(subTreeResp.subTreeSize), count: subTreeResp.subTreeNoteCount }));
+            } else {
                 this.$subTreeSize.text("");
             }
         });
@@ -143,7 +140,7 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
         this.$noteSizesWrapper.hide();
     }
 
-    entitiesReloadedEvent({loadResults}) {
+    entitiesReloadedEvent({ loadResults }) {
         if (loadResults.isNoteReloaded(this.noteId) || loadResults.isNoteContentReloaded(this.noteId)) {
             this.refresh();
         }

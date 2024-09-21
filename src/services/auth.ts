@@ -1,14 +1,14 @@
 "use strict";
 
-import etapiTokenService = require('./etapi_tokens');
-import log = require('./log');
-import sqlInit = require('./sql_init');
-import utils = require('./utils');
-import passwordEncryptionService = require('./encryption/password_encryption');
-import config = require('./config');
-import passwordService = require('./encryption/password');
+import etapiTokenService from "./etapi_tokens.js";
+import log from "./log.js";
+import sqlInit from "./sql_init.js";
+import utils from "./utils.js";
+import passwordEncryptionService from "./encryption/password_encryption.js";
+import config from "./config.js";
+import passwordService from "./encryption/password.js";
 import type { NextFunction, Request, Response } from 'express';
-import { AppRequest } from '../routes/route-interface';
+import { AppRequest } from '../routes/route-interface.js';
 
 const noAuthentication = config.General && config.General.noAuthentication === true;
 
@@ -126,7 +126,7 @@ function checkCredentials(req: AppRequest, res: Response, next: NextFunction) {
     }
 }
 
-export = {
+export default {
     checkAuth,
     checkApiAuth,
     checkAppInitialized,

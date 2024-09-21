@@ -1,20 +1,10 @@
-const path = require('path');
-const assetPath = require('./src/services/asset_path');
+import { fileURLToPath } from "url";
+import path from "path";
+import assetPath from "./src/services/asset_path.js";
 
-module.exports = {
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+export default {
     mode: 'production',
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-        ],
-    },
-    resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
-    },
     entry: {
         setup: './src/public/app/setup.js',
         mobile: './src/public/app/mobile.js',
@@ -22,7 +12,7 @@ module.exports = {
     },
     output: {
         publicPath: `${assetPath}/app-dist/`,
-        path: path.resolve(__dirname, 'src/public/app-dist'),
+        path: path.resolve(rootDir, 'src/public/app-dist'),
         filename: '[name].js',
     },
     devtool: 'source-map',

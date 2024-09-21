@@ -135,7 +135,11 @@ function ajax(url, method, data, headers, silentNotFound) {
                 });
             },
             error: async jqXhr => {
-                if (silentNotFound && jqXhr.status === 404) {
+                if (jqXhr.status === 0) {
+                    // don't report requests that are rejected by the browser, usually when the user is refreshing or going to a different page.
+                    rej("rejected by browser");
+                    return;
+                } else if (silentNotFound && jqXhr.status === 404) {
                     // report nothing
                 } else {
                     await reportError(method, url, jqXhr.status, jqXhr.responseText);

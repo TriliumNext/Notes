@@ -17,6 +17,7 @@ const TPL = `
     .note-title-widget input.note-title {
         font-size: 180%;
         border: 0;
+        margin: 2px 0px;
         min-width: 5em;
         width: 100%;
     }

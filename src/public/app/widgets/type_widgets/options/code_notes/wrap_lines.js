@@ -1,11 +1,12 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Wrap lines in code notes</h4>
+    <h4>${t("wrap_lines.wrap_lines_in_code_notes")}</h4>
     <label>
-        <input type="checkbox" class="line-wrap-enabled">
-        Enable Line Wrap (change might need a frontend reload to take effect)
+        <input type="checkbox" class="line-wrap-enabled form-check-input">
+        ${t("wrap_lines.enable_line_wrap")}
     </label>
 </div>`;
 

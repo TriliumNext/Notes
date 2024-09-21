@@ -1,7 +1,7 @@
-import BAttachment = require("../becca/entities/battachment");
-import BAttribute = require("../becca/entities/battribute");
-import BBranch = require("../becca/entities/bbranch");
-import BNote = require("../becca/entities/bnote");
+import BAttachment from "../becca/entities/battachment.js";
+import BAttribute from "../becca/entities/battribute.js";
+import BBranch from "../becca/entities/bbranch.js";
+import BNote from "../becca/entities/bnote.js";
 
 function mapNoteToPojo(note: BNote) {
     return {
@@ -64,7 +64,7 @@ function mapAttachmentToPojo(attachment: BAttachment) {
     };
 }
 
-export = {
+export default {
     mapNoteToPojo,
     mapBranchToPojo,
     mapAttributeToPojo,

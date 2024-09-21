@@ -1,26 +1,26 @@
 "use strict";
 
-import BAttribute = require('../../becca/entities/battribute');
-import utils = require('../../services/utils');
-import log = require('../../services/log');
-import noteService = require('../../services/notes');
-import attributeService = require('../../services/attributes');
-import BBranch = require('../../becca/entities/bbranch');
-import path = require('path');
-import protectedSessionService = require('../protected_session');
-import mimeService = require('./mime');
-import treeService = require('../tree');
-import yauzl = require("yauzl");
-import htmlSanitizer = require('../html_sanitizer');
-import becca = require('../../becca/becca');
-import BAttachment = require('../../becca/entities/battachment');
-import markdownService = require('./markdown');
-import TaskContext = require('../task_context');
-import BNote = require('../../becca/entities/bnote');
-import NoteMeta = require('../meta/note_meta');
-import AttributeMeta = require('../meta/attribute_meta');
+import BAttribute from "../../becca/entities/battribute.js";
+import utils from "../../services/utils.js";
+import log from "../../services/log.js";
+import noteService from "../../services/notes.js";
+import attributeService from "../../services/attributes.js";
+import BBranch from "../../becca/entities/bbranch.js";
+import path from "path";
+import protectedSessionService from "../protected_session.js";
+import mimeService from "./mime.js";
+import treeService from "../tree.js";
+import yauzl from "yauzl";
+import htmlSanitizer from "../html_sanitizer.js";
+import becca from "../../becca/becca.js";
+import BAttachment from "../../becca/entities/battachment.js";
+import markdownService from "./markdown.js";
+import TaskContext from "../task_context.js";
+import BNote from "../../becca/entities/bnote.js";
+import NoteMeta from "../meta/note_meta.js";
+import AttributeMeta from "../meta/attribute_meta.js";
 import { Stream } from 'stream';
-import { NoteType } from '../../becca/entities/rows';
+import { ALLOWED_NOTE_TYPES, NoteType } from '../../becca/entities/rows.js';
 
 interface MetaFile {
     files: NoteMeta[]
@@ -457,7 +457,7 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
         }
 
         let { mime } = noteMeta ? noteMeta : detectFileTypeAndMime(taskContext, filePath);
-        if (!mime) {
+        if (mime == null) {
             throw new Error("Unable to resolve mime type.");
         }
 
@@ -499,10 +499,6 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
             }
         }
         else {
-            if (typeof content !== "string") {
-                throw new Error("Incorrect content type.");
-            }
-
             ({note} = noteService.createNewNote({
                 parentNoteId: parentNoteId,
                 title: noteTitle || "",
@@ -633,11 +629,17 @@ function readContent(zipfile: yauzl.ZipFile, entry: yauzl.Entry): Promise<Buffer
 function readZipFile(buffer: Buffer, processEntryCallback: (zipfile: yauzl.ZipFile, entry: yauzl.Entry) => void) {
     return new Promise((res, rej) => {
         yauzl.fromBuffer(buffer, {lazyEntries: true, validateEntrySizes: false}, function(err, zipfile) {
-            if (err) throw err;
+            if (err) rej(err);
             if (!zipfile) throw new Error("Unable to read zip file.");
 
             zipfile.readEntry();
-            zipfile.on("entry", entry => processEntryCallback(zipfile, entry));
+            zipfile.on("entry", async entry => {
+                try {
+                    await processEntryCallback(zipfile, entry);
+                } catch (e) {
+                    rej(e);
+                }
+            });
             zipfile.on("end", res);
         });
     });
@@ -653,9 +655,13 @@ function resolveNoteType(type: string | undefined): NoteType {
         return 'webView';
     }
 
-    return "text";
+    if (type && (ALLOWED_NOTE_TYPES as readonly string[]).includes(type)) {
+        return type as NoteType;
+    } else {
+        return "text";
+    }
 }
 
-export = {
+export default {
     importZip
 };

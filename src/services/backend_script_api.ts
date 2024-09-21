@@ -1,39 +1,39 @@
-import log = require('./log');
-import noteService = require('./notes');
-import sql = require('./sql');
-import utils = require('./utils');
-import attributeService = require('./attributes');
-import dateNoteService = require('./date_notes');
-import treeService = require('./tree');
-import config = require('./config');
-import axios = require('axios');
-import dayjs = require('dayjs');
-import xml2js = require('xml2js');
-import cloningService = require('./cloning');
-import appInfo = require('./app_info');
-import searchService = require('./search/services/search');
-import SearchContext = require('./search/search_context');
-import becca = require('../becca/becca');
-import ws = require('./ws');
-import SpacedUpdate = require('./spaced_update');
-import specialNotesService = require('./special_notes');
-import branchService = require('./branches');
-import exportService = require('./export/zip');
-import syncMutex = require('./sync_mutex');
-import backupService = require('./backup');
-import optionsService = require('./options');
-import BNote = require('../becca/entities/bnote');
-import AbstractBeccaEntity = require('../becca/entities/abstract_becca_entity');
-import BBranch = require('../becca/entities/bbranch');
-import BAttribute = require('../becca/entities/battribute');
-import BAttachment = require('../becca/entities/battachment');
-import BRevision = require('../becca/entities/brevision');
-import BEtapiToken = require('../becca/entities/betapi_token');
-import BOption = require('../becca/entities/boption');
-import { AttributeRow, AttributeType, NoteType } from '../becca/entities/rows';
-import Becca from '../becca/becca-interface';
-import { NoteParams } from './note-interface';
-import { ApiParams } from './backend_script_api_interface';
+import log from "./log.js";
+import noteService from "./notes.js";
+import sql from "./sql.js";
+import utils from "./utils.js";
+import attributeService from "./attributes.js";
+import dateNoteService from "./date_notes.js";
+import treeService from "./tree.js";
+import config from "./config.js";
+import axios from "axios";
+import dayjs from "dayjs";
+import xml2js from "xml2js";
+import cloningService from "./cloning.js";
+import appInfo from "./app_info.js";
+import searchService from "./search/services/search.js";
+import SearchContext from "./search/search_context.js";
+import becca from "../becca/becca.js";
+import ws from "./ws.js";
+import SpacedUpdate from "./spaced_update.js";
+import specialNotesService from "./special_notes.js";
+import branchService from "./branches.js";
+import exportService from "./export/zip.js";
+import syncMutex from "./sync_mutex.js";
+import backupService from "./backup.js";
+import optionsService from "./options.js";
+import BNote from "../becca/entities/bnote.js";
+import AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
+import BBranch from "../becca/entities/bbranch.js";
+import BAttribute from "../becca/entities/battribute.js";
+import BAttachment from "../becca/entities/battachment.js";
+import BRevision from "../becca/entities/brevision.js";
+import BEtapiToken from "../becca/entities/betapi_token.js";
+import BOption from "../becca/entities/boption.js";
+import { AttributeRow } from '../becca/entities/rows.js';
+import Becca from '../becca/becca-interface.js';
+import { NoteParams } from './note-interface.js';
+import { ApiParams } from './backend_script_api_interface.js';
 
 
 /**
@@ -63,7 +63,7 @@ interface Api {
      * Note where the script started executing (entrypoint).
      * As an analogy, in C this would be the file which contains the main() function of the current process.
      */
-    startNote?: BNote;
+    startNote?: BNote | null;
 
     /**
      * Note where the script is currently executing. This comes into play when your script is spread in multiple code
@@ -76,7 +76,7 @@ interface Api {
     /**
      * Entity whose event triggered this execution
      */
-    originEntity?: AbstractBeccaEntity<any>;
+    originEntity?: AbstractBeccaEntity<any> | null;
     
     /**
      * Axios library for HTTP requests. See {@link https://axios-http.com} for documentation
@@ -114,13 +114,13 @@ interface Api {
     
     /**
      * This is a powerful search method - you can search by attributes and their values, e.g.:
-     * "#dateModified =* MONTH AND #log". See {@link https://github.com/zadam/trilium/wiki/Search} for full documentation for all options
+     * "#dateModified =* MONTH AND #log". See {@link https://triliumnext.github.io/Docs/Wiki/search.html} for full documentation for all options
      */
     searchForNotes(query: string, searchParams: SearchParams): BNote[];
     
     /**
      * This is a powerful search method - you can search by attributes and their values, e.g.:
-     * "#dateModified =* MONTH AND #log". See {@link https://github.com/zadam/trilium/wiki/Search} for full documentation for all options
+     * "#dateModified =* MONTH AND #log". See {@link https://triliumnext.github.io/Docs/Wiki/search.html} for full documentation for all options
      */
     searchForNote(query: string, searchParams: SearchParams): BNote | null;
     
@@ -251,7 +251,7 @@ interface Api {
      */
     sortNotes(parentNoteId: string, sortConfig: {
         /** 'title', 'dateCreated', 'dateModified' or a label name
-          * See {@link https://github.com/zadam/trilium/wiki/Sorting} for details. */
+          * See {@link https://triliumnext.github.io/Docs/Wiki/sorting.html} for details. */
         sortBy?: string;
         reverse?: boolean;
         foldersFirst?: boolean;
@@ -371,7 +371,7 @@ interface Api {
      * This object contains "at your risk" and "no BC guarantees" objects for advanced use cases.
      */
     __private: {
-        /** provides access to the backend in-memory object graph, see {@link https://github.com/zadam/trilium/blob/master/src/becca/becca.js} */
+        /** provides access to the backend in-memory object graph, see {@link Becca} */
         becca: Becca;
     };
 }
@@ -651,6 +651,6 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     }
 }
 
-export = BackendScriptApi as any as {
+export default BackendScriptApi as any as {
     new (currentNote: BNote, apiParams: ApiParams): Api
 };

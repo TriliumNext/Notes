@@ -1,5 +1,6 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import attributeService from "../../services/attributes.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="book-properties-widget">
@@ -15,32 +16,33 @@ const TPL = `
     </style>
 
     <div style="display: flex; align-items: baseline">
-        <span style="white-space: nowrap">View type:&nbsp; &nbsp;</span>
+        <span style="white-space: nowrap">${t("book_properties.view_type")}:&nbsp; &nbsp;</span>
         
-        <select class="view-type-select form-control form-control-sm">
-            <option value="grid">Grid</option>
-            <option value="list">List</option>
+        <select class="view-type-select form-select form-select-sm">
+            <option value="grid">${t("book_properties.grid")}</option>
+            <option value="list">${t("book_properties.list")}</option>
         </select>
     </div>
     
     <button type="button"
             class="collapse-all-button btn btn-sm"
-            title="Collapse all notes">
+            title="${t("book_properties.collapse_all_notes")}">
     
         <span class="bx bx-layer-minus"></span>
         
-        Collapse
+        ${t("book_properties.collapse")}
     </button>
 
     <button type="button"
             class="expand-children-button btn btn-sm"
-            title="Expand all children">
+            title="${t("book_properties.expand_all_children")}">
         <span class="bx bx-move-vertical"></span>
         
-        Expand
+        ${t("book_properties.expand")}
     </button>
 </div>
 `;
+
 export default class BookPropertiesWidget extends NoteContextAwareWidget {
     get name() {
         return "bookProperties";
@@ -58,7 +60,7 @@ export default class BookPropertiesWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             activate: true,
-            title: 'Book Properties',
+            title: t("book_properties.book_properties"),
             icon: 'bx bx-book'
         };
     }
@@ -101,7 +103,7 @@ export default class BookPropertiesWidget extends NoteContextAwareWidget {
 
     async toggleViewType(type) {
         if (type !== 'list' && type !== 'grid') {
-            throw new Error(`Invalid view type '${type}'`);
+            throw new Error(t("book_properties.invalid_view_type", { type }));
         }
 
         await attributeService.setLabel(this.noteId, 'viewType', type);

@@ -1,8 +1,8 @@
 "use strict";
 
-import Expression = require('./expression');
-import NoteSet = require('../note_set');
-import SearchContext = require('../search_context');
+import Expression from "./expression.js";
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
 
 class ParentOfExp extends Expression {
     private subExpression: Expression;
@@ -36,4 +36,4 @@ class ParentOfExp extends Expression {
     }
 }
 
-export = ParentOfExp;
+export default ParentOfExp;

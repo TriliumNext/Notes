@@ -1,12 +1,14 @@
 "use strict";
 
-import sql = require('../../services/sql');
-import log = require('../../services/log');
-import backupService = require('../../services/backup');
-import anonymizationService = require('../../services/anonymization');
-import consistencyChecksService = require('../../services/consistency_checks');
+import sql from "../../services/sql.js";
+import log from "../../services/log.js";
+import backupService from "../../services/backup.js";
+import anonymizationService from "../../services/anonymization.js";
+import consistencyChecksService from "../../services/consistency_checks.js";
 import { Request } from 'express';
-import ValidationError = require('../../errors/validation_error');
+import ValidationError from "../../errors/validation_error.js";
+import sql_init from "../../services/sql_init.js";
+import becca_loader from "../../becca/becca_loader.js";
 
 function getExistingBackups() {
     return backupService.getExistingBackups();
@@ -26,6 +28,12 @@ function vacuumDatabase() {
 
 function findAndFixConsistencyIssues() {
     consistencyChecksService.runOnDemandChecks(true);
+}
+
+async function rebuildIntegrationTestDatabase() {
+    sql.rebuildIntegrationTestDatabase();
+    sql_init.initializeDb();
+    becca_loader.load();
 }
 
 function getExistingAnonymizedDatabases() {
@@ -49,11 +57,12 @@ function checkIntegrity() {
     };
 }
 
-export = {
+export default {
     getExistingBackups,
     backupDatabase,
     vacuumDatabase,
     findAndFixConsistencyIssues,
+    rebuildIntegrationTestDatabase,
     getExistingAnonymizedDatabases,
     anonymize,
     checkIntegrity

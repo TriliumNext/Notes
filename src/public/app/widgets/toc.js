@@ -19,6 +19,7 @@ import RightPanelWidget from "./right_panel_widget.js";
 import options from "../services/options.js";
 import OnClickButtonWidget from "./buttons/onclick_button.js";
 import appContext from "../components/app_context.js";
+import libraryLoader from "../services/library_loader.js";
 
 const TPL = `<div class="toc-widget">
     <style>
@@ -40,7 +41,6 @@ const TPL = `<div class="toc-widget">
         .toc li {
             cursor: pointer;
             text-align: justify;
-            text-justify: distribute;
             word-wrap: break-word;
             hyphens: auto;
         }
@@ -61,7 +61,7 @@ export default class TocWidget extends RightPanelWidget {
     get widgetButtons() {
         return [
             new OnClickButtonWidget()
-                .icon("bx-slider")
+                .icon("bx-cog")
                 .title("Options")
                 .titlePlacement("left")
                 .onClick(() => appContext.tabManager.openContextWithNote('_optionsTextNotes', {activate: true}))
@@ -121,6 +121,52 @@ export default class TocWidget extends RightPanelWidget {
     }
 
     /**
+     * Rendering formulas in strings using katex
+     *
+     * @param {string} html Note's html content
+     * @returns {string} The HTML content with mathematical formulas rendered by KaTeX.
+     */  
+    async replaceMathTextWithKatax(html) {
+        const mathTextRegex = /<span class="math-tex">\\\(([\s\S]*?)\\\)<\/span>/g;
+        var matches = [...html.matchAll(mathTextRegex)];
+        let modifiedText = html;
+    
+        if (matches.length > 0) {
+            // Process all matches asynchronously
+            for (const match of matches) {
+                let latexCode = match[1];
+                let rendered;
+    
+                try {
+                    rendered = katex.renderToString(latexCode, {
+                        throwOnError: false
+                    });
+                } catch (e) {
+                    if (e instanceof ReferenceError && e.message.includes('katex is not defined')) {
+                        // Load KaTeX if it is not already loaded
+                        await libraryLoader.requireLibrary(libraryLoader.KATEX);
+                        try {
+                            rendered = katex.renderToString(latexCode, {
+                                throwOnError: false
+                            });
+                        } catch (renderError) {
+                            console.error("KaTeX rendering error after loading library:", renderError);
+                            rendered = match[0]; // Fall back to original if error persists
+                        }
+                    } else {
+                        console.error("KaTeX rendering error:", e);
+                        rendered = match[0]; // Fall back to original on error
+                    }
+                }
+    
+                // Replace the matched formula in the modified text
+                modifiedText = modifiedText.replace(match[0], rendered);
+            }
+        }
+        return modifiedText;
+    }
+
+    /**
      * Builds a jquery table of contents.
      *
      * @param {string} html Note's html content
@@ -128,7 +174,7 @@ export default class TocWidget extends RightPanelWidget {
      *         with an onclick event that will cause the document to scroll to
      *         the desired position.
      */
-    getToc(html) {
+    async getToc(html) {
         // Regular expression for headings <h1>...</h1> using non-greedy
         // matching and backreferences
         const headingTagsRegex = /<h(\d+)[^>]*>(.*?)<\/h\1>/gi;
@@ -167,8 +213,8 @@ export default class TocWidget extends RightPanelWidget {
             // Create the list item and set up the click callback
             //
 
-            const headingText = $("<div>").html(m[2]).text();
-            const $li = $('<li>').text(headingText);
+            const headingText = await this.replaceMathTextWithKatax(m[2])
+            const $li = $('<li>').html(headingText);
             $li.on("click", () => this.jumpToHeading(headingIndex));
             $ols[$ols.length - 1].append($li);
             headingCount = headingIndex;
@@ -228,9 +274,17 @@ export default class TocWidget extends RightPanelWidget {
         this.noteContext.viewScope.tocTemporarilyHidden = true;
         await this.refresh();
         this.triggerCommand('reEvaluateRightPaneVisibility');
+        appContext.triggerEvent("reEvaluateTocWidgetVisibility", { noteId: this.noteId });
     }
 
-    async entitiesReloadedEvent({loadResults}) {
+    async showTocWidgetEvent({ noteId }) {
+        if (this.noteId === noteId) {
+            await this.refresh();
+            this.triggerCommand('reEvaluateRightPaneVisibility');
+        }
+    }
+
+    async entitiesReloadedEvent({ loadResults }) {
         if (loadResults.isNoteContentReloaded(this.noteId)) {
             await this.refresh();
         } else if (loadResults.getAttributeRows().find(attr => attr.type === 'label'

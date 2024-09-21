@@ -1,0 +1,95 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:    
+permissions:
+  contents: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  make-electron:
+    name: Make Electron
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+        os:
+          - name: macos
+            image: macos-latest
+            extension: dmg
+          - name: linux
+            image: ubuntu-latest
+            extension: deb
+          - name: windows
+            image: windows-latest
+            extension: exe
+    runs-on: ${{ matrix.os.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up node & dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Set up Python for appdmg to be installed
+        if: ${{ matrix.os.name == 'macos' }}
+        run: brew install python-setuptools
+      - name: Install dependencies
+        run: npm ci
+      - name: Update build info
+        run: npm run update-build-info
+      - name: Run electron-forge
+        run: npm run make-electron -- --arch=${{ matrix.arch }}
+      - name: Prepare artifacts (Unix)
+        if: runner.os != 'windows'
+        run: |
+          mkdir -p upload
+          file=$(find out/make -name '*.zip' -print -quit)
+          cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-${{ matrix.os.name }}-${{ matrix.arch }}.zip"
+          file=$(find out/make -name '*.${{ matrix.os.extension }}' -print -quit)
+          cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }}"
+      - name: Prepare artifacts (Windows)
+        if: runner.os == 'windows'
+        run: |
+          mkdir upload
+          $file = Get-ChildItem -Path out/make -Filter '*.zip' -Recurse | Select-Object -First 1
+          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ github.ref_name }}-${{ matrix.os.name }}-${{ matrix.arch }}.zip"
+          $file = Get-ChildItem -Path out/make -Filter '*.${{ matrix.os.extension }}' -Recurse | Select-Object -First 1
+          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ github.ref_name }}-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }}"      
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          fail_on_unmatched_files: true
+          files: upload/*.*
+  build_linux_server-x64:
+    name: Build Linux Server x86_64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up node & dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Linux server build (x86_64)
+        run: |
+          npm run update-build-info
+          ./bin/build-server.sh
+      - name: Prepare artifacts
+        if: runner.os != 'windows'
+        run: |
+          mkdir -p upload
+          file=$(find dist -name '*.tar.xz' -print -quit)
+          cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-server-linux-x64.tar.xz"
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          fail_on_unmatched_files: true
+          files: upload/*.*

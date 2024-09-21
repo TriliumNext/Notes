@@ -1,3 +1,4 @@
+import { t } from "../../../services/i18n.js";
 import server from "../../../services/server.js";
 import dialogService from "../../../services/dialog.js";
 import toastService from "../../../services/toast.js";
@@ -5,24 +6,24 @@ import OptionsWidget from "./options_widget.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>ETAPI</h4>
+    <h4>${t("etapi.title")}</h4>
     
-    <p>ETAPI is a REST API used to access Trilium instance programmatically, without UI. <br/>
-       See more details on <a href="https://github.com/zadam/trilium/wiki/ETAPI">wiki</a> and <a onclick="window.open('etapi/etapi.openapi.yaml')" href="etapi/etapi.openapi.yaml">ETAPI OpenAPI spec</a>.</p>
+    <p>${t("etapi.description")} <br/>
+       ${t("etapi.see_more")} <a href="https://triliumnext.github.io/Docs/Wiki/etapi.html">${t("etapi.wiki")}</a> ${t("etapi.and")} <a onclick="window.open('etapi/etapi.openapi.yaml')" href="etapi/etapi.openapi.yaml">${t("etapi.openapi_spec")}</a>.</p>
     
-    <button type="button" class="create-etapi-token btn btn-sm">Create new ETAPI token</button>
+    <button type="button" class="create-etapi-token btn btn-sm">${t("etapi.create_token")}</button>
 
-    <h5>Existing tokens</h5>
+    <h5>${t("etapi.existing_tokens")}</h5>
     
-    <div class="no-tokens-yet">There are no tokens yet. Click on the button above to create one.</div>
+    <div class="no-tokens-yet">${t("etapi.no_tokens_yet")}</div>
     
     <div style="overflow: auto; height: 500px;">
         <table class="tokens-table table table-stripped">
         <thead>
             <tr>
-                <th>Token name</th>
-                <th>Created</th>
-                <th>Actions</th>
+                <th>${t("etapi.token_name")}</th>
+                <th>${t("etapi.created")}</th>
+                <th>${t("etapi.actions")}</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -52,21 +53,21 @@ export default class EtapiOptions extends OptionsWidget {
 
         this.$widget.find(".create-etapi-token").on("click", async () => {
             const tokenName = await dialogService.prompt({
-                title: "New ETAPI token",
-                message: "Please enter new token's name",
-                defaultValue: "new token"
+                title: t("etapi.new_token_title"),
+                message: t("etapi.new_token_message"),
+                defaultValue: t("etapi.default_token_name")
             });
 
             if (!tokenName.trim()) {
-                toastService.showError("Token name can't be empty");
+                toastService.showError(t("etapi.error_empty_name"));
                 return;
             }
 
             const {authToken} = await server.post('etapi-tokens', {tokenName});
 
             await dialogService.prompt({
-                title: "ETAPI token created",
-                message: 'Copy the created token into clipboard. Trilium stores the token hashed and this is the last time you see it.',
+                title: t("etapi.token_created_title"),
+                message: t("etapi.token_created_message"),
                 defaultValue: authToken
             });
 
@@ -94,9 +95,9 @@ export default class EtapiOptions extends OptionsWidget {
                     .append($("<td>").text(token.name))
                     .append($("<td>").text(token.utcDateCreated))
                     .append($("<td>").append(
-                        $('<span class="bx bx-pen token-table-button" title="Rename this token"></span>')
+                        $('<span class="bx bx-pen token-table-button" title="${t("etapi.rename_token")}"></span>')
                             .on("click", () => this.renameToken(token.etapiTokenId, token.name)),
-                        $('<span class="bx bx-trash token-table-button" title="Delete / deactivate this token"></span>')
+                        $('<span class="bx bx-trash token-table-button" title="${t("etapi.delete_token")}"></span>')
                             .on("click", () => this.deleteToken(token.etapiTokenId, token.name))
                     ))
             );
@@ -105,8 +106,8 @@ export default class EtapiOptions extends OptionsWidget {
 
     async renameToken(etapiTokenId, oldName) {
         const tokenName = await dialogService.prompt({
-            title: "Rename token",
-            message: "Please enter new token's name",
+            title: t("etapi.rename_token_title"),
+            message: t("etapi.rename_token_message"),
             defaultValue: oldName
         });
 
@@ -120,7 +121,7 @@ export default class EtapiOptions extends OptionsWidget {
     }
 
     async deleteToken(etapiTokenId, name) {
-        if (!await dialogService.confirm(`Are you sure you want to delete ETAPI token "${name}"?`)) {
+        if (!await dialogService.confirm(t("etapi.delete_token_confirmation", { name }))) {
             return;
         }
 

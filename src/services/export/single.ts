@@ -1,12 +1,12 @@
 "use strict";
 
-import mimeTypes = require('mime-types');
-import html = require('html');
-import utils = require('../utils');
-import mdService = require('./md');
-import becca = require('../../becca/becca');
-import TaskContext = require('../task_context');
-import BBranch = require('../../becca/entities/bbranch');
+import mimeTypes from "mime-types";
+import html from "html";
+import utils from "../utils.js";
+import mdService from "./md.js";
+import becca from "../../becca/becca.js";
+import TaskContext from "../task_context.js";
+import BBranch from "../../becca/entities/bbranch.js";
 import { Response } from 'express';
 
 function exportSingleNote(taskContext: TaskContext, branch: BBranch, format: "html" | "markdown", res: Response) {
@@ -125,6 +125,6 @@ function inlineAttachments(content: string) {
     return content;
 }
 
-export = {
+export default {
     exportSingleNote
 };

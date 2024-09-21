@@ -1,5 +1,6 @@
-import noteTypeService = require('../services/note_types');
-import dateUtils = require('../services/date_utils');
+import noteTypeService from "../services/note_types.js";
+import dateUtils from "../services/date_utils.js";
+import becca from "../becca/becca.js";
 
 function mandatory(obj: unknown) {
     if (obj === undefined) {
@@ -64,8 +65,6 @@ function isNoteId(obj: unknown) {
         return;
     }
 
-    const becca = require('../becca/becca');
-
     if (typeof obj !== 'string') {
         return `'${obj}' is not a valid noteId`;
     }
@@ -107,7 +106,7 @@ function isValidEntityId(obj: unknown) {
     }
 }
 
-export = {
+export default {
     mandatory,
     notNull,
     isString,

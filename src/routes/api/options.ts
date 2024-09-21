@@ -1,9 +1,9 @@
 "use strict";
 
-import optionService = require('../../services/options');
-import log = require('../../services/log');
-import searchService = require('../../services/search/services/search');
-import ValidationError = require('../../errors/validation_error');
+import optionService from "../../services/options.js";
+import log from "../../services/log.js";
+import searchService from "../../services/search/services/search.js";
+import ValidationError from "../../errors/validation_error.js";
 import { Request } from 'express';
 
 // options allowed to be updated directly in the Options dialog
@@ -58,7 +58,9 @@ const ALLOWED_OPTIONS = new Set([
     'customSearchEngineName',
     'customSearchEngineUrl',
     'promotedAttributesOpenInRibbon',
-    'editedNotesOpenInRibbon'
+    'editedNotesOpenInRibbon',
+    'locale',
+    'firstDayOfWeek'
 ]);
 
 function getOptions() {
@@ -129,6 +131,28 @@ function getUserThemes() {
     return ret;
 }
 
+function getSupportedLocales() {
+    // TODO: Currently hardcoded, needs to read the list of available languages.
+    return [
+        {
+            "id": "en",
+            "name": "English"
+        },
+        {
+            "id": "es",
+            "name": "Español"
+        },
+        {
+            "id": "cn",
+            "name": "简体中文"
+        },
+        {
+            "id": "ro",
+            "name": "Română"
+        }
+    ];
+}
+
 function isAllowed(name: string) {
     return ALLOWED_OPTIONS.has(name)
         || name.startsWith("keyboardShortcuts")
@@ -136,9 +160,10 @@ function isAllowed(name: string) {
         || name.startsWith("hideArchivedNotes");
 }
 
-export = {
+export default {
     getOptions,
     updateOption,
     updateOptions,
-    getUserThemes
+    getUserThemes,
+    getSupportedLocales
 };

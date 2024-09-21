@@ -1,16 +1,17 @@
+import { t } from "../../../../services/i18n.js";
 import OptionsWidget from "../options_widget.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Ribbon widgets</h4>
+    <h4>${t('ribbon.widgets')}</h4>
     <label>
-        <input type="checkbox" class="promoted-attributes-open-in-ribbon">
-        Promoted Attributes ribbon tab will automatically open if promoted attributes are present on the note
+        <input type="checkbox" class="promoted-attributes-open-in-ribbon form-check-input">
+        ${t('ribbon.promoted_attributes_message')}
     </label>
     
     <label>
-        <input type="checkbox" class="edited-notes-open-in-ribbon">
-        Edited Notes ribbon tab will automatically open on day notes
+        <input type="checkbox" class="edited-notes-open-in-ribbon form-check-input">
+        ${t('ribbon.edited_notes_message')}
     </label>
 </div>`;
 

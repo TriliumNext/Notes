@@ -1,8 +1,8 @@
 "use strict";
 
-import Expression = require('./expression');
-import NoteSet = require('../note_set');
-import buildComparator = require('../services/build_comparator');
+import Expression from "./expression.js";
+import NoteSet from "../note_set.js";
+import buildComparator from "../services/build_comparator.js";
 
 /**
  * Search string is lower cased for case-insensitive comparison. But when retrieving properties,
@@ -87,4 +87,4 @@ class PropertyComparisonExp extends Expression {
     }
 }
 
-export = PropertyComparisonExp;
+export default PropertyComparisonExp;

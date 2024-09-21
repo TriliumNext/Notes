@@ -1,9 +1,9 @@
-import { TokenData } from "./types";
+import { TokenData, TokenStructure } from "./types.js";
 
 /**
  * This will create a recursive object from a list of tokens - tokens between parenthesis are grouped in a single array
  */
-function handleParens(tokens: (TokenData | TokenData[])[]) {
+function handleParens(tokens: TokenStructure) {
     if (tokens.length === 0) {
         return [];
     }
@@ -47,4 +47,4 @@ function handleParens(tokens: (TokenData | TokenData[])[]) {
     }
 }
 
-export = handleParens;
+export default handleParens;

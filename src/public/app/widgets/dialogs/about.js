@@ -1,48 +1,48 @@
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
+import { t } from "../../services/i18n.js";
 import BasicWidget from "../basic_widget.js";
+import openService from "../../services/open.js";
+
 
 const TPL = `
 <div class="about-dialog modal fade mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">About Trilium Notes</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t("about.title")}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table class="table table-borderless">
+                <table class="table table-borderless text-nowrap">
                     <tr>
-                        <th>Homepage:</th>
-                        <td><a href="https://github.com/zadam/trilium" class="external">https://github.com/zadam/trilium</a></td>
+                        <th>${t("about.homepage")}</th>
+                        <td><a href="https://github.com/TriliumNext/Notes" class="external">https://github.com/TriliumNext/Notes</a></td>
                     </tr>
                     <tr>
-                        <th>App version:</th>
+                        <th>${t("about.app_version")}</th>
                         <td class="app-version"></td>
                     </tr>
                     <tr>
-                        <th>DB version:</th>
+                        <th>${t("about.db_version")}</th>
                         <td class="db-version"></td>
                     </tr>
                     <tr>
-                        <th>Sync version:</th>
+                        <th>${t("about.sync_version")}</th>
                         <td class="sync-version"></td>
                     </tr>
                     <tr>
-                        <th>Build date:</th>
+                        <th>${t("about.build_date")}</th>
                         <td class="build-date"></td>
                     </tr>
 
                     <tr>
-                        <th>Build revision:</th>
+                        <th>${t("about.build_revision")}</th>
                         <td><a href="" class="build-revision external" target="_blank"></a></td>
                     </tr>
 
                     <tr>
-                        <th>Data directory:</th>
+                        <th>${t("about.data_directory")}</th>
                         <td class="data-directory"></td>
                     </tr>
                 </table>
@@ -70,8 +70,19 @@ export default class AboutDialog extends BasicWidget {
         this.$syncVersion.text(appInfo.syncVersion);
         this.$buildDate.text(appInfo.buildDate);
         this.$buildRevision.text(appInfo.buildRevision);
-        this.$buildRevision.attr('href', `https://github.com/zadam/trilium/commit/${appInfo.buildRevision}`);
-        this.$dataDirectory.text(appInfo.dataDirectory);
+        this.$buildRevision.attr('href', `https://github.com/TriliumNext/Notes/commit/${appInfo.buildRevision}`);
+        if (utils.isElectron()) {
+            this.$dataDirectory.html($('<a></a>', {
+                href: '#',
+                text: appInfo.dataDirectory,
+            }));
+            this.$dataDirectory.find("a").on('click', (event) => {
+                event.preventDefault();
+                openService.openDirectory(appInfo.dataDirectory);
+            })
+        } else {
+            this.$dataDirectory.text(appInfo.dataDirectory);
+        }
     }
 
     async openAboutDialogEvent() {

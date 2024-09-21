@@ -1,13 +1,14 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Heading Style</h4>
+    <h4>${t("heading_style.title")}</h4>
     
-    <select class="heading-style form-control">
-        <option value="plain">Plain</option>
-        <option value="underline">Underline</option>
-        <option value="markdown">Markdown-style</option>
+    <select class="heading-style form-select">
+        <option value="plain">${t("heading_style.plain")}</option>
+        <option value="underline">${t("heading_style.underline")}</option>
+        <option value="markdown">${t("heading_style.markdown")}</option>
     </select>
 </div>`;
 

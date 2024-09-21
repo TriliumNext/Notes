@@ -74,4 +74,4 @@ class SpacedUpdate {
     }
 }
 
-export = SpacedUpdate;
+export default SpacedUpdate;

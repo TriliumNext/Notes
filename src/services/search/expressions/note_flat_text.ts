@@ -1,12 +1,13 @@
 "use strict";
 
-import BNote = require("../../../becca/entities/bnote");
-import SearchContext = require("../search_context");
+import BNote from "../../../becca/entities/bnote.js";
+import SearchContext from "../search_context.js";
 
-import Expression = require('./expression');
-import NoteSet = require('../note_set');
-import becca = require('../../../becca/becca');
-import utils = require('../../utils');
+import Expression from "./expression.js";
+import NoteSet from "../note_set.js";
+import becca from "../../../becca/becca.js";
+import utils from "../../utils.js";
+import beccaService from "../../../becca/becca_service.js";
 
 class NoteFlatTextExp extends Expression {
     private tokens: string[];
@@ -18,8 +19,6 @@ class NoteFlatTextExp extends Expression {
     }
 
     execute(inputNoteSet: NoteSet, executionContext: any, searchContext: SearchContext) {
-        // has deps on SQL which breaks unit test so needs to be dynamically required
-        const beccaService = require('../../../becca/becca_service');
         const resultNoteSet = new NoteSet();
 
         /**
@@ -172,4 +171,4 @@ class NoteFlatTextExp extends Expression {
     }
 }
 
-export = NoteFlatTextExp;
+export default NoteFlatTextExp;

@@ -1,6 +1,7 @@
 import BasicWidget from "./basic_widget.js";
 import options from "../services/options.js";
 import utils from "../services/utils.js";
+import { t } from "../services/i18n.js";
 
 const TPL = `
 <div class="title-bar-buttons">
@@ -41,7 +42,7 @@ const TPL = `
     </style>
 
     <!-- divs act as a hitbox for the buttons, making them clickable on corners -->
-    <div class="top-btn" title="Keep this window on top. "><button class="btn bx bx-pin"></button></div>
+    <div class="top-btn" title="${t("title_bar_buttons.window-on-top")}"><button class="btn bx bx-pin"></button></div>
     <div class="minimize-btn"><button class="btn bx bx-minus"></button></div>
     <div class="maximize-btn"><button class="btn bx bx-checkbox"></button></div>
     <div class="close-btn"><button class="btn bx bx-x"></button></div>

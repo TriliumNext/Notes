@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import BasicWidget from "./basic_widget.js";
 import ws from "../services/ws.js";
 import options from "../services/options.js";
@@ -39,36 +40,30 @@ const TPL = `
 
     <div class="sync-status">
         <span class="sync-status-icon sync-status-unknown bx bx-time" 
-              data-toggle="tooltip" 
-              data-placement="right"
-              title="<p>Sync status will be known once the next sync attempt starts.</p><p>Click to trigger sync now.</p>">
+              data-bs-toggle="tooltip" 
+              title="${t("sync_status.unknown")}">
         </span>
         <span class="sync-status-icon sync-status-connected-with-changes bx bx-wifi"
-              data-toggle="tooltip" 
-              data-placement="right"
-              title="<p>Connected to the sync server. <br>There are some outstanding changes yet to be synced.</p><p>Click to trigger sync.</p>">
+              data-bs-toggle="tooltip" 
+              title="${t("sync_status.connected_with_changes")}">
             <span class="bx bxs-star sync-status-sub-icon"></span>
         </span>
         <span class="sync-status-icon sync-status-connected-no-changes bx bx-wifi" 
-              data-toggle="tooltip" 
-              data-placement="right"
-              title="<p>Connected to the sync server.<br>All changes have been already synced.</p><p>Click to trigger sync.</p>">
+              data-bs-toggle="tooltip" 
+              title="${t("sync_status.connected_no_changes")}">
         </span>
         <span class="sync-status-icon sync-status-disconnected-with-changes bx bx-wifi-off"
-              data-toggle="tooltip" 
-              data-placement="right"
-              title="<p>Establishing the connection to the sync server was unsuccessful.<br>There are some outstanding changes yet to be synced.</p><p>Click to trigger sync.</p>">
+              data-bs-toggle="tooltip" 
+              title="${t("sync_status.disconnected_with_changes")}">
             <span class="bx bxs-star sync-status-sub-icon"></span>
         </span>
         <span class="sync-status-icon sync-status-disconnected-no-changes bx bx-wifi-off" 
-              data-toggle="tooltip"
-              data-placement="right"
-              title="<p>Establishing the connection to the sync server was unsuccessful.<br>All known changes have been synced.</p><p>Click to trigger sync.</p>">
+              data-bs-toggle="tooltip"
+              title="${t("sync_status.disconnected_no_changes")}">
         </span>
         <span class="sync-status-icon sync-status-in-progress bx bx-analyse bx-spin" 
-              data-toggle="tooltip"
-              data-placement="right"
-              title="Sync with the server is in progress.">
+              data-bs-toggle="tooltip"
+              title="${t("sync_status.in_progress")}">
         </span>
     </div>
 </div>
@@ -86,10 +81,6 @@ export default class SyncStatusWidget extends BasicWidget {
         this.$widget = $(TPL);
         this.$widget.hide();
 
-        this.$widget.find('[data-toggle="tooltip"]').tooltip({
-            html: true
-        });
-
         this.$widget.find('.sync-status-icon:not(.sync-status-in-progress)')
             .on('click', () => syncService.syncNow());
 
@@ -101,6 +92,11 @@ export default class SyncStatusWidget extends BasicWidget {
             this.toggleInt(false);
             return;
         }
+
+        bootstrap.Tooltip.getOrCreateInstance(this.$widget.find(`.sync-status-${className}`), {
+            html: true,
+            placement: 'right',
+        });
 
         this.$widget.show();
         this.$widget.find('.sync-status-icon').hide();

@@ -3,75 +3,72 @@ import treeService from "../../services/tree.js";
 import importService from "../../services/import.js";
 import options from "../../services/options.js";
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="import-dialog modal fade mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Import into note</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t('import.importIntoNote')}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('import.close')}"></button>
             </div>
             <form class="import-form">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="import-file-upload-input"><strong>Choose import file</strong></label>
+                        <label for="import-file-upload-input"><strong>${t('import.chooseImportFile')}</strong></label>
 
                         <input type="file" class="import-file-upload-input form-control-file" multiple />
 
-                        <p>Content of the selected file(s) will be imported as child note(s) into <strong class="import-note-title"></strong>.
+                        <p>${t('import.importDescription')} <strong class="import-note-title"></strong>.
                     </div>
 
                     <div class="form-group">
-                        <strong>Options:</strong>
+                        <strong>${t('import.options')}:</strong>
 
                         <div class="checkbox">
-                            <label data-toggle="tooltip" title="Trilium <code>.zip</code> export files can contain executable scripts which may contain harmful behavior. Safe import will deactivate automatic execution of all imported scripts. Uncheck &quot;Safe import&quot; only if the imported tar archive is supposed to contain executable scripts and you completely trust the contents of the import file.">
+                            <label data-bs-toggle="tooltip" title="${t('import.safeImportTooltip')}">
                                 <input class="safe-import-checkbox" value="1" type="checkbox" checked>
-                                <span>Safe import</span>
+                                <span>${t('import.safeImport')}</span>
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-toggle="tooltip" title="If this is checked then Trilium will read <code>.zip</code>, <code>.enex</code> and <code>.opml</code> files and create notes from files insides those archives. If unchecked, then Trilium will attach the archives themselves to the note.">
+                            <label data-bs-toggle="tooltip" title="${t('import.explodeArchivesTooltip')}">
                                 <input class="explode-archives-checkbox" value="1" type="checkbox" checked>
-                                <span>Read contents of <code>.zip</code>, <code>.enex</code> and <code>.opml</code> archives.</span>
+                                <span>${t('import.explodeArchives')}</span>
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-toggle="tooltip" title="<p>If you check this option, Trilium will attempt to shrink the imported images by scaling and optimization which may affect the perceived image quality. If unchecked, images will be imported without changes.</p><p>This doesn't apply to <code>.zip</code> imports with metadata since it is assumed these files are already optimized.</p>">
-                                <input class="shrink-images-checkbox" value="1" type="checkbox" checked> <span>Shrink images</span>
+                            <label data-bs-toggle="tooltip" title="${t('import.shrinkImagesTooltip')}">
+                                <input class="shrink-images-checkbox" value="1" type="checkbox" checked> <span>${t('import.shrinkImages')}</span>
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
                                 <input class="text-imported-as-text-checkbox" value="1" type="checkbox" checked>
-
-                                Import HTML, Markdown and TXT as text notes if it's unclear from metadata
+                                ${t('import.textImportedAsText')}
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input class="code-imported-as-code-checkbox" value="1" type="checkbox" checked> Import recognized code files (e.g. <code>.json</code>) as code notes if it's unclear from metadata
+                                <input class="code-imported-as-code-checkbox" value="1" type="checkbox" checked> ${t('import.codeImportedAsCode')}
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
                                 <input class="replace-underscores-with-spaces-checkbox" value="1" type="checkbox" checked>
-
-                                Replace underscores with spaces in imported note names
+                                ${t('import.replaceUnderscoresWithSpaces')}
                             </label>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="import-button btn btn-primary">Import</button>
+                    <button class="import-button btn btn-primary">${t('import.import')}</button>
                 </div>
             </form>
         </div>
@@ -87,6 +84,8 @@ export default class ImportDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        bootstrap.Modal.getOrCreateInstance(this.$widget);
+
         this.$form = this.$widget.find(".import-form");
         this.$noteTitle = this.$widget.find(".import-note-title");
         this.$fileUploadInput = this.$widget.find(".import-file-upload-input");
@@ -116,12 +115,14 @@ export default class ImportDialog extends BasicWidget {
             }
         });
 
-        this.$widget.find('[data-toggle="tooltip"]').tooltip({
-            html: true
+        let _ = [...this.$widget.find('[data-bs-toggle="tooltip"]')].forEach(element => {
+            bootstrap.Tooltip.getOrCreateInstance(element, {
+                html: true
+            });
         });
     }
 
-    async showImportDialogEvent({noteId}) {
+    async showImportDialogEvent({ noteId }) {
         this.parentNoteId = noteId;
 
         this.$fileUploadInput.val('').trigger('change'); // to trigger Import button disabling listener below

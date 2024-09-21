@@ -1,3 +1,4 @@
+import { t } from "../../../services/i18n.js";
 import server from "../../../services/server.js";
 import protectedSessionHolder from "../../../services/protected_session_holder.js";
 import toastService from "../../../services/toast.js";
@@ -5,42 +6,39 @@ import OptionsWidget from "./options_widget.js";
 
 const TPL = `
 <div class="options-section">
-    <h4 class="password-heading"></h4>
+    <h4 class="password-heading">${t("password.heading")}</h4>
     
     <div class="alert alert-warning" role="alert" style="font-weight: bold; color: red !important;">
-      Please take care to remember your new password. Password is used for logging into the web interface and
-      to encrypt protected notes. If you forget your password, then all your protected notes are forever lost. 
-      In case you did forget your password, <a class="reset-password-button" href="javascript:">click here to reset it</a>.
+      ${t("password.alert_message")} <a class="reset-password-button" href="javascript:">${t("password.reset_link")}</a>
     </div>
     
     <form class="change-password-form">
         <div class="old-password-form-group form-group">
-            <label>Old password</label>
+            <label>${t("password.old_password")}</label>
             <input class="old-password form-control" type="password">
         </div>
     
         <div class="form-group">
-            <label>New password</label>
+            <label>${t("password.new_password")}</label>
             <input class="new-password1 form-control" type="password">
         </div>
     
         <div class="form-group">
-            <label>New password confirmation</label>
+            <label>${t("password.new_password_confirmation")}</label>
             <input class="new-password2 form-control" type="password">
         </div>
     
-        <button class="save-password-button btn btn-primary">Change password</button>
+        <button class="save-password-button btn btn-primary">${t("password.change_password")}</button>
     </form>
 </div>
 
 <div class="options-section">
-    <h4>Protected Session Timeout</h4>
+    <h4>${t("password.protected_session_timeout")}</h4>
 
-    <p>Protected session timeout is a time period after which the protected session is wiped from
-        the browser's memory. This is measured from the last interaction with protected notes. See <a href="https://github.com/zadam/trilium/wiki/Protected-notes" class="external">wiki</a> for more info.</p>
+    <p>${t("password.protected_session_timeout_description")} <a href="https://triliumnext.github.io/Docs/Wiki/protected-notes.html" class="external">${t("password.wiki")}</a> ${t("password.for_more_info")}</p>
 
     <div class="form-group">
-        <label>Protected session timeout (in seconds)</label>
+        <label>${t("password.protected_session_timeout_label")}</label>
         <input class="protected-session-timeout-in-seconds form-control options-number-input" type="number" min="60">
     </div>
 </div>`;
@@ -58,13 +56,13 @@ export default class PasswordOptions extends OptionsWidget {
         this.$resetPasswordButton = this.$widget.find(".reset-password-button");
 
         this.$resetPasswordButton.on("click", async () => {
-            if (confirm("By resetting the password you will forever lose access to all your existing protected notes. Do you really want to reset the password?")) {
+            if (confirm(t("password.reset_confirmation"))) {
                 await server.post("password/reset?really=yesIReallyWantToResetPasswordAndLoseAccessToMyProtectedNotes");
 
                 const options = await server.get('options');
                 this.optionsLoaded(options);
 
-                toastService.showError("Password has been reset. Please set new password");
+                toastService.showError(t("password.reset_success_message"));
             }
         });
 
@@ -79,8 +77,8 @@ export default class PasswordOptions extends OptionsWidget {
         const isPasswordSet = options.isPasswordSet === 'true';
 
         this.$widget.find(".old-password-form-group").toggle(isPasswordSet);
-        this.$passwordHeading.text(isPasswordSet ? 'Change Password' : 'Set Password');
-        this.$savePasswordButton.text(isPasswordSet ? 'Change Password' : 'Set Password');
+        this.$passwordHeading.text(isPasswordSet ? t("password.change_password_heading") : t("password.set_password_heading"));
+        this.$savePasswordButton.text(isPasswordSet ? t("password.change_password") : t("password.set_password"));
         this.$protectedSessionTimeout.val(options.protectedSessionTimeout);
     }
 
@@ -94,7 +92,7 @@ export default class PasswordOptions extends OptionsWidget {
         this.$newPassword2.val('');
 
         if (newPassword1 !== newPassword2) {
-            toastService.showError("New passwords are not the same.");
+            toastService.showError(t("password.password_mismatch"));
             return false;
         }
 
@@ -103,7 +101,7 @@ export default class PasswordOptions extends OptionsWidget {
             'new_password': newPassword1
         }).then(result => {
             if (result.success) {
-                toastService.showError("Password has been changed. Trilium will be reloaded after you press OK.");
+                toastService.showError(t("password.password_changed_success"));
 
                 // password changed so current protected session is invalid and needs to be cleared
                 protectedSessionHolder.resetProtectedSession();

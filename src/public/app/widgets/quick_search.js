@@ -5,6 +5,7 @@ import froca from "../services/froca.js";
 import utils from "../services/utils.js";
 import appContext from "../components/app_context.js";
 import shortcutService from "../services/shortcuts.js";
+import { t } from "../services/i18n.js";
 
 const TPL = `
 <div class="quick-search input-group input-group-sm">
@@ -30,13 +31,12 @@ const TPL = `
   </style>
   
   <div class="input-group-prepend">
-    <button class="btn btn-outline-secondary search-button" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-outline-secondary search-button" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="bx bx-search"></span>
     </button>
     <div class="dropdown-menu dropdown-menu-left"></div>
   </div>
-  <input type="text" class="form-control form-control-sm search-string" placeholder="Quick search">
-  </div>
+  <input type="text" class="form-control form-control-sm search-string" placeholder="${t("quick-search.placeholder")}">
 </div>`;
 
 const MAX_DISPLAYED_NOTES = 15;
@@ -44,21 +44,20 @@ const MAX_DISPLAYED_NOTES = 15;
 export default class QuickSearchWidget extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
+        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"));
 
         this.$searchString = this.$widget.find('.search-string');
         this.$dropdownMenu = this.$widget.find('.dropdown-menu');
-        this.$dropdownToggle = this.$widget.find('.search-button');
-        this.$dropdownToggle.dropdown();
 
         this.$widget.find('.input-group-prepend').on('shown.bs.dropdown', () => this.search());
 
-        if(utils.isMobile()) {
-            this.$searchString.keydown(e =>{
-                if(e.which === 13) {
+        if (utils.isMobile()) {
+            this.$searchString.keydown(e => {
+                if (e.which === 13) {
                     if (this.$dropdownMenu.is(":visible")) {
                         this.search(); // just update already visible dropdown
                     } else {
-                        this.$dropdownToggle.dropdown('show');
+                        this.dropdown.show();
                     }
                     e.preventDefault();
                     e.stopPropagation();
@@ -70,7 +69,7 @@ export default class QuickSearchWidget extends BasicWidget {
             if (this.$dropdownMenu.is(":visible")) {
                 this.search(); // just update already visible dropdown
             } else {
-                this.$dropdownToggle.dropdown('show');
+                this.dropdown.show();
             }
 
             this.$searchString.focus();
@@ -81,7 +80,7 @@ export default class QuickSearchWidget extends BasicWidget {
         });
 
         shortcutService.bindElShortcut(this.$searchString, 'esc', () => {
-            this.$dropdownToggle.dropdown('hide');
+            this.dropdown.hide();
         });
 
         return this.$widget;
@@ -91,25 +90,25 @@ export default class QuickSearchWidget extends BasicWidget {
         const searchString = this.$searchString.val().trim();
 
         if (!searchString) {
-            this.$dropdownToggle.dropdown("hide");
+            this.dropdown.hide();
             return;
         }
 
         this.$dropdownMenu.empty();
-        this.$dropdownMenu.append('<span class="dropdown-item disabled"><span class="bx bx-loader bx-spin"></span> Searching ...</span>');
+        this.$dropdownMenu.append(`<span class="dropdown-item disabled"><span class="bx bx-loader bx-spin"></span>${t("quick-search.searching")}</span>`);
 
-        const {searchResultNoteIds, error} = await server.get(`quick-search/${encodeURIComponent(searchString)}`);
+        const { searchResultNoteIds, error } = await server.get(`quick-search/${encodeURIComponent(searchString)}`);
 
         if (error) {
-            this.$searchString.tooltip({
+            let tooltip = new bootstrap.Tooltip(this.$searchString, {
                 trigger: 'manual',
                 title: `Search error: ${error}`,
                 placement: 'right'
             });
 
-            this.$searchString.tooltip("show");
+            tooltip.show();
 
-            setTimeout(() => this.$searchString.tooltip("dispose"), 4000);
+            setTimeout(() => tooltip.dispose(), 4000);
         }
 
         const displayedNoteIds = searchResultNoteIds.slice(0, Math.min(MAX_DISPLAYED_NOTES, searchResultNoteIds.length));
@@ -117,15 +116,15 @@ export default class QuickSearchWidget extends BasicWidget {
         this.$dropdownMenu.empty();
 
         if (displayedNoteIds.length === 0) {
-            this.$dropdownMenu.append('<span class="dropdown-item disabled">No results found</span>');
+            this.$dropdownMenu.append(`<span class="dropdown-item disabled">${t("quick-search.no-results")}</span>`);
         }
 
         for (const note of await froca.getNotes(displayedNoteIds)) {
-            const $link = await linkService.createLink(note.noteId, {showNotePath: true});
+            const $link = await linkService.createLink(note.noteId, { showNotePath: true });
             $link.addClass('dropdown-item');
             $link.attr("tabIndex", "0");
             $link.on('click', e => {
-                this.$dropdownToggle.dropdown("hide");
+                this.dropdown.hide();
 
                 if (!e.target || e.target.nodeName !== 'A') {
                     // click on the link is handled by link handling, but we want the whole item clickable
@@ -133,7 +132,7 @@ export default class QuickSearchWidget extends BasicWidget {
                 }
             });
             shortcutService.bindElShortcut($link, 'return', () => {
-                this.$dropdownToggle.dropdown("hide");
+                this.dropdown.hide();
 
                 appContext.tabManager.getActiveContext().setNote(note.noteId);
             });
@@ -142,11 +141,12 @@ export default class QuickSearchWidget extends BasicWidget {
         }
 
         if (searchResultNoteIds.length > MAX_DISPLAYED_NOTES) {
-            this.$dropdownMenu.append(`<span class="dropdown-item disabled">... and ${searchResultNoteIds.length - MAX_DISPLAYED_NOTES} more results.</span>`);
+            const numRemainingResults = (searchResultNoteIds.length - MAX_DISPLAYED_NOTES);
+            this.$dropdownMenu.append(`<span class="dropdown-item disabled">${t("quick-search.more-results", { number: numRemainingResults })}</span>`);
         }
 
         const $showInFullButton = $('<a class="dropdown-item" tabindex="0">')
-            .append($('<button class="btn btn-sm">Show in full search</button>'));
+            .append($(`<button class="btn btn-sm">${t("quick-search.show-in-full-search")}</button>`));
 
         this.$dropdownMenu.append($showInFullButton);
 
@@ -156,11 +156,11 @@ export default class QuickSearchWidget extends BasicWidget {
 
         shortcutService.bindElShortcut(this.$dropdownMenu.find('.dropdown-item:first'), 'up', () => this.$searchString.focus());
 
-        this.$dropdownToggle.dropdown('update');
+        this.dropdown.update();
     }
 
     async showInFullSearch() {
-        this.$dropdownToggle.dropdown("hide");
+        this.dropdown.hide();
 
         await appContext.triggerCommand('searchNotes', {
             searchString: this.$searchString.val()

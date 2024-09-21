@@ -1,5 +1,5 @@
-import sql = require('../../services/sql');
-import becca = require('../../becca/becca');
+import sql from "../../services/sql.js";
+import becca from "../../becca/becca.js";
 import { Request } from 'express';
 
 function getNoteSize(req: Request) {
@@ -45,7 +45,7 @@ function getSubtreeSize(req: Request) {
     };
 }
 
-export = {
+export default {
     getNoteSize,
     getSubtreeSize
 };

@@ -1,12 +1,13 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Network Connections</h4>
+    <h4>${t("network_connections.network_connections_title")}</h4>
         
     <label>
-        <input class="check-for-updates" type="checkbox" name="check-for-updates">
-        Check for updates automatically
+        <input class="check-for-updates form-check-input" type="checkbox" name="check-for-updates">
+        ${t("network_connections.check_for_updates")}
     </label>
 </div>`;
 

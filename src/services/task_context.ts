@@ -1,7 +1,7 @@
 "use strict";
 
-import { TaskData } from './task_context_interface';
-import ws = require('./ws');
+import { TaskData } from './task_context_interface.js';
+import ws from "./ws.js";
 
 // taskId => TaskContext
 const taskContexts: Record<string, TaskContext> = {};
@@ -77,4 +77,4 @@ class TaskContext {
     }
 }
 
-export = TaskContext;
+export default TaskContext;

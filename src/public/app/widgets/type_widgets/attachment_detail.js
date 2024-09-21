@@ -3,6 +3,7 @@ import AttachmentDetailWidget from "../attachment_detail.js";
 import linkService from "../../services/link.js";
 import froca from "../../services/froca.js";
 import utils from "../../services/utils.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="attachment-detail note-detail-printable">
@@ -47,15 +48,15 @@ export default class AttachmentDetailTypeWidget extends TypeWidget {
         this.$wrapper.empty();
         this.children = [];
 
-        const $helpButton = $('<button class="attachment-help-button" type="button" data-help-page="attachments" title="Open help page on attachments"><span class="bx bx-help-circle"></span></button>');
+        const $helpButton = $('<button class="attachment-help-button" type="button" data-help-page="attachments.html" title="' + t('attachment_detail.open_help_page') + '"><span class="bx bx-help-circle"></span></button>');
         utils.initHelpButtons($helpButton);
 
         this.$linksWrapper.empty().append(
-            "Owning note: ",
+            t('attachment_detail.owning_note'),
             await linkService.createLink(this.noteId),
-            ", you can also open the ",
+            t('attachment_detail.you_can_also_open'),
             await linkService.createLink(this.noteId, {
-                title: 'List of all attachments',
+                title: t('attachment_detail.list_of_all_attachments'),
                 viewScope: {
                     viewMode: 'attachments'
                 }
@@ -66,8 +67,7 @@ export default class AttachmentDetailTypeWidget extends TypeWidget {
         const attachment = await froca.getAttachment(this.attachmentId, true);
 
         if (!attachment) {
-            this.$wrapper.html("<strong>This attachment has been deleted.</strong>");
-
+            this.$wrapper.html("<strong>" + t('attachment_detail.attachment_deleted') + "</strong>");
             return;
         }
 

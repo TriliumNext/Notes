@@ -1,12 +1,12 @@
-import scriptService = require('./script');
-import cls = require('./cls');
-import sqlInit = require('./sql_init');
-import config = require('./config');
-import log = require('./log');
-import attributeService = require('../services/attributes');
-import protectedSessionService = require('../services/protected_session');
-import hiddenSubtreeService = require('./hidden_subtree');
-import BNote = require('../becca/entities/bnote');
+import scriptService from "./script.js";
+import cls from "./cls.js";
+import sqlInit from "./sql_init.js";
+import config from "./config.js";
+import log from "./log.js";
+import attributeService from "../services/attributes.js";
+import protectedSessionService from "../services/protected_session.js";
+import hiddenSubtreeService from "./hidden_subtree.js";
+import BNote from "../becca/entities/bnote.js";
 
 function getRunAtHours(note: BNote): number[] {
     try {

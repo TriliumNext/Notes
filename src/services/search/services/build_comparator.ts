@@ -33,11 +33,8 @@ const numericComparators: Record<string, Comparator<number>> = {
 function buildComparator(operator: string, comparedValue: string) {
     comparedValue = comparedValue.toLowerCase();
 
-    if (operator in numericComparators) {
-        const floatValue = parseFloat(comparedValue);
-        if (!isNaN(floatValue)) {
-            return numericComparators[operator](floatValue);
-        }
+    if (operator in numericComparators && !isNaN(+comparedValue)) {
+        return numericComparators[operator](parseFloat(comparedValue));
     }
 
     if (operator in stringComparators) {
@@ -45,4 +42,4 @@ function buildComparator(operator: string, comparedValue: string) {
     }
 }
 
-export = buildComparator;
+export default buildComparator;

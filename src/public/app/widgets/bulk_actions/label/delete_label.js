@@ -1,17 +1,18 @@
+import { t } from "../../../services/i18n.js";
 import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 
 const TPL = `
 <tr>
     <td>
-        Delete label:
+        ${t("delete_label.delete_label")}
     </td>
     <td>
         <input type="text" 
            class="form-control label-name"
            pattern="[\\p{L}\\p{N}_:]+"
-           title="Alphanumeric characters, underscore and colon are allowed characters."
-           placeholder="label name"/>
+           title="${t("delete_label.label_name_title")}"
+           placeholder="${t("delete_label.label_name_placeholder")}"/>
     </td>
     <td class="button-column">
         <span class="bx bx-x icon-action action-conf-del"></span>
@@ -20,7 +21,7 @@ const TPL = `
 
 export default class DeleteLabelBulkAction extends AbstractBulkAction {
     static get actionName() { return "deleteLabel"; }
-    static get actionTitle() { return "Delete label"; }
+    static get actionTitle() { return t("delete_label.delete_label"); }
 
     doRender() {
         const $action = $(TPL);

@@ -7,4 +7,4 @@ interface AttachmentMeta {
     dataFileName: string;
 }
 
-export = AttachmentMeta;
+export default AttachmentMeta;

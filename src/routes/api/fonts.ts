@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import optionService = require('../../services/options');
+import optionService from "../../services/options.js";
 
 function getFontCss(req: Request, res: Response) {
     res.setHeader('Content-Type', 'text/css');
@@ -35,6 +35,6 @@ function getFontCss(req: Request, res: Response) {
     res.send(style);
 }
 
-export = {
+export default {
     getFontCss
 };

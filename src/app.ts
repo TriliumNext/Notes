@@ -1,26 +1,45 @@
-import express = require('express');
-import path = require('path');
-import favicon = require('serve-favicon');
-import cookieParser = require('cookie-parser');
-import helmet = require('helmet');
-import compression = require('compression');
-import sessionParser = require('./routes/session_parser');
-import utils = require('./services/utils');
+import express from "express";
+import path from "path";
+import favicon from "serve-favicon";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import compression from "compression";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import sessionParser from "./routes/session_parser.js";
+import utils from "./services/utils.js";
+import assets from "./routes/assets.js";
+import routes from "./routes/routes.js";
+import custom from "./routes/custom.js";
+import error_handlers from "./routes/error_handlers.js";
+import { startScheduledCleanup } from "./services/erase.js";
+import sql_init from "./services/sql_init.js";
+import { t } from "i18next";
 
-require('./services/handlers');
-require('./becca/becca_loader');
+await import('./services/handlers.js');
+await import('./becca/becca_loader.js');
 
 const app = express();
 
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+
+// Initialize DB
+sql_init.initializeDb();
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(scriptDir, 'views'));
 app.set('view engine', 'ejs');
+
+app.use((req, res, next) => {
+    res.locals.t = t;
+    return next();
+});
 
 if (!utils.isElectron()) {
     app.use(compression()); // HTTP compression
 }
 
-app.use(helmet.default({
+app.use(helmet({
     hidePoweredBy: false, // errors out in electron
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
@@ -31,30 +50,32 @@ app.use(express.json({ limit: '500mb' }));
 app.use(express.raw({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public/root')));
-app.use(`/manifest.webmanifest`, express.static(path.join(__dirname, 'public/manifest.webmanifest')));
-app.use(`/robots.txt`, express.static(path.join(__dirname, 'public/robots.txt')));
+app.use(express.static(path.join(scriptDir, 'public/root')));
+app.use(`/manifest.webmanifest`, express.static(path.join(scriptDir, 'public/manifest.webmanifest')));
+app.use(`/robots.txt`, express.static(path.join(scriptDir, 'public/robots.txt')));
 app.use(sessionParser);
-app.use(favicon(`${__dirname}/../images/app-icons/win/icon.ico`));
+app.use(favicon(`${scriptDir}/../images/app-icons/icon.ico`));
 
-require('./routes/assets').register(app);
-require('./routes/routes').register(app);
-require('./routes/custom').register(app);
-require('./routes/error_handlers').register(app);
+assets.register(app);
+routes.register(app);
+custom.register(app);
+error_handlers.register(app);
 
 // triggers sync timer
-require('./services/sync');
+await import("./services/sync.js");
 
 // triggers backup timer
-require('./services/backup');
+await import('./services/backup.js');
 
 // trigger consistency checks timer
-require('./services/consistency_checks');
+await import('./services/consistency_checks.js');
 
-require('./services/scheduler');
+await import('./services/scheduler.js');
+
+startScheduledCleanup();
 
 if (utils.isElectron()) {
-    require('@electron/remote/main').initialize();
+    (await import('@electron/remote/main/index.js')).initialize();
 }
 
-export = app;
+export default app;

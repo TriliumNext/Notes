@@ -1,9 +1,10 @@
+import { t } from "../../../../services/i18n.js";
 import OptionsWidget from "../options_widget.js";
 import mimeTypesService from "../../../../services/mime_types.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Available MIME types in the dropdown</h4>
+    <h4>${t('code_mime_types.title')}</h4>
     
     <ul class="options-mime-types" style="list-style-type: none;"></ul>
 </div>`;
@@ -23,7 +24,7 @@ export default class CodeMimeTypesOptions extends OptionsWidget {
             const id = "code-mime-type-" + (idCtr++);
 
             this.$mimeTypes.append($("<li>")
-                .append($('<input type="checkbox">')
+                .append($('<input type="checkbox" class="form-check-input">')
                     .attr("id", id)
                     .attr("data-mime-type", mimeType.mime)
                     .prop("checked", mimeType.enabled))

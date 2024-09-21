@@ -1,33 +1,31 @@
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="help-dialog modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="min-width: 100%; height: 100%; margin: 0;">
         <div class="modal-content" style="height: auto;">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Help (full documentation is available <a class="external" href="https://github.com/zadam/trilium/wiki">online</a>)</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t('help.fullDocumentation')}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('help.close')}"></button>
             </div>
             <div class="modal-body" style="overflow: auto; height: calc(100vh - 70px);">
-                <div class="card-columns help-cards">
+                <div class="help-cards row row-cols-3 g-3">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Note navigation</h5>
+                            <h5 class="card-title">${t('help.noteNavigation')}</h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd>UP</kbd>, <kbd>DOWN</kbd> - go up/down in the list of notes</li>
-                                    <li><kbd>LEFT</kbd>, <kbd>RIGHT</kbd> - collapse/expand node</li>
-                                    <li><kbd data-command="backInNoteHistory">not set</kbd>, <kbd data-command="forwardInNoteHistory">not set</kbd> - go back / forwards in the history</li>
-                                    <li><kbd data-command="jumpToNote">not set</kbd> - show <a class="external" href="https://github.com/zadam/trilium/wiki/Note-navigation#jump-to-note">"Jump to" dialog</a></li>
-                                    <li><kbd data-command="scrollToActiveNote">not set</kbd> - scroll to active note</li>
-                                    <li><kbd>Backspace</kbd> - jump to parent note</li>
-                                    <li><kbd data-command="collapseTree">not set</kbd> - collapse whole note tree</li>
-                                    <li><kbd data-command="collapseSubtree">not set</kbd> - collapse sub-tree</li>
+                                    <li><kbd>UP</kbd>, <kbd>DOWN</kbd> - ${t('help.goUpDown')}</li>
+                                    <li><kbd>LEFT</kbd>, <kbd>RIGHT</kbd> - ${t('help.collapseExpand')}</li>
+                                    <li><kbd data-command="backInNoteHistory">${t('help.notSet')}</kbd>, <kbd data-command="forwardInNoteHistory">${t('help.notSet')}</kbd> - ${t('help.goBackForwards')}</li>
+                                    <li><kbd data-command="jumpToNote">${t('help.notSet')}</kbd> - ${t('help.showJumpToNoteDialog')}</li>
+                                    <li><kbd data-command="scrollToActiveNote">${t('help.notSet')}</kbd> - ${t('help.scrollToActiveNote')}</li>
+                                    <li><kbd>Backspace</kbd> - ${t('help.jumpToParentNote')}</li>
+                                    <li><kbd data-command="collapseTree">${t('help.notSet')}</kbd> - ${t('help.collapseWholeTree')}</li>
+                                    <li><kbd data-command="collapseSubtree">${t('help.notSet')}</kbd> - ${t('help.collapseSubTree')}</li>
                                 </ul>
                             </p>
                         </div>
@@ -35,19 +33,19 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Tab shortcuts</h5>
+                            <h5 class="card-title">${t('help.tabShortcuts')}</h5>
 
                             <p class="card-text">
                             <ul>
-                                <li><kbd>CTRL+click</kbd> (or middle mouse click) on note link opens note in a new tab</li>
+                                <li><kbd>CTRL+click</kbd> ${t('help.newTabNoteLink')}</li>
                             </ul>
 
-                            Only in desktop (electron build):
+                            ${t('help.onlyInDesktop')}:
                             <ul>
-                                <li><kbd data-command="openNewTab">not set</kbd> open empty tab</li>
-                                <li><kbd data-command="closeActiveTab">not set</kbd> close active tab</li>
-                                <li><kbd data-command="activateNextTab">not set</kbd> activate next tab</li>
-                                <li><kbd data-command="activatePreviousTab">not set</kbd> activate previous tab</li>
+                                <li><kbd data-command="openNewTab">${t('help.notSet')}</kbd> ${t('help.openEmptyTab')}</li>
+                                <li><kbd data-command="closeActiveTab">${t('help.notSet')}</kbd> ${t('help.closeActiveTab')}</li>
+                                <li><kbd data-command="activateNextTab">${t('help.notSet')}</kbd> ${t('help.activateNextTab')}</li>
+                                <li><kbd data-command="activatePreviousTab">${t('help.notSet')}</kbd> ${t('help.activatePreviousTab')}</li>
                             </ul>
                             </p>
                         </div>
@@ -55,13 +53,13 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Creating notes</h5>
+                            <h5 class="card-title">${t('help.creatingNotes')}</h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd data-command="createNoteAfter">not set</kbd> - create new note after the active note</li>
-                                    <li><kbd data-command="createNoteInto">not set</kbd> - create new sub-note into active note</li>
-                                    <li><kbd data-command="editBranchPrefix">not set</kbd> - edit <a class="external" href="https://github.com/zadam/trilium/wiki/Tree concepts#prefix">prefix</a> of active note clone</li>
+                                    <li><kbd data-command="createNoteAfter">${t('help.notSet')}</kbd> - ${t('help.createNoteAfter')}</li>
+                                    <li><kbd data-command="createNoteInto">${t('help.notSet')}</kbd> - ${t('help.createNoteInto')}</li>
+                                    <li><kbd data-command="editBranchPrefix">${t('help.notSet')}</kbd> - ${t('help.editBranchPrefix')}</li>
                                 </ul>
                             </p>
                         </div>
@@ -69,19 +67,19 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Moving / cloning notes</h5>
+                            <h5 class="card-title">${t('help.movingCloningNotes')}</h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd data-command="moveNoteUp">not set</kbd>, <kbd data-command="moveNoteDown">not set</kbd> - move note up/down in the note list</li>
-                                    <li><kbd data-command="moveNoteUpInHierarchy">not set</kbd>, <kbd data-command="moveNoteDownInHierarchy">not set</kbd> - move note up in the hierarchy</li>
-                                    <li><kbd data-command="addNoteAboveToSelection">not set</kbd>, <kbd data-command="addNoteBelowToSelection">not set</kbd> - multi-select note above/below</li>
-                                    <li><kbd data-command="selectAllNotesInParent">not set</kbd> - select all notes in the current level</li>
-                                    <li><kbd>Shift+click</kbd> - select note</li>
-                                    <li><kbd data-command="copyNotesToClipboard">not set</kbd> - copy active note (or current selection) into clipboard (used for <a class="external" href="https://github.com/zadam/trilium/wiki/Cloning notes">cloning</a>)</li>
-                                    <li><kbd data-command="cutNotesToClipboard">not set</kbd> - cut current (or current selection) note into clipboard (used for moving notes)</li>
-                                    <li><kbd data-command="pasteNotesFromClipboard">not set</kbd> - paste note(s) as sub-note into active note (which is either move or clone depending on whether it was copied or cut into clipboard)</li>
-                                    <li><kbd data-command="deleteNotes">not set</kbd> - delete note / sub-tree</li>
+                                    <li><kbd data-command="moveNoteUp">${t('help.notSet')}</kbd>, <kbd data-command="moveNoteDown">${t('help.notSet')}</kbd> - ${t('help.moveNoteUpDown')}</li>
+                                    <li><kbd data-command="moveNoteUpInHierarchy">${t('help.notSet')}</kbd>, <kbd data-command="moveNoteDownInHierarchy">${t('help.notSet')}</kbd> - ${t('help.moveNoteUpHierarchy')}</li>
+                                    <li><kbd data-command="addNoteAboveToSelection">${t('help.notSet')}</kbd>, <kbd data-command="addNoteBelowToSelection">${t('help.notSet')}</kbd> - ${t('help.multiSelectNote')}</li>
+                                    <li><kbd data-command="selectAllNotesInParent">${t('help.notSet')}</kbd> - ${t('help.selectAllNotes')}</li>
+                                    <li><kbd>Shift+click</kbd> - ${t('help.selectNote')}</li>
+                                    <li><kbd data-command="copyNotesToClipboard">${t('help.notSet')}</kbd> - ${t('help.copyNotes')}</li>
+                                    <li><kbd data-command="cutNotesToClipboard">${t('help.notSet')}</kbd> - ${t('help.cutNotes')}</li>
+                                    <li><kbd data-command="pasteNotesFromClipboard">${t('help.notSet')}</kbd> - ${t('help.pasteNotes')}</li>
+                                    <li><kbd data-command="deleteNotes">${t('help.notSet')}</kbd> - ${t('help.deleteNotes')}</li>
                                 </ul>
                             </p>
                         </div>
@@ -89,17 +87,16 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Editing notes</h5>
+                            <h5 class="card-title">${t('help.editingNotes')}</h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd data-command="editNoteTitle">not set</kbd> in tree pane will switch from tree pane into note title. Enter from note title will switch focus to text editor.
-                                        <kbd data-command="scrollToActiveNote">not set</kbd> will switch back from editor to tree pane.</li>
-                                    <li><kbd>Ctrl+K</kbd> - create / edit external link</li>
-                                    <li><kbd data-command="addLinkToText">not set</kbd> - create internal link</li>
-                                    <li><kbd data-command="followLinkUnderCursor">not set</kbd> - follow link under cursor</li>
-                                    <li><kbd data-command="insertDateTimeToText">not set</kbd> - insert current date and time at caret position</li>
-                                    <li><kbd data-command="scrollToActiveNote">not set</kbd> - jump away to the tree pane and scroll to active note</li>
+                                    <li><kbd data-command="editNoteTitle">${t('help.notSet')}</kbd> ${t('help.editNoteTitle')}</li>
+                                    <li><kbd>Ctrl+K</kbd> - ${t('help.createEditLink')}</li>
+                                    <li><kbd data-command="addLinkToText">${t('help.notSet')}</kbd> - ${t('help.createInternalLink')}</li>
+                                    <li><kbd data-command="followLinkUnderCursor">${t('help.notSet')}</kbd> - ${t('help.followLink')}</li>
+                                    <li><kbd data-command="insertDateTimeToText">${t('help.notSet')}</kbd> - ${t('help.insertDateTime')}</li>
+                                    <li><kbd data-command="scrollToActiveNote">${t('help.notSet')}</kbd> - ${t('help.jumpToTreePane')}</li>
                                 </ul>
                             </p>
                         </div>
@@ -107,14 +104,14 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title"><a class="external" href="https://github.com/zadam/trilium/wiki/Text-notes#autoformat">Markdown-like autoformatting</a></h5>
+                            <h5 class="card-title"><a class="external" href="https://triliumnext.github.io/Docs/Wiki/text-notes.html#markdown--autoformat">${t('help.markdownAutoformat')}</a></h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd>##</kbd>, <kbd>###</kbd>, <kbd>####</kbd> etc. followed by space for headings</li>
-                                    <li><kbd>*</kbd> or <kbd>-</kbd> followed by space for bullet list</li>
-                                    <li><kbd>1.</kbd> or <kbd>1)</kbd> followed by space for numbered list</li>
-                                    <li>start a line with <kbd>&gt;</kbd> followed by space for block quote</li>
+                                    <li><kbd>##</kbd>, <kbd>###</kbd>, <kbd>####</kbd> ${t('help.headings')}</li>
+                                    <li>${t('help.bulletList')}</li>
+                                    <li>${t('help.numberedList')}</li>
+                                    <li>${t('help.blockQuote')}</li>
                                 </ul>
                             </p>
                         </div>
@@ -122,13 +119,13 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Troubleshooting</h5>
+                            <h5 class="card-title">${t('help.troubleshooting')}</h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd data-command="reloadFrontendApp">not set</kbd> - reload Trilium frontend</li>
-                                    <li><kbd data-command="openDevTools">not set</kbd> - show developer tools</li>
-                                    <li><kbd data-command="showSQLConsole">not set</kbd> - show SQL console</li>
+                                    <li><kbd data-command="reloadFrontendApp">${t('help.notSet')}</kbd> - ${t('help.reloadFrontend')}</li>
+                                    <li><kbd data-command="openDevTools">${t('help.notSet')}</kbd> - ${t('help.showDevTools')}</li>
+                                    <li><kbd data-command="showSQLConsole">${t('help.notSet')}</kbd> - ${t('help.showSQLConsole')}</li>
                                 </ul>
                             </p>
                         </div>
@@ -136,12 +133,12 @@ const TPL = `
 
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Other</h5>
+                            <h5 class="card-title">${t('help.other')}</h5>
 
                             <p class="card-text">
                                 <ul>
-                                    <li><kbd data-command="quickSearch">not set</kbd> - focus on quick search input</li>
-                                    <li><kbd data-command="findInText">not set</kbd> - in page search</li>
+                                    <li><kbd data-command="quickSearch">${t('help.notSet')}</kbd> - ${t('help.quickSearch')}</li>
+                                    <li><kbd data-command="findInText">${t('help.notSet')}</kbd> - ${t('help.inPageSearch')}</li>
                                 </ul>
                             </p>
                         </div>

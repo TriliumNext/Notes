@@ -1,9 +1,9 @@
 "use strict";
 
-import Expression = require('./expression');
-import NoteSet = require('../note_set');
-import becca = require('../../../becca/becca');
-import SearchContext = require('../search_context');
+import Expression from "./expression.js";
+import NoteSet from "../note_set.js";
+import becca from "../../../becca/becca.js";
+import SearchContext from "../search_context.js";
 
 class RelationWhereExp extends Expression {
     private relationName: string;
@@ -42,4 +42,4 @@ class RelationWhereExp extends Expression {
     }
 }
 
-export = RelationWhereExp;
+export default RelationWhereExp;

@@ -4,6 +4,7 @@ import bulkActionService from "../../services/bulk_action.js";
 import utils from "../../services/utils.js";
 import server from "../../services/server.js";
 import toastService from "../../services/toast.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="bulk-actions-dialog modal mx-auto" tabindex="-1" role="dialog">
@@ -37,32 +38,27 @@ const TPL = `
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Bulk actions</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0 !important;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t('bulk_actions.bulk_actions')}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('bulk_actions.close')}"></button>
             </div>
             <div class="modal-body">
-                <h4>Affected notes: <span class="affected-note-count">0</span></h4>
+                <h4>${t('bulk_actions.affected_notes')}: <span class="affected-note-count">0</span></h4>
 
                 <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="include-descendants form-check-input" type="checkbox" value="">
-                        Include descendants of the selected notes
-                    </label>
+                    <input class="include-descendants form-check-input" type="checkbox" value="">
+                    <label class="form-check-label">${t('bulk_actions.include_descendants')}</label>
                 </div>
 
-                <h4>Available actions</h4>
+                <h4>${t('bulk_actions.available_actions')}</h4>
 
                 <table class="bulk-available-action-list"></table>
 
-                <h4>Chosen actions</h4>
+                <h4>${t('bulk_actions.chosen_actions')}</h4>
 
                 <table class="bulk-existing-action-list"></table>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="execute-bulk-actions btn btn-primary">Execute bulk actions</button>
+                <button type="submit" class="execute-bulk-actions btn btn-primary">${t('bulk_actions.execute_bulk_actions')}</button>
             </div>
         </div>
     </div>
@@ -71,7 +67,6 @@ const TPL = `
 export default class BulkActionsDialog extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
-
         this.$includeDescendants = this.$widget.find(".include-descendants");
         this.$includeDescendants.on("change", () => this.refresh());
 
@@ -95,7 +90,7 @@ export default class BulkActionsDialog extends BasicWidget {
                 includeDescendants: this.$includeDescendants.is(":checked")
             });
 
-            toastService.showMessage("Bulk actions have been executed successfully.", 3000);
+            toastService.showMessage(t('bulk_actions.bulk_actions_executed'), 3000);
 
             utils.closeActiveDialog();
         });
@@ -120,7 +115,7 @@ export default class BulkActionsDialog extends BasicWidget {
         if (actions.length > 0) {
             this.$existingActionList.append(...actions.map(action => action.render()));
         } else {
-            this.$existingActionList.append($("<p>None yet ... add an action by clicking one of the available ones above.</p>"))
+            this.$existingActionList.append($("<p>").text(t('bulk_actions.none_yet')))
         }
     }
 

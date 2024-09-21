@@ -1,5 +1,6 @@
 import openService from "../../services/open.js";
 import TypeWidget from "./type_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-detail-file note-detail-printable">
@@ -25,7 +26,7 @@ const TPL = `
     <pre class="file-preview-content"></pre>
     
     <div class="file-preview-not-available alert alert-info">
-        File preview is not available for this file format.
+        ${t('file.file_preview_not_available')}
     </div>
     
     <iframe class="pdf-preview" style="width: 100%; height: 100%; flex-grow: 100;"></iframe>

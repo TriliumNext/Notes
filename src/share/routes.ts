@@ -1,20 +1,21 @@
-import safeCompare = require('safe-compare');
-import ejs = require("ejs");
+import safeCompare from "safe-compare";
+import ejs from "ejs";
 
 import type { Request, Response, Router } from "express";
 
-import shaca = require('./shaca/shaca');
-import shacaLoader = require('./shaca/shaca_loader');
-import shareRoot = require('./share_root');
-import contentRenderer = require('./content_renderer');
-import assetPath = require('../services/asset_path');
-import appPath = require('../services/app_path');
-import searchService = require('../services/search/services/search');
-import SearchContext = require('../services/search/search_context');
-import log = require('../services/log');
-import SNote = require('./shaca/entities/snote');
-import SBranch = require('./shaca/entities/sbranch');
-import SAttachment = require('./shaca/entities/sattachment');
+import shaca from "./shaca/shaca.js";
+import shacaLoader from "./shaca/shaca_loader.js";
+import shareRoot from "./share_root.js";
+import contentRenderer from "./content_renderer.js";
+import assetPath from "../services/asset_path.js";
+import appPath from "../services/app_path.js";
+import searchService from "../services/search/services/search.js";
+import SearchContext from "../services/search/search_context.js";
+import log from "../services/log.js";
+import SNote from "./shaca/entities/snote.js";
+import SBranch from "./shaca/entities/sbranch.js";
+import SAttachment from "./shaca/entities/sattachment.js";
+import utils from "../services/utils.js";
 
 function getSharedSubTreeRoot(note: SNote): { note?: SNote; branch?: SBranch } {
     if (note.noteId === shareRoot.SHARE_ROOT_NOTE_ID) {
@@ -249,8 +250,6 @@ function register(router: Router) {
 
         addNoIndexHeader(note, res);
 
-        const utils = require('../services/utils');
-
         const filename = utils.formatDownloadTitle(note.title, note.type, note.mime);
 
         res.setHeader('Content-Disposition', utils.getContentDisposition(filename));
@@ -280,6 +279,8 @@ function register(router: Router) {
             renderImageAttachment(image, res, 'canvas-export.svg');
         } else if (image.type === 'mermaid') {
             renderImageAttachment(image, res, 'mermaid-export.svg');
+        } else if (image.type === "mindMap") {
+            renderImageAttachment(image, res, 'mindmap-export.svg');
         } else {
             return res.status(400)
                 .json({ message: "Requested note is not a shareable image" });
@@ -316,8 +317,6 @@ function register(router: Router) {
         }
 
         addNoIndexHeader(attachment.note, res);
-
-        const utils = require('../services/utils');
 
         const filename = utils.formatDownloadTitle(attachment.title, null, attachment.mime);
 
@@ -383,6 +382,6 @@ function register(router: Router) {
     });
 }
 
-export = {
+export default {
     register
 }

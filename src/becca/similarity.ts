@@ -1,9 +1,9 @@
-import becca = require('./becca');
-import log = require('../services/log');
-import beccaService = require('./becca_service');
-import dateUtils = require('../services/date_utils');
+import becca from "./becca.js";
+import log from "../services/log.js";
+import beccaService from "./becca_service.js";
+import dateUtils from "../services/date_utils.js";
 import { JSDOM } from "jsdom";
-import BNote = require('./entities/bnote');
+import BNote from "./entities/bnote.js";
 
 const DEBUG = false;
 
@@ -461,6 +461,6 @@ function setImmediatePromise() {
     });
 }
 
-export = {
+export default {
     findSimilarNotes
 };

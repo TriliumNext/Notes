@@ -1,12 +1,12 @@
 "use strict";
 
-import imageType = require('image-type');
-import imageService = require('../../services/image');
-import noteService = require('../../services/notes');
-import sanitize_attribute_name = require('../../services/sanitize_attribute_name');
-import specialNotesService = require('../../services/special_notes');
+import imageType from "image-type";
+import imageService from "../../services/image.js";
+import noteService from "../../services/notes.js";
+import sanitize_attribute_name from "../../services/sanitize_attribute_name.js";
+import specialNotesService from "../../services/special_notes.js";
 import { Request } from 'express';
-import { AppRequest } from '../route-interface';
+import { AppRequest } from '../route-interface.js';
 
 function uploadImage(req: AppRequest) {
     const file = req.file;
@@ -84,7 +84,7 @@ function saveNote(req: Request) {
     };
 }
 
-export = {
+export default {
     uploadImage,
     saveNote
 };

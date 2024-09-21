@@ -1,9 +1,9 @@
 "use strict";
 
-import BNote = require("../../../becca/entities/bnote");
-import NoteSet = require("../note_set");
-import SearchContext = require("../search_context");
-import Expression = require("./expression");
+import BNote from "../../../becca/entities/bnote.js";
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
+import Expression from "./expression.js";
 
 interface ValueExtractor {
     extract: (note: BNote) => number | string | null;
@@ -111,4 +111,4 @@ class OrderByAndLimitExp extends Expression {
     }
 }
 
-export = OrderByAndLimitExp;
+export default OrderByAndLimitExp;

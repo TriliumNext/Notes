@@ -1,9 +1,9 @@
-import log = require('../services/log');
-import fileService = require('./api/files');
-import scriptService = require('../services/script');
-import cls = require('../services/cls');
-import sql = require('../services/sql');
-import becca = require('../becca/becca');
+import log from "../services/log.js";
+import fileService from "./api/files.js";
+import scriptService from "../services/script.js";
+import cls from "../services/cls.js";
+import sql from "../services/sql.js";
+import becca from "../becca/becca.js";
 import { Request, Response, Router } from 'express';
 
 function handleRequest(req: Request, res: Response) {
@@ -84,6 +84,6 @@ function register(router: Router) {
     });
 }
 
-export = {
+export default {
     register
 };

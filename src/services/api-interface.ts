@@ -1,4 +1,4 @@
-import { OptionRow } from "../becca/entities/rows";
+import { OptionRow } from "../becca/entities/rows.js";
 
 /**
  * Response for /api/setup/status.

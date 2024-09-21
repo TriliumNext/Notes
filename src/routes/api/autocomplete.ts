@@ -1,13 +1,13 @@
 "use strict";
 
-import beccaService = require('../../becca/becca_service');
-import searchService = require('../../services/search/services/search');
-import log = require('../../services/log');
-import utils = require('../../services/utils');
-import cls = require('../../services/cls');
-import becca = require('../../becca/becca');
+import beccaService from "../../becca/becca_service.js";
+import searchService from "../../services/search/services/search.js";
+import log from "../../services/log.js";
+import utils from "../../services/utils.js";
+import cls from "../../services/cls.js";
+import becca from "../../becca/becca.js";
 import { Request } from 'express';
-import ValidationError = require('../../errors/validation_error');
+import ValidationError from "../../errors/validation_error.js";
 
 function getAutocomplete(req: Request) {
     if (typeof req.query.query !== "string") {
@@ -75,6 +75,6 @@ function getRecentNotes(activeNoteId: string) {
     });
 }
 
-export = {
+export default {
     getAutocomplete
 };

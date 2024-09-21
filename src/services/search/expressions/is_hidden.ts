@@ -1,8 +1,8 @@
 "use strict";
 
-import Expression = require('./expression');
-import NoteSet = require('../note_set');
-import SearchContext = require('../search_context');
+import Expression from "./expression.js";
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
 
 /**
  * Note is hidden when all its note paths start in hidden subtree (i.e., the note is not cloned into visible tree)
@@ -21,4 +21,4 @@ class IsHiddenExp extends Expression {
     }
 }
 
-export = IsHiddenExp;
+export default IsHiddenExp;

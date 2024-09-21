@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import utils from "../services/utils.js";
 import AttachmentActionsWidget from "./buttons/attachments_actions.js";
 import BasicWidget from "./basic_widget.js";
@@ -153,19 +154,19 @@ export default class AttachmentDetailWidget extends BasicWidget {
             $deletionWarning.show();
 
             if (willBeDeletedInMs >= 60000) {
-                $deletionWarning.text(`This attachment will be automatically deleted in ${utils.formatTimeInterval(willBeDeletedInMs)}`);
+                $deletionWarning.text(t('attachment_detail_2.will_be_deleted_in', { time: utils.formatTimeInterval(willBeDeletedInMs) }));
             } else {
-                $deletionWarning.text(`This attachment will be automatically deleted soon`);
+                $deletionWarning.text(t('attachment_detail_2.will_be_deleted_soon'));
             }
 
-            $deletionWarning.append(", because the attachment is not linked in the note's content. To prevent deletion, add the attachment link back into the content or convert the attachment into note.");
+            $deletionWarning.append(t('attachment_detail_2.deletion_reason'));
         } else {
             this.$wrapper.removeClass("scheduled-for-deletion");
             $deletionWarning.hide();
         }
 
         this.$wrapper.find('.attachment-details')
-            .text(`Role: ${this.attachment.role}, Size: ${utils.formatSize(this.attachment.contentLength)}`);
+            .text(t('attachment_detail_2.role_and_size', { role: this.attachment.role, size: utils.formatSize(this.attachment.contentLength) }));
         this.$wrapper.find('.attachment-actions-container').append(this.attachmentActionsWidget.render());
 
         const {$renderedContent} = await contentRenderer.getRenderedContent(this.attachment, { imageHasZoom: this.isFullDetail });
@@ -186,9 +187,9 @@ export default class AttachmentDetailWidget extends BasicWidget {
 
             utils.copyHtmlToClipboard($link[0].outerHTML);
 
-            toastService.showMessage("Attachment link copied to clipboard.");
+            toastService.showMessage(t('attachment_detail_2.link_copied'));
         } else {
-            throw new Error(`Unrecognized attachment role '${this.attachment.role}'.`);
+            throw new Error(t('attachment_detail_2.unrecognized_role', { role: this.attachment.role }));
         }
     }
 

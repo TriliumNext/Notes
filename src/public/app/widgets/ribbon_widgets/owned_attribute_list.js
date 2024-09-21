@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import AttributeDetailWidget from "../attribute_widgets/attribute_detail.js";
 import AttributeEditorWidget from "../attribute_widgets/attribute_editor.js";
@@ -48,7 +49,7 @@ export default class OwnedAttributeListWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: !this.note.isLaunchBarConfig(),
-            title: "Owned Attributes",
+            title: t('owned_attribute_list.owned_attributes'),
             icon: "bx bx-list-check"
         };
     }

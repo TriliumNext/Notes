@@ -13,7 +13,8 @@ const noteTypes = [
     { type: 'webView', defaultMime: '' },
     { type: 'launcher', defaultMime: '' },
     { type: 'doc', defaultMime: '' },
-    { type: 'contentWidget', defaultMime: '' }
+    { type: 'contentWidget', defaultMime: '' },
+    { type: 'mindMap', defaultMime: 'application/json' }
 ];
 
 function getDefaultMimeForNoteType(typeName: string) {
@@ -26,7 +27,7 @@ function getDefaultMimeForNoteType(typeName: string) {
     return typeRec.defaultMime;
 }
 
-export = {
+export default {
     getNoteTypeNames: () => noteTypes.map(nt => nt.type),
     getDefaultMimeForNoteType
 };

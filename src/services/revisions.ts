@@ -1,10 +1,10 @@
 "use strict";
 
-import log = require('./log');
-import sql = require('./sql');
-import protectedSessionService = require('./protected_session');
-import dateUtils = require('./date_utils');
-import BNote = require('../becca/entities/bnote');
+import log from "./log.js";
+import sql from "./sql.js";
+import protectedSessionService from "./protected_session.js";
+import dateUtils from "./date_utils.js";
+import BNote from "../becca/entities/bnote.js";
 
 function protectRevisions(note: BNote) {
     if (!protectedSessionService.isProtectedSessionAvailable()) {
@@ -44,6 +44,6 @@ function protectRevisions(note: BNote) {
     }
 }
 
-export = {
+export default {
     protectRevisions
 };

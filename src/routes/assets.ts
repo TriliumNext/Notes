@@ -1,8 +1,9 @@
-import assetPath = require('../services/asset_path');
-import path = require("path");
-import express = require("express");
-import env = require('../services/env');
-import serveStatic = require('serve-static');
+import assetPath from "../services/asset_path.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import express from "express";
+import env from "../services/env.js";
+import serveStatic from "serve-static";
 
 const persistentCacheStatic = (root: string, options?: serveStatic.ServeStaticOptions<express.Response<any, Record<string, any>>>) => {
     if (!env.isDev()) {
@@ -15,7 +16,7 @@ const persistentCacheStatic = (root: string, options?: serveStatic.ServeStaticOp
 };
 
 function register(app: express.Application) {
-    const srcRoot = path.join(__dirname, '..');
+    const srcRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
     app.use(`/${assetPath}/app`, persistentCacheStatic(path.join(srcRoot, 'public/app')));
     app.use(`/${assetPath}/app-dist`, persistentCacheStatic(path.join(srcRoot, 'public/app-dist')));
     app.use(`/${assetPath}/fonts`, persistentCacheStatic(path.join(srcRoot, 'public/fonts')));
@@ -69,8 +70,40 @@ function register(app: express.Application) {
     app.use(`/${assetPath}/node_modules/split.js/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/split.js/dist/')));
 
     app.use(`/${assetPath}/node_modules/panzoom/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/panzoom/dist/')));
+
+    // i18n
+    app.use(`/${assetPath}/node_modules/i18next/`, persistentCacheStatic(path.join(srcRoot, "..", 'node_modules/i18next/')));
+    app.use(`/${assetPath}/node_modules/i18next-http-backend/`, persistentCacheStatic(path.join(srcRoot, "..", 'node_modules/i18next-http-backend/')));
+    app.use(`/${assetPath}/translations/`, persistentCacheStatic(path.join(srcRoot, "public", "translations/")));
+
+    app.use(`/${assetPath}/node_modules/eslint/bin/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/eslint/bin/')));
+
+    app.use(`/${assetPath}/node_modules/jsplumb/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/jsplumb/dist/')));
+
+    app.use(`/${assetPath}/node_modules/vanilla-js-wheel-zoom/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/vanilla-js-wheel-zoom/dist/')));
+    
+    app.use(`/${assetPath}/node_modules/mark.js/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/mark.js/dist/')));
+    
+    // Deprecated, https://www.npmjs.com/package/autocomplete.js?activeTab=readme
+    app.use(`/${assetPath}/node_modules/autocomplete.js/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/autocomplete.js/dist/')));
+
+    app.use(`/${assetPath}/node_modules/knockout/build/output/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/knockout/build/output/')));
+
+    app.use(`/${assetPath}/node_modules/normalize.css/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/normalize.css/')));
+
+    app.use(`/${assetPath}/node_modules/jquery.fancytree/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/jquery.fancytree/dist/')));
+
+    app.use(`/${assetPath}/node_modules/bootstrap/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/bootstrap/dist/')));
+
+    // CodeMirror
+    app.use(`/${assetPath}/node_modules/codemirror/lib/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/codemirror/lib/')));
+    app.use(`/${assetPath}/node_modules/codemirror/addon/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/codemirror/addon/')));
+    app.use(`/${assetPath}/node_modules/codemirror/mode/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/codemirror/mode/')));
+    app.use(`/${assetPath}/node_modules/codemirror/keymap/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/codemirror/keymap/')));
+
+    app.use(`/${assetPath}/node_modules/mind-elixir/dist/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/mind-elixir/dist/")));
 }
 
-export = {
+export default {
     register
 };

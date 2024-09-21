@@ -1,24 +1,27 @@
 "use strict";
 
-import log = require('./log');
-import sql = require('./sql');
-import optionService = require('./options');
-import utils = require('./utils');
-import instanceId = require('./instance_id');
-import dateUtils = require('./date_utils');
-import syncUpdateService = require('./sync_update');
-import contentHashService = require('./content_hash');
-import appInfo = require('./app_info');
-import syncOptions = require('./sync_options');
-import syncMutexService = require('./sync_mutex');
-import cls = require('./cls');
-import request = require('./request');
-import ws = require('./ws');
-import entityChangesService = require('./entity_changes');
-import entityConstructor = require('../becca/entity_constructor');
-import becca = require('../becca/becca');
-import { EntityChange, EntityChangeRecord, EntityRow } from './entity_changes_interface';
-import { CookieJar, ExecOpts } from './request_interface';
+import log from "./log.js";
+import sql from "./sql.js";
+import optionService from "./options.js";
+import utils from "./utils.js";
+import instanceId from "./instance_id.js";
+import dateUtils from "./date_utils.js";
+import syncUpdateService from "./sync_update.js";
+import contentHashService from "./content_hash.js";
+import appInfo from "./app_info.js";
+import syncOptions from "./sync_options.js";
+import syncMutexService from "./sync_mutex.js";
+import cls from "./cls.js";
+import request from "./request.js";
+import ws from "./ws.js";
+import entityChangesService from "./entity_changes.js";
+import entityConstructor from "../becca/entity_constructor.js";
+import becca from "../becca/becca.js";
+import { EntityChange, EntityChangeRecord, EntityRow } from './entity_changes_interface.js';
+import { CookieJar, ExecOpts } from './request_interface.js';
+import setupService from "./setup.js";
+import consistency_checks from "./consistency_checks.js";
+import becca_loader from "../becca/becca_loader.js";
 
 let proxyToggle = true;
 
@@ -107,8 +110,6 @@ async function sync() {
 }
 
 async function login() {
-    const setupService = require('./setup'); // circular dependency issue
-
     if (!await setupService.hasSyncServerSchemaAndSeed()) {
         await setupService.sendSeedToSyncServer();
     }
@@ -282,8 +283,7 @@ async function checkContentHash(syncContext: SyncContext) {
 
     if (failedChecks.length > 0) {
         // before re-queuing sectors, make sure the entity changes are correct
-        const consistencyChecks = require('./consistency_checks');
-        consistencyChecks.runEntityChangesChecks();
+        consistency_checks.runEntityChangesChecks();
 
         await syncRequest(syncContext, 'POST', `/api/sync/check-entity-changes`);
     }
@@ -443,7 +443,7 @@ function getOutstandingPullCount() {
     return outstandingPullCount;
 }
 
-require('../becca/becca_loader').beccaLoaded.then(() => {
+becca_loader.beccaLoaded.then(() => {
     setInterval(cls.wrap(sync), 60000);
 
     // kickoff initial sync immediately, but should happen after initial consistency checks
@@ -453,7 +453,7 @@ require('../becca/becca_loader').beccaLoaded.then(() => {
     getLastSyncedPush();
 });
 
-export = {
+export default {
     sync,
     login,
     getEntityChangeRecords,

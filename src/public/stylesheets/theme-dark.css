@@ -73,10 +73,6 @@
     --mermaid-theme: dark;
 }
 
-body .global-menu-button {
-    background-image: url("../images/icon-grey.svg");
-}
-
 body ::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
@@ -91,4 +87,8 @@ body .CodeMirror {
 
 body .todo-list input[type="checkbox"]:not(:checked):before {
     border-color: var(--muted-text-color) !important;
+}
+
+.btn-close {
+    filter: invert(1);
 }

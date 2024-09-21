@@ -5,6 +5,7 @@ import toastService from "../../services/toast.js";
 import froca from "../../services/froca.js";
 import openService from "../../services/open.js";
 import BasicWidget from "../basic_widget.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="export-dialog modal fade mx-auto" tabindex="-1" role="dialog">
@@ -32,17 +33,15 @@ const TPL = `
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Export note "<span class="export-note-title"></span>"</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t('export.export_note_title')} <span class="export-note-title"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('export.close')}"></button>
             </div>
             <form class="export-form">
                 <div class="modal-body">
                     <div class="form-check">
                         <label class="form-check-label">
                             <input class="export-type-subtree form-check-input" type="radio" name="export-type" value="subtree">
-                            this note and all of its descendants
+                            ${t('export.export_type_subtree')}
                         </label>
                     </div>
 
@@ -50,21 +49,21 @@ const TPL = `
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="export-subtree-format" value="html">
-                                HTML in ZIP archive - this is recommended since this preserves all the formatting.
+                                ${t('export.format_html')}
                             </label>
                         </div>
 
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="export-subtree-format" value="markdown">
-                                Markdown - this preserves most of the formatting.
+                                ${t('export.format_markdown')}
                             </label>
                         </div>
 
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="export-subtree-format" value="opml">
-                                OPML - outliner interchange format for text only. Formatting, images and files are not included.
+                                ${t('export.format_opml')}
                             </label>
                         </div>
 
@@ -72,14 +71,14 @@ const TPL = `
                             <div class="form-check">
                                 <label class="form-check-label">
                                     <input class="form-check-input" type="radio" name="opml-version" value="1.0">
-                                    OPML v1.0 - plain text only
+                                    ${t('export.opml_version_1')}
                                 </label>
                             </div>
 
                             <div class="form-check">
                                 <label class="form-check-label">
                                     <input class="form-check-input" type="radio" name="opml-version" value="2.0">
-                                    OMPL v2.0 - allows also HTML
+                                    ${t('export.opml_version_2')}
                                 </label>
                             </div>
                         </div>
@@ -88,7 +87,7 @@ const TPL = `
                     <div class="form-check">
                         <label class="form-check-label">
                             <input class="form-check-input" type="radio" name="export-type" value="single">
-                            only this note without its descendants
+                            ${t('export.export_type_single')}
                         </label>
                     </div>
 
@@ -96,20 +95,20 @@ const TPL = `
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="export-single-format" value="html">
-                                HTML - this is recommended since this preserves all the formatting.
+                                ${t('export.format_html')}
                             </label>
                         </div>
 
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="export-single-format" value="markdown">                            
-                                Markdown - this preserves most of the formatting.
+                                <input class="form-check-input" type="radio" name="export-single-format" value="markdown">
+                                ${t('export.format_markdown')}
                             </label>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="export-button btn btn-primary">Export</button>
+                    <button class="export-button btn btn-primary">${t('export.export')}</button>
                 </div>
             </form>
         </div>
@@ -126,6 +125,7 @@ export default class ExportDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
         this.$form = this.$widget.find(".export-form");
         this.$noteTitle = this.$widget.find(".export-note-title");
         this.$subtreeFormats = this.$widget.find(".export-subtree-formats");
@@ -136,13 +136,12 @@ export default class ExportDialog extends BasicWidget {
         this.$opmlVersions = this.$widget.find(".opml-versions");
 
         this.$form.on('submit', () => {
-            this.$widget.modal('hide');
+            this.modal.hide();
 
             const exportType = this.$widget.find("input[name='export-type']:checked").val();
 
             if (!exportType) {
-                // this shouldn't happen as we always choose a default export type
-                toastService.showError("Choose export type first please");
+                toastService.showError(t('export.choose_export_type'));
                 return;
             }
 
@@ -188,15 +187,13 @@ export default class ExportDialog extends BasicWidget {
         });
     }
 
-    async showExportDialogEvent({notePath, defaultType}) {
-        // each opening of the dialog resets the taskId, so we don't associate it with previous exports anymore
+    async showExportDialogEvent({ notePath, defaultType }) {
         this.taskId = '';
         this.$exportButton.removeAttr("disabled");
 
         if (defaultType === 'subtree') {
             this.$subtreeType.prop("checked", true).trigger('change');
 
-            // to show/hide OPML versions
             this.$widget.find("input[name=export-subtree-format]:checked").trigger('change');
         }
         else if (defaultType === 'single') {
@@ -210,7 +207,7 @@ export default class ExportDialog extends BasicWidget {
 
         utils.openDialog(this.$widget);
 
-        const {noteId, parentNoteId} = treeService.getNoteIdAndParentIdFromUrl(notePath);
+        const { noteId, parentNoteId } = treeService.getNoteIdAndParentIdFromUrl(notePath);
 
         this.branchId = await froca.getBranchId(parentNoteId, noteId);
         this.$noteTitle.text(await treeService.getNoteTitle(noteId));
@@ -228,7 +225,7 @@ export default class ExportDialog extends BasicWidget {
 ws.subscribeToMessages(async message => {
     const makeToast = (id, message) => ({
         id: id,
-        title: "Export status",
+        title: t('export.export_status'),
         message: message,
         icon: "arrow-square-up-right"
     });
@@ -242,10 +239,10 @@ ws.subscribeToMessages(async message => {
         toastService.showError(message.message);
     }
     else if (message.type === 'taskProgressCount') {
-        toastService.showPersistent(makeToast(message.taskId, `Export in progress: ${message.progressCount}`));
+        toastService.showPersistent(makeToast(message.taskId, t('export.export_in_progress', { progressCount: message.progressCount })));
     }
     else if (message.type === 'taskSucceeded') {
-        const toast = makeToast(message.taskId, "Export finished successfully.");
+        const toast = makeToast(message.taskId, t('export.export_finished_successfully'));
         toast.closeAfter = 5000;
 
         toastService.showPersistent(toast);

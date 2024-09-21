@@ -1,25 +1,26 @@
 import OptionsWidget from "../options_widget.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Highlights List</h4>
+    <h4>${t("highlights_list.title")}</h4>
 
-    <p>You can customize the highlights list displayed in the right panel:</p>
+    <p>${t("highlights_list.description")}</p>
 
     </div>
-        <label><input type="checkbox" class="highlights-list-check" value="bold"> Bold font &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check" value="italic"> Italic font &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check" value="underline"> Underlined font &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check" value="color"> Font with color &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check" value="bgColor"> Font with background color &nbsp;</label>
+        <label><input type="checkbox" class="highlights-list-check form-check-input" value="bold"> ${t("highlights_list.bold")} &nbsp;</label>
+        <label><input type="checkbox" class="highlights-list-check form-check-input" value="italic"> ${t("highlights_list.italic")} &nbsp;</label>
+        <label><input type="checkbox" class="highlights-list-check form-check-input" value="underline"> ${t("highlights_list.underline")} &nbsp;</label>
+        <label><input type="checkbox" class="highlights-list-check form-check-input" value="color"> ${t("highlights_list.color")} &nbsp;</label>
+        <label><input type="checkbox" class="highlights-list-check form-check-input" value="bgColor"> ${t("highlights_list.bg_color")} &nbsp;</label>
     </div>
 
     <br/><br/>
-    <h5>Highlights List visibility</h5>
+    <h5>${t("highlights_list.visibility_title")}</h5>
 
-    <p>You can hide the highlights widget per-note by adding a <code>#hideHighlightWidget</code> label.</p>
+    <p>${t("highlights_list.visibility_description")}</p>
     
-    <p>You can configure a keyboard shortcut for quickly toggling the right pane (including Highlights) in the Options -> Shortcuts (name "toggleRightPane").</p>
+    <p>${t("highlights_list.shortcut_info")}</p>
 </div>`;
 
 export default class HighlightsListOptions extends OptionsWidget {

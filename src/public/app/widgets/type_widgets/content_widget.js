@@ -32,6 +32,7 @@ import DatabaseAnonymizationOptions from "./options/advanced/database_anonymizat
 import BackendLogWidget from "./content/backend_log.js";
 import AttachmentErasureTimeoutOptions from "./options/other/attachment_erasure_timeout.js";
 import RibbonOptions from "./options/appearance/ribbon.js";
+import LocalizationOptions from "./options/appearance/i18n.js";
 
 const TPL = `<div class="note-detail-content-widget note-detail-printable">
     <style>
@@ -54,6 +55,7 @@ const TPL = `<div class="note-detail-content-widget note-detail-printable">
 
 const CONTENT_WIDGETS = {
     _optionsAppearance: [
+        LocalizationOptions,
         ThemeOptions,
         FontsOptions,
         ZoomFactorOptions,

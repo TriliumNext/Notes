@@ -1,6 +1,7 @@
 import SwitchWidget from "./switch.js";
 import server from "../services/server.js";
 import toastService from "../services/toast.js";
+import { t } from "../services/i18n.js";
 
 export default class BookmarkSwitchWidget extends SwitchWidget {
     isEnabled() {
@@ -12,11 +13,11 @@ export default class BookmarkSwitchWidget extends SwitchWidget {
     doRender() {
         super.doRender();
 
-        this.$switchOnName.text("Bookmark");
-        this.$switchOnButton.attr("title", "Bookmark this note to the left side panel");
+        this.$switchOnName.text(t("bookmark_switch.bookmark"));
+        this.$switchOnButton.attr("title", t("bookmark_switch.bookmark_this_note"));
 
-        this.$switchOffName.text("Bookmark");
-        this.$switchOffButton.attr("title", "Remove bookmark");
+        this.$switchOffName.text(t("bookmark_switch.bookmark"));
+        this.$switchOffButton.attr("title", t("bookmark_switch.remove_bookmark"));
     }
 
     async toggle(state) {

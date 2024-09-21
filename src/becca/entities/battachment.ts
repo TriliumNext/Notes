@@ -1,14 +1,15 @@
 "use strict";
 
-import utils = require('../../services/utils');
-import dateUtils = require('../../services/date_utils');
-import AbstractBeccaEntity = require('./abstract_becca_entity');
-import sql = require('../../services/sql');
-import protectedSessionService = require('../../services/protected_session');
-import log = require('../../services/log');
-import { AttachmentRow } from './rows';
-import BNote = require('./bnote');
-import BBranch = require('./bbranch');
+import utils from "../../services/utils.js";
+import dateUtils from "../../services/date_utils.js";
+import AbstractBeccaEntity from "./abstract_becca_entity.js";
+import sql from "../../services/sql.js";
+import protectedSessionService from "../../services/protected_session.js";
+import log from "../../services/log.js";
+import { AttachmentRow } from './rows.js';
+import BNote from "./bnote.js";
+import BBranch from "./bbranch.js";
+import noteService from "../../services/notes.js";
 
 const attachmentRoleToNoteTypeMapping = {
     'image': 'image',
@@ -43,9 +44,6 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
     title!: string;
     type?: keyof typeof attachmentRoleToNoteTypeMapping;
     position?: number;
-    blobId?: string;
-    isProtected?: boolean;
-    dateModified?: string;
     utcDateScheduledForErasureSince?: string | null;
     /** optionally added to the entity */
     contentLength?: number;
@@ -157,8 +155,6 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
             throw new Error(`Cannot convert protected attachment outside of protected session`);
         }
 
-        const noteService = require('../../services/notes');
-
         const { note, branch } = noteService.createNewNote({
             parentNoteId: this.ownerId,
             title: this.title,
@@ -249,4 +245,4 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
     }
 }
 
-export = BAttachment;
+export default BAttachment;

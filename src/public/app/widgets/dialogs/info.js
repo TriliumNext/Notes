@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 
@@ -6,17 +7,14 @@ const TPL = `
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Info message</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">${t("info.modalTitle")}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("info.closeButton")}"></button>
             </div>
             <div class="modal-body">
                 <div class="info-dialog-content"></div>
             </div>
             <div class="modal-footer">
-                <button class="info-dialog-ok-button btn btn-primary btn-sm">OK</button>
+                <button class="info-dialog-ok-button btn btn-primary btn-sm">${t("info.okButton")}</button>
             </div>
         </div>
     </div>
@@ -32,6 +30,7 @@ export default class InfoDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
         this.$infoContent = this.$widget.find(".info-dialog-content");
         this.$okButton = this.$widget.find(".info-dialog-ok-button");
 
@@ -48,10 +47,10 @@ export default class InfoDialog extends BasicWidget {
             }
         });
 
-        this.$okButton.on('click', () => this.$widget.modal("hide"));
+        this.$okButton.on('click', () => this.modal.hide());
     }
 
-    showInfoDialogEvent({message, callback}) {
+    showInfoDialogEvent({ message, callback }) {
         this.$originallyFocused = $(':focus');
 
         this.$infoContent.text(message);

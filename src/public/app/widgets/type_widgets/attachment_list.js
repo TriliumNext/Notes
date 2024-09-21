@@ -2,6 +2,7 @@ import TypeWidget from "./type_widget.js";
 import AttachmentDetailWidget from "../attachment_detail.js";
 import linkService from "../../services/link.js";
 import utils from "../../services/utils.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="attachment-list note-detail-printable">
@@ -39,19 +40,19 @@ export default class AttachmentListTypeWidget extends TypeWidget {
     }
 
     async doRefresh(note) {
-        const $helpButton = $('<button class="attachment-help-button" type="button" data-help-page="attachments" title="Open help page on attachments"><span class="bx bx-help-circle"></span></button>');
+        const $helpButton = $('<button class="attachment-help-button" type="button" data-help-page="attachments.html" title="' + t('attachment_list.open_help_page') + '"><span class="bx bx-help-circle"></span></button>');
         utils.initHelpButtons($helpButton);
 
         const noteLink = await linkService.createLink(this.noteId); // do separately to avoid race condition between empty() and .append()
 
         this.$linksWrapper.empty().append(
             $('<div>').append(
-                "Owning note: ",
+                t('attachment_list.owning_note'),
                 noteLink,
             ),
             $('<div>').append(
                 $('<button class="btn btn-sm">')
-                    .text("Upload attachments")
+                    .text(t('attachment_list.upload_attachments'))
                     .on('click', () => this.triggerCommand("showUploadAttachmentsDialog", {noteId: this.noteId})),
                 $helpButton
             )
@@ -64,8 +65,7 @@ export default class AttachmentListTypeWidget extends TypeWidget {
         const attachments = await note.getAttachments();
 
         if (attachments.length === 0) {
-            this.$list.html('<div class="alert alert-info">This note has no attachments.</div>');
-
+            this.$list.html('<div class="alert alert-info">' + t('attachment_list.no_attachments') + '</div>');
             return;
         }
 

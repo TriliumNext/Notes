@@ -1,5 +1,6 @@
 import Component from "../components/component.js";
-
+import { t } from "../services/i18n.js";
+import toastService from "../services/toast.js";
 
 /**
  * This is the base widget for all other widgets.
@@ -81,7 +82,18 @@ class BasicWidget extends Component {
     }
 
     render() {
-        this.doRender();
+        try {
+            this.doRender();
+        } catch (e) {
+            toastService.showPersistent({
+                title: t("toast.widget-error.title"),
+                icon: "alert",
+                message: t("toast.widget-error.message", {
+                    title: this.widgetTitle,
+                    message: e.message
+                })
+            });
+        }
 
         this.$widget.attr('data-component-id', this.componentId);
         this.$widget
@@ -119,6 +131,10 @@ class BasicWidget extends Component {
         return this.$widget;
     }
 
+    /**
+     * Indicates if the widget is enabled. Widgets are enabled by default. Generally setting this to `false` will cause the widget not to be displayed, however it will still be available on the DOM but hidden.
+     * @returns 
+     */
     isEnabled() {
         return true;
     }

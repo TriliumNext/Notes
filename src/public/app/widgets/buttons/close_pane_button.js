@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import OnClickButtonWidget from "./onclick_button.js";
 
 export default class ClosePaneButton extends OnClickButtonWidget {
@@ -15,7 +16,7 @@ export default class ClosePaneButton extends OnClickButtonWidget {
         super();
 
         this.icon("bx-x")
-            .title("Close this pane")
+            .title(t("close_pane_button.close_this_pane"))
             .titlePlacement("bottom")
             .onClick((widget, e) => {
                 // to avoid split pane container detecting click within the pane which would try to activate this

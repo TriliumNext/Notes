@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
 const TPL = `
@@ -10,7 +11,7 @@ const TPL = `
     </style>
 
     <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-        This note was originally taken from: <a class="page-url external"></a>
+        ${t('note_properties.this_note_was_originally_taken_from')} <a class="page-url external"></a>
     </div>
 </div>`;
 
@@ -26,7 +27,7 @@ export default class NotePropertiesWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             activate: true,
-            title: 'Info',
+            title: t('note_properties.info'),
             icon: 'bx bx-info-square'
         };
     }

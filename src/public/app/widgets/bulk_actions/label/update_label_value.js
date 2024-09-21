@@ -1,3 +1,4 @@
+import { t } from "../../../services/i18n.js";
 import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 
@@ -5,26 +6,26 @@ const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;" class="text-nowrap">Update label value</div> 
+            <div style="margin-right: 10px;" class="text-nowrap">${t("update_label_value.update_label_value")}</div> 
             
             <input type="text" 
                 class="form-control label-name" 
-                placeholder="label name"
+                placeholder="${t("update_label_value.label_name_placeholder")}"
                 pattern="[\\p{L}\\p{N}_:]+"
-                title="Alphanumeric characters, underscore and colon are allowed characters."/>
+                title="${t("update_label_value.label_name_title")}"/>
             
-            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">to value</div>
+            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("update_label_value.to_value")}</div>
             
-            <input type="text" class="form-control label-value" placeholder="new value"/>
+            <input type="text" class="form-control label-value" placeholder="${t("update_label_value.new_value_placeholder")}"/>
         </div>
     </td>
     <td class="button-column">
         <div class="dropdown help-dropdown">
-            <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+            <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
-                <p>On all matched notes, change value of the existing label.</p>
+                <p>${t("update_label_value.help_text")}</p>
                 
-                <p>You can also call this method without value, in such case label will be assigned to the note without value.</p>
+                ${t("update_label_value.help_text_note")}
             </div> 
         </div>
     
@@ -34,7 +35,7 @@ const TPL = `
 
 export default class UpdateLabelValueBulkAction extends AbstractBulkAction {
     static get actionName() { return "updateLabelValue"; }
-    static get actionTitle() { return "Update label value"; }
+    static get actionTitle() { return t("update_label_value.update_label_value"); }
 
     doRender() {
         const $action = $(TPL);

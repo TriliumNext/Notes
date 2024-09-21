@@ -1,11 +1,11 @@
 "use strict";
 
-import BNote = require('./bnote');
-import AbstractBeccaEntity = require('./abstract_becca_entity');
-import dateUtils = require('../../services/date_utils');
-import promotedAttributeDefinitionParser = require('../../services/promoted_attribute_definition_parser');
-import sanitizeAttributeName = require('../../services/sanitize_attribute_name');
-import { AttributeRow, AttributeType } from './rows';
+import BNote from "./bnote.js";
+import AbstractBeccaEntity from "./abstract_becca_entity.js";
+import dateUtils from "../../services/date_utils.js";
+import promotedAttributeDefinitionParser from "../../services/promoted_attribute_definition_parser.js";
+import sanitizeAttributeName from "../../services/sanitize_attribute_name.js";
+import { AttributeRow, AttributeType } from './rows.js';
 
 interface SavingOpts {
     skipValidation?: boolean;
@@ -226,4 +226,4 @@ class BAttribute extends AbstractBeccaEntity<BAttribute> {
     }
 }
 
-export = BAttribute;
+export default BAttribute;

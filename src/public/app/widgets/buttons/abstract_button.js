@@ -1,7 +1,7 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
 const TPL = `<button class="button-widget bx"
-      data-toggle="tooltip"
+      data-bs-toggle="tooltip"
       title=""></button>`;
 
 export default class AbstractButtonWidget extends NoteContextAwareWidget {
@@ -22,10 +22,13 @@ export default class AbstractButtonWidget extends NoteContextAwareWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        this.tooltip = new bootstrap.Tooltip(this.$widget, {
+            html: true, title: () => this.getTitle(), trigger: 'hover'
+        })
 
         if (this.settings.onContextMenu) {
             this.$widget.on("contextmenu", e => {
-                this.$widget.tooltip("hide");
+                this.tooltip.hide();
 
                 this.settings.onContextMenu(e);
 
@@ -34,12 +37,6 @@ export default class AbstractButtonWidget extends NoteContextAwareWidget {
         }
 
         this.$widget.attr("data-placement", this.settings.titlePlacement);
-
-        this.$widget.tooltip({
-            html: true,
-            title: () => this.getTitle(),
-            trigger: "hover"
-        });
 
         super.doRender();
     }

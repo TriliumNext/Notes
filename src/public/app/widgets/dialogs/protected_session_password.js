@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import protectedSessionService from "../../services/protected_session.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
@@ -7,25 +8,17 @@ const TPL = `
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Protected session</h5>
-
-                <button class="help-button" type="button" data-help-page="Protected-notes" title="Help on Protected notes">?</button>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title flex-grow-1">${t("protected_session_password.modal_title")}</h5>
+                <button class="help-button" type="button" data-help-page="protected-notes.html" title="${t("protected_session_password.help_title")}">?</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("protected_session_password.close_label")}"></button>
             </div>
             <form class="protected-session-password-form">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label>
-                            To proceed with requested action you need to start protected session by entering password:
-                            <input class="form-control protected-session-password" type="password">
-                        </label>
-                    </div>
+                    <label class="col-form-label">${t("protected_session_password.form_label")}</label>
+                    <input class="form-control protected-session-password" type="password">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary">Start protected session <kbd>enter</kbd></button>
+                    <button class="btn btn-primary">${t("protected_session_password.start_button")}</button>
                 </div>
             </form>
         </div>
@@ -35,6 +28,8 @@ const TPL = `
 export default class ProtectedSessionPasswordDialog extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
+        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+
         this.$passwordForm = this.$widget.find(".protected-session-password-form");
         this.$passwordInput = this.$widget.find(".protected-session-password");
         this.$passwordForm.on('submit', () => {
@@ -54,6 +49,6 @@ export default class ProtectedSessionPasswordDialog extends BasicWidget {
     }
 
     closeProtectedSessionPasswordDialogEvent() {
-        this.$widget.modal('hide');
+        this.modal.hide();
     }
 }

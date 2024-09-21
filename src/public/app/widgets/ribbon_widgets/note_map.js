@@ -1,5 +1,6 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import NoteMapWidget from "../note_map.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-map-ribbon-widget">
@@ -25,8 +26,8 @@ const TPL = `
         }
     </style>
 
-    <button class="bx bx-arrow-to-bottom icon-action open-full-button" title="Open full"></button>
-    <button class="bx bx-arrow-to-top icon-action collapse-button" style="display: none;" title="Collapse to normal size"></button>
+    <button class="bx bx-arrow-to-bottom icon-action open-full-button" title="${t("note_map.open_full")}"></button>
+    <button class="bx bx-arrow-to-top icon-action collapse-button" style="display: none;" title="${t("note_map.collapse")}"></button>
 
     <div class="note-map-container"></div>
 </div>`;
@@ -50,8 +51,8 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: this.isEnabled(),
-            title: 'Note Map',
-            icon: 'bx bx-map-alt'
+            title: t("note_map.title"),
+            icon: 'bx bxs-network-chart'
         };
     }
 

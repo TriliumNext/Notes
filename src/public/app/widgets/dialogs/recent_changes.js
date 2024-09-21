@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import linkService from '../../services/link.js';
 import utils from '../../services/utils.js';
 import server from '../../services/server.js';
@@ -14,14 +15,9 @@ const TPL = `
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Recent changes</h5>
-                
-                <button class="erase-deleted-notes-now-button btn btn-sm" style="padding: 0 10px">
-                    Erase deleted notes now</button>
-                
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0 !important;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title flex-grow-1">${t('recent_changes.title')}</h5>
+                <button class="erase-deleted-notes-now-button btn btn-sm" style="padding: 0 10px">${t('recent_changes.erase_notes_button')}</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="recent-changes-content"></div>
@@ -33,18 +29,20 @@ const TPL = `
 export default class RecentChangesDialog extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
+        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+
         this.$content = this.$widget.find(".recent-changes-content");
         this.$eraseDeletedNotesNow = this.$widget.find(".erase-deleted-notes-now-button");
         this.$eraseDeletedNotesNow.on("click", () => {
             server.post('notes/erase-deleted-notes-now').then(() => {
                 this.refresh();
 
-                toastService.showMessage("Deleted notes have been erased.");
+                toastService.showMessage(t('recent_changes.deleted_notes_message'));
             });
         });
     }
 
-    async showRecentChangesEvent({ancestorNoteId}) {
+    async showRecentChangesEvent({ ancestorNoteId }) {
         this.ancestorNoteId = ancestorNoteId;
 
         await this.refresh();
@@ -65,7 +63,7 @@ export default class RecentChangesDialog extends BasicWidget {
         this.$content.empty();
 
         if (recentChangesRows.length === 0) {
-            this.$content.append("No changes yet ...");
+            this.$content.append(t('recent_changes.no_changes_message'));
         }
 
         const groupedByDate = this.groupByDate(recentChangesRows);
@@ -85,14 +83,14 @@ export default class RecentChangesDialog extends BasicWidget {
 
                     if (change.canBeUndeleted) {
                         const $undeleteLink = $(`<a href="javascript:">`)
-                            .text("undelete")
+                            .text(t('recent_changes.undelete_link'))
                             .on('click', async () => {
-                                const text = 'Do you want to undelete this note and its sub-notes?';
+                                const text = t('recent_changes.confirm_undelete');
 
                                 if (await dialogService.confirm(text)) {
                                     await server.put(`notes/${change.noteId}/undelete`);
 
-                                    this.$widget.modal('hide');
+                                    this.modal.hide();
 
                                     await ws.waitForMaxKnownEntityChangeId();
 

@@ -1,5 +1,5 @@
-import sanitizeHtml = require('sanitize-html');
-import sanitizeUrl = require('@braintree/sanitize-url');
+import sanitizeHtml from "sanitize-html";
+import sanitizeUrl from "@braintree/sanitize-url";
 
 // intended mainly as protection against XSS via import
 // secondarily, it (partly) protects against "CSS takeover"
@@ -47,7 +47,7 @@ function sanitize(dirtyHtml: string) {
     });
 }
 
-export = {
+export default {
     sanitize,
     sanitizeUrl: (url: string) => {
         return sanitizeUrl.sanitizeUrl(url).trim();

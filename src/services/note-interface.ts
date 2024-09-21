@@ -1,4 +1,4 @@
-import { NoteType } from "../becca/entities/rows";
+import { NoteType } from "../becca/entities/rows.js";
 
 export interface NoteParams {
     /** optionally can force specific noteId */
@@ -7,7 +7,7 @@ export interface NoteParams {
     parentNoteId: string;
     templateNoteId?: string;
     title: string;
-    content: string;
+    content: string | Buffer;
     /** text, code, file, image, search, book, relationMap, canvas, webView */
     type: NoteType;
     /** default value is derived from default mimes for type */

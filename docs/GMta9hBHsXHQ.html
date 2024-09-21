@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="shortcut icon" href="./favicon.ico">
+    
+    <script src="./assets/v0.63.6/app-dist/share.js"></script>
+    
+        <link href="./assets/v0.63.6/libraries/normalize.min.css" rel="stylesheet">
+        <link href="./assets/v0.63.6/stylesheets/share.css" rel="stylesheet">
+    
+    
+        <link href="./assets/v0.63.6/libraries/ckeditor/ckeditor-content.css" rel="stylesheet">
+    
+    
+    
+    
+    
+    <title>Node.js, Electron and `better-sqlite3`</title>
+</head>
+<body data-note-id="GMta9hBHsXHQ" data-ancestor-note-id="4yYHqKbLovVX">
+<div id="layout">
+    <div id="main">
+        
+            <nav id="parentLink">
+                parent: <a href="s5gsYTbPQr6c.html"
+                           class="type-text">Updating dependencies</a>
+            </nav>
+        
+
+        <h1 id="title">Node.js, Electron and `better-sqlite3`</h1>
+
+        
+
+        
+            <div id="content" class="type-text ck-content">
+                <p><code>better-sqlite3</code> requires a native module in order to work. In order to ease the installation process, prebuilt binaries are provided by the library developers.</p><p>Trilium Next started with version <a href="https://github.com/WiseLibs/better-sqlite3/releases/tag/v8.4.0">8.4.0</a> for <code>better-sqlite3</code></p><figure class="table" style="width:100%;"><table class="ck-table-resized"><colgroup><col style="width:30.24%;"><col style="width:18.47%;"><col style="width:26.73%;"><col style="width:24.56%;"></colgroup><tbody><tr><td><code>better-sqlite3</code> version</td><td>SQLite version</td><td>Node.js prebuilds</td><td>Electron.js prebuilds</td></tr><tr><td>8.4.0</td><td rowspan="4">&lt;3.43.0</td><td>v20</td><td>???</td></tr><tr><td>8.5.0</td><td>v20</td><td>v25</td></tr><tr><td>8.5.1</td><td>&nbsp;</td><td rowspan="4">v26</td></tr><tr><td>8.5.2</td><td>v20 (macOS + arm64)</td></tr><tr><td>8.6.0</td><td>3.43.0</td><td>&nbsp;</td></tr><tr><td>8.7.0</td><td>3.43.1</td><td>&nbsp;</td></tr><tr><td>9.0.0</td><td>3.43.2</td><td>&nbsp;</td><td rowspan="4">v27</td></tr><tr><td>9.1.0</td><td rowspan="2">3.44.0</td><td>&nbsp;</td></tr><tr><td>9.1.1</td><td>macOS + Alpine</td></tr><tr><td>9.2.0</td><td rowspan="2">3.44.2</td><td>&nbsp;</td></tr><tr><td>9.2.1 / 9.2.2</td><td>&nbsp;</td><td rowspan="4">v28</td></tr><tr><td>9.3.0</td><td>3.45.0</td><td>&nbsp;</td></tr><tr><td>9.4.0</td><td rowspan="6">3.45.1</td><td>&nbsp;</td></tr><tr><td>9.4.1</td><td>Windows arm, arm64</td></tr><tr><td>9.4.2</td><td>&nbsp;</td><td>&lt;v29</td></tr><tr><td>9.4.3</td><td>&nbsp;</td><td>&lt;v29</td></tr><tr><td>9.4.4</td><td>&nbsp;</td><td rowspan="3">v29</td></tr><tr><td>9.4.5</td><td>Better prebuilds</td></tr><tr><td>9.5.0</td><td>3.45.2</td><td>&nbsp;</td></tr><tr><td>9.6.0</td><td rowspan="2">3.45.3</td><td>&nbsp;</td><td rowspan="4">v30</td></tr><tr><td>10.0.0</td><td>v22</td></tr><tr><td>10.1.0</td><td rowspan="2">3.46.0</td><td>&nbsp;</td></tr><tr><td>11.0.0</td><td>&gt;21</td></tr><tr><td>11.1.0 (prerelease)</td><td>&nbsp;</td><td>&nbsp;</td><td rowspan="3">v31</td></tr><tr><td>11.1.1</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>11.1.2</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></figure>
+            </div>
+        
+
+        
+    </div>
+
+    
+        <button id="toggleMenuButton"></button>
+
+        <nav id="menu">
+            
+<p>
+    
+
+    
+    <a class="type-text" href="4yYHqKbLovVX.html">Developer&#39;s Guide</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="VS22Hq5PBFNf.html">Dependency Management</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QXCi6Y1SYulw.html">Adding a new client library</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="C09Dou56ffMe.html">Having a simpler packaging system</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="ZlxZh8NH5frM.html">Building and deployment</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="PHqgH8FCfcod.html">Documentation</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="btM6L9JtG301.html">Running a development build</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="UTB518X6X9Uh.html">Build deliveries locally</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="biDJ9KgbWLgt.html">Releasing a version</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="rU1hxvgqlA9x.html">CI</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="BhE2WFknKKHG.html">Main</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="xtBYDVZPb0gr.html">Project maintenance</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="s5gsYTbPQr6c.html">Updating dependencies</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="X4N03xLYEWnN.html">bettersqlite binaries</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <strong>Node.js, Electron and `better-sqlite3`</strong>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="jvdjFBOCCrOa.html">Testing compatibility</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="WKn3hLGmKmiH.html">CKEditor</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="MUGBo4n67kBI.html">Environment setup</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="icQBu8R1ij57.html">Building &amp; updating</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="zpR91YHYs6lL.html">Differences from upstream</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="B8hxg4e66cVL.html">Development and architecture</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="hkrBX8KE1HQl.html">Internationalisation / Translations</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="Z9N9OKBXXLFW.html">Guidelines</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="KRC2O84LekPz.html">i18n-ally</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="XxqZW6JjkW2g.html">Live reload</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="3jc1nUXyteo0.html">Themes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="U5RtMeGPeZ29.html">Synchronisation</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="d3dnvVOhur16.html">Content hashing</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="mPGbEmYGitWe.html">Build information</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="zCDxk5VFdsqg.html">Database</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="wCxCJB3hhojs.html">attachments</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="wxCwZ1P2SGCx.html">attributes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="6x42mhlfLo0o.html">blobs</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="Vy1PbjSkUast.html">branches</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="inGKXCChkVYX.html">entity_changes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="y2ido6E6tZ0V.html">etapi_tokens</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="kAfgZERKtVhU.html">notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="FSZoX3cJlJE7.html">options</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="bzQfhyzDo3Xz.html">recent_notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QYMncZf5Bu3D.html">revisions</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="KbwD5mDpD4CV.html">Protected entities</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="IuxV242YGaN5.html">Deleted notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="FJ4VR6G2M6VD.html">Special notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="1l1f6WZbaBEZ.html">Branch prefixes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QSkfVssHIngA.html">Revisions</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="cemIoFLfEGPO.html">Backlinks</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="VbDoDdiHEemi.html">Note types</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="UDBwK5Fhr2CT.html">Safe mode</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="3eTu21fjtZkj.html">Scripting</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="1pOWnHdGAuWR.html">Widgets</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="8jWguCtuKsAt.html">Right pane widget</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="4FXLAtcPhZFo.html">CSS</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </nav>
+    
+</div>
+</body>
+</html>

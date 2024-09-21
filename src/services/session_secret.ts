@@ -1,9 +1,9 @@
 "use strict";
 
-import fs = require('fs');
-import crypto = require('crypto');
-import dataDir = require('./data_dir');
-import log = require('./log');
+import fs from "fs";
+import crypto from "crypto";
+import dataDir from "./data_dir.js";
+import log from "./log.js";
 
 const sessionSecretPath = `${dataDir.TRILIUM_DATA_DIR}/session_secret.txt`;
 
@@ -28,4 +28,4 @@ else {
     sessionSecret = fs.readFileSync(sessionSecretPath, ENCODING);
 }
 
-export = sessionSecret;
+export default sessionSecret;

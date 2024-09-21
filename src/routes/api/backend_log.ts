@@ -1,8 +1,8 @@
 "use strict";
 
-import fs = require('fs');
-import dateUtils = require('../../services/date_utils');
-import dataDir = require('../../services/data_dir');
+import fs from "fs";
+import dateUtils from "../../services/date_utils.js";
+import dataDir from "../../services/data_dir.js";
 const { LOG_DIR } = dataDir;
 
 function getBackendLog() {
@@ -17,6 +17,6 @@ function getBackendLog() {
     }
 }
 
-export = {
+export default {
     getBackendLog
 };

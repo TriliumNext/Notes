@@ -1,6 +1,7 @@
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import options from "../services/options.js";
 import attributeService from "../services/attributes.js";
+import { t } from "../services/i18n.js";
 
 const TPL = `
 <div class="shared-info-widget alert alert-warning">
@@ -13,7 +14,7 @@ const TPL = `
         }
     </style>
     
-    <span class="shared-text"></span> <a class="shared-link external"></a>. For help visit <a href="https://github.com/zadam/trilium/wiki/Sharing">wiki</a>.
+    <span class="shared-text"></span> <a class="shared-link external"></a>. ${t("shared_info.help_link")}
 </div>`;
 
 export default class SharedInfoWidget extends NoteContextAwareWidget {
@@ -36,7 +37,7 @@ export default class SharedInfoWidget extends NoteContextAwareWidget {
 
         if (syncServerHost) {
             link = `${syncServerHost}/share/${shareId}`;
-            this.$sharedText.text("This note is shared publicly on");
+            this.$sharedText.text(t("shared_info.shared_publicly"));
         }
         else {
             let host = location.host;
@@ -47,7 +48,7 @@ export default class SharedInfoWidget extends NoteContextAwareWidget {
             }
 
             link = `${location.protocol}//${host}${location.pathname}share/${shareId}`;
-            this.$sharedText.text("This note is shared locally on");
+            this.$sharedText.text(t("shared_info.shared_locally"));
         }
 
         this.$sharedLink.attr("href", link).text(link);

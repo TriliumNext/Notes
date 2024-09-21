@@ -5,11 +5,13 @@
  * - For example, if there is a formula in the middle of the highlighted text, the two ends of the formula will be regarded as two entries
  */
 
+import { t } from "../services/i18n.js";
 import attributeService from "../services/attributes.js";
 import RightPanelWidget from "./right_panel_widget.js";
 import options from "../services/options.js";
 import OnClickButtonWidget from "./buttons/onclick_button.js";
 import appContext from "../components/app_context.js";
+import libraryLoader from "../services/library_loader.js";
 
 const TPL = `<div class="highlights-list-widget">
     <style>
@@ -28,7 +30,6 @@ const TPL = `<div class="highlights-list-widget">
             cursor: pointer;
             margin-bottom: 3px;
             text-align: justify;
-            text-justify: distribute;
             word-wrap: break-word;
             hyphens: auto;
         }
@@ -43,16 +44,16 @@ const TPL = `<div class="highlights-list-widget">
 
 export default class HighlightsListWidget extends RightPanelWidget {
     get widgetTitle() {
-        return "Highlights List";
+        return t("highlights_list_2.title");
     }
 
     get widgetButtons() {
         return [
             new OnClickButtonWidget()
-                .icon("bx-slider")
-                .title("Options")
+                .icon("bx-cog")
+                .title(t("highlights_list_2.options"))
                 .titlePlacement("left")
-                .onClick(() => appContext.tabManager.openContextWithNote('_optionsTextNotes', {activate: true}))
+                .onClick(() => appContext.tabManager.openContextWithNote('_optionsTextNotes', { activate: true }))
                 .class("icon-action"),
             new OnClickButtonWidget()
                 .icon("bx-x")
@@ -97,8 +98,8 @@ export default class HighlightsListWidget extends RightPanelWidget {
         let $highlightsList = "", hlLiCount = -1;
         // Check for type text unconditionally in case alwaysShowWidget is set
         if (this.note.type === 'text') {
-            const {content} = await note.getNoteComplement();
-            ({$highlightsList, hlLiCount} = this.getHighlightList(content, optionsHighlightsList));
+            const { content } = await note.getNoteComplement();
+            ({ $highlightsList, hlLiCount } = await this.getHighlightList(content, optionsHighlightsList));
         }
         this.$highlightsList.empty().append($highlightsList);
         if (hlLiCount > 0) {
@@ -112,7 +113,79 @@ export default class HighlightsListWidget extends RightPanelWidget {
         this.triggerCommand("reEvaluateRightPaneVisibility");
     }
 
-    getHighlightList(content, optionsHighlightsList) {
+    extractOuterTag(htmlStr) {
+        if (htmlStr === null) {
+            return null
+        }
+        // Regular expressions that match only the outermost tag
+        const regex = /^<([a-zA-Z]+)([^>]*)>/;
+        const match = htmlStr.match(regex);
+        if (match) {
+            const tagName = match[1].toLowerCase(); // Extract tag name
+            const attributes = match[2].trim(); // Extract label attributes
+            return { tagName, attributes };
+        }
+        return null;
+    }
+
+    areOuterTagsConsistent(str1, str2) {
+        const tag1 = this.extractOuterTag(str1);
+        const tag2 = this.extractOuterTag(str2);
+        // If one of them has no label, returns false
+        if (!tag1 || !tag2) {
+            return false;
+        }
+        // Compare tag names and attributes to see if they are the same
+        return tag1.tagName === tag2.tagName && tag1.attributes === tag2.attributes;
+    }
+
+    /**
+     * Rendering formulas in strings using katex
+     *
+     * @param {string} html Note's html content
+     * @returns {string} The HTML content with mathematical formulas rendered by KaTeX.
+     */
+    async replaceMathTextWithKatax(html) {
+        const mathTextRegex = /<span class="math-tex">\\\(([\s\S]*?)\\\)<\/span>/g;
+        var matches = [...html.matchAll(mathTextRegex)];
+        let modifiedText = html;
+
+        if (matches.length > 0) {
+            // Process all matches asynchronously
+            for (const match of matches) {
+                let latexCode = match[1];
+                let rendered;
+
+                try {
+                    rendered = katex.renderToString(latexCode, {
+                        throwOnError: false
+                    });
+                } catch (e) {
+                    if (e instanceof ReferenceError && e.message.includes('katex is not defined')) {
+                        // Load KaTeX if it is not already loaded
+                        await libraryLoader.requireLibrary(libraryLoader.KATEX);
+                        try {
+                            rendered = katex.renderToString(latexCode, {
+                                throwOnError: false
+                            });
+                        } catch (renderError) {
+                            console.error("KaTeX rendering error after loading library:", renderError);
+                            rendered = match[0]; // Fall back to original if error persists
+                        }
+                    } else {
+                        console.error("KaTeX rendering error:", e);
+                        rendered = match[0]; // Fall back to original on error
+                    }
+                }
+
+                // Replace the matched formula in the modified text
+                modifiedText = modifiedText.replace(match[0], rendered);
+            }
+        }
+        return modifiedText;
+    }
+
+    async getHighlightList(content, optionsHighlightsList) {
         // matches a span containing background-color
         const regex1 = /<span[^>]*style\s*=\s*[^>]*background-color:[^>]*?>[\s\S]*?<\/span>/gi;
         // matches a span containing color
@@ -152,6 +225,10 @@ export default class HighlightsListWidget extends RightPanelWidget {
         const combinedRegex = new RegExp(combinedRegexStr, 'gi');
         const $highlightsList = $("<ol>");
         let prevEndIndex = -1, hlLiCount = 0;
+        let prevSubHtml = null;
+        // Used to determine if a string is only a formula
+        const onlyMathRegex = /^<span class="math-tex">\\\([^\)]*?\)<\/span>(?:<span class="math-tex">\\\([^\)]*?\)<\/span>)*$/;
+
         for (let match = null, hltIndex = 0; ((match = combinedRegex.exec(content)) !== null); hltIndex++) {
             const subHtml = match[0];
             const startIndex = match.index;
@@ -166,11 +243,19 @@ export default class HighlightsListWidget extends RightPanelWidget {
                 const hasText = $(subHtml).text().trim();
 
                 if (hasText) {
-                    $highlightsList.append(
-                        $('<li>')
-                            .html(subHtml)
-                            .on("click", () => this.jumpToHighlightsList(findSubStr, hltIndex))
-                    );
+                    const substring = content.substring(prevEndIndex, startIndex);
+                    //If the two elements have the same style and there are only formulas in between, append the formulas and the current element to the end of the previous element.
+                    if (this.areOuterTagsConsistent(prevSubHtml, subHtml) && onlyMathRegex.test(substring)) {
+                        const $lastLi = $highlightsList.children('li').last();
+                        $lastLi.append(await this.replaceMathTextWithKatax(substring));
+                        $lastLi.append(subHtml);
+                    } else {
+                        $highlightsList.append(
+                            $('<li>')
+                                .html(subHtml)
+                                .on("click", () => this.jumpToHighlightsList(findSubStr, hltIndex))
+                        );
+                    }
 
                     hlLiCount++;
                 } else {
@@ -179,6 +264,7 @@ export default class HighlightsListWidget extends RightPanelWidget {
                 }
             }
             prevEndIndex = endIndex;
+            prevSubHtml = subHtml;
         }
         return {
             $highlightsList,
@@ -232,9 +318,17 @@ export default class HighlightsListWidget extends RightPanelWidget {
         this.noteContext.viewScope.highlightsListTemporarilyHidden = true;
         await this.refresh();
         this.triggerCommand('reEvaluateRightPaneVisibility');
+        appContext.triggerEvent("reEvaluateHighlightsListWidgetVisibility", { noteId: this.noteId });
     }
 
-    async entitiesReloadedEvent({loadResults}) {
+    async showHighlightsListWidgetEvent({ noteId }) {
+        if (this.noteId === noteId) {
+            await this.refresh();
+            this.triggerCommand('reEvaluateRightPaneVisibility');
+        }
+    }
+
+    async entitiesReloadedEvent({ loadResults }) {
         if (loadResults.isNoteContentReloaded(this.noteId)) {
             await this.refresh();
         } else if (loadResults.getAttributeRows().find(attr => attr.type === 'label'

@@ -1,13 +1,13 @@
 "use strict";
 
-import imageService = require('../../services/image');
-import becca = require('../../becca/becca');
-const RESOURCE_DIR = require('../../services/resource_dir').RESOURCE_DIR;
-import fs = require('fs');
+import imageService from "../../services/image.js";
+import becca from "../../becca/becca.js";
+import fs from "fs";
 import { Request, Response } from 'express';
-import BNote = require('../../becca/entities/bnote');
-import BRevision = require('../../becca/entities/brevision');
-import { AppRequest } from '../route-interface';
+import BNote from "../../becca/entities/bnote.js";
+import BRevision from "../../becca/entities/brevision.js";
+import { AppRequest } from '../route-interface.js';
+import { RESOURCE_DIR } from "../../services/resource_dir.js";
 
 function returnImageFromNote(req: Request, res: Response) {
     const image = becca.getNote(req.params.noteId);
@@ -25,7 +25,7 @@ function returnImageInt(image: BNote | BRevision | null, res: Response) {
     if (!image) {
         res.set('Content-Type', 'image/png');
         return res.send(fs.readFileSync(`${RESOURCE_DIR}/db/image-deleted.png`));
-    } else if (!["image", "canvas", "mermaid"].includes(image.type)) {
+    } else if (![ "image", "canvas", "mermaid", "mindMap" ].includes(image.type)) {
         return res.sendStatus(400);
     }
 
@@ -33,6 +33,8 @@ function returnImageInt(image: BNote | BRevision | null, res: Response) {
         renderSvgAttachment(image, res, 'canvas-export.svg');
     } else if (image.type === 'mermaid') {
         renderSvgAttachment(image, res, 'mermaid-export.svg');
+    } else if (image.type === "mindMap") {
+        renderSvgAttachment(image, res, 'mindmap-export.svg');
     } else {
         res.set('Content-Type', image.mime);
         res.set("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -41,22 +43,20 @@ function returnImageInt(image: BNote | BRevision | null, res: Response) {
 }
 
 function renderSvgAttachment(image: BNote | BRevision, res: Response, attachmentName: string) {
-    let svgString = '<svg/>'
+    let svg: string | Buffer = '<svg/>'
     const attachment = image.getAttachmentByTitle(attachmentName);
 
-    const content = attachment.getContent();
-    if (attachment && typeof content === "string") {
-        svgString = content;
+    if (attachment) {
+        svg = attachment.getContent();
     } else {
         // backwards compatibility, before attachments, the SVG was stored in the main note content as a separate key
         const contentSvg = image.getJsonContentSafely()?.svg;
 
         if (contentSvg) {
-            svgString = contentSvg;
+            svg = contentSvg;
         }
     }
 
-    const svg = svgString
     res.set('Content-Type', "image/svg+xml");
     res.set("Cache-Control", "no-cache, no-store, must-revalidate");
     res.send(svg);
@@ -114,7 +114,7 @@ function updateImage(req: AppRequest) {
     return { uploaded: true };
 }
 
-export = {
+export default {
     returnImageFromNote,
     returnImageFromRevision,
     returnAttachedImage,

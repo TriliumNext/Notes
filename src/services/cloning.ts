@@ -1,18 +1,28 @@
 "use strict";
 
-const sql = require('./sql');
-const eventChangesService = require('./entity_changes');
-const treeService = require('./tree');
-const BBranch = require('../becca/entities/bbranch');
-const becca = require('../becca/becca');
-const log = require('./log');
+import sql from './sql.js';
+import eventChangesService from './entity_changes.js';
+import treeService from './tree.js';
+import BBranch from '../becca/entities/bbranch.js';
+import becca from '../becca/becca.js';
+import log from './log.js';
 
-function cloneNoteToParentNote(noteId: string, parentNoteId: string, prefix: string | null = null) {
+export interface CloneResponse {
+    success: boolean;
+    message?: string;
+    branchId?: string;
+    notePath?: string;
+}
+
+function cloneNoteToParentNote(noteId: string, parentNoteId: string, prefix: string | null = null): CloneResponse {
     if (!(noteId in becca.notes) || !(parentNoteId in becca.notes)) {
         return { success: false, message: 'Note cannot be cloned because either the cloned note or the intended parent is deleted.' };
     }
 
     const parentNote = becca.getNote(parentNoteId);
+    if (!parentNote) {
+        return { success: false, message: 'Note cannot be cloned because the parent note could not be found.' };
+    }
 
     if (parentNote.type === 'search') {
         return {
@@ -31,7 +41,7 @@ function cloneNoteToParentNote(noteId: string, parentNoteId: string, prefix: str
         noteId: noteId,
         parentNoteId: parentNoteId,
         prefix: prefix,
-        isExpanded: 0
+        isExpanded: false
     }).save();
 
     log.info(`Cloned note '${noteId}' to a new parent note '${parentNoteId}' with prefix '${prefix}'`);
@@ -43,7 +53,7 @@ function cloneNoteToParentNote(noteId: string, parentNoteId: string, prefix: str
     };
 }
 
-function cloneNoteToBranch(noteId: string, parentBranchId: string, prefix: string) {
+function cloneNoteToBranch(noteId: string, parentBranchId: string, prefix?: string) {
     const parentBranch = becca.getBranch(parentBranchId);
 
     if (!parentBranch) {
@@ -67,6 +77,9 @@ function ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefi
 
     const parentNote = becca.getNote(parentNoteId);
 
+    if (!parentNote) {
+        return { branch: null, success: false, message: "Can't find parent note." };
+    }
     if (parentNote.type === 'search') {
         return { branch: null, success: false, message: "Can't clone into a search note" };
     }
@@ -81,7 +94,7 @@ function ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefi
         noteId: noteId,
         parentNoteId: parentNoteId,
         prefix: prefix,
-        isExpanded: 0
+        isExpanded: false
     }).save();
 
     log.info(`Ensured note '${noteId}' is in parent note '${parentNoteId}' with prefix '${branch.prefix}'`);
@@ -90,7 +103,7 @@ function ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefi
 }
 
 function ensureNoteIsAbsentFromParent(noteId: string, parentNoteId: string) {
-    const branchId = sql.getValue(`SELECT branchId FROM branches WHERE noteId = ? AND parentNoteId = ? AND isDeleted = 0`, [noteId, parentNoteId]);
+    const branchId = sql.getValue<string>(`SELECT branchId FROM branches WHERE noteId = ? AND parentNoteId = ? AND isDeleted = 0`, [noteId, parentNoteId]);
     const branch = becca.getBranch(branchId);
 
     if (branch) {
@@ -137,13 +150,13 @@ function cloneNoteAfter(noteId: string, afterBranchId: string) {
 
     if (!(noteId in becca.notes)) {
         return { success: false, message: `Note to be cloned '${noteId}' is deleted or does not exist.` };
-    } else if (!(afterNote.parentNoteId in becca.notes)) {
-        return { success: false, message: `After note '${afterNote.parentNoteId}' is deleted or does not exist.` };
+    } else if (!afterNote || !(afterNote.parentNoteId in becca.notes)) {
+        return { success: false, message: `After note '${afterNote?.parentNoteId}' is deleted or does not exist.` };
     }
 
     const parentNote = becca.getNote(afterNote.parentNoteId);
 
-    if (parentNote.type === 'search') {
+    if (!parentNote || parentNote.type === 'search') {
         return {
             success: false,
             message: "Can't clone into a search note"
@@ -167,7 +180,7 @@ function cloneNoteAfter(noteId: string, afterBranchId: string) {
         noteId: noteId,
         parentNoteId: afterNote.parentNoteId,
         notePosition: afterNote.notePosition + 10,
-        isExpanded: 0
+        isExpanded: false
     }).save();
 
     log.info(`Cloned note '${noteId}' into parent note '${afterNote.parentNoteId}' after note '${afterNote.noteId}', branch '${afterBranchId}'`);
@@ -175,7 +188,7 @@ function cloneNoteAfter(noteId: string, afterBranchId: string) {
     return { success: true, branchId: branch.branchId };
 }
 
-export = {
+export default {
     cloneNoteToBranch,
     cloneNoteToParentNote,
     ensureNoteIsPresentInParent,

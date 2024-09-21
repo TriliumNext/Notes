@@ -2,15 +2,18 @@ import ws from "./ws.js";
 import utils from "./utils.js";
 
 function toast(options) {
-    const $toast = $(`<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-        <strong class="mr-auto"><span class="bx bx-${options.icon}"></span> <span class="toast-title"></span></strong>
-        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="toast-body"></div>
-</div>`);
+    const $toast = $(
+        `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">
+                    <span class="bx bx-${options.icon}"></span>
+                    <span class="toast-title"></span>
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>`
+    );
 
     $toast.find('.toast-title').text(options.title);
     $toast.find('.toast-body').text(options.message);

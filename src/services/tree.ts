@@ -1,13 +1,19 @@
 "use strict";
 
-import sql = require('./sql');
-import log = require('./log');
-import BBranch = require('../becca/entities/bbranch');
-import entityChangesService = require('./entity_changes');
-import becca = require('../becca/becca');
-import BNote = require('../becca/entities/bnote');
+import sql from "./sql.js";
+import log from "./log.js";
+import BBranch from "../becca/entities/bbranch.js";
+import entityChangesService from "./entity_changes.js";
+import becca from "../becca/becca.js";
+import BNote from "../becca/entities/bnote.js";
 
-function validateParentChild(parentNoteId: string, childNoteId: string, branchId: string | null = null) {
+interface ValidationResponse {
+    branch: BBranch | null;
+    success: boolean;
+    message?: string;
+}
+
+function validateParentChild(parentNoteId: string, childNoteId: string, branchId: string | null = null): ValidationResponse {
     if (['root', '_hidden', '_share', '_lbRoot', '_lbAvailableLaunchers', '_lbVisibleLaunchers'].includes(childNoteId)) {
         return { branch: null, success: false, message: `Cannot change this note's location.` };
     }
@@ -261,7 +267,7 @@ function setNoteToParent(noteId: string, prefix: string, parentNoteId: string) {
     }
 }
 
-export = {
+export default {
     validateParentChild,
     sortNotes,
     sortNotesIfNeeded,

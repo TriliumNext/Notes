@@ -36,22 +36,78 @@ a, a:visited, a:hover {
     color: var(--link-color);
 }
 
-input, select, textarea {
-    color: var(--input-text-color) !important;
-    background: var(--input-background-color) !important;
+.note-list-widget a {
+    text-decoration: none;
 }
 
-#left-pane input, select, textarea {
-    color: var(--left-pane-text-color) !important;
-    background: var(--left-pane-background-color) !important;
+.note-list-widget a:hover {
+    text-decoration: underline;
 }
 
-input::placeholder {
+input,
+select,
+textarea,
+.form-control,
+.form-select {
+    color: var(--input-text-color);
+    background: var(--input-background-color);
+}
+
+.form-control:focus {
+    color: var(--input-text-color);
+    background: var(--input-background-color);
+}
+
+.form-select {
+    background: var(--input-background-color) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23ffffff' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>") right .75rem center/15px 20px no-repeat;
+}
+
+/* Hide number input arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox browser */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Show number input arrows when focus or hover */
+input[type="number"]:focus::-webkit-inner-spin-button,
+input[type="number"]:focus::-webkit-outer-spin-button,
+input[type="number"]:hover::-webkit-inner-spin-button,
+input[type="number"]:hover::-webkit-outer-spin-button {
+    -webkit-appearance: inner-spin-button;
+}
+
+/* Restore default apperance */
+input[type="number"]:focus,
+input[type="number"]:hover {
+    appearance: auto;
+}
+
+#left-pane input,
+#left-pane select,
+#left-pane textarea {
+    color: var(--left-pane-text-color);
+    background: var(--left-pane-background-color);
+}
+
+input::placeholder,
+.form-control::placeholder,
+#left-pane input::placeholder {
     color: var(--muted-text-color);
 }
 
-table td, table th {
+.table thead th,
+.table td,
+.table th {
+    /* Fix center vertical alignment of table cells */
+    vertical-align: middle;
     color: var(--main-text-color);
+    background: transparent;
 }
 
 .ck .todo-list__checkmark {
@@ -184,10 +240,15 @@ div.ui-tooltip {
     display: none;
 }
 
+.dropdown-divider {
+    background-color: var(--menu-text-color);
+}
+
 .dropdown-menu {
     border: 1px solid var(--dropdown-border-color);
     color: var(--menu-text-color) !important;
     background-color: var(--menu-background-color) !important;
+    font-size: inherit;
 }
 
 .dropdown-menu .disabled {
@@ -279,6 +340,10 @@ body .CodeMirror {
 .btn {
     border-radius: var(--button-border-radius);
     border-color: var(--button-border-color);
+}
+
+.btn:hover {
+    border-color: var(--hover-item-border-color);
 }
 
 button.btn, button.btn-sm {
@@ -397,48 +462,83 @@ table.promoted-attributes-in-tooltip td, table.promoted-attributes-in-tooltip th
     font-size: var(--main-font-size) !important;
 }
 
-.bs-tooltip-bottom .arrow::before { border-bottom-color: var(--main-border-color) !important; }
-.bs-tooltip-top .arrow::before    { border-top-color: var(--main-border-color) !important; }
-.bs-tooltip-left .arrow::before   { border-left-color: var(--main-border-color) !important; }
-.bs-tooltip-right .arrow::before  { border-right-color: var(--main-border-color) !important; }
-
-.bs-tooltip-bottom .arrow::after { border-bottom-color: var(--tooltip-background-color) !important; }
-.bs-tooltip-top .arrow::after    { border-top-color: var(--tooltip-background-color) !important; }
-.bs-tooltip-left .arrow::after   { border-left-color: var(--tooltip-background-color) !important; }
-.bs-tooltip-right .arrow::after  { border-right-color: var(--tooltip-background-color) !important; }
-
-.tooltip .arrow::after {
+.tooltip-trigger {
     position: absolute;
-    content: '';
-    border-color: transparent;
-    border-style: solid;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    pointer-events: none;
 }
 
-.bs-tooltip-auto[x-placement^='left'] .arrow::after,
-.bs-tooltip-left .arrow::after {
+.bs-tooltip-bottom .tooltip-arrow::before { border-bottom-color: var(--main-border-color) !important; }
+.bs-tooltip-top .tooltip-arrow::before    { border-top-color: var(--main-border-color) !important; }
+.bs-tooltip-left .tooltip-arrow::before   { border-left-color: var(--main-border-color) !important; }
+.bs-tooltip-right .tooltip-arrow::before  { border-right-color: var(--main-border-color) !important; }
+
+.bs-tooltip-bottom .tooltip-arrow::after { border-bottom-color: var(--tooltip-background-color) !important; }
+.bs-tooltip-top .tooltip-arrow::after    { border-top-color: var(--tooltip-background-color) !important; }
+.bs-tooltip-left .tooltip-arrow::after   { border-left-color: var(--tooltip-background-color) !important; }
+.bs-tooltip-right .tooltip-arrow::after  { border-right-color: var(--tooltip-background-color) !important; }
+
+.bs-tooltip-auto[data-popper-placement^='left'] .tooltip-arrow::before,
+.bs-tooltip-left .tooltip-arrow::before {
     left: -1px;
     border-width: 0.4rem 0 0.4rem 0.4rem;
+    border-left-color: var(--main-border-color) !important;
 }
 
-.bs-tooltip-auto[x-placement^='bottom'] .arrow::after,
-.bs-tooltip-bottom .arrow::after {
+.bs-tooltip-auto[data-popper-placement^='bottom'] .tooltip-arrow::before,
+.bs-tooltip-bottom .tooltip-arrow::before {
     bottom: -1px;
     border-width: 0 0.4rem 0.4rem;
+    border-bottom-color: var(--main-border-color) !important;
 }
 
-.bs-tooltip-auto[x-placement^='right'] .arrow::after,
-.bs-tooltip-right .arrow::after {
+.bs-tooltip-auto[data-popper-placement^='right'] .tooltip-arrow::before,
+.bs-tooltip-right .tooltip-arrow::before {
     right: -1px;
     border-width: 0.4rem 0.4rem 0.4rem 0;
+    border-right-color: var(--main-border-color) !important;
 }
 
-.bs-tooltip-auto[x-placement^='top'] .arrow::after,
-.bs-tooltip-top .arrow::after {
+.bs-tooltip-auto[data-popper-placement^='top'] .tooltip-arrow::before,
+.bs-tooltip-top .tooltip-arrow::before {
     top: -1px;
     border-width: 0.4rem 0.4rem 0;
+    border-top-color: var(--main-border-color) !important;
 }
 
-.note-tooltip.tooltip .arrow {
+.bs-tooltip-auto[data-popper-placement^='left'] .tooltip-arrow::after,
+.bs-tooltip-left .tooltip-arrow::after {
+    left: -1px;
+    border-width: 0.4rem 0 0.4rem 0.4rem;
+    border-left-color: var(--tooltip-background-color) !important;
+}
+
+.bs-tooltip-auto[data-popper-placement^='bottom'] .tooltip-arrow::after,
+.bs-tooltip-bottom .tooltip-arrow::after {
+    bottom: -1px;
+    border-width: 0 0.4rem 0.4rem;
+    border-bottom-color: var(--tooltip-background-color) !important;
+}
+
+.bs-tooltip-auto[data-popper-placement^='right'] .tooltip-arrow::after,
+.bs-tooltip-right .tooltip-arrow::after {
+    right: -1px;
+    border-width: 0.4rem 0.4rem 0.4rem 0;
+    border-right-color: var(--tooltip-background-color) !important;
+}
+
+.bs-tooltip-auto[data-popper-placement^='top'] .tooltip-arrow::after,
+.bs-tooltip-top .tooltip-arrow::after {
+    top: -1px;
+    border-width: 0.4rem 0.4rem 0;
+    border-top-color: var(--tooltip-background-color) !important;
+}
+
+.note-tooltip.tooltip .tooltip-arrow {
     display: none;
 }
 
@@ -623,6 +723,10 @@ div[data-notify="container"] {
     background-color: var(--accented-background-color) !important;
 }
 
+.ck-content li p {
+    margin: 0 !important;
+}
+
 #options-dialog input[type=number] {
     text-align: right;
 }
@@ -647,6 +751,7 @@ a.external:not(.no-arrow):after, a[href^="http://"]:not(.no-arrow):after, a[href
 }
 
 .card {
+    color: inherit !important;
     background-color: inherit !important;
     border-color: var(--main-border-color) !important;
 }
@@ -663,7 +768,7 @@ a.external:not(.no-arrow):after, a[href^="http://"]:not(.no-arrow):after, a[href
 }
 
 .modal-header {
-    padding: 0.7rem 1rem 0 1rem !important; /* make modal header padding slightly smaller */
+    padding: 0.5rem 1rem 0.5rem 1rem !important; /* make modal header padding slightly smaller */
 }
 
 #toast-container {
@@ -678,12 +783,15 @@ a.external:not(.no-arrow):after, a[href^="http://"]:not(.no-arrow):after, a[href
     color: var(--main-text-color) !important;
     z-index: 9999999999 !important;
     pointer-events: all;
-    flex-basis: 0; /* otherwise toast is always at least 350px tall (happens since 4.5.1, perhaps a bug) */
 }
 
 .toast-header {
     background-color: var(--more-accented-background-color) !important;
     color: var(--main-text-color) !important;
+}
+
+.toast-body {
+    white-space: preserve-breaks;
 }
 
 .ck-mentions .ck-button {
@@ -781,10 +889,6 @@ a.external:not(.no-arrow):after, a[href^="http://"]:not(.no-arrow):after, a[href
     cursor: row-resize;
 }
 
-.dropdown-menu {
-    font-size: inherit;
-}
-
 #context-menu-container {
     max-height: 100vh;
     /* !!! Cannot set overflow: auto, submenus will break !!! */
@@ -824,11 +928,6 @@ li.dropdown-submenu:hover > ul.dropdown-menu {
     transform: rotate(-90deg);
 }
 
-body {
-    /* FF basic styling */
-    scrollbar-color: var(--scrollbar-background-color) var(--main-background-color);
-}
-
 ::-webkit-scrollbar {
     width: 12px;
 }
@@ -843,7 +942,7 @@ body {
     background-color: inherit;
 }
 
-[data-toggle="tooltip"]:not(.button-widget) span {
+[data-bs-toggle="tooltip"]:not(.button-widget) span {
     padding-bottom: 0;
     border-bottom: 1px dotted;
 }
@@ -921,6 +1020,10 @@ body {
     margin: 10px;
 }
 
+.help-dropdown code {
+    font-variant-ligatures: none;
+}
+
 #launcher-pane .launcher-button {
     font-size: 150%;
     display: inline-block;
@@ -946,11 +1049,6 @@ body {
     color: var(--launcher-pane-text-color);
     background-color: var(--launcher-pane-background-color);
 }
-
-input {
-    background-color: transparent !important;
-}
-
 
 #right-pane {
     overflow: auto;
@@ -1052,7 +1150,6 @@ button.close:hover {
 }
 
 .options-number-input {
-    text-align: right;
     /* overriding settings from .form-control */
     width: 10em !important;
     flex-grow: 0 !important;
@@ -1060,12 +1157,6 @@ button.close:hover {
 
 textarea {
     cursor: auto;
-}
-
-.table thead th,
-.table td, .table th {
-    /* Fix center vertical alignment of table cells */
-    vertical-align: middle;
 }
 
 .ck-powered-by-balloon {
@@ -1085,7 +1176,6 @@ textarea {
 
 .jump-to-note-dialog .modal-header {
     align-items: center;
-    padding-bottom: 1rem !important;
 }
 
 .jump-to-note-dialog .modal-body {

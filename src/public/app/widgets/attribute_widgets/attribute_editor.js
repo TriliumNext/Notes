@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import noteAutocompleteService from "../../services/note_autocomplete.js";
 import server from "../../services/server.js";
@@ -11,11 +12,11 @@ import attributeService from "../../services/attributes.js";
 import linkService from "../../services/link.js";
 
 const HELP_TEXT = `
-<p>To add label, just type e.g. <code>#rock</code> or if you want to add also value then e.g. <code>#year = 2020</code></p> 
+<p>${t("attribute_editor.help_text_body1")}</p>
 
-<p>For relation, type <code>~author = @</code> which should bring up an autocomplete where you can look up the desired note.</p>
+<p>${t("attribute_editor.help_text_body2")}</p>
 
-<p>Alternatively you can add label and relation using the <code>+</code> button on the right side.</p>`;
+<p>${t("attribute_editor.help_text_body3")}</p>`;
 
 const TPL = `
 <div style="position: relative; padding-top: 10px; padding-bottom: 10px">
@@ -71,8 +72,8 @@ const TPL = `
     
     <div class="attribute-list-editor" tabindex="200"></div>
 
-    <div class="bx bx-save save-attributes-button" title="Save attributes <enter>"></div>
-    <div class="bx bx-plus add-new-attribute-button" title="Add a new attribute"></div>
+    <div class="bx bx-save save-attributes-button" title="${t("attribute_editor.save_attributes")}"></div>
+    <div class="bx bx-plus add-new-attribute-button" title="${t("attribute_editor.add_a_new_attribute")}"></div>
     
     <div class="attribute-errors" style="display: none;"></div>
 </div>
@@ -174,7 +175,7 @@ const editorConfig = {
     toolbar: {
         items: []
     },
-    placeholder: "Type the labels and relations here",
+    placeholder: t("attribute_editor.placeholder"),
     mention: mentionSetup
 };
 
@@ -217,13 +218,13 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget {
             y: e.pageY,
             orientation: 'left',
             items: [
-                {title: `Add new label <kbd data-command="addNewLabel"></kbd>`, command: "addNewLabel", uiIcon: "bx bx-hash"},
-                {title: `Add new relation <kbd data-command="addNewRelation"></kbd>`, command: "addNewRelation", uiIcon: "bx bx-transfer"},
-                {title: "----"},
-                {title: "Add new label definition", command: "addNewLabelDefinition", uiIcon: "bx bx-empty"},
-                {title: "Add new relation definition", command: "addNewRelationDefinition", uiIcon: "bx bx-empty"},
+                { title: t("attribute_editor.add_new_label"), command: "addNewLabel", uiIcon: "bx bx-hash" },
+                { title: t("attribute_editor.add_new_relation"), command: "addNewRelation", uiIcon: "bx bx-transfer" },
+                { title: "----" },
+                { title: t("attribute_editor.add_new_label_definition"), command: "addNewLabelDefinition", uiIcon: "bx bx-empty" },
+                { title: t("attribute_editor.add_new_relation_definition"), command: "addNewRelationDefinition", uiIcon: "bx bx-empty" },
             ],
-            selectMenuItemHandler: ({command}) => this.handleAddNewAttributeCommand(command)
+            selectMenuItemHandler: ({ command }) => this.handleAddNewAttributeCommand(command)
         });
     }
 

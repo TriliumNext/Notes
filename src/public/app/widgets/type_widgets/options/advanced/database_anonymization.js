@@ -1,27 +1,27 @@
 import OptionsWidget from "../options_widget.js";
 import toastService from "../../../../services/toast.js";
 import server from "../../../../services/server.js";
+import { t } from "../../../../services/i18n.js";
 
 const TPL = `
 <div class="options-section">
-    <h4>Database Anonymization</h4>
+    <h4>${t("database_anonymization.title")}</h4>
     
-    <h5>Full Anonymization</h5>
+    <h5>${t("database_anonymization.full_anonymization")}</h5>
     
-    <p>This action will create a new copy of the database and anonymize it (remove all note content and leave only structure and some non-sensitive metadata)
-        for sharing online for debugging purposes without fear of leaking your personal data.</p>
+    <p>${t("database_anonymization.full_anonymization_description")}</p>
     
-    <button class="anonymize-full-button btn">Save fully anonymized database</button>
+    <button class="anonymize-full-button btn">${t("database_anonymization.save_fully_anonymized_database")}</button>
 
-    <h5>Light Anonymization</h5>
+    <h5>${t("database_anonymization.light_anonymization")}</h5>
     
-    <p>This action will create a new copy of the database and do a light anonymization on it — specifically only content of all notes will be removed, but titles and attributes will remain. Additionally, custom JS frontend/backend script notes and custom widgets will remain. This provides more context to debug the issues.</p>
+    <p>${t("database_anonymization.light_anonymization_description")}</p>
     
-    <p>You can decide yourself if you want to provide a fully or lightly anonymized database. Even fully anonymized DB is very useful, however in some cases lightly anonymized database can speed up the process of bug identification and fixing.</p>
+    <p>${t("database_anonymization.choose_anonymization")}</p>
     
-    <button class="anonymize-light-button btn">Save lightly anonymized database</button>
+    <button class="anonymize-light-button btn">${t("database_anonymization.save_lightly_anonymized_database")}</button>
     
-    <h5>Existing anonymized databases</h5>
+    <h5>${t("database_anonymization.existing_anonymized_databases")}</h5>
     
     <ul class="existing-anonymized-databases"></ul>
 </div>`;
@@ -32,30 +32,30 @@ export default class DatabaseAnonymizationOptions extends OptionsWidget {
         this.$anonymizeFullButton = this.$widget.find(".anonymize-full-button");
         this.$anonymizeLightButton = this.$widget.find(".anonymize-light-button");
         this.$anonymizeFullButton.on('click', async () => {
-            toastService.showMessage("Creating fully anonymized database...");
+            toastService.showMessage(t("database_anonymization.creating_fully_anonymized_database"));
 
             const resp = await server.post('database/anonymize/full');
 
             if (!resp.success) {
-                toastService.showError("Could not create anonymized database, check backend logs for details");
+                toastService.showError(t("database_anonymization.error_creating_anonymized_database"));
             }
             else {
-                toastService.showMessage(`Created fully anonymized database in ${resp.anonymizedFilePath}`, 10000);
+                toastService.showMessage(t("database_anonymization.successfully_created_fully_anonymized_database", { anonymizedFilePath: resp.anonymizedFilePath }), 10000);
             }
 
             this.refresh();
         });
 
         this.$anonymizeLightButton.on('click', async () => {
-            toastService.showMessage("Creating lightly anonymized database...");
+            toastService.showMessage(t("database_anonymization.creating_lightly_anonymized_database"));
 
             const resp = await server.post('database/anonymize/light');
 
             if (!resp.success) {
-                toastService.showError("Could not create anonymized database, check backend logs for details");
+                toastService.showError(t("database_anonymization.error_creating_anonymized_database"));
             }
             else {
-                toastService.showMessage(`Created lightly anonymized database in ${resp.anonymizedFilePath}`, 10000);
+                toastService.showMessage(t("database_anonymization.successfully_created_lightly_anonymized_database", { anonymizedFilePath: resp.anonymizedFilePath }), 10000);
             }
 
             this.refresh();
@@ -69,7 +69,7 @@ export default class DatabaseAnonymizationOptions extends OptionsWidget {
             this.$existingAnonymizedDatabases.empty();
 
             if (!anonymizedDatabases.length) {
-                anonymizedDatabases = [{filePath: "no anonymized database yet"}];
+                anonymizedDatabases = [{filePath: t("database_anonymization.no_anonymized_database_yet")}];
             }
 
             for (const {filePath} of anonymizedDatabases) {

@@ -2,6 +2,7 @@ import noteAutocompleteService from '../../services/note_autocomplete.js';
 import TypeWidget from "./type_widget.js";
 import appContext from "../../components/app_context.js";
 import searchService from "../../services/search.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="note-detail-empty note-detail-printable">
@@ -33,9 +34,9 @@ const TPL = `
     </style>
 
     <div class="form-group">
-        <label>Open a note by typing the note's title into the input below or choose a note in the tree.</label>
+        <label>${t('empty.open_note_instruction')}</label>
         <div class="input-group">
-            <input class="form-control note-autocomplete" placeholder="search for a note by its name">
+            <input class="form-control note-autocomplete" placeholder="${t('empty.search_placeholder')}">
         </div>
     </div>
     
@@ -78,7 +79,7 @@ export default class EmptyTypeWidget extends TypeWidget {
                 $('<div class="workspace-note">')
                     .append($("<div>").addClass(`${workspaceNote.getIcon()} workspace-icon`))
                     .append($("<div>").text(workspaceNote.title))
-                    .attr("title", `Enter workspace ${workspaceNote.title}`)
+                    .attr("title", t('empty.enter_workspace', { title: workspaceNote.title }))
                     .on('click', () => this.triggerCommand('hoistNote', {noteId: workspaceNote.noteId}))
             );
         }

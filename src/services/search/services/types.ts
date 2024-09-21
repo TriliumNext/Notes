@@ -1,3 +1,5 @@
+export type TokenStructure = (TokenData | TokenStructure)[];
+
 export interface TokenData {
     token: string;
     inQuotes?: boolean;

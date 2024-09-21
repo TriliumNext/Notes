@@ -1,9 +1,9 @@
 "use strict";
 
-import NoteSet = require("../note_set");
-import SearchContext = require("../search_context");
+import NoteSet from "../note_set.js";
+import SearchContext from "../search_context.js";
 
-import Expression = require('./expression');
+import Expression from "./expression.js";
 
 class TrueExp extends Expression {
     execute(inputNoteSet: NoteSet, executionContext: {}, searchContext: SearchContext): NoteSet {
@@ -11,4 +11,4 @@ class TrueExp extends Expression {
     }
 }
 
-export = TrueExp;
+export default TrueExp;

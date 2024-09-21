@@ -14,15 +14,16 @@ const NOTE_TYPE_ICONS = {
     "code": "bx bx-code",
     "render": "bx bx-extension",
     "search": "bx bx-file-find",
-    "relationMap": "bx bx-map-alt",
+    "relationMap": "bx bxs-network-chart",
     "book": "bx bx-book",
-    "noteMap": "bx bx-map-alt",
+    "noteMap": "bx bxs-network-chart",
     "mermaid": "bx bx-selection",
     "canvas": "bx bx-pen",
     "webView": "bx bx-globe-alt",
     "launcher": "bx bx-link",
     "doc": "bx bxs-file-doc",
-    "contentWidget": "bx bxs-widget"
+    "contentWidget": "bx bxs-widget",
+    "mindMap": "bx bx-sitemap"
 };
 
 /**
@@ -542,7 +543,7 @@ class FNote {
             return workspaceIconClass;
         }
         else if (this.noteId === 'root') {
-            return "bx bx-chevrons-right";
+            return "bx bx-home-alt-2";
         }
         if (this.noteId === '_share') {
             return "bx bx-share-alt";

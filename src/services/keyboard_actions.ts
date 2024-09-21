@@ -1,9 +1,10 @@
 "use strict";
 
-import optionService = require('./options');
-import log = require('./log');
-import utils = require('./utils');
-import { KeyboardShortcut } from './keyboard_actions_interface';
+import optionService from "./options.js";
+import log from "./log.js";
+import utils from "./utils.js";
+import { KeyboardShortcut } from './keyboard_actions_interface.js';
+import { t } from "i18next";
 
 const isMac = process.platform === "darwin";
 const isElectron = utils.isElectron();
@@ -17,9 +18,13 @@ const isElectron = utils.isElectron();
  * e.g. CTRL-C in note tree does something a bit different from CTRL-C in the text editor.
  */
 
+if (!t("keyboard_actions.note-navigation")) {
+    throw new Error("Keyboard actions loaded before translations.");
+}
+
 const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
     {
-        separator: "Note navigation"
+        separator: t("keyboard_actions.note-navigation")
     },
     {
         actionName: "backInNoteHistory",
@@ -36,7 +41,7 @@ const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
     {
         actionName: "jumpToNote",
         defaultShortcuts: ["CommandOrControl+J"],
-        description: 'Open "Jump to note" dialog',
+        description: t("keyboard_actions.open-jump-to-note-dialog"),
         scope: "window"
     },
     {
@@ -52,37 +57,37 @@ const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
     {
         actionName: "searchInSubtree",
         defaultShortcuts: ["CommandOrControl+Shift+S"],
-        description: "Search for notes in the active note's subtree",
+        description: t("keyboard_actions.search-in-subtree"),
         scope: "note-tree"
     },
     {
         actionName: "expandSubtree",
         defaultShortcuts: [],
-        description: "Expand subtree of current note",
+        description: t("keyboard_actions.expand-subtree"),
         scope: "note-tree"
     },
     {
         actionName: "collapseTree",
         defaultShortcuts: ["Alt+C"],
-        description: "Collapses the complete note tree",
+        description: t("keyboard_actions.collapse-tree"),
         scope: "window"
     },
     {
         actionName: "collapseSubtree",
         defaultShortcuts: ["Alt+-"],
-        description: "Collapses subtree of current note",
+        description: t("keyboard_actions.collapse-subtree"),
         scope: "note-tree"
     },
     {
         actionName: "sortChildNotes",
         defaultShortcuts: ["Alt+S"],
-        description: "Sort child notes",
+        description: t("keyboard_actions.sort-child-notes"),
         scope: "note-tree"
     },
 
 
     {
-        separator: "Creating and moving notes"
+        separator: t("keyboard_actions.creating-and-moving-notes")
     },
     {
         actionName: "createNoteAfter",
@@ -97,50 +102,50 @@ const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
     {
         actionName: "createNoteIntoInbox",
         defaultShortcuts: ["global:CommandOrControl+Alt+P"],
-        description: "Create and open in the inbox (if defined) or day note",
+        description: t("keyboard_actions.create-note-into-inbox"),
         scope: "window"
     },
     {
         actionName: "deleteNotes",
         defaultShortcuts: ["Delete"],
-        description: "Delete note",
+        description: t("keyboard_actions.delete-note"),
         scope: "note-tree"
     },
     {
         actionName: "moveNoteUp",
         defaultShortcuts: isMac ? ["Alt+Up"] : ["CommandOrControl+Up"],
-        description: "Move note up",
+        description: t("keyboard_actions.move-note-up"),
         scope: "note-tree"
     },
     {
         actionName: "moveNoteDown",
         defaultShortcuts: isMac ? ["Alt+Down"] : ["CommandOrControl+Down"],
-        description: "Move note down",
+        description: t("keyboard_actions.move-note-down"),
         scope: "note-tree"
     },
     {
         actionName: "moveNoteUpInHierarchy",
         defaultShortcuts: isMac ? ["Alt+Left"] : ["CommandOrControl+Left"],
-        description: "Move note up in hierarchy",
+        description: t("keyboard_actions.move-note-up-in-hierarchy"),
         scope: "note-tree"
     },
     {
         actionName: "moveNoteDownInHierarchy",
         defaultShortcuts: isMac ? ["Alt+Right"] : ["CommandOrControl+Right"],
-        description: "Move note down in hierarchy",
+        description: t("keyboard_actions.move-note-down-in-hierarchy"),
         scope: "note-tree"
     },
     {
         actionName: "editNoteTitle",
         defaultShortcuts: ["Enter"],
-        description: "Jump from tree to the note detail and edit title",
+        description: t("keyboard_actions.edit-note-title"),
         scope: "note-tree"
     },
     {
         actionName: "editBranchPrefix",
         defaultShortcuts: ["F2"],
-        description: "Show Edit branch prefix dialog",
-        scope: "window"
+        description: t("keyboard_actions.edit-branch-prefix"),
+        scope: "note-tree"
     },
     {
         actionName: "cloneNotesTo",
@@ -154,399 +159,398 @@ const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
     },
 
     {
-        separator: "Note clipboard"
+        separator: t("keyboard_actions.note-clipboard")
     },
-
 
     {
         actionName: "copyNotesToClipboard",
         defaultShortcuts: ["CommandOrControl+C"],
-        description: "Copy selected notes to the clipboard",
+        description: t("keyboard_actions.copy-notes-to-clipboard"),
         scope: "note-tree"
     },
     {
         actionName: "pasteNotesFromClipboard",
         defaultShortcuts: ["CommandOrControl+V"],
-        description: "Paste notes from the clipboard into active note",
+        description: t("keyboard_actions.paste-notes-from-clipboard"),
         scope: "note-tree"
     },
     {
         actionName: "cutNotesToClipboard",
         defaultShortcuts: ["CommandOrControl+X"],
-        description: "Cut selected notes to the clipboard",
+        description: t("keyboard_actions.cut-notes-to-clipboard"),
         scope: "note-tree"
     },
     {
         actionName: "selectAllNotesInParent",
         defaultShortcuts: ["CommandOrControl+A"],
-        description: "Select all notes from the current note level",
+        description: t("keyboard_actions.select-all-notes-in-parent"),
         scope: "note-tree"
     },
     {
         actionName: "addNoteAboveToSelection",
         defaultShortcuts: ["Shift+Up"],
-        description: "Add note above to the selection",
+        description: t("keyboard_actions.add-note-above-to-the-selection"),
         scope: "note-tree"
     },
     {
         actionName: "addNoteBelowToSelection",
         defaultShortcuts: ["Shift+Down"],
-        description: "Add note above to the selection",
+        description: t("keyboard_actions.add-note-below-to-selection"),
         scope: "note-tree"
     },
     {
         actionName: "duplicateSubtree",
         defaultShortcuts: [],
-        description: "Duplicate subtree",
+        description: t("keyboard_actions.duplicate-subtree"),
         scope: "note-tree"
     },
 
 
     {
-        separator: "Tabs & Windows"
+        separator: t("keyboard_actions.tabs-and-windows")
     },
     {
         actionName: "openNewTab",
         defaultShortcuts: isElectron ? ["CommandOrControl+T"] : [],
-        description: "Opens new tab",
+        description: t("keyboard_actions.open-new-tab"),
         scope: "window"
     },
     {
         actionName: "closeActiveTab",
         defaultShortcuts: isElectron ? ["CommandOrControl+W"] : [],
-        description: "Closes active tab",
+        description: t("keyboard_actions.close-active-tab"),
         scope: "window"
     },
     {
         actionName: "reopenLastTab",
         defaultShortcuts: isElectron ? ["CommandOrControl+Shift+T"] : [],
-        description: "Reopens the last closed tab",
+        description: t("keyboard_actions.reopen-last-tab"),
         scope: "window"
     },
     {
         actionName: "activateNextTab",
         defaultShortcuts: isElectron ? ["CommandOrControl+Tab", "CommandOrControl+PageDown"] : [],
-        description: "Activates tab on the right",
+        description: t("keyboard_actions.activate-next-tab"),
         scope: "window"
     },
     {
         actionName: "activatePreviousTab",
         defaultShortcuts: isElectron ? ["CommandOrControl+Shift+Tab", "CommandOrControl+PageUp"] : [],
-        description: "Activates tab on the left",
+        description: t("keyboard_actions.activate-previous-tab"),
         scope: "window"
     },
     {
         actionName: "openNewWindow",
         defaultShortcuts: [],
-        description: "Open new empty window",
+        description: t("keyboard_actions.open-new-window"),
         scope: "window"
     },
     {
         actionName: "toggleTray",
         defaultShortcuts: [],
-        description: "Shows/hides the application from the system tray",
+        description: t("keyboard_actions.toggle-tray"),
         scope: "window"
     },
     {
         actionName: "firstTab",
         defaultShortcuts: ["CommandOrControl+1"],
-        description: "Activates the first tab in the list",
+        description: t("keyboard_actions.first-tab"),
         scope: "window"
     },
     {
         actionName: "secondTab",
         defaultShortcuts: ["CommandOrControl+2"],
-        description: "Activates the second tab in the list",
+        description: t("keyboard_actions.second-tab"),
         scope: "window"
     },
     {
         actionName: "thirdTab",
         defaultShortcuts: ["CommandOrControl+3"],
-        description: "Activates the third tab in the list",
+        description: t("keyboard_actions.third-tab"),
         scope: "window"
     },
     {
         actionName: "fourthTab",
         defaultShortcuts: ["CommandOrControl+4"],
-        description: "Activates the fourth tab in the list",
+        description: t("keyboard_actions.fourth-tab"),
         scope: "window"
     },
     {
         actionName: "fifthTab",
         defaultShortcuts: ["CommandOrControl+5"],
-        description: "Activates the fifth tab in the list",
+        description: t("keyboard_actions.fifth-tab"),
         scope: "window"
     },
     {
         actionName: "sixthTab",
         defaultShortcuts: ["CommandOrControl+6"],
-        description: "Activates the sixth tab in the list",
+        description: t("keyboard_actions.sixth-tab"),
         scope: "window"
     },
     {
         actionName: "seventhTab",
         defaultShortcuts: ["CommandOrControl+7"],
-        description: "Activates the seventh tab in the list",
+        description: t("keyboard_actions.seventh-tab"),
         scope: "window"
     },
     {
         actionName: "eigthTab",
         defaultShortcuts: ["CommandOrControl+8"],
-        description: "Activates the eighth tab in the list",
+        description: t("keyboard_actions.eight-tab"),
         scope: "window"
     },
     {
         actionName: "ninthTab",
         defaultShortcuts: ["CommandOrControl+9"],
-        description: "Activates the ninth tab in the list",
+        description: t("keyboard_actions.ninth-tab"),
         scope: "window"
     },
     {
         actionName: "lastTab",
         defaultShortcuts: [],
-        description: "Activates the last tab in the list",
+        description: t("keyboard_actions.last-tab"),
         scope: "window"
     },
 
 
     {
-        separator: "Dialogs"
+        separator: t("keyboard_actions.dialogs")
     },
     {
         actionName: "showNoteSource",
         defaultShortcuts: [],
-        description: "Shows Note Source dialog",
+        description: t("keyboard_actions.show-note-source"),
         scope: "window"
     },
     {
         actionName: "showOptions",
         defaultShortcuts: [],
-        description: "Shows Options dialog",
+        description: t("keyboard_actions.show-options"),
         scope: "window"
     },
     {
         actionName: "showRevisions",
         defaultShortcuts: [],
-        description: "Shows Note Revisions dialog",
+        description: t("keyboard_actions.show-revisions"),
         scope: "window"
     },
     {
         actionName: "showRecentChanges",
         defaultShortcuts: [],
-        description: "Shows Recent Changes dialog",
+        description: t("keyboard_actions.show-recent-changes"),
         scope: "window"
     },
     {
         actionName: "showSQLConsole",
         defaultShortcuts: ["Alt+O"],
-        description: "Shows SQL Console dialog",
+        description: t("keyboard_actions.show-sql-console"),
         scope: "window"
     },
     {
         actionName: "showBackendLog",
         defaultShortcuts: [],
-        description: "Shows Backend Log dialog",
+        description: t("keyboard_actions.show-backend-log"),
         scope: "window"
     },
     {
         actionName: "showHelp",
         defaultShortcuts: ["F1"],
-        description: "Shows built-in Help / cheatsheet",
+        description: t("keyboard_actions.show-help"),
         scope: "window"
     },
 
 
     {
-        separator: "Text note operations"
+        separator: t("keyboard_actions.text-note-operations")
     },
 
     {
         actionName: "addLinkToText",
         defaultShortcuts: ["CommandOrControl+L"],
-        description: "Open dialog to add link to the text",
+        description: t("keyboard_actions.add-link-to-text"),
         scope: "text-detail"
     },
     {
         actionName: "followLinkUnderCursor",
         defaultShortcuts: ["CommandOrControl+Enter"],
-        description: "Follow link within which the caret is placed",
+        description: t("keyboard_actions.follow-link-under-cursor"),
         scope: "text-detail"
     },
     {
         actionName: "insertDateTimeToText",
         defaultShortcuts: ["Alt+T"],
-        description: "Insert current date & time into text",
+        description: t("keyboard_actions.insert-date-and-time-to-text"),
         scope: "text-detail"
     },
     {
         actionName: "pasteMarkdownIntoText",
         defaultShortcuts: [],
-        description: "Pastes Markdown from clipboard into text note",
+        description: t("keyboard_actions.paste-markdown-into-text"),
         scope: "text-detail"
     },
     {
         actionName: "cutIntoNote",
         defaultShortcuts: [],
-        description: "Cuts the selection from the current note and creates subnote with the selected text",
+        description: t("keyboard_actions.cut-into-note"),
         scope: "text-detail"
     },
     {
         actionName: "addIncludeNoteToText",
         defaultShortcuts: [],
-        description: "Opens the dialog to include a note",
+        description: t("keyboard_actions.add-include-note-to-text"),
         scope: "text-detail"
     },
     {
         actionName: "editReadOnlyNote",
         defaultShortcuts: [],
-        description: "Edit a read-only note",
+        description: t("keyboard_actions.edit-readonly-note"),
         scope: "window"
     },
 
     {
-        separator: "Attributes (labels & relations)"
+        separator: t("keyboard_actions.attributes-labels-and-relations")
     },
 
     {
         actionName: "addNewLabel",
         defaultShortcuts: ["Alt+L"],
-        description: "Create new label",
+        description: t("keyboard_actions.add-new-label"),
         scope: "window"
     },
     {
         actionName: "addNewRelation",
         defaultShortcuts: ["Alt+R"],
-        description: "Create new relation",
+        description: t("keyboard_actions.create-new-relation"),
         scope: "window"
     },
 
     {
-        separator: "Ribbon tabs"
+        separator: t("keyboard_actions.ribbon-tabs")
     },
 
     {
         actionName: "toggleRibbonTabBasicProperties",
         defaultShortcuts: [],
-        description: "Toggle Basic Properties",
+        description: t("keyboard_actions.toggle-basic-properties"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabBookProperties",
         defaultShortcuts: [],
-        description: "Toggle Book Properties",
+        description: t("keyboard_actions.toggle-book-properties"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabFileProperties",
         defaultShortcuts: [],
-        description: "Toggle File Properties",
+        description: t("keyboard_actions.toggle-file-properties"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabImageProperties",
         defaultShortcuts: [],
-        description: "Toggle Image Properties",
+        description: t("keyboard_actions.toggle-image-properties"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabOwnedAttributes",
         defaultShortcuts: ["Alt+A"],
-        description: "Toggle Owned Attributes",
+        description: t("keyboard_actions.toggle-owned-attributes"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabInheritedAttributes",
         defaultShortcuts: [],
-        description: "Toggle Inherited Attributes",
+        description: t("keyboard_actions.toggle-inherited-attributes"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabPromotedAttributes",
         defaultShortcuts: [],
-        description: "Toggle Promoted Attributes",
+        description: t("keyboard_actions.toggle-promoted-attributes"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabNoteMap",
         defaultShortcuts: [],
-        description: "Toggle Link Map",
+        description: t("keyboard_actions.toggle-link-map"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabNoteInfo",
         defaultShortcuts: [],
-        description: "Toggle Note Info",
+        description: t("keyboard_actions.toggle-note-info"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabNotePaths",
         defaultShortcuts: [],
-        description: "Toggle Note Paths",
+        description: t("keyboard_actions.toggle-note-paths"),
         scope: "window"
     },
     {
         actionName: "toggleRibbonTabSimilarNotes",
         defaultShortcuts: [],
-        description: "Toggle Similar Notes",
+        description: t("keyboard_actions.toggle-similar-notes"),
         scope: "window"
     },
 
     {
-        separator: "Other"
+        separator: t("keyboard_actions.other")
     },
 
     {
         actionName: "toggleRightPane",
         defaultShortcuts: [],
-        description: "Toggle the display of the right pane, which includes Table of Contents and Highlights",
+        description: t("keyboard_actions.toggle-right-pane"),
         scope: "window"
     },
     {
         actionName: "printActiveNote",
         defaultShortcuts: [],
-        description: "Print active note",
+        description: t("keyboard_actions.print-active-note"),
         scope: "window"
     },
     {
         actionName: "openNoteExternally",
         defaultShortcuts: [],
-        description: "Open note as a file with default application",
+        description: t("keyboard_actions.open-note-externally"),
         scope: "window"
     },
     {
         actionName: "renderActiveNote",
         defaultShortcuts: [],
-        description: "Render (re-render) active note",
+        description: t("keyboard_actions.render-active-note"),
         scope: "window"
     },
     {
         actionName: "runActiveNote",
         defaultShortcuts: ["CommandOrControl+Enter"],
-        description: "Run active JavaScript (frontend/backend) code note",
+        description: t("keyboard_actions.run-active-note"),
         scope: "code-detail"
     },
     {
         actionName: "toggleNoteHoisting",
         defaultShortcuts: ["Alt+H"],
-        description: "Toggles note hoisting of active note",
+        description: t("keyboard_actions.toggle-note-hoisting"),
         scope: "window"
     },
     {
         actionName: "unhoist",
         defaultShortcuts: ["Alt+U"],
-        description: "Unhoist from anywhere",
+        description: t("keyboard_actions.unhoist"),
         scope: "window"
     },
     {
         actionName: "reloadFrontendApp",
         defaultShortcuts: ["F5", "CommandOrControl+R"],
-        description: "Reload frontend App",
+        description: t("keyboard_actions.reload-frontend-app"),
         scope: "window"
     },
     {
         actionName: "openDevTools",
         defaultShortcuts: isElectron ? ["CommandOrControl+Shift+I"] : [],
-        description: "Open dev tools",
+        description: t("keyboard_actions.open-dev-tools"),
         scope: "window"
     },
     {
@@ -557,43 +561,43 @@ const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
     {
         actionName: "toggleLeftPane",
         defaultShortcuts: [],
-        description: "Toggle left (note tree) panel",
+        description: t("keyboard_actions.toggle-left-note-tree-panel"),
         scope: "window"
     },
     {
         actionName: "toggleFullscreen",
         defaultShortcuts: ["F11"],
-        description: "Toggle full screen",
+        description: t("keyboard_actions.toggle-full-screen"),
         scope: "window"
     },
     {
         actionName: "zoomOut",
         defaultShortcuts: isElectron ? ["CommandOrControl+-"] : [],
-        description: "Zoom Out",
+        description: t("keyboard_actions.zoom-out"),
         scope: "window"
     },
     {
         actionName: "zoomIn",
-        description: "Zoom In",
+        description: t("keyboard_actions.zoom-in"),
         defaultShortcuts: isElectron ? ["CommandOrControl+="] : [],
         scope: "window"
     },
     {
         actionName: "zoomReset",
-        description: "Reset zoom level",
+        description: t("keyboard_actions.reset-zoom-level"),
         defaultShortcuts: isElectron ? ["CommandOrControl+0"] : [],
         scope: "window"
     },
     {
         actionName: "copyWithoutFormatting",
         defaultShortcuts: ["CommandOrControl+Alt+C"],
-        description: "Copy selected text without formatting",
+        description: t("keyboard_actions.copy-without-formatting"),
         scope: "text-detail"
     },
     {
         actionName: "forceSaveRevision",
         defaultShortcuts: [],
-        description: "Force creating / saving new note revision of the active note",
+        description: t("keyboard_actions.force-save-revision"),
         scope: "window"
     }
 ];
@@ -637,7 +641,7 @@ function getKeyboardActions() {
     return actions;
 }
 
-export = {
+export default {
     DEFAULT_KEYBOARD_ACTIONS,
     getKeyboardActions
 };

@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import libraryLoader from "../../services/library_loader.js";
 import noteAutocompleteService from '../../services/note_autocomplete.js';
 import mimeTypesService from '../../services/mime_types.js';
@@ -167,7 +168,7 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         });
 
         await this.watchdog.create(this.$editor[0], {
-            placeholder: "Type the content of your note here ...",
+            placeholder: t('editable_text.placeholder'),
             mention: mentionSetup,
             codeBlock: {
                 languages: codeBlockLanguages

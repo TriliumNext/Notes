@@ -1,9 +1,9 @@
 "use strict";
 
-import { RecentNoteRow } from "./rows";
+import { RecentNoteRow } from "./rows.js";
 
-import dateUtils = require('../../services/date_utils');
-import AbstractBeccaEntity = require('./abstract_becca_entity');
+import dateUtils from "../../services/date_utils.js";
+import AbstractBeccaEntity from "./abstract_becca_entity.js";
 
 /**
  * RecentNote represents recently visited note.
@@ -15,7 +15,6 @@ class BRecentNote extends AbstractBeccaEntity<BRecentNote> {
 
     noteId!: string;
     notePath!: string;
-    utcDateCreated!: string;
 
     constructor(row: RecentNoteRow) {
         super();
@@ -38,4 +37,4 @@ class BRecentNote extends AbstractBeccaEntity<BRecentNote> {
     }
 }
 
-export = BRecentNote;
+export default BRecentNote;

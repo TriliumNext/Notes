@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
 const TPL = `
@@ -26,8 +27,8 @@ const TPL = `
     </style>
 
     <button type="button"
-            class="close-floating-buttons-button btn bx bx-x"
-            title="Hide buttons"></button>
+            class="close-floating-buttons-button btn bx bx-chevrons-right"
+            title="${t('hide_floating_buttons_button.button_title')}"></button>
 </div>
 `;
 

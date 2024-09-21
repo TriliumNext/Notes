@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="shortcut icon" href="./favicon.ico">
+    
+    <script src="./assets/v0.63.6/app-dist/share.js"></script>
+    
+        <link href="./assets/v0.63.6/libraries/normalize.min.css" rel="stylesheet">
+        <link href="./assets/v0.63.6/stylesheets/share.css" rel="stylesheet">
+    
+    
+        <link href="./assets/v0.63.6/libraries/ckeditor/ckeditor-content.css" rel="stylesheet">
+    
+    
+    
+    
+    
+    <title>Internationalisation / Translations</title>
+</head>
+<body data-note-id="hkrBX8KE1HQl" data-ancestor-note-id="4yYHqKbLovVX">
+<div id="layout">
+    <div id="main">
+        
+            <nav id="parentLink">
+                parent: <a href="B8hxg4e66cVL.html"
+                           class="type-text">Development and architecture</a>
+            </nav>
+        
+
+        <h1 id="title">Internationalisation / Translations</h1>
+
+        
+
+        
+            <div id="content" class="type-text ck-content">
+                <p>During the initial development of Trilium Notes, internationalisation was not considered as it was meant to be an English-only product.</p><p>As the application and the user base grows, it makes sense to be able to reach out as many people as possible by providing translations in their native language.</p><p>The library used is <a href="https://www.i18next.com/">i18next</a>.</p><h2>What has been implemented so far</h2><ul class="todo-list"><li><label class="todo-list__label"><input type="checkbox" checked="checked" disabled="disabled"><span class="todo-list__label__description">Client component-level translations: <a href="https://github.com/TriliumNext/Notes/pull/248/files">#248</a></span></label></li><li><label class="todo-list__label"><input type="checkbox" disabled="disabled"><span class="todo-list__label__description">Client template-level translations</span></label></li><li><label class="todo-list__label"><input type="checkbox" disabled="disabled"><span class="todo-list__label__description">Server-side translations</span></label></li><li><label class="todo-list__label"><input type="checkbox" disabled="disabled"><span class="todo-list__label__description">Electron translations</span></label></li><li><label class="todo-list__label"><input type="checkbox" disabled="disabled"><span class="todo-list__label__description">Allowing the user to switch the language via options</span></label></li><li><label class="todo-list__label"><input type="checkbox" disabled="disabled"><span class="todo-list__label__description">Integrate with a translation service</span></label></li></ul><h2>Where are the translations?</h2><p>The translations are formatted as JSON files and they are located in <code>src/public/translations</code>. For every supported locale, there is a subdirectory in which there is a <code>translation.json</code> file (e.g. <code>src/public/translations/en/translation.json</code>).</p><h3>Message keys</h3><p>One important aspect is the fact that we are using a key-based approach. This means that each message is identified by an ID rather than a natural-language message (such as the default approach in gettext).</p><p>The key-based approach allows a hierarchical structure. For example, a key of <code>about.title</code> would be added in <code>translation.json</code> as follows:</p><pre><code class="language-application-json">{
+	"about": {
+		"title": "About TriliumNext Notes"
+	}
+} </code></pre><p>Follow the&nbsp;<a class="reference-link type-text" href="Z9N9OKBXXLFW.html">Guidelines</a>&nbsp;when creating a new message.</p><h3>Adding a new locale</h3><p>To add a new locale, go to <code>src/public/translations</code> with your favorite text editor and copy the <code>en</code> directory.</p><p>Rename the copy to the ISO code (e.g. <code>fr</code>, <code>ro</code>) of the language being translated.</p><p>Translations with a country-language combination, using their corresponding ISO code (e.g. <code>fr_FR</code>, <code>fr_BE</code>), has not been tested yet.</p><h3>Changing the language</h3><p>Since the internationalisation process is in its early stages, there is no user-facing way to switch the language.</p><p>To change the language manually, edit <code>src/public/app/services/i18n.js</code> and look for the line containing <code>lng: "en"</code>. Replace <code>en</code> with the desired language code (from the ones available in <code>src/public/translations</code>).</p><h2>Client-side translations</h2><h3>Component-level translations</h3><p>Most of the client translations are present in the various widgets and layouts.</p><p>Translation support has to be added manually for every file.</p><p>The first step is to add the translation import with a relative import. For example, if we are in the <code>src/public/app/widgets/dialogs</code> directory, the import would look as follows:</p><pre><code class="language-application-javascript-env-frontend">import { t } from "../../services/i18n.js";</code></pre><p>Afterwards, simply replace the hard-coded message with:</p><pre><code class="language-application-javascript-env-frontend">${t("msgid")}</code></pre><p>where <code>msgid</code> is the key of the message being translated.</p><h3>Variables</h3><p>In the translation, enclose the variables with <code>{{</code> and <code>}}</code>:</p><pre><code class="language-text-plain">{
+    "key": "{{what}} is {{how}}"
+}</code></pre><p>Then pass the arguments when reading the translation:</p><pre><code class="language-text-plain">t('key', { what: 'i18next', how: 'great' })</code></pre><h3>Template-level translations</h3><p>Templates are <code>.ejs</code> files present in <code>src/views</code>, these are used to prepare the root layout for desktop, mobile applications as well as setup (onboarding) and the shared notes view.</p><p>Due to using a different approach, it is not possible yet to translate those files.</p><h2>Server-side translations</h2><p>Currently the server-side messages are not translatable. They will be added as a separate step.</p>
+            </div>
+        
+
+        
+            <nav id="childLinks" class="list">
+                
+                    <hr>
+                    <span>Child notes: </span>
+                
+
+                <ul>
+                    
+                        <li>
+                            <a href="Z9N9OKBXXLFW.html" 
+                               class="type-text">Guidelines</a>
+                        </li>
+                    
+                        <li>
+                            <a href="KRC2O84LekPz.html" 
+                               class="type-text">i18n-ally</a>
+                        </li>
+                    
+                </ul>
+            </nav>
+        
+    </div>
+
+    
+        <button id="toggleMenuButton"></button>
+
+        <nav id="menu">
+            
+<p>
+    
+
+    
+    <a class="type-text" href="4yYHqKbLovVX.html">Developer&#39;s Guide</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="VS22Hq5PBFNf.html">Dependency Management</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QXCi6Y1SYulw.html">Adding a new client library</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="C09Dou56ffMe.html">Having a simpler packaging system</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="ZlxZh8NH5frM.html">Building and deployment</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="PHqgH8FCfcod.html">Documentation</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="btM6L9JtG301.html">Running a development build</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="UTB518X6X9Uh.html">Build deliveries locally</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="biDJ9KgbWLgt.html">Releasing a version</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="rU1hxvgqlA9x.html">CI</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="BhE2WFknKKHG.html">Main</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="xtBYDVZPb0gr.html">Project maintenance</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="s5gsYTbPQr6c.html">Updating dependencies</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="X4N03xLYEWnN.html">bettersqlite binaries</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="GMta9hBHsXHQ.html">Node.js, Electron and `better-sqlite3`</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="jvdjFBOCCrOa.html">Testing compatibility</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="WKn3hLGmKmiH.html">CKEditor</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="MUGBo4n67kBI.html">Environment setup</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="icQBu8R1ij57.html">Building &amp; updating</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="zpR91YHYs6lL.html">Differences from upstream</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="B8hxg4e66cVL.html">Development and architecture</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <strong>Internationalisation / Translations</strong>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="Z9N9OKBXXLFW.html">Guidelines</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="KRC2O84LekPz.html">i18n-ally</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="XxqZW6JjkW2g.html">Live reload</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="3jc1nUXyteo0.html">Themes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="U5RtMeGPeZ29.html">Synchronisation</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="d3dnvVOhur16.html">Content hashing</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="mPGbEmYGitWe.html">Build information</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="zCDxk5VFdsqg.html">Database</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="wCxCJB3hhojs.html">attachments</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="wxCwZ1P2SGCx.html">attributes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="6x42mhlfLo0o.html">blobs</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="Vy1PbjSkUast.html">branches</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="inGKXCChkVYX.html">entity_changes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="y2ido6E6tZ0V.html">etapi_tokens</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="kAfgZERKtVhU.html">notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="FSZoX3cJlJE7.html">options</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="bzQfhyzDo3Xz.html">recent_notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QYMncZf5Bu3D.html">revisions</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="KbwD5mDpD4CV.html">Protected entities</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="IuxV242YGaN5.html">Deleted notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="FJ4VR6G2M6VD.html">Special notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="1l1f6WZbaBEZ.html">Branch prefixes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QSkfVssHIngA.html">Revisions</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="cemIoFLfEGPO.html">Backlinks</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="VbDoDdiHEemi.html">Note types</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="UDBwK5Fhr2CT.html">Safe mode</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="3eTu21fjtZkj.html">Scripting</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="1pOWnHdGAuWR.html">Widgets</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="8jWguCtuKsAt.html">Right pane widget</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="4FXLAtcPhZFo.html">CSS</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </nav>
+    
+</div>
+</body>
+</html>

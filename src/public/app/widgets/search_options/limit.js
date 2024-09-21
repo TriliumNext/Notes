@@ -1,20 +1,20 @@
 import AbstractSearchOption from "./abstract_search_option.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <tr data-search-option-conf="limit">
     <td class="title-column">
         <span class="bx bx-stop"></span>
-    
-        Limit
+        ${t('limit.limit')}
     </td>
     <td>
         <input name="limit" class="form-control" type="number" min="1" step="1" />
     </td>
     <td class="button-column">
         <div class="dropdown help-dropdown">
-            <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+            <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
-                Take only first X specified results.
+                ${t('limit.take_first_x_results')}
             </div> 
         </div>
     

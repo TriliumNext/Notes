@@ -11,7 +11,7 @@ export default class CommandButtonWidget extends AbstractButtonWidget {
 
         if (this.settings.command) {
             this.$widget.on("click", () => {
-                this.$widget.tooltip("hide");
+                this.tooltip.hide();
 
                 this.triggerCommand(this._command);
             });

@@ -1,9 +1,9 @@
 "use strict";
 
-import utils = require('../utils');
-import becca = require('../../becca/becca');
-import TaskContext = require('../task_context');
-import BBranch = require('../../becca/entities/bbranch');
+import utils from "../utils.js";
+import becca from "../../becca/becca.js";
+import TaskContext from "../task_context.js";
+import BBranch from "../../becca/entities/bbranch.js";
 import { Response } from 'express';
 
 function exportToOpml(taskContext: TaskContext, branch: BBranch, version: string, res: Response) {
@@ -98,6 +98,6 @@ function escapeXmlAttribute(text: string) {
         .replace(/'/g, '&apos;');
 }
 
-export = {
+export default {
     exportToOpml
 };

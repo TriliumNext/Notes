@@ -1,9 +1,9 @@
 "use strict";
 
-import sql = require('./sql');
-import utils = require('./utils');
-import log = require('./log');
-import eraseService = require('./erase');
+import sql from "./sql.js";
+import utils from "./utils.js";
+import log from "./log.js";
+import eraseService from "./erase.js";
 
 type SectorHash = Record<string, string>;
 
@@ -80,7 +80,7 @@ function checkContentHashes(otherHashes: Record<string, SectorHash>) {
     return failedChecks;
 }
 
-export = {
+export default {
     getEntityHashes,
     checkContentHashes
 };

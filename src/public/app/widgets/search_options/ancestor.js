@@ -1,46 +1,47 @@
 import AbstractSearchOption from "./abstract_search_option.js";
 import noteAutocompleteService from "../../services/note_autocomplete.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center;">
-            <div style="margin-right: 10px">Ancestor:</div> 
+            <div style="margin-right: 10px">${t('ancestor.label')}:</div> 
             <div class="input-group" style="flex-shrink: 2">
-                <input class="ancestor form-control" placeholder="search for note by its name">
+                <input class="ancestor form-control" placeholder="${t('ancestor.placeholder')}">
             </div>
             
-            <div style="margin-left: 10px; margin-right: 10px">depth:</div>
+            <div style="margin-left: 10px; margin-right: 10px">${t('ancestor.depth_label')}:</div>
             
-            <select name="depth" class="form-control d-inline ancestor-depth" style="flex-shrink: 3">
-                <option value="">doesn't matter</option>
-                <option value="eq1">is exactly 1 (direct children)</option>
-                <option value="eq2">is exactly 2</option>
-                <option value="eq3">is exactly 3</option>
-                <option value="eq4">is exactly 4</option>
-                <option value="eq5">is exactly 5</option>
-                <option value="eq6">is exactly 6</option>
-                <option value="eq7">is exactly 7</option>
-                <option value="eq8">is exactly 8</option>
-                <option value="eq9">is exactly 9</option>
-                <option value="gt0">is greater than 0</option>
-                <option value="gt1">is greater than 1</option>
-                <option value="gt2">is greater than 2</option>
-                <option value="gt3">is greater than 3</option>
-                <option value="gt4">is greater than 4</option>
-                <option value="gt5">is greater than 5</option>
-                <option value="gt6">is greater than 6</option>
-                <option value="gt7">is greater than 7</option>
-                <option value="gt8">is greater than 8</option>
-                <option value="gt9">is greater than 9</option>
-                <option value="lt2">is less than 2</option>
-                <option value="lt3">is less than 3</option>
-                <option value="lt4">is less than 4</option>
-                <option value="lt5">is less than 5</option>
-                <option value="lt6">is less than 6</option>
-                <option value="lt7">is less than 7</option>
-                <option value="lt8">is less than 8</option>
-                <option value="lt9">is less than 9</option>
+            <select name="depth" class="form-select d-inline ancestor-depth" style="flex-shrink: 3">
+                <option value="">${t('ancestor.depth_doesnt_matter')}</option>
+                <option value="eq1">${t('ancestor.depth_eq', {count: 1})} (${t('ancestor.direct_children')})</option>
+                <option value="eq2">${t('ancestor.depth_eq', {count: 2})}</option>
+                <option value="eq3">${t('ancestor.depth_eq', {count: 3})}</option>
+                <option value="eq4">${t('ancestor.depth_eq', {count: 4})}</option>
+                <option value="eq5">${t('ancestor.depth_eq', {count: 5})}</option>
+                <option value="eq6">${t('ancestor.depth_eq', {count: 6})}</option>
+                <option value="eq7">${t('ancestor.depth_eq', {count: 7})}</option>
+                <option value="eq8">${t('ancestor.depth_eq', {count: 8})}</option>
+                <option value="eq9">${t('ancestor.depth_eq', {count: 9})}</option>
+                <option value="gt0">${t('ancestor.depth_gt', {count: 0})}</option>
+                <option value="gt1">${t('ancestor.depth_gt', {count: 1})}</option>
+                <option value="gt2">${t('ancestor.depth_gt', {count: 2})}</option>
+                <option value="gt3">${t('ancestor.depth_gt', {count: 3})}</option>
+                <option value="gt4">${t('ancestor.depth_gt', {count: 4})}</option>
+                <option value="gt5">${t('ancestor.depth_gt', {count: 5})}</option>
+                <option value="gt6">${t('ancestor.depth_gt', {count: 6})}</option>
+                <option value="gt7">${t('ancestor.depth_gt', {count: 7})}</option>
+                <option value="gt8">${t('ancestor.depth_gt', {count: 8})}</option>
+                <option value="gt9">${t('ancestor.depth_gt', {count: 9})}</option>
+                <option value="lt2">${t('ancestor.depth_lt', {count: 2})}</option>
+                <option value="lt3">${t('ancestor.depth_lt', {count: 3})}</option>
+                <option value="lt4">${t('ancestor.depth_lt', {count: 4})}</option>
+                <option value="lt5">${t('ancestor.depth_lt', {count: 5})}</option>
+                <option value="lt6">${t('ancestor.depth_lt', {count: 6})}</option>
+                <option value="lt7">${t('ancestor.depth_lt', {count: 7})}</option>
+                <option value="lt8">${t('ancestor.depth_lt', {count: 8})}</option>
+                <option value="lt9">${t('ancestor.depth_lt', {count: 9})}</option>
             </select>
         </div>
     </td>

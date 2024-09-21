@@ -85,6 +85,9 @@ function now() {
     return formatTimeWithSeconds(new Date());
 }
 
+/**
+ * Returns `true` if the client is currently running under Electron, or `false` if running in a web browser.
+ */
 function isElectron() {
     return !!(window && window.process && window.process.type);
 }
@@ -198,7 +201,7 @@ function getMimeTypeClass(mime) {
 
 function closeActiveDialog() {
     if (glob.activeDialog) {
-        glob.activeDialog.modal('hide');
+        bootstrap.Modal.getOrCreateInstance(glob.activeDialog).hide();
         glob.activeDialog = null;
     }
 }
@@ -242,8 +245,7 @@ async function openDialog($dialog, closeActDialog = true) {
     }
 
     saveFocusedElement();
-
-    $dialog.modal();
+    bootstrap.Modal.getOrCreateInstance($dialog).show();
 
     $dialog.on('hidden.bs.modal', () => {
         $(".aa-input").autocomplete("close");
@@ -330,7 +332,7 @@ function initHelpDropdown($el) {
     initHelpButtons($dropdownMenu);
 }
 
-const wikiBaseUrl = "https://github.com/zadam/trilium/wiki/";
+const wikiBaseUrl = "https://triliumnext.github.io/Docs/Wiki/";
 
 function openHelp($button) {
     const helpPage = $button.attr("data-help-page");
@@ -371,10 +373,10 @@ function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
-function areObjectsEqual () {
+function areObjectsEqual() {
     let i, l, leftChain, rightChain;
 
-    function compare2Objects (x, y) {
+    function compare2Objects(x, y) {
         let p;
 
         // remember that NaN === NaN returns false
@@ -449,7 +451,7 @@ function areObjectsEqual () {
                     leftChain.push(x);
                     rightChain.push(y);
 
-                    if (!compare2Objects (x[p], y[p])) {
+                    if (!compare2Objects(x[p], y[p])) {
                         return false;
                     }
 
@@ -505,6 +507,26 @@ function createImageSrcUrl(note) {
     return `api/images/${note.noteId}/${encodeURIComponent(note.title)}?timestamp=${Date.now()}`;
 }
 
+/**
+ * Given a string representation of an SVG, triggers a download of the file on the client device.
+ * 
+ * @param {string} nameWithoutExtension the name of the file. The .svg suffix is automatically added to it.
+ * @param {string} svgContent the content of the SVG file download.
+ */
+function downloadSvg(nameWithoutExtension, svgContent) {
+    const filename = `${nameWithoutExtension}.svg`;
+    const element = document.createElement('a');
+    element.setAttribute('href', `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`);
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
 export default {
     reloadFrontendApp,
     parseDate,
@@ -544,5 +566,6 @@ export default {
     escapeRegExp,
     areObjectsEqual,
     copyHtmlToClipboard,
-    createImageSrcUrl
+    createImageSrcUrl,
+    downloadSvg
 };

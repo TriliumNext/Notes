@@ -3,29 +3,29 @@ import SpacedUpdate from "../../services/spaced_update.js";
 import server from "../../services/server.js";
 import shortcutService from "../../services/shortcuts.js";
 import appContext from "../../components/app_context.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <tr>
-    <td class="title-column">Search string:</td>
+    <td class="title-column">${t('search_string.title_column')}</td>
     <td>
-        <textarea class="form-control search-string" placeholder="fulltext keywords, #tag = value ..."></textarea>
+        <textarea class="form-control search-string" placeholder="${t('search_string.placeholder')}"></textarea>
     </td>
     <td class="button-column">
         <div class="dropdown help-dropdown">
-          <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+          <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
           <div class="dropdown-menu dropdown-menu-right p-4">
-            <strong>Search syntax</strong> - also see <button class="btn btn-sm" type="button" data-help-page="Search">complete help on search syntax</button>
-            <p>
-            <ul>
-                <li>Just enter any text for full text search</li>
-                <li><code>#abc</code> - returns notes with label abc</li>
-                <li><code>#year = 2019</code> - matches notes with label <code>year</code> having value <code>2019</code></li>
-                <li><code>#rock #pop</code> - matches notes which have both <code>rock</code> and <code>pop</code> labels</li>
-                <li><code>#rock or #pop</code> - only one of the labels must be present</li>
-                <li><code>#year &lt;= 2000</code> - numerical comparison (also &gt;, &gt;=, &lt;).</li>
-                <li><code>note.dateCreated >= MONTH-1</code> - notes created in the last month</li>
+            <strong>${t('search_string.search_syntax')}</strong> - ${t('search_string.also_see')} <a href="#" data-help-page="search.html">${t('search_string.complete_help')}</a>
+
+            <ul style="marigin-bottom: 0;">
+                <li>${t('search_string.full_text_search')}</li>
+                <li><code>#abc</code> - ${t('search_string.label_abc')}</li>
+                <li><code>#year = 2019</code> - ${t('search_string.label_year')}</li>
+                <li><code>#rock #pop</code> - ${t('search_string.label_rock_pop')}</li>
+                <li><code>#rock or #pop</code> - ${t('search_string.label_rock_or_pop')}</li>
+                <li><code>#year &lt;= 2000</code> - ${t('search_string.label_year_comparison')}</li>
+                <li><code>note.dateCreated >= MONTH-1</code> - ${t('search_string.label_date_created')}</li>
             </ul>
-            </p>
           </div>
         </div>
         
@@ -73,16 +73,16 @@ export default class SearchString extends AbstractSearchOption {
         return $option;
     }
 
-    showSearchErrorEvent({error}) {
-        this.$searchString.tooltip({
+    showSearchErrorEvent({ error }) {
+        let tooltip = new bootstrap.Tooltip(this.$searchString, {
             trigger: 'manual',
-            title: `Search error: ${error}`,
+            title: `${t('search_string.error', { error })}`,
             placement: 'bottom'
         });
 
-        this.$searchString.tooltip("show");
+        tooltip.show();
 
-        setTimeout(() => this.$searchString.tooltip("dispose"), 4000);
+        setTimeout(() => tooltip.dispose(), 4000);
     }
 
     focusOnSearchDefinitionEvent() {

@@ -1,8 +1,8 @@
 "use strict";
 
-import mimeTypes = require('mime-types');
-import path = require('path');
-import { TaskData } from '../task_context_interface';
+import mimeTypes from "mime-types";
+import path from "path";
+import { TaskData } from '../task_context_interface.js';
 
 const CODE_MIME_TYPES: Record<string, boolean | string> = {
     'text/plain': true,
@@ -110,7 +110,7 @@ function normalizeMimeType(mime: string) {
     return undefined;
 }
 
-export = {
+export default {
     getMime,
     getType,
     normalizeMimeType

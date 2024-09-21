@@ -1,7 +1,8 @@
 "use strict";
 
-import AbstractShacaEntity = require('./abstract_shaca_entity');
-import SNote = require('./snote');
+import AbstractShacaEntity from "./abstract_shaca_entity.js";
+import { SBranchRow } from './rows.js';
+import SNote from "./snote.js";
 
 class SBranch extends AbstractShacaEntity {
 
@@ -58,4 +59,4 @@ class SBranch extends AbstractShacaEntity {
     }
 }
 
-export = SBranch;
+export default SBranch;

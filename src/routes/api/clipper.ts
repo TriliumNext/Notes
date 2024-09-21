@@ -2,22 +2,22 @@
 
 import { Request } from "express";
 
-import attributeService = require('../../services/attributes');
-import cloneService = require('../../services/cloning');
-import noteService = require('../../services/notes');
-import dateNoteService = require('../../services/date_notes');
-import dateUtils = require('../../services/date_utils');
-import imageService = require('../../services/image');
-import appInfo = require('../../services/app_info');
-import ws = require('../../services/ws');
-import log = require('../../services/log');
-import utils = require('../../services/utils');
-import path = require('path');
-import htmlSanitizer = require('../../services/html_sanitizer');
-import attributeFormatter = require('../../services/attribute_formatter');
-import jsdom = require("jsdom");
-import BNote = require("../../becca/entities/bnote");
-import ValidationError = require("../../errors/validation_error");
+import attributeService from "../../services/attributes.js";
+import cloneService from "../../services/cloning.js";
+import noteService from "../../services/notes.js";
+import dateNoteService from "../../services/date_notes.js";
+import dateUtils from "../../services/date_utils.js";
+import imageService from "../../services/image.js";
+import appInfo from "../../services/app_info.js";
+import ws from "../../services/ws.js";
+import log from "../../services/log.js";
+import utils from "../../services/utils.js";
+import path from "path";
+import htmlSanitizer from "../../services/html_sanitizer.js";
+import attributeFormatter from "../../services/attribute_formatter.js";
+import jsdom from "jsdom";
+import BNote from "../../becca/entities/bnote.js";
+import ValidationError from "../../errors/validation_error.js";
 const { JSDOM } = jsdom;
 
 interface Image {
@@ -229,7 +229,7 @@ function findNotesByUrl(req: Request){
     }
 }
 
-export = {
+export default {
     createNote,
     addClipping,
     openNote,

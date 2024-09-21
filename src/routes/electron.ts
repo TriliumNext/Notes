@@ -1,6 +1,5 @@
+import { ipcMain } from "electron";
 import { Application } from "express";
-
-const ipcMain = require('electron').ipcMain;
 
 interface Response {
     statusCode: number;
@@ -56,4 +55,4 @@ function init(app: Application) {
     });
 }
 
-export = init;
+export default init;

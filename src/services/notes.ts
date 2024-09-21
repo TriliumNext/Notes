@@ -1,31 +1,32 @@
-import sql = require('./sql');
-import optionService = require('./options');
-import dateUtils = require('./date_utils');
-import entityChangesService = require('./entity_changes');
-import eventService = require('./events');
-import cls = require('../services/cls');
-import protectedSessionService = require('../services/protected_session');
-import log = require('../services/log');
-import utils = require('../services/utils');
-import revisionService = require('./revisions');
-import request = require('./request');
-import path = require('path');
-import url = require('url');
-import becca = require('../becca/becca');
-import BBranch = require('../becca/entities/bbranch');
-import BNote = require('../becca/entities/bnote');
-import BAttribute = require('../becca/entities/battribute');
-import BAttachment = require('../becca/entities/battachment');
-import dayjs = require("dayjs");
-import htmlSanitizer = require('./html_sanitizer');
-import ValidationError = require('../errors/validation_error');
-import noteTypesService = require('./note_types');
-import fs = require("fs");
-import ws = require('./ws');
-import html2plaintext = require('html2plaintext');
-import { AttachmentRow, AttributeRow, BranchRow, NoteRow, NoteType } from '../becca/entities/rows';
-import TaskContext = require('./task_context');
-import { NoteParams } from './note-interface';
+import sql from "./sql.js";
+import optionService from "./options.js";
+import dateUtils from "./date_utils.js";
+import entityChangesService from "./entity_changes.js";
+import eventService from "./events.js";
+import cls from "../services/cls.js";
+import protectedSessionService from "../services/protected_session.js";
+import log from "../services/log.js";
+import utils from "../services/utils.js";
+import revisionService from "./revisions.js";
+import request from "./request.js";
+import path from "path";
+import url from "url";
+import becca from "../becca/becca.js";
+import BBranch from "../becca/entities/bbranch.js";
+import BNote from "../becca/entities/bnote.js";
+import BAttribute from "../becca/entities/battribute.js";
+import BAttachment from "../becca/entities/battachment.js";
+import dayjs from "dayjs";
+import htmlSanitizer from "./html_sanitizer.js";
+import ValidationError from "../errors/validation_error.js";
+import noteTypesService from "./note_types.js";
+import fs from "fs";
+import ws from "./ws.js";
+import html2plaintext from "html2plaintext";
+import { AttachmentRow, AttributeRow, BranchRow, NoteRow, NoteType } from '../becca/entities/rows.js';
+import TaskContext from "./task_context.js";
+import { NoteParams } from './note-interface.js';
+import imageService from "./image.js";
 
 interface FoundLink {
     name: "imageLink" | "internalLink" | "includeNoteLink" | "relationMapLink",
@@ -446,13 +447,17 @@ function findIncludeNoteLinks(content: string, foundLinks: FoundLink[]) {
 }
 
 function findRelationMapLinks(content: string, foundLinks: FoundLink[]) {
-    const obj = JSON.parse(content);
+    try {
+        const obj = JSON.parse(content);
 
-    for (const note of obj.notes) {
-        foundLinks.push({
-            name: 'relationMapLink',
-            value: note.noteId
-        });
+        for (const note of obj.notes) {
+            foundLinks.push({
+                name: 'relationMapLink',
+                value: note.noteId
+            });
+        }
+    } catch (e: any) {
+        log.error("Could not scan for relation map links: " + e.message);
     }
 }
 
@@ -462,7 +467,7 @@ async function downloadImage(noteId: string, imageUrl: string) {
     const unescapedUrl = utils.unescapeHtml(imageUrl);
 
     try {
-        let imageBuffer;
+        let imageBuffer: Buffer;
 
         if (imageUrl.toLowerCase().startsWith("file://")) {
             imageBuffer = await new Promise((res, rej) => {
@@ -483,10 +488,13 @@ async function downloadImage(noteId: string, imageUrl: string) {
         const parsedUrl = url.parse(unescapedUrl);
         const title = path.basename(parsedUrl.pathname || "");
 
-        const imageService = require('../services/image');
         const attachment = imageService.saveImageToAttachment(noteId, imageBuffer, title, true, true);
-
-        imageUrlToAttachmentIdMapping[imageUrl] = attachment.attachmentId;
+        
+        if (attachment.attachmentId) {
+            imageUrlToAttachmentIdMapping[imageUrl] = attachment.attachmentId;
+        } else {
+            log.error(`Download of '${imageUrl}' due to no attachment ID.`);
+        }
 
         log.info(`Download of '${imageUrl}' succeeded and was saved as image attachment '${attachment.attachmentId}' of note '${noteId}'`);
     }
@@ -516,7 +524,6 @@ function downloadImages(noteId: string, content: string) {
             const imageBase64 = url.substr(inlineImageMatch[0].length);
             const imageBuffer = Buffer.from(imageBase64, 'base64');
 
-            const imageService = require('../services/image');
             const attachment = imageService.saveImageToAttachment(noteId, imageBuffer, "inline image", true, true);
 
             const encodedTitle = encodeURIComponent(attachment.title);
@@ -810,7 +817,6 @@ function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskCon
 
         for (const attributeRow of attributeRows) {
             // relation might point to a note which hasn't been undeleted yet and would thus throw up
-            // TODO: skipValidation is not used.
             new BAttribute(attributeRow).save({skipValidation: true});
         }
 
@@ -990,8 +996,7 @@ function duplicateSubtreeInner(origNote: BNote, origBranch: BBranch, newParentNo
             }
 
             // the relation targets may not be created yet, the mapping is pre-generated
-            // TODO: This used to be `attr.save({skipValidation: true});`, but skipValidation is in beforeSaving.
-            attr.save();
+            attr.save({skipValidation: true});
         }
 
         for (const childBranch of origNote.getChildBranches()) {
@@ -1033,7 +1038,7 @@ function getNoteIdMapping(origNote: BNote) {
     return noteIdMapping;
 }
 
-export = {
+export default {
     createNewNote,
     createNewNoteWithTarget,
     updateNoteData,

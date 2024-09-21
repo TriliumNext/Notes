@@ -1,7 +1,7 @@
-import optionService = require('../options');
-import myScryptService = require('./my_scrypt');
-import utils = require('../utils');
-import dataEncryptionService = require('./data_encryption');
+import optionService from "../options.js";
+import myScryptService from "./my_scrypt.js";
+import utils from "../utils.js";
+import dataEncryptionService from "./data_encryption.js";
 
 function verifyPassword(password: string) {
     const givenPasswordHash = utils.toBase64(myScryptService.getVerificationHash(password));
@@ -33,7 +33,7 @@ function getDataKey(password: string) {
     return decryptedDataKey;
 }
 
-export = {
+export default {
     verifyPassword,
     getDataKey,
     setDataKey

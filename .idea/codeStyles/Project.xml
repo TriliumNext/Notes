@@ -6,8 +6,10 @@
         <option name="TAB_SIZE" value="2" />
       </value>
     </option>
-    <JSCodeStyleSettings version="0">
-      <option name="USE_EXPLICIT_JS_EXTENSION" value="TRUE" />
-    </JSCodeStyleSettings>
+    <codeStyleSettings language="JSON">
+      <indentOptions>
+        <option name="INDENT_SIZE" value="4" />
+      </indentOptions>
+    </codeStyleSettings>
   </code_scheme>
 </component>

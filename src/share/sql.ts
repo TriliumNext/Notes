@@ -1,17 +1,22 @@
 "use strict";
 
-import Database = require('better-sqlite3');
-import dataDir = require('../services/data_dir');
+import Database from "better-sqlite3";
+import dataDir from "../services/data_dir.js";
+import sql_init from "../services/sql_init.js";
 
-const dbConnection = new Database(dataDir.DOCUMENT_PATH, { readonly: true });
+let dbConnection!: Database.Database;
 
-[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach(eventType => {
-    process.on(eventType, () => {
-        if (dbConnection) {
-            // closing connection is especially important to fold -wal file into the main DB file
-            // (see https://sqlite.org/tempfiles.html for details)
-            dbConnection.close();
-        }
+sql_init.dbReady.then(() => {
+    dbConnection = new Database(dataDir.DOCUMENT_PATH, { readonly: true });
+    
+    [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach(eventType => {
+        process.on(eventType, () => {
+            if (dbConnection) {
+                // closing connection is especially important to fold -wal file into the main DB file
+                // (see https://sqlite.org/tempfiles.html for details)
+                dbConnection.close();
+            }
+        });
     });
 });
 
@@ -27,7 +32,7 @@ function getColumn<T>(query: string, params: string[] = []): T[] {
     return dbConnection.prepare(query).pluck().all(params) as T[];
 }
 
-export = {
+export default {
     getRawRows,
     getRow,
     getColumn

@@ -1,8 +1,8 @@
 "use strict";
 
-import BRecentNote = require('../../becca/entities/brecent_note');
-import sql = require('../../services/sql');
-import dateUtils = require('../../services/date_utils');
+import BRecentNote from "../../becca/entities/brecent_note.js";
+import sql from "../../services/sql.js";
+import dateUtils from "../../services/date_utils.js";
 import { Request } from 'express';
 
 function addRecentNote(req: Request) {
@@ -19,6 +19,6 @@ function addRecentNote(req: Request) {
     }
 }
 
-export = {
+export default {
     addRecentNote
 };

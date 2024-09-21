@@ -1,3 +1,4 @@
+import { t } from "../../../services/i18n.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 
 const TPL = `
@@ -5,17 +6,17 @@ const TPL = `
     <td colspan="2">
         <span class="bx bx-trash"></span>
     
-        Delete matched notes
+        ${t("delete_note.delete_matched_notes")}
     </td>
     <td class="button-column">
         <div class="dropdown help-dropdown">
-            <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+            <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
-                <p>This will delete matched notes.</p>
+                <p>${t("delete_note.delete_matched_notes_description")}</p>
                  
-                <p>After the deletion, it's possible to undelete them from <span class="bx bx-history"></span> Recent Notes dialog.</p>
+                <p>${t("delete_note.undelete_notes_instruction")}</p>
                 
-                <p>To erase notes permanently, you can go after the deletion to the Option -> Other and click the "Erase deleted notes now" button.</p>
+                ${t("delete_note.erase_notes_instruction")}
             </div>
         </div>
         
@@ -25,7 +26,7 @@ const TPL = `
 
 export default class DeleteNoteBulkAction extends AbstractBulkAction {
     static get actionName() { return "deleteNote"; }
-    static get actionTitle() { return "Delete note"; }
+    static get actionTitle() { return t("delete_note.delete_note"); }
 
     doRender() {
         return $(TPL);

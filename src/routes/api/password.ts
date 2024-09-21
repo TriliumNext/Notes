@@ -1,7 +1,7 @@
 "use strict";
 
-import passwordService = require('../../services/encryption/password');
-import ValidationError = require('../../errors/validation_error');
+import passwordService from "../../services/encryption/password.js";
+import ValidationError from "../../errors/validation_error.js";
 import { Request } from 'express';
 
 function changePassword(req: Request) {
@@ -22,7 +22,7 @@ function resetPassword(req: Request) {
     return passwordService.resetPassword();
 }
 
-export = {
+export default {
     changePassword,
     resetPassword
 };

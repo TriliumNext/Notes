@@ -1,19 +1,19 @@
 "use strict";
 
-import options = require('../../services/options');
-import utils = require('../../services/utils');
-import dateUtils = require('../../services/date_utils');
-import instanceId = require('../../services/instance_id');
-import passwordEncryptionService = require('../../services/encryption/password_encryption');
-import protectedSessionService = require('../../services/protected_session');
-import appInfo = require('../../services/app_info');
-import eventService = require('../../services/events');
-import sqlInit = require('../../services/sql_init');
-import sql = require('../../services/sql');
-import ws = require('../../services/ws');
-import etapiTokenService = require('../../services/etapi_tokens');
+import options from "../../services/options.js";
+import utils from "../../services/utils.js";
+import dateUtils from "../../services/date_utils.js";
+import instanceId from "../../services/instance_id.js";
+import passwordEncryptionService from "../../services/encryption/password_encryption.js";
+import protectedSessionService from "../../services/protected_session.js";
+import appInfo from "../../services/app_info.js";
+import eventService from "../../services/events.js";
+import sqlInit from "../../services/sql_init.js";
+import sql from "../../services/sql.js";
+import ws from "../../services/ws.js";
+import etapiTokenService from "../../services/etapi_tokens.js";
 import { Request } from 'express';
-import { AppRequest } from '../route-interface';
+import { AppRequest } from '../route-interface.js';
 
 function loginSync(req: AppRequest) {
     if (!sqlInit.schemaExists()) {
@@ -110,7 +110,7 @@ function token(req: Request) {
     return { token: authToken };
 }
 
-export = {
+export default {
     loginSync,
     loginToProtectedSession,
     logoutFromProtectedSession,

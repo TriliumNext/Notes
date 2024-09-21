@@ -1,13 +1,13 @@
-import syncService = require('./sync');
-import log = require('./log');
-import sqlInit = require('./sql_init');
-import optionService = require('./options');
-import syncOptions = require('./sync_options');
-import request = require('./request');
-import appInfo = require('./app_info');
-import utils = require('./utils');
-import becca = require('../becca/becca');
-import { SetupStatusResponse, SetupSyncSeedResponse } from './api-interface';
+import syncService from "./sync.js";
+import log from "./log.js";
+import sqlInit from "./sql_init.js";
+import optionService from "./options.js";
+import syncOptions from "./sync_options.js";
+import request from "./request.js";
+import appInfo from "./app_info.js";
+import utils from "./utils.js";
+import becca from "../becca/becca.js";
+import { SetupStatusResponse, SetupSyncSeedResponse } from './api-interface.js';
 
 async function hasSyncServerSchemaAndSeed() {
     const response = await requestToSyncServer<SetupStatusResponse>('GET', '/api/setup/status');
@@ -87,8 +87,8 @@ async function setupSyncFromSyncServer(syncServerHost: string, syncProxy: string
             }
         }
 
-        sqlInit.createDatabaseForSync(resp.options, syncServerHost, syncProxy);
-
+        await sqlInit.createDatabaseForSync(resp.options, syncServerHost, syncProxy);
+        
         triggerSync();
 
         return { result: 'success' };
@@ -110,7 +110,7 @@ function getSyncSeedOptions() {
     ];
 }
 
-export = {
+export default {
     hasSyncServerSchemaAndSeed,
     triggerSync,
     sendSeedToSyncServer,

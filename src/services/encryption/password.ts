@@ -1,10 +1,10 @@
 "use strict";
 
-import sql = require('../sql');
-import optionService = require('../options');
-import myScryptService = require('./my_scrypt');
-import utils = require('../utils');
-import passwordEncryptionService = require('./password_encryption');
+import sql from "../sql.js";
+import optionService from "../options.js";
+import myScryptService from "./my_scrypt.js";
+import utils from "../utils.js";
+import passwordEncryptionService from "./password_encryption.js";
 
 function isPasswordSet() {
     return !!sql.getValue("SELECT value FROM options WHERE name = 'passwordVerificationHash'");
@@ -78,7 +78,7 @@ function resetPassword() {
     };
 }
 
-export = {
+export default {
     isPasswordSet,
     changePassword,
     setPassword,

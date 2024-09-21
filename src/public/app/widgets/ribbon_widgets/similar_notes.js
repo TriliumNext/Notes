@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import linkService from "../../services/link.js";
 import server from "../../services/server.js";
 import froca from "../../services/froca.js";
@@ -48,7 +49,7 @@ export default class SimilarNotesWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: this.isEnabled(),
-            title: 'Similar Notes',
+            title: t('similar_notes.title'),
             icon: 'bx bx-bar-chart'
         };
     }
@@ -67,7 +68,7 @@ export default class SimilarNotesWidget extends NoteContextAwareWidget {
         const similarNotes = await server.get(`similar-notes/${this.noteId}`);
 
         if (similarNotes.length === 0) {
-            this.$similarNotesWrapper.empty().append("No similar notes found.");
+            this.$similarNotesWrapper.empty().append(t('similar_notes.no_similar_notes_found'));
 
             return;
         }

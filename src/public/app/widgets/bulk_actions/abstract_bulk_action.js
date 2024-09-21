@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import server from "../../services/server.js";
 import ws from "../../services/ws.js";
 import utils from "../../services/utils.js";
@@ -14,7 +15,7 @@ export default class AbstractBulkAction {
 
             $rendered.find('.action-conf-del')
                 .on('click', () => this.deleteAction())
-                .attr('title', 'Remove this search action');
+                .attr('title', t('abstract_bulk_action.remove_this_search_action'));
 
             utils.initHelpDropdown($rendered);
 

@@ -1,21 +1,22 @@
 "use strict";
 
-import sql = require('./sql');
-import sqlInit = require('./sql_init');
-import log = require('./log');
-import ws = require('./ws');
-import syncMutexService = require('./sync_mutex');
-import cls = require('./cls');
-import entityChangesService = require('./entity_changes');
-import optionsService = require('./options');
-import BBranch = require('../becca/entities/bbranch');
-import becca = require('../becca/becca');
-import utils = require('../services/utils');
-import eraseService = require('../services/erase');
-import sanitizeAttributeName = require('./sanitize_attribute_name');
-import noteTypesService = require('../services/note_types');
-import { BranchRow } from '../becca/entities/rows';
-import { EntityChange } from './entity_changes_interface';
+import sql from "./sql.js";
+import sqlInit from "./sql_init.js";
+import log from "./log.js";
+import ws from "./ws.js";
+import syncMutexService from "./sync_mutex.js";
+import cls from "./cls.js";
+import entityChangesService from "./entity_changes.js";
+import optionsService from "./options.js";
+import BBranch from "../becca/entities/bbranch.js";
+import becca from "../becca/becca.js";
+import utils from "../services/utils.js";
+import eraseService from "../services/erase.js";
+import sanitizeAttributeName from "./sanitize_attribute_name.js";
+import noteTypesService from "../services/note_types.js";
+import { BranchRow } from '../becca/entities/rows.js';
+import { EntityChange } from './entity_changes_interface.js';
+import becca_loader from "../becca/becca_loader.js";
 const noteTypes = noteTypesService.getNoteTypeNames();
 
 class ConsistencyChecks {
@@ -825,7 +826,7 @@ class ConsistencyChecks {
         }
 
         if (this.reloadNeeded) {
-            require('../becca/becca_loader').reload("consistency checks need becca reload");
+            becca_loader.reload("consistency checks need becca reload");
         }
 
         return !this.unrecoveredConsistencyErrors;
@@ -913,7 +914,7 @@ sqlInit.dbReady.then(() => {
     setTimeout(cls.wrap(runPeriodicChecks), 4 * 1000);
 });
 
-export = {
+export default {
     runOnDemandChecks,
     runEntityChangesChecks
 };

@@ -1,8 +1,8 @@
 "use strict";
 
-import becca = require('./becca');
-import cls = require('../services/cls');
-import log = require('../services/log');
+import becca from "./becca.js";
+import cls from "../services/cls.js";
+import log from "../services/log.js";
 
 function isNotePathArchived(notePath: string[]) {
     const noteId = notePath[notePath.length - 1];
@@ -82,7 +82,7 @@ function getNoteTitleForPath(notePathArray: string[]) {
     return titles.join(' / ');
 }
 
-export = {
+export default {
     getNoteTitle,
     getNoteTitleForPath,
     isNotePathArchived

@@ -1,20 +1,24 @@
-import log = require('./log');
-import fs = require('fs');
-import resourceDir = require('./resource_dir');
-import sql = require('./sql');
-import utils = require('./utils');
-import optionService = require('./options');
-import port = require('./port');
-import BOption = require('../becca/entities/boption');
-import TaskContext = require('./task_context');
-import migrationService = require('./migration');
-import cls = require('./cls');
-import config = require('./config');
-import { OptionRow } from '../becca/entities/rows';
+import log from "./log.js";
+import fs from "fs";
+import resourceDir from "./resource_dir.js";
+import sql from "./sql.js";
+import utils from "./utils.js";
+import optionService from "./options.js";
+import port from "./port.js";
+import BOption from "../becca/entities/boption.js";
+import TaskContext from "./task_context.js";
+import migrationService from "./migration.js";
+import cls from "./cls.js";
+import config from "./config.js";
+import { OptionRow } from '../becca/entities/rows.js';
+import BNote from "../becca/entities/bnote.js";
+import BBranch from "../becca/entities/bbranch.js";
+import zipImportService from "./import/zip.js";
+import becca_loader from "../becca/becca_loader.js";
+import password from "./encryption/password.js";
+import backup from "./backup.js";
 
 const dbReady = utils.deferred<void>();
-
-cls.init(initDbConnection);
 
 function schemaExists() {
     return !!sql.getValue(`SELECT name FROM sqlite_master
@@ -53,18 +57,19 @@ async function createInitialDatabase() {
 
     const schema = fs.readFileSync(`${resourceDir.DB_INIT_DIR}/schema.sql`, "utf-8");
     const demoFile = fs.readFileSync(`${resourceDir.DB_INIT_DIR}/demo.zip`);
+    const defaultTheme = await getDefaultTheme();
 
-    let rootNote;
+    let rootNote!: BNote;
+
+    // We have to import async since options init requires keyboard actions which require translations.
+    const optionsInitService = (await import("./options_init.js")).default;
 
     sql.transactional(() => {
         log.info("Creating database schema ...");
 
         sql.executeScript(schema);
 
-        require('../becca/becca_loader').load();
-
-        const BNote = require('../becca/entities/bnote');
-        const BBranch = require('../becca/entities/bbranch');
+        becca_loader.load();
 
         log.info("Creating root note ...");
 
@@ -83,20 +88,17 @@ async function createInitialDatabase() {
             isExpanded: true,
             notePosition: 10
         }).save();
-
-        const optionsInitService = require('./options_init');
-
+        
         optionsInitService.initDocumentOptions();
-        optionsInitService.initNotSyncedOptions(true, {});
+        optionsInitService.initNotSyncedOptions(true, defaultTheme, {});
         optionsInitService.initStartupOptions();
-        require('./encryption/password').resetPassword();
+        password.resetPassword();
     });
 
     log.info("Importing demo content ...");
 
     const dummyTaskContext = new TaskContext("no-progress-reporting", 'import', false);
 
-    const zipImportService = require('./import/zip');
     await zipImportService.importZip(dummyTaskContext, demoFile, rootNote);
 
     sql.transactional(() => {
@@ -106,7 +108,6 @@ async function createInitialDatabase() {
 
         const startNoteId = sql.getValue("SELECT noteId FROM branches WHERE parentNoteId = 'root' AND isDeleted = 0 ORDER BY notePosition");
 
-        const optionService = require('./options');
         optionService.setOption('openNoteContexts', JSON.stringify([
             {
                 notePath: startNoteId,
@@ -120,19 +121,23 @@ async function createInitialDatabase() {
     initDbConnection();
 }
 
-function createDatabaseForSync(options: OptionRow[], syncServerHost = '', syncProxy = '') {
+async function createDatabaseForSync(options: OptionRow[], syncServerHost = '', syncProxy = '') {
     log.info("Creating database for sync");
 
     if (isDbInitialized()) {
         throw new Error("DB is already initialized");
     }
 
+    const defaultTheme = await getDefaultTheme();
     const schema = fs.readFileSync(`${resourceDir.DB_INIT_DIR}/schema.sql`, "utf8");
 
+    // We have to import async since options init requires keyboard actions which require translations.
+    const optionsInitService = (await import("./options_init.js")).default;
+    
     sql.transactional(() => {
         sql.executeScript(schema);
 
-        require('./options_init').initNotSyncedOptions(false,  { syncServerHost, syncProxy });
+        optionsInitService.initNotSyncedOptions(false, defaultTheme, { syncServerHost, syncProxy });
 
         // document options required for sync to kick off
         for (const opt of options) {
@@ -141,6 +146,16 @@ function createDatabaseForSync(options: OptionRow[], syncServerHost = '', syncPr
     });
 
     log.info("Schema and not synced options generated.");
+}
+
+async function getDefaultTheme() {
+    if (utils.isElectron()) {
+        const {nativeTheme} = await import("electron");
+        return nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+    } else {
+        // default based on the poll in https://github.com/zadam/trilium/issues/2516
+        return "dark";
+    }
 }
 
 function setDbAsInitialized() {
@@ -160,36 +175,41 @@ function optimize() {
     log.info(`Optimization finished in ${Date.now() - start}ms.`);
 }
 
-dbReady.then(() => {
-    if (config.General && config.General.noBackup === true) {
-        log.info("Disabling scheduled backups.");
-
-        return;
-    }
-
-    setInterval(() => require('./backup').regularBackup(), 4 * 60 * 60 * 1000);
-
-    // kickoff first backup soon after start up
-    setTimeout(() => require('./backup').regularBackup(), 5 * 60 * 1000);
-
-    // optimize is usually inexpensive no-op, so running it semi-frequently is not a big deal
-    setTimeout(() => optimize(), 60 * 60 * 1000);
-
-    setInterval(() => optimize(), 10 * 60 * 60 * 1000);
-});
-
 function getDbSize() {
     return sql.getValue<number>("SELECT page_count * page_size / 1000 as size FROM pragma_page_count(), pragma_page_size()");
 }
 
-log.info(`DB size: ${getDbSize()} KB`);
+function initializeDb() {
+    cls.init(initDbConnection);
 
-export = {
+    log.info(`DB size: ${getDbSize()} KB`);
+ 
+    dbReady.then(() => {
+        if (config.General && config.General.noBackup === true) {
+            log.info("Disabling scheduled backups.");
+    
+            return;
+        }
+    
+        setInterval(() => backup.regularBackup(), 4 * 60 * 60 * 1000);
+    
+        // kickoff first backup soon after start up
+        setTimeout(() => backup.regularBackup(), 5 * 60 * 1000);
+    
+        // optimize is usually inexpensive no-op, so running it semi-frequently is not a big deal
+        setTimeout(() => optimize(), 60 * 60 * 1000);
+    
+        setInterval(() => optimize(), 10 * 60 * 60 * 1000);
+    });
+}
+
+export default {
     dbReady,
     schemaExists,
     isDbInitialized,
     createInitialDatabase,
     createDatabaseForSync,
     setDbAsInitialized,
-    getDbSize
+    getDbSize,
+    initializeDb
 };

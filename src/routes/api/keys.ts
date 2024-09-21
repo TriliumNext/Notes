@@ -1,7 +1,7 @@
 "use strict";
 
-import keyboardActions = require('../../services/keyboard_actions');
-import becca = require('../../becca/becca');
+import keyboardActions from "../../services/keyboard_actions.js";
+import becca from "../../becca/becca.js";
 
 function getKeyboardActions() {
     return keyboardActions.getKeyboardActions();
@@ -14,7 +14,7 @@ function getShortcutsForNotes() {
     return labels.filter(attr => becca.getNote(attr.noteId)?.type !== 'launcher');
 }
 
-export = {
+export default {
     getKeyboardActions,
     getShortcutsForNotes
 };

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="shortcut icon" href="./favicon.ico">
+    
+    <script src="./assets/v0.63.6/app-dist/share.js"></script>
+    
+        <link href="./assets/v0.63.6/libraries/normalize.min.css" rel="stylesheet">
+        <link href="./assets/v0.63.6/stylesheets/share.css" rel="stylesheet">
+    
+    
+        <link href="./assets/v0.63.6/libraries/ckeditor/ckeditor-content.css" rel="stylesheet">
+    
+    
+    
+    
+    
+    <title>bettersqlite binaries</title>
+</head>
+<body data-note-id="X4N03xLYEWnN" data-ancestor-note-id="4yYHqKbLovVX">
+<div id="layout">
+    <div id="main">
+        
+            <nav id="parentLink">
+                parent: <a href="s5gsYTbPQr6c.html"
+                           class="type-text">Updating dependencies</a>
+            </nav>
+        
+
+        <h1 id="title">bettersqlite binaries</h1>
+
+        
+
+        
+            <div id="content" class="type-text ck-content">
+                <h3>The native node bindings</h3><p><code>better-sqlite3</code> has native Node bindings. With updates of <code>better-sqlite3</code>, but also of Electron and Node.js versions, these bindings need to be updated.</p><p>Note that Electron and Node.js versions need different versions of these bindings, since Electron usually packs a different version of Node.js.</p><p>During development, <code>npm install</code> tries to build or reuse prebuilt natives for the current Node.js version. This makes <code>npm run start-server</code> work out of the box. Trying to run <code>npm run start-electron</code> with these versions generally causes an error such as this:</p><pre><code class="language-text-plain">Uncaught Exception:
+Error: The module '/Users/elian/Projects/Notes/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 108. This version of Node.js requires
+NODE_MODULE_VERSION 116. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).</code></pre><h3>How the natives are handled</h3><p>Locally, this can be fixed by rebuilding the binaries, which is what <code>npm run switch-electron</code> does, which uses <code>electron-rebuild</code> under the hood.</p><p>When the deliveries are built (see&nbsp;<a class="reference-link type-text" href="UTB518X6X9Uh.html">Build deliveries locally</a>), it is not feasible to rebuild the dependencies since we are building for multiple platforms. Luckily, <code>better-sqlite3</code> provides these prebuilt binaries from us, available as artifacts on <a href="https://github.com/WiseLibs/better-sqlite3/releases/">their GitHub releases page</a>.&nbsp;</p><p>The build script manages the natives for <code>better-sqlite3</code> by keeping a copy of the <code>.node</code> file for every platform in <code>bin/better-sqlite3</code>.</p><p>Whenever the version of <code>better-sqlite3</code> changes, the <code>.node</code> files must also be renewed based on their releases page. To simplify this process, a script was created in <code>bin/better-sqlite3/update.sh</code>.</p><h2>How to update the natives</h2><p>The update script needs to know the version of Electron or Node.js for which to download the prebuilt binaries.</p><p>If you get errors during download, check on the <a href="https://github.com/WiseLibs/better-sqlite3/releases/">releases page</a> to ensure that this particular combination of Electron/Node actually exists for the given release.</p><p>To determine the <code>NODE_MODULE_VERSION</code> that is required, look for <code>This version of Node.js requires</code><br><code>NODE_MODULE_VERSION</code> in the error when starting Trilium via:</p><ul><li><code>npm run start-electron</code> (or run any Electron <a href="UTB518X6X9Uh.html" class="type-text">delivery</a>), case in which the <span style="color:#c0bfbc;"><code>ELECTRON_VERSION</code> variable needs to be changed.</span></li><li><span style="color:#c0bfbc;"><code>npm run start-server</code></span> (or run the Linux server delivery), case in which the <code>NODE_VERSION</code> variable needs to be changed.</li></ul><p>Check which files got changed after running the update script and for each platform that got changed, test it locally via&nbsp;<a class="reference-link type-text" href="UTB518X6X9Uh.html">Build deliveries locally</a>&nbsp;or via the CI.</p>
+            </div>
+        
+
+        
+    </div>
+
+    
+        <button id="toggleMenuButton"></button>
+
+        <nav id="menu">
+            
+<p>
+    
+
+    
+    <a class="type-text" href="4yYHqKbLovVX.html">Developer&#39;s Guide</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="VS22Hq5PBFNf.html">Dependency Management</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QXCi6Y1SYulw.html">Adding a new client library</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="C09Dou56ffMe.html">Having a simpler packaging system</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="ZlxZh8NH5frM.html">Building and deployment</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="PHqgH8FCfcod.html">Documentation</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="btM6L9JtG301.html">Running a development build</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="UTB518X6X9Uh.html">Build deliveries locally</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="biDJ9KgbWLgt.html">Releasing a version</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="rU1hxvgqlA9x.html">CI</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="BhE2WFknKKHG.html">Main</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="xtBYDVZPb0gr.html">Project maintenance</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="s5gsYTbPQr6c.html">Updating dependencies</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <strong>bettersqlite binaries</strong>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="GMta9hBHsXHQ.html">Node.js, Electron and `better-sqlite3`</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="jvdjFBOCCrOa.html">Testing compatibility</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="WKn3hLGmKmiH.html">CKEditor</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="MUGBo4n67kBI.html">Environment setup</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="icQBu8R1ij57.html">Building &amp; updating</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="zpR91YHYs6lL.html">Differences from upstream</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="B8hxg4e66cVL.html">Development and architecture</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="hkrBX8KE1HQl.html">Internationalisation / Translations</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="Z9N9OKBXXLFW.html">Guidelines</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="KRC2O84LekPz.html">i18n-ally</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="XxqZW6JjkW2g.html">Live reload</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="3jc1nUXyteo0.html">Themes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="U5RtMeGPeZ29.html">Synchronisation</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="d3dnvVOhur16.html">Content hashing</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="mPGbEmYGitWe.html">Build information</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="zCDxk5VFdsqg.html">Database</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="wCxCJB3hhojs.html">attachments</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="wxCwZ1P2SGCx.html">attributes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="6x42mhlfLo0o.html">blobs</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="Vy1PbjSkUast.html">branches</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="inGKXCChkVYX.html">entity_changes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="y2ido6E6tZ0V.html">etapi_tokens</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="kAfgZERKtVhU.html">notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="FSZoX3cJlJE7.html">options</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="bzQfhyzDo3Xz.html">recent_notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QYMncZf5Bu3D.html">revisions</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="KbwD5mDpD4CV.html">Protected entities</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="IuxV242YGaN5.html">Deleted notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="FJ4VR6G2M6VD.html">Special notes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="1l1f6WZbaBEZ.html">Branch prefixes</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="QSkfVssHIngA.html">Revisions</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="cemIoFLfEGPO.html">Backlinks</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="VbDoDdiHEemi.html">Note types</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="UDBwK5Fhr2CT.html">Safe mode</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="3eTu21fjtZkj.html">Scripting</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="1pOWnHdGAuWR.html">Widgets</a>
+    
+</p>
+
+
+<ul>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="8jWguCtuKsAt.html">Right pane widget</a>
+    
+</p>
+
+
+
+        </li>
+    
+        <li>
+            
+<p>
+    
+
+    
+    <a class="type-text" href="4FXLAtcPhZFo.html">CSS</a>
+    
+</p>
+
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </li>
+    
+</ul>
+
+
+        </nav>
+    
+</div>
+</body>
+</html>

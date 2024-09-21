@@ -1,37 +1,30 @@
 import AbstractSearchOption from "./abstract_search_option.js";
 import noteAutocompleteService from "../../services/note_autocomplete.js";
+import { t } from "../../services/i18n.js";
 
 const TPL = `
 <tr>
     <td class="title-column">
-        Search script: 
+        ${t('search_script.title')}
     </td>
     <td>
         <div class="input-group">
-            <input class="search-script form-control" placeholder="search for note by its name">
+            <input class="search-script form-control" placeholder="${t('search_script.placeholder')}">
         </div>
     </td>
-        <td class="button-column">
+    <td class="button-column">
         <div class="dropdown help-dropdown">
-          <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+          <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
           <div class="dropdown-menu dropdown-menu-right p-4">
-            <p>Search script allows to define search results by running a script. This provides maximal flexibility when standard search doesn't suffice.</p>
+            <p>${t('search_script.description1')}</p>
             
-            <p>Search script must be of type "code" and subtype "JavaScript backend". The script receives  needs to return an array of noteIds or notes.</p>
+            <p>${t('search_script.description2')}</p>
             
-            <p>See this example:</p>
+            <p>${t('search_script.example_title')}</p>
             
-            <pre>
-// 1. prefiltering using standard search
-const candidateNotes = api.searchForNotes("#journal"); 
+            <pre>${t('search_script.example_code')}</pre>
 
-// 2. applying custom search criteria
-const matchedNotes = candidateNotes
-    .filter(note => note.title.match(/[0-9]{1,2}\. ?[0-9]{1,2}\. ?[0-9]{4}\/));
-
-return matchedNotes;</pre>
-
-            <p>Note that search script and search string can't be combined with each other.</p>
+            ${t('search_script.note')}
           </div>
         </div>
         

@@ -1,11 +1,11 @@
-import backupService = require('./backup');
-import sql = require('./sql');
-import fs = require('fs-extra');
-import log = require('./log');
-import utils = require('./utils');
-import resourceDir = require('./resource_dir');
-import appInfo = require('./app_info');
-import cls = require('./cls');
+import backupService from "./backup.js";
+import sql from "./sql.js";
+import fs from "fs-extra";
+import log from "./log.js";
+import utils from "./utils.js";
+import resourceDir from "./resource_dir.js";
+import appInfo from "./app_info.js";
+import cls from "./cls.js";
 
 interface MigrationInfo {
     dbVersion: number;
@@ -20,7 +20,7 @@ async function migrate() {
     if (currentDbVersion < 214) {
         log.error("Direct migration from your current version is not supported. Please upgrade to the latest v0.60.4 first and only then to this version.");
 
-        utils.crash();
+        await utils.crash();
         return;
     }
 
@@ -67,12 +67,12 @@ async function migrate() {
 
     cls.setMigrationRunning(true);
 
-    sql.transactional(() => {
+    sql.transactional(async () => {
         for (const mig of migrations) {
             try {
                 log.info(`Attempting migration to version ${mig.dbVersion}`);
 
-                executeMigration(mig);
+                await executeMigration(mig);
 
                 sql.execute(`UPDATE options
                              SET value = ?
@@ -84,7 +84,7 @@ async function migrate() {
                 log.error("migration failed, crashing hard"); // this is not very user-friendly :-/
 
                 utils.crash();
-                break; // crash() above does not seem to work right away
+                break; // crash() is sometimes async
             }
         }
     });
@@ -96,7 +96,7 @@ async function migrate() {
     }
 }
 
-function executeMigration(mig: MigrationInfo) {
+async function executeMigration(mig: MigrationInfo) {
     if (mig.type === 'sql') {
         const migrationSql = fs.readFileSync(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`).toString('utf8');
 
@@ -106,7 +106,7 @@ function executeMigration(mig: MigrationInfo) {
     } else if (mig.type === 'js') {
         console.log("Migration with JS module");
 
-        const migrationModule = require(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`);
+        const migrationModule = await import(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`);
         migrationModule();
     } else {
         throw new Error(`Unknown migration type '${mig.type}'`);
@@ -135,7 +135,7 @@ async function migrateIfNecessary() {
     if (currentDbVersion > appInfo.dbVersion && process.env.TRILIUM_IGNORE_DB_VERSION !== 'true') {
         log.error(`Current DB version ${currentDbVersion} is newer than the current DB version ${appInfo.dbVersion}, which means that it was created by a newer and incompatible version of Trilium. Upgrade to the latest version of Trilium to resolve this issue.`);
 
-        utils.crash();
+        await utils.crash();
     }
 
     if (!isDbUpToDate()) {
@@ -143,7 +143,7 @@ async function migrateIfNecessary() {
     }
 }
 
-export = {
+export default {
     migrateIfNecessary,
     isDbUpToDate
 };

@@ -1,10 +1,11 @@
+import { t } from "../../services/i18n.js";
 import SpacedUpdate from "../../services/spaced_update.js";
 import AbstractBulkAction from "./abstract_bulk_action.js";
 
 const TPL = `
 <tr>
     <td>
-        Execute script:
+        ${t('execute_script.execute_script')}
     </td>
     <td>
         <input type="text" 
@@ -14,15 +15,15 @@ const TPL = `
     <td class="button-column">
         <div style="display: flex">
             <div class="dropdown help-dropdown">
-              <span class="bx bx-help-circle icon-action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+              <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
               <div class="dropdown-menu dropdown-menu-right p-4">
-                You can execute simple scripts on the matched notes.
+                ${t('execute_script.help_text')}
                 
-                For example to append a string to a note's title, use this small script:
+                ${t('execute_script.example_1')}
                 
                 <pre>note.title = note.title + ' - suffix';</pre>
                 
-                More complex example would be deleting all matched note's attributes:
+                ${t('execute_script.example_2')}
                 
                 <pre>for (const attr of note.getOwnedAttributes) { attr.markAsDeleted(); }</pre>
               </div>
@@ -35,7 +36,7 @@ const TPL = `
 
 export default class ExecuteScriptBulkAction extends AbstractBulkAction {
     static get actionName() { return "executeScript"; }
-    static get actionTitle() { return "Execute script"; }
+    static get actionTitle() { return t("execute_script.execute_script"); }
 
     doRender() {
         const $action = $(TPL);

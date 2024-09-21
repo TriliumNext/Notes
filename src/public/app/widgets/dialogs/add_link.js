@@ -1,3 +1,4 @@
+import { t } from "../../services/i18n.js";
 import treeService from '../../services/tree.js';
 import noteAutocompleteService from "../../services/note_autocomplete.js";
 import utils from "../../services/utils.js";
@@ -8,21 +9,17 @@ const TPL = `
     <div class="modal-dialog modal-lg" style="max-width: 1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mr-auto">Add link</h5>
-
-                <button type="button" class="help-button" title="Help on links" data-help-page="Links">?</button>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0 !important;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title flex-grow-1">${t('add_link.add_link')}</h5>
+                <button type="button" class="help-button" title="${t('add_link.help_on_links')}" data-help-page="links.html">?</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('add_link.close')}"></button>
             </div>
             <form class="add-link-form">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="add-link-note-autocomplete">Note</label>
+                        <label for="add-link-note-autocomplete">${t('add_link.note')}</label>
 
                         <div class="input-group">
-                            <input class="add-link-note-autocomplete form-control" placeholder="search for note by its name">
+                            <input class="add-link-note-autocomplete form-control" placeholder="${t('add_link.search_note')}">
                         </div>
                     </div>
 
@@ -30,20 +27,20 @@ const TPL = `
                         <div class="add-link-title-radios form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="link-type" value="reference-link" checked>
-                                link title mirrors the note's current title
+                                ${t('add_link.link_title_mirrors')}
                             </label>
                         </div>
                         <div class="add-link-title-radios form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="link-type" value="hyper-link">
-                                link title can be changed arbitrarily
+                                ${t('add_link.link_title_arbitrary')}
                             </label>
                         </div>
 
                         <div class="add-link-title-form-group form-group">
                             <br/>
                             <label>
-                                Link title
+                                ${t('add_link.link_title')}
                                 
                                 <input class="link-title form-control" style="width: 100%;">
                             </label>
@@ -51,7 +48,7 @@ const TPL = `
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Add link <kbd>enter</kbd></button>
+                    <button type="submit" class="btn btn-primary">${t('add_link.add_link')} <kbd>enter</kbd></button>
                 </div>
             </form>
         </div>

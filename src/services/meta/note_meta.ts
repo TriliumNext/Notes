@@ -1,5 +1,5 @@
-import AttachmentMeta = require("./attachment_meta");
-import AttributeMeta = require("./attribute_meta");
+import AttachmentMeta from "./attachment_meta.js";
+import AttributeMeta from "./attribute_meta.js";
 
 interface NoteMeta {
     noteId?: string;
@@ -23,4 +23,4 @@ interface NoteMeta {
     children?: NoteMeta[];
 }
 
-export = NoteMeta;
+export default NoteMeta;

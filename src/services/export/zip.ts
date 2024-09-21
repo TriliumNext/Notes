@@ -1,26 +1,26 @@
 "use strict";
 
-import html = require('html');
-import dateUtils = require('../date_utils');
-import path = require('path');
-import mimeTypes = require('mime-types');
-import mdService = require('./md');
-import packageInfo = require('../../../package.json');
-import utils = require('../utils');
-import protectedSessionService = require('../protected_session');
-import sanitize = require("sanitize-filename");
-import fs = require("fs");
-import becca = require('../../becca/becca');
-const RESOURCE_DIR = require('../../services/resource_dir').RESOURCE_DIR;
-import archiver = require('archiver');
-import log = require('../log');
-import TaskContext = require('../task_context');
-import ValidationError = require('../../errors/validation_error');
-import NoteMeta = require('../meta/note_meta');
-import AttachmentMeta = require('../meta/attachment_meta');
-import AttributeMeta = require('../meta/attribute_meta');
-import BBranch = require('../../becca/entities/bbranch');
+import html from "html";
+import dateUtils from "../date_utils.js";
+import path from "path";
+import mimeTypes from "mime-types";
+import mdService from "./md.js";
+import packageInfo from "../../../package.json" with { type: "json" };
+import utils from "../utils.js";
+import protectedSessionService from "../protected_session.js";
+import sanitize from "sanitize-filename";
+import fs from "fs";
+import becca from "../../becca/becca.js";
+import archiver from "archiver";
+import log from "../log.js";
+import TaskContext from "../task_context.js";
+import ValidationError from "../../errors/validation_error.js";
+import NoteMeta from "../meta/note_meta.js";
+import AttachmentMeta from "../meta/attachment_meta.js";
+import AttributeMeta from "../meta/attribute_meta.js";
+import BBranch from "../../becca/entities/bbranch.js";
 import { Response } from 'express';
+import { RESOURCE_DIR } from "../resource_dir.js";
 
 async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "html" | "markdown", res: Response | fs.WriteStream, setHeaders = true) {
     if (!['html', 'markdown'].includes(format)) {
@@ -582,7 +582,7 @@ async function exportToZipFile(noteId: string, format: "markdown" | "html", zipF
     log.info(`Exported '${noteId}' with format '${format}' to '${zipFilePath}'`);
 }
 
-export = {
+export default {
     exportToZip,
     exportToZipFile
 };
