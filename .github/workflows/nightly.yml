@@ -1,0 +1,122 @@
+name: Nightly Release
+on:
+  # This can be used to automatically publish nightlies at UTC nighttime
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+  # This can be used to allow manually triggering nightlies from the web interface
+  workflow_dispatch:
+
+jobs:
+  nightly-electron:
+    name: Deploy nightly
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+        os:
+          - name: macos
+            image: macos-latest
+            extension: dmg
+          - name: linux
+            image: ubuntu-latest
+            extension: deb
+          - name: windows
+            image: windows-latest
+            extension: exe
+    runs-on: ${{ matrix.os.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up node & dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Set up Python for appdmg to be installed
+        if: ${{ matrix.os.name == 'macos' }}
+        run: brew install python-setuptools
+      - name: Install dependencies
+        run: npm ci
+      - name: Update build info
+        run: npm run update-build-info
+      - name: Run electron-forge
+        run: npm run make-electron -- --arch=${{ matrix.arch }}
+      - name: Prepare artifacts (Unix)
+        if: runner.os != 'windows'
+        run: |
+          mkdir -p upload
+          file=$(find out/make -name '*.zip' -print -quit)
+          cp "$file" "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.zip"
+          file=$(find out/make -name '*.${{ matrix.os.extension }}' -print -quit)
+          cp "$file" "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }}"
+      - name: Prepare artifacts (Windows)
+        if: runner.os == 'windows'
+        run: |
+          mkdir upload
+          $file = Get-ChildItem -Path out/make -Filter '*.zip' -Recurse | Select-Object -First 1
+          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.zip"
+          $file = Get-ChildItem -Path out/make -Filter '*.${{ matrix.os.extension }}' -Recurse | Select-Object -First 1
+          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }}"
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TriliumNextNotes ${{ matrix.os.name }} ${{ matrix.arch }}
+          path: upload/*.zip
+          overwrite: true
+      - name: Publish installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TriliumNextNotes ${{ matrix.os.name }} ${{ matrix.arch }}
+          path: upload/*.${{ matrix.os.extension }}
+          overwrite: true
+
+      - name: Deploy release
+        uses: WebFreak001/deploy-nightly@v3.1.0
+        with:
+          # upload_url:  # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
+          # release_id:  # same as above (id can just be taken out the upload_url, it's used to find old releases)
+          asset_path: upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.zip # path to archive to upload
+          asset_name: TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}-nightly.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
+          asset_content_type: application/zip # required by GitHub API
+      - name: Deploy installer release
+        uses: WebFreak001/deploy-nightly@v3.1.0
+        with:
+          # upload_url:  # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
+          # release_id:  # same as above (id can just be taken out the upload_url, it's used to find old releases)
+          asset_path: upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }} # path to archive to upload
+          asset_name: TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}-nightly.${{ matrix.os.extension }} # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
+          asset_content_type: application/zip # required by GitHub API
+  nightly-server:
+    name: Deploy server nightly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up node & dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Linux server build (x86_64)
+        run: |
+          npm run update-build-info
+          ./bin/build-server.sh
+      - name: Prepare artifacts
+        if: runner.os != 'windows'
+        run: |
+          mkdir -p upload
+          file=$(find dist -name '*.tar.xz' -print -quit)
+          cp "$file" "upload/TriliumNextNotes-linux-x64-${{ github.ref_name }}.tar.xz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TriliumNextNotes linux server x64
+          path: upload/TriliumNextNotes-linux-x64-${{ github.ref_name }}.tar.xz
+          overwrite: true
+
+      - name: Deploy release
+        uses: WebFreak001/deploy-nightly@v3.1.0
+        with:
+          # upload_url:  # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
+          # release_id:  # same as above (id can just be taken out the upload_url, it's used to find old releases)
+          asset_path: upload/TriliumNextNotes-linux-x64-${{ github.ref_name }}.tar.xz # path to archive to upload
+          asset_name: TriliumNextNotes-linux-x64-nightly.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
+          asset_content_type: application/zip # required by GitHub API
