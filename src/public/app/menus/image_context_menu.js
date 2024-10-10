@@ -22,15 +22,31 @@ function setupContextMenu($image) {
                     command: "copyImageReferenceToClipboard",
                     uiIcon: "bx bx-empty"
                 },
-                {title: "Copy image to clipboard", command: "copyImageToClipboard", uiIcon: "bx bx-empty"},
+                { title: "Copy image to clipboard", command: "copyImageToClipboard", uiIcon: "bx bx-empty" },
             ],
-            selectMenuItemHandler: ({command}) => {
+            selectMenuItemHandler: async ({ command }) => {
                 if (command === 'copyImageReferenceToClipboard') {
                     imageService.copyImageReferenceToClipboard($image);
                 } else if (command === 'copyImageToClipboard') {
-                    const webContents = utils.dynamicRequire('@electron/remote').getCurrentWebContents();
-                    utils.dynamicRequire('electron');
-                    webContents.copyImageAt(e.pageX, e.pageY);
+                    try {
+                        const nativeImage = utils.dynamicRequire('electron').nativeImage;
+                        const clipboard = utils.dynamicRequire('electron').clipboard;
+
+                        const response = await fetch(
+                            $image.attr('src')
+                        );
+                        const blob = await response.blob();
+
+                        clipboard.writeImage(
+                            nativeImage.createFromBuffer(
+                                Buffer.from(
+                                    await blob.arrayBuffer()
+                                )
+                            )
+                        );
+                    } catch (error) {
+                        console.error('Failed to copy image to clipboard:', error);
+                    }
                 } else {
                     throw new Error(`Unrecognized command '${command}'`);
                 }
