@@ -37,10 +37,11 @@ const TPL = `
     .note-detail {
         font-family: var(--detail-font-family);
         font-size: var(--detail-font-size);
+        flex-grow: 1;
     }
     
     .note-detail.full-height {
-        height: 100%;
+        contain: size !important;
     }
     </style>
 </div>

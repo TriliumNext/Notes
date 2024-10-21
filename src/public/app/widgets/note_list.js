@@ -6,7 +6,6 @@ const TPL = `
     <style>
     .note-list-widget {
         min-height: 0;
-        overflow: auto;
     }
     
     .note-list-widget .note-list {

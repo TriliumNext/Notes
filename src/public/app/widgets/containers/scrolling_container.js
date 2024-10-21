@@ -8,6 +8,8 @@ export default class ScrollingContainer extends Container {
         this.css('overflow', 'auto');
         this.css('scroll-behavior', 'smooth');
         this.css('position', 'relative');
+        this.css('display', 'flex');
+        this.css('flex-direction', 'column');
     }
 
     setNoteContextEvent({noteContext}) {
