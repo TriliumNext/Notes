@@ -83,7 +83,15 @@ export default class EmptyTypeWidget extends TypeWidget {
                     .on('click', () => this.triggerCommand('hoistNote', {noteId: workspaceNote.noteId}))
             );
         }
-        noteAutocompleteService.showRecentNotes(this.$autoComplete);
+        // Automatically trigger autocomplete on focus, which can achieve:
+        // 1. Automatically display suggestions when $el is focused, without needing to input any text.
+        // 2. Automatically show recent notes when creating a new tab.
+        this.$autoComplete.on('focus', () => {
+            // simulate pressing down arrow to trigger autocomplete
+            const e = $.Event('keydown');
+            e.which = 40; // arrow down
+            this.$autoComplete.trigger(e);
+        });
         this.$autoComplete
             .trigger('focus')
             .trigger('select');
