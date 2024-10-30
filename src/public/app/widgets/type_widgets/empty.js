@@ -89,9 +89,8 @@ export default class EmptyTypeWidget extends TypeWidget {
         // 2. Automatically show recent notes when creating a new tab.
         this.$autoComplete.on('focus', () => {
             // simulate pressing down arrow to trigger autocomplete
-            const e = $.Event('keydown');
-            e.which = 40; // arrow down
-            this.$autoComplete.trigger(e);
+            this.$autoComplete.trigger($.Event('keydown', { which: 40 })); // arrow down
+            this.$autoComplete.trigger($.Event('keydown', { which: 38 })); // arrow up
         });
         
         this.$autoComplete
