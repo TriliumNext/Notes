@@ -1,16 +1,28 @@
-function parse(value) {
+type LabelType = "text" | "number" | "boolean" | "date" | "datetime" | "url";
+type Multiplicity = "single" | "multi";
+
+interface DefinitionObject {
+    isPromoted?: boolean;
+    labelType?: LabelType;
+    multiplicity?: Multiplicity;
+    numberPrecision?: number;
+    promotedAlias?: string;
+    inverseRelation?: string;
+}
+
+function parse(value: string) {
     const tokens = value.split(',').map(t => t.trim());
-    const defObj = {};
+    const defObj: DefinitionObject = {};
 
     for (const token of tokens) {
         if (token === 'promoted') {
             defObj.isPromoted = true;
         }
         else if (['text', 'number', 'boolean', 'date', 'datetime', 'url'].includes(token)) {
-            defObj.labelType = token;
+            defObj.labelType = token as LabelType;
         }
         else if (['single', 'multi'].includes(token)) {
-            defObj.multiplicity = token;
+            defObj.multiplicity = token as Multiplicity;
         }
         else if (token.startsWith('precision')) {
             const chunks = token.split('=');

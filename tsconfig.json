@@ -10,7 +10,8 @@
 	  "lib": ["ES2022"],
 	  "downlevelIteration": true,
 	  "skipLibCheck": true,
-	  "esModuleInterop": true
+	  "esModuleInterop": true,
+	  "allowJs": true
 	},
 	"include": [
     "./src/**/*.js",
@@ -21,6 +22,7 @@
 	],
 	"exclude": ["./node_modules/**/*"],
 	"files": [
-		"src/types.d.ts"
+		"src/types.d.ts",
+		"src/public/app/types.d.ts"
 	]
 }

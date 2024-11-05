@@ -1,6 +1,20 @@
 // taken from the HTML source of https://boxicons.com/
 
-const categories = [
+interface Category {
+    name: string;
+    id: number;
+}
+
+interface Icon {
+    name: string;
+    slug: string;
+    category_id: number;
+    type_of_icon: "REGULAR" | "SOLID" | "LOGO";
+    term?: string[];
+    className?: string;
+}
+
+const categories: Category[] = [
     {"name": "All categories", "id": 0},
     {
         "name": "Accessibility",
@@ -132,7 +146,7 @@ const categories = [
     }
 ];
 
-const icons = [
+const icons: Icon[] = [
     {
         "name": "child",
         "slug": "child-regular",
@@ -11175,7 +11189,7 @@ const icons = [
     }
 ];
 
-function getIconClass(icon) {
+function getIconClass(icon: Icon) {
     if (icon.type_of_icon === 'LOGO') {
         return `bxl-${icon.name}`;
     }
