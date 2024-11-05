@@ -333,7 +333,7 @@ export default class GlobalMenuWidget extends BasicWidget {
 
         const latestVersion = await this.fetchLatestVersion();
         this.updateAvailableWidget.updateVersionStatus(latestVersion);
-        this.$updateToLatestVersionButton.toggle(latestVersion > glob.triliumVersion);
+        this.$updateToLatestVersionButton.toggle((Number(latestVersion) > Number(glob.triliumVersion)) ?? false);
         this.$updateToLatestVersionButton.find(".version-text").text(`Version ${latestVersion} is available, click to download.`);
     }
 
