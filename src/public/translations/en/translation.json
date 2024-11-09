@@ -643,7 +643,9 @@
     "convert_into_attachment_prompt": "Are you sure you want to convert note '{{title}}' into an attachment of the parent note?"
   },
   "onclick_button": {
-    "no_click_handler": "Button widget '{{componentId}}' has no defined click handler"
+    "no_click_handler": "Button widget '{{componentId}}' has no defined click handler",
+    "scroll_to_top": "Scroll to top",
+    "scroll_to_bottom": "Scroll to bottom"
   },
   "protected_session_status": {
     "active": "Protected session is active. Click to leave protected session.",
