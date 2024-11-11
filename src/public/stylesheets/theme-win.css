@@ -159,3 +159,7 @@ span.fancytree-active .fancytree-title {
 #right-pane {
     background: var(--content-background-color);
 }
+
+.note-title-widget {
+    --input-background-color: transparent;
+}
