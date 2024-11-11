@@ -153,4 +153,9 @@ span.fancytree-active .fancytree-title {
 
 .split-note-container-widget {
     background: var(--content-background-color);
+    border-top-left-radius: 10px;
+}
+
+#right-pane {
+    background: var(--content-background-color);
 }
