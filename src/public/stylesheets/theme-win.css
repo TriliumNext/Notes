@@ -40,6 +40,7 @@
     --main-background-color: transparent;
     --main-text-color: #fff;
     --main-border-color: #686868;
+    --alt-border-color: #3a3a3a;
     --dropdown-border-color: #555;
 
     --accented-background-color: #3b3b3b;
@@ -154,6 +155,15 @@ span.fancytree-active .fancytree-title {
 .split-note-container-widget {
     background: var(--content-background-color);
     border-top-left-radius: 10px;
+}
+
+#left-pane + .gutter {
+    background: transparent;
+}
+
+#center-pane + .gutter {
+    background: var(--content-background-color);
+    border-right: 1px solid var(--alt-border-color);
 }
 
 #right-pane {
