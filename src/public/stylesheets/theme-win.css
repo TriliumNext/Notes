@@ -121,6 +121,12 @@ body .todo-list input[type="checkbox"]:not(:checked):before {
     border-color: var(--muted-text-color) !important;
 }
 
+/* Global layout */
+#launcher-pane .launcher-button {
+    width: 53px !important;
+    height: unset !important;
+}
+
 /* Tree */
 .fancytree-node {
     border: 0 !important;

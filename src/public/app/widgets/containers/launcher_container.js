@@ -4,11 +4,13 @@ import appContext from "../../components/app_context.js";
 import LauncherWidget from "./launcher.js";
 
 export default class LauncherContainer extends FlexContainer {
-    constructor() {
-        super('column');
+    constructor(horizontal) {
+        super(horizontal ? 'row' : 'column');
 
         this.id('launcher-container');
-        this.css('height', '100%');
+        if (!horizontal) {
+            this.css('height', '100%');
+        }
         this.filling();
 
         this.load();
