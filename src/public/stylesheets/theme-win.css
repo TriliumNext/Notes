@@ -95,6 +95,9 @@
     --link-color: lightskyblue;
 
     --mermaid-theme: dark;
+
+    /** Custom variables **/
+    --content-background-color: #191919;
 }
 
 body .global-menu-button {
@@ -144,4 +147,10 @@ span.fancytree-active .fancytree-title {
 .note-book-card:hover {
     background-color: #484848 !important;
     border-color: transparent !important;
+}
+
+/* Content */
+
+.split-note-container-widget {
+    background: var(--content-background-color);
 }
