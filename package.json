@@ -54,6 +54,7 @@
     "@electron/remote": "2.1.2",
     "@excalidraw/excalidraw": "0.17.6",
     "@highlightjs/cdn-assets": "11.10.0",
+    "@mermaid-js/layout-elk": "0.1.5",
     "archiver": "7.0.1",
     "async-mutex": "0.5.0",
     "autocomplete.js": "0.38.1",

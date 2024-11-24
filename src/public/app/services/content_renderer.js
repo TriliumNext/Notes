@@ -12,6 +12,7 @@ import FAttachment from "../entities/fattachment.js";
 import imageContextMenuService from "../menus/image_context_menu.js";
 import { applySingleBlockSyntaxHighlight, applySyntaxHighlight } from "./syntax_highlight.js";
 import mime_types from "./mime_types.js";
+import mermaidService from "../../../services/mermaid.js"
 
 let idCounter = 1;
 
@@ -223,6 +224,7 @@ function renderFile(entity, type, $renderedContent) {
 
 async function renderMermaid(note, $renderedContent) {
     await libraryLoader.requireLibrary(libraryLoader.MERMAID);
+    await mermaidService.registerMermaidAddons();
 
     const blob = await note.getBlob();
     const content = blob.content || "";
@@ -231,10 +233,7 @@ async function renderMermaid(note, $renderedContent) {
         .css("display", "flex")
         .css("justify-content", "space-around");
 
-    const documentStyle = window.getComputedStyle(document.documentElement);
-    const mermaidTheme = documentStyle.getPropertyValue('--mermaid-theme');
-
-    mermaid.mermaidAPI.initialize({startOnLoad: false, theme: mermaidTheme.trim(), securityLevel: 'antiscript'});
+    mermaid.mermaidAPI.initialize(mermaidService.loadMermaidConfig());
 
     try {
         const {svg} = await mermaid.mermaidAPI.render("in-mermaid-graph-" + idCounter++, content);
