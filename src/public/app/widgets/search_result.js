@@ -35,6 +35,14 @@ const TPL = `
 </div>`;
 
 export default class SearchResultWidget extends NoteContextAwareWidget {
+    constructor() {
+        super();
+        this.page = 1;
+        this.loading = false;
+        this.hasMore = true;
+        this.pageSize = 20;
+    }
+
     isEnabled() {
         return super.isEnabled()
             && this.note.type === 'search';
@@ -46,14 +54,66 @@ export default class SearchResultWidget extends NoteContextAwareWidget {
         this.$content = this.$widget.find('.search-result-widget-content');
         this.$noResults = this.$widget.find('.search-no-results');
         this.$notExecutedYet = this.$widget.find('.search-not-executed-yet');
+        
+        // Add scroll event listener for infinite scroll
+        this.$widget.on('scroll', () => this.handleScroll());
+    }
+
+    handleScroll() {
+        if (this.loading || !this.hasMore) return;
+
+        const scrollHeight = this.$widget[0].scrollHeight;
+        const scrollTop = this.$widget.scrollTop();
+        const clientHeight = this.$widget[0].clientHeight;
+
+        // Load more when user scrolls near bottom
+        if (scrollTop + clientHeight > scrollHeight - 100) {
+            this.loadMoreResults();
+        }
+    }
+
+    async loadMoreResults() {
+        if (this.loading || !this.hasMore) return;
+
+        this.loading = true;
+        this.page += 1;
+
+        const searchString = this.note.getLabelValue('searchString');
+        const { results, hasMore } = await server.get(
+            `search/${encodeURIComponent(searchString)}?page=${this.page}&pageSize=${this.pageSize}`
+        );
+
+        this.hasMore = hasMore;
+
+        if (results.length > 0) {
+            const noteListRenderer = new NoteListRenderer(
+                this.$content, 
+                this.note, 
+                results,
+                true
+            );
+            await noteListRenderer.renderList();
+        }
+
+        this.loading = false;
     }
 
     async refreshWithNote(note) {
+        // Reset pagination state
+        this.page = 1;
+        this.hasMore = true;
+        this.loading = false;
+
         this.$content.empty();
         this.$noResults.toggle(note.getChildNoteIds().length === 0 && !!note.searchResultsLoaded);
         this.$notExecutedYet.toggle(!note.searchResultsLoaded);
 
-        const noteListRenderer = new NoteListRenderer(this.$content, note, note.getChildNoteIds(), true);
+        const noteListRenderer = new NoteListRenderer(
+            this.$content, 
+            note, 
+            note.getChildNoteIds(), 
+            true
+        );
         await noteListRenderer.renderList();
     }
 
