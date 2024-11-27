@@ -63,16 +63,25 @@ function quickSearch(req: Request) {
 
 function search(req: Request) {
     const {searchString} = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = parseInt(req.query.pageSize as string) || 20;
 
     const searchContext = new SearchContext({
         fastSearch: false,
         includeArchivedNotes: true,
         fuzzyAttributeSearch: false,
-        ignoreHoistedNote: true
+        ignoreHoistedNote: true,
+        limit: pageSize,
+        page: page
     });
 
-    return searchService.findResultsWithQuery(searchString, searchContext)
-        .map(sr => sr.noteId);
+    const results = searchService.findResultsWithQuery(searchString, searchContext);
+    
+    return {
+        results: results.map(sr => sr.noteId),
+        hasMore: results.length === pageSize, // If we got a full page, there might be more
+        page: page
+    };
 }
 
 function getRelatedNotes(req: Request) {

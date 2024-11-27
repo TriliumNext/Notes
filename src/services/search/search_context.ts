@@ -22,6 +22,8 @@ class SearchContext {
     fulltextQuery: string;
     dbLoadNeeded: boolean;
     private error: string | null;
+    page: number;
+    pageSize: number;
 
     constructor(params: SearchParams = {}) {
         this.fastSearch = !!params.fastSearch;
@@ -50,6 +52,12 @@ class SearchContext {
         // and some extra data needs to be loaded before executing
         this.dbLoadNeeded = false;
         this.error = null;
+        this.page = params.page || 1;
+        this.pageSize = params.pageSize || 20;
+
+        if (!this.ancestorNoteId && !this.ignoreHoistedNote) {
+            this.ancestorNoteId = hoistedNoteService.getHoistedNoteId();
+        }
     }
 
     addError(error: string) {

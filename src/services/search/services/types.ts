@@ -19,4 +19,6 @@ export interface SearchParams {
     limit?: number | null;
     debug?: boolean;
     fuzzyAttributeSearch?: boolean;
+    page?: number;
+    pageSize?: number;
 }
