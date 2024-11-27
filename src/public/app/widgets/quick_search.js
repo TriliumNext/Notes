@@ -41,7 +41,25 @@ const TPL = `
 
 const MAX_DISPLAYED_NOTES = 15;
 
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func.apply(this, args);  // Use apply to maintain correct 'this' context
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 export default class QuickSearchWidget extends BasicWidget {
+    constructor() {
+        super();
+        // Bind the debounced search to the instance
+        this.debouncedSearch = debounce(this.search.bind(this), 250);
+    }
+
     doRender() {
         this.$widget = $(TPL);
         this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"));
@@ -49,13 +67,13 @@ export default class QuickSearchWidget extends BasicWidget {
         this.$searchString = this.$widget.find('.search-string');
         this.$dropdownMenu = this.$widget.find('.dropdown-menu');
 
-        this.$widget.find('.input-group-prepend').on('shown.bs.dropdown', () => this.search());
+        this.$widget.find('.input-group-prepend').on('shown.bs.dropdown', () => this.debouncedSearch());
 
         if (utils.isMobile()) {
             this.$searchString.keydown(e => {
                 if (e.which === 13) {
                     if (this.$dropdownMenu.is(":visible")) {
-                        this.search(); // just update already visible dropdown
+                        this.debouncedSearch(); // just update already visible dropdown
                     } else {
                         this.dropdown.show();
                     }
@@ -67,7 +85,7 @@ export default class QuickSearchWidget extends BasicWidget {
 
         shortcutService.bindElShortcut(this.$searchString, 'return', () => {
             if (this.$dropdownMenu.is(":visible")) {
-                this.search(); // just update already visible dropdown
+                this.debouncedSearch(); // just update already visible dropdown
             } else {
                 this.dropdown.show();
             }
