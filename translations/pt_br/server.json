@@ -78,8 +78,8 @@
     "run-active-note": "Run active JavaScript (frontend/backend) code note",
     "toggle-note-hoisting": "Toggles note hoisting of active note",
     "unhoist": "Unhoist from anywhere",
-    "reload-frontend-app": "Reload frontend App",
-    "open-dev-tools": "Open dev tools",
+    "reload-frontend-app": "Recarregar Interface",
+    "open-dev-tools": "Abrir dev tools",
     "toggle-left-note-tree-panel": "Toggle left (note tree) panel",
     "toggle-full-screen": "Toggle full screen",
     "zoom-out": "Zoom Out",
@@ -95,16 +95,16 @@
   "login": {
     "title": "Login",
     "heading": "Trilium login",
-    "incorrect-password": "Password is incorrect. Please try again.",
-    "password": "Password",
-    "remember-me": "Remember me",
+    "incorrect-password": "Senha incorreta. Tente novamente.",
+    "password": "Senha",
+    "remember-me": "Lembrar",
     "button": "Login"
   },
   "set_password": {
     "heading": "Set password",
     "description": "Before you can start using Trilium from web, you need to set a password first. You will then use this password to login.",
-    "password": "Password",
-    "password-confirmation": "Password confirmation",
+    "password": "Senha",
+    "password-confirmation": "Confirmar Senha",
     "button": "Set password"
   },
   "javascript-required": "Trilium requires JavaScript to be enabled.",
@@ -187,8 +187,8 @@
   },
   "code_block": {
     "theme_none": "No syntax highlighting",
-    "theme_group_light": "Light themes",
-    "theme_group_dark": "Dark themes"
+    "theme_group_light": "Temas claros",
+    "theme_group_dark": "Temas escuros"
   },
   "test_sync": {
     "not-configured": "Sync server host is not configured. Please configure sync first.",
