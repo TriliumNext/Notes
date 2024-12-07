@@ -3,7 +3,7 @@
 	  "module": "NodeNext",
 	  "declaration": false,
 	  "sourceMap": true,
-	  "outDir": "./build",
+	  "outDir": "./dist",
 	  "strict": true,
 	  "noImplicitAny": true,
 	  "resolveJsonModule": true,
@@ -13,14 +13,13 @@
 	  "esModuleInterop": true
 	},
 	"include": [
-    "./src/**/*.js",
-	"./src/**/*.ts",
+    "./src/**/*.ts",
     "./*.ts",
     "./spec/**/*.ts",
     "./spec-es6/**/*.ts"
 	],
 	"exclude": ["./node_modules/**/*"],
 	"files": [
-		"src/types.d.ts"
+		"./src/types.d.ts"
 	]
 }

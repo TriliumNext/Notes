@@ -1574,5 +1574,19 @@
     "open_note_in_new_tab": "Open note in a new tab",
     "open_note_in_new_split": "Open note in a new split",
     "open_note_in_new_window": "Open note in a new window"
+  },
+  "share_page": {
+    "parent": "Parent:",
+    "login": "Login",
+    "child-notes": "Child notes:",
+    "no-content": "This note has no content.",
+    "clipped-from": "Clipped from: %s"
+  },
+  "share": {
+    "settings_title": "Share Settings",
+    "redirect_bare_domain": "Redirect bare domain to share",
+    "redirect_bare_domain_description": "When enabled, accessing the root URL (/) will redirect to the share page (/share). Relies on having one more more notes shared, and one having `#shareRoot` attribute defined. (default: false)",
+    "show_login_in_share": "Show login in share theme",
+    "show_login_in_share_description": "When enabled, shows a login button in the share theme (default: false). Probably best to leave it disabled and visit '{{hostname}}/login' manually to login."
   }
 }

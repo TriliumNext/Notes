@@ -16,6 +16,7 @@ import SNote from "./shaca/entities/snote.js";
 import SBranch from "./shaca/entities/sbranch.js";
 import SAttachment from "./shaca/entities/sattachment.js";
 import utils from "../services/utils.js";
+import optionService from '../services/options.js';
 
 function getSharedSubTreeRoot(note: SNote): { note?: SNote; branch?: SBranch } {
     if (note.noteId === shareRoot.SHARE_ROOT_NOTE_ID) {
@@ -156,7 +157,8 @@ function register(router: Router) {
 
         const { header, content, isEmpty } = contentRenderer.getContent(note);
         const subRoot = getSharedSubTreeRoot(note);
-        const opts = { note, header, content, isEmpty, subRoot, assetPath, appPath };
+        const showLoginInShareTheme = optionService.getOption('showLoginInShareTheme');
+        const opts = { note, header, content, isEmpty, subRoot, assetPath, appPath, showLoginInShareTheme };
         let useDefaultView = true;
 
         // Check if the user has their own template

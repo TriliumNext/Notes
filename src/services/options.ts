@@ -72,15 +72,18 @@ function getOptionBool(name: string): boolean {
 }
 
 function setOption(name: string, value: string | number | boolean) {
-    if (value === true || value === false || typeof value === "number") {
+    if (typeof value === "boolean") {
+        value = value ? 'true' : 'false';
+    } else if (typeof value === "number") {
         value = value.toString();
     }
 
     const option = becca.getOption(name);
 
     if (option) {
+        const isSynced = option.isSynced; // Preserve the isSynced flag
         option.value = value;
-
+        option.isSynced = isSynced; // Restore the isSynced flag
         option.save();
     }
     else {

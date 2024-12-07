@@ -1,10 +1,53 @@
+# Version control
 .git
-.idea
-/bin
-/dist
-/docs
-/npm-debug.log
-node_modules
+.gitignore
+.github
 
+# Development environments
+.idea
+.vscode
+.devcontainer
+.pixi
+
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Tests and docs
+/test-etapi
+/integration-tests
+/tests-examples
+/spec
+/spec-es6
+/docs
+/dump-db
+
+# Build artifacts
+/dist
+
+# Development files
+*.md
+!README.md
+dev-log.md
+/bin
+!/bin/copy-dist.ts
+
+# Source maps and TypeScript files (except specific ones needed)
 src/**/*.ts
 !src/services/asset_path.ts
+!src/types.d.ts
+
+# Docker related
+Dockerfile*
+.dockerignore
+docker-compose.yml
+/docker
+
+# Other
+.prettierrc
+.npmrc
+trilium.iml
+renovate.json
+forge.config.cjs
+nodemon.json
+jsdoc-conf.json
