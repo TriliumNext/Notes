@@ -97,7 +97,7 @@
     "ini": "5.0.0",
     "is-animated": "2.0.2",
     "is-svg": "4.4.0",
-    "jimp": "0.22.12",
+    "jimp": "1.6.0",
     "joplin-turndown-plugin-gfm": "1.0.12",
     "jquery": "3.7.1",
     "jquery-hotkeys": "0.2.2",
