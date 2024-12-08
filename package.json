@@ -63,7 +63,7 @@
     "better-sqlite3": "11.6.0",
     "bootstrap": "5.3.3",
     "boxicons": "2.1.4",
-    "chokidar": "3.6.0",
+    "chokidar": "4.0.1",
     "cls-hooked": "4.2.2",
     "codemirror": "5.65.18",
     "compression": "1.7.4",
