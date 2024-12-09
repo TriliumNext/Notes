@@ -16,7 +16,7 @@ See [screenshots](https://triliumnext.github.io/Docs/Wiki/screenshot-tour) for q
 
 ### Migrating from Trilium?
 
-There are no special migration steps to migrate from a zadam/Trilium instance to a TriliumNext/Notes instance. Just upgrade your Trilium instance to the latest version and [install TriliumNext/Notes as usual](#-installation) 
+There are no special migration steps to migrate from a zadam/Trilium instance to a TriliumNext/Notes instance. Just upgrade your Trilium instance to the latest version and [install TriliumNext/Notes as usual](#-installation)
 
 Versions up to and including [v0.90.4](https://github.com/TriliumNext/Notes/releases/tag/v0.90.4) are compatible with the latest zadam/trilium version of [v0.63.7](https://github.com/zadam/trilium/releases/tag/v0.63.7). Any later versions of TriliumNext have their sync versions incremented.
 
@@ -114,7 +114,7 @@ Head on over to our [Docs repo](https://github.com/TriliumNext/Docs)
 * [CKEditor 5](https://github.com/ckeditor/ckeditor5) - best WYSIWYG editor on the market, very interactive and listening team
 * [FancyTree](https://github.com/mar10/fancytree) - very feature rich tree library without real competition. TriliumNext Notes would not be the same without it.
 * [CodeMirror](https://github.com/codemirror/CodeMirror) - code editor with support for huge amount of languages
-* [jsPlumb](https://github.com/jsplumb/jsplumb) - visual connectivity library without competition. Used in [relation maps](https://triliumnext.github.io/Docs/Wiki/Relation-map) and [link maps](https://triliumnext.github.io/Docs/Wiki/Link-map)
+* [jsPlumb](https://github.com/jsplumb/jsplumb) - visual connectivity library without competition. Used in [relation maps](https://triliumnext.github.io/Docs/Wiki/relation-map.html) and [link maps](https://triliumnext.github.io/Docs/Wiki/note-map.html#link-map)
 
 ## 🤝 Support
 
