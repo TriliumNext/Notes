@@ -32,7 +32,7 @@ async function createExtraWindow(extraWindowHash: string) {
             spellcheck: spellcheckEnabled
         },
         ...getWindowExtraOpts(),
-        icon: getIcon()
+        icon: getIcon(),
     });
 
     win.setMenuBarVisibility(false);
@@ -122,6 +122,10 @@ function getWindowExtraOpts() {
         if (isMac) {
             extraOpts.titleBarStyle = "hiddenInset";
             extraOpts.titleBarOverlay = true;
+            extraOpts.transparent = true;
+            extraOpts.backgroundColor = "#00000000"; // transparent hexadecimal or anything with transparency,
+            extraOpts.vibrancy = "under-window", // in my case...
+            extraOpts.visualEffectState = "followWindow";
         } else if (isWindows) {
             extraOpts.titleBarStyle = "hidden";
             extraOpts.titleBarOverlay = true;

@@ -437,8 +437,12 @@ body.background-effects.platform-win32.layout-vertical {
     --background-material: mica;
 }
 
-body.background-effects.platform-win32,
-body.background-effects.platform-win32 #root-widget,
+body.background-effects.platform-darwin.layout-horizontal {
+    --left-pane-background-color: transparent;
+}
+
+body.background-effects,
+body.background-effects #root-widget,
 body.background-effects.platform-win32 #launcher-pane .launcher-button {
     background: transparent !important;   
 }
