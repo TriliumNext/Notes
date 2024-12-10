@@ -1434,7 +1434,7 @@
     "saved-search-note-refreshed": "Saved search note refreshed."
   },
   "title_bar_buttons": {
-    "window-on-top": "Keep Window on Top"
+    "window-on-top": "Keep this window on top."
   },
   "note_detail": {
     "could_not_find_typewidget": "Could not find typeWidget for type '{{type}}'"
@@ -1574,14 +1574,5 @@
     "open_note_in_new_tab": "Open note in a new tab",
     "open_note_in_new_split": "Open note in a new split",
     "open_note_in_new_window": "Open note in a new window"
-  },
-  "electron_integration": {
-    "desktop-application": "Desktop Application",
-    "native-title-bar": "Native title bar",
-    "native-title-bar-description": "For Windows and macOS, keeping the native title bar off makes the application look more compact. On Linux, keeping the native title bar on integrates better with the rest of the system.",
-    "background-effects": "Enable background effects (Windows 11 only)",
-    "background-effects-description": "The Mica effect adds a blurred, stylish background to app windows, creating depth and a modern look.",
-    "restart-app-button": "Restart the application to view the changes",
-    "zoom-factor": "Zoom factor"
   }
 }

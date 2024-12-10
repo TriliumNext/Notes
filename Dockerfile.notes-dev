@@ -1,0 +1,36 @@
+# build a development image, ex:
+# podman build -t notes-dev -f Dockerfile.notes-dev .
+FROM triliumnext/notes
+
+WORKDIR /usr/src/app
+
+# Install TypeScript and development dependencies globally
+# Includes ts-node for direct TS execution
+RUN npm install -g typescript ts-node @types/node 
+
+# Copy package files and install dependencies
+# Keeps dev dependencies for better debugging
+# Only required behind corporate firewall proxy which unwraps all requests (MiTM),
+# don't use in production:
+#   apk ... --no-check-certificate
+#   npm config set strict-ssl false
+#   NODE_TLS_REJECT_UNAUTHORIZED=0
+
+COPY package*.json tsconfig.json ./
+RUN apk --no-cache add --no-check-certificate python3 make g++ &&\
+    npm config set strict-ssl false &&\
+    NODE_TLS_REJECT_UNAUTHORIZED=0 npm install --legacy-peer-deps
+
+# Copy source files
+COPY . .
+
+# Configure Node.js for TypeScript ESM
+ENV NODE_OPTIONS="--loader ts-node/esm"
+
+# Set environment variables
+ENV TRILIUM_ENV=dev
+ENV NODE_NO_WARNINGS=1
+ENV TRILIUM_DATA_DIR=/usr/src/app/data
+
+# Start the application
+CMD ["npm", "run", "start-server-tsnode"]

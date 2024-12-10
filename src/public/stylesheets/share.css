@@ -42,6 +42,21 @@ body {
     margin-top: 20px;
 }
 
+#loginLink {
+    float: right;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+#loginLink a {
+    color: var(--link-color, #0066cc);
+    text-decoration: none;
+}
+
+#loginLink a:hover {
+    text-decoration: underline;
+}
+
 #title {
     margin: 0;
     padding-top: 10px;

@@ -69,7 +69,9 @@ const ALLOWED_OPTIONS = new Set([
     'textNoteEditorType',
     'layoutOrientation',
     'backgroundEffects',
-    'allowedHtmlTags' // Allow configuring HTML import tags
+    'allowedHtmlTags', // Allow configuring HTML import tags
+    'redirectBareDomain',
+    'showLoginInShareTheme'
 ]);
 
 function getOptions() {
