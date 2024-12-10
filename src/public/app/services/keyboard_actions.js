@@ -70,7 +70,7 @@ async function setupActionsForElement(scope, $el, component) {
                                 return;
                             }
 
-                            let model_command = user_command;
+                            let model_command = getConsoleChatPrompt(selectedText, '', user_command);
                             
                             if (!selection.isCollapsed) {
                                 const selectedText = Array.from(range.getItems())
