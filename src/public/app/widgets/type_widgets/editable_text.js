@@ -183,7 +183,13 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
                     styles: true,
                     classes: true,
                     attributes: true
-                }
+                },
+                keystrokes: [
+                    [ 'Cmd+Shift+ArrowDown', 'insertTableRowBelow' ],
+                    [ 'Ctrl+Shift+ArrowUp', 'insertTableRowAbove' ],
+                    [ 'Ctrl+Shift+ArrowRight', 'insertTableColumnRight' ],
+                    [ 'Ctrl+Shift+ArrowLeft', 'insertTableColumnLeft' ]
+                ]
             });
 
             await initSyntaxHighlighting(editor);
@@ -217,12 +223,15 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
             codeBlock: {
                 languages: codeBlockLanguages
             },
+            table: {
+                contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]
+            },
             math: {
                 engine: 'katex',
-                outputType: 'span', // or script
+                outputType: 'span',
                 lazyLoad: async () => await libraryLoader.requireLibrary(libraryLoader.KATEX),
-                forceOutputType: false, // forces output to use outputType
-                enablePreview: true // Enable preview view
+                forceOutputType: false,
+                enablePreview: true
             }
         });
     }

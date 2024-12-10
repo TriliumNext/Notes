@@ -54,7 +54,17 @@ async function setupActionsForElement(scope, $el, component) {
                         await activeContext.getTextEditor(async editor => {
                             const selection = editor.model.document.selection;
                             const range = selection.getFirstRange();
-                            const user_command = prompt("Edit selection with AI: ");
+                            let selectedText = '';
+                            if (!selection.isCollapsed) {
+                                selectedText = Array.from(range.getItems())
+                                    .map(item => item.data || '')
+                                    .join('');
+                                if (selectedText.length > 100) {
+                                    selectedText = selectedText.substring(0, 97) + '...';
+                                }
+								selectedText += '\n\n'
+                            }
+                            const user_command = prompt(`${selectedText}${EDIT_SELECTION_PROMPT}`);
                             
                             if (!user_command) {
                                 return;
@@ -95,8 +105,8 @@ async function setupActionsForElement(scope, $el, component) {
                                     const cleanChunk = chunk
                                         .replace(/^-+$/gm, '')     
                                         .replace(/^\[/, '')        
-                                        .replace(/\]$/, '')        
-                                        .replace(/^,\s*/, '');    
+                                        .replace(/\]$/, '')     
+                                        .replace(/^,\s*/, '');
                                     const chunkJSON = JSON.parse(cleanChunk);
                                     const chunkText = chunkJSON.candidates?.[0]?.content?.parts?.[0]?.text;
                                     
