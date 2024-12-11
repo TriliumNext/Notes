@@ -150,6 +150,15 @@ const defaultOptions: DefaultOption[] = [
         'fieldset', 'form', 'legend', 'meter', 'noscript', 'option', 'progress', 'rp',
         'samp', 'small', 'sub', 'sup', 'template', 'textarea', 'tt'
     ]), isSynced: true },
+
+    // LLM Integration
+    { name: 'llmEnabled', value: 'false', isSynced: true },
+    { name: 'llmProvider', value: 'ollama', isSynced: true },
+    { name: 'llmModel', value: 'llama2', isSynced: true },
+    { name: 'llmBaseUrl', value: 'http://localhost:11434', isSynced: true },
+    { name: 'llmMaxTokens', value: '2000', isSynced: true },
+    { name: 'llmTemperature', value: '0.7', isSynced: true },
+    { name: 'llmApiKey', value: '', isSynced: true },
 ];
 
 /**

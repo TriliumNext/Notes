@@ -71,6 +71,8 @@ import etapiSpecialNoteRoutes from "../etapi/special_notes.js";
 import etapiSpecRoute from "../etapi/spec.js";
 import etapiBackupRoute from "../etapi/backup.js";
 
+import * as llmRoute from "./api/llm.js";
+
 const csrfMiddleware = csurf({
     cookie: {
         path: ""       // empty, so cookie is valid only for the current path
@@ -241,6 +243,16 @@ function register(app: express.Application) {
 
     // docker health check
     route(GET, '/api/health-check', [], () => ({ "status": "ok" }), apiResultHandler);
+
+    // LLM routes
+    apiRoute(PST, '/api/llm/chat', llmRoute.chat);
+    apiRoute(PST, '/api/llm/embeddings/:noteId', llmRoute.generateEmbeddings);
+    apiRoute(GET, '/api/llm/config', llmRoute.getConfig);
+    apiRoute(PUT, '/api/llm/config', llmRoute.updateConfig);
+    apiRoute(PST, '/api/llm/chat', llmRoute.chat);
+    apiRoute(PST, '/api/llm/embeddings/:noteId', llmRoute.generateEmbeddings);
+    apiRoute(GET, '/api/llm/config', llmRoute.getConfig);
+    apiRoute(PUT, '/api/llm/config', llmRoute.updateConfig);
 
     // group of the services below are meant to be executed from the outside
     route(GET, '/api/setup/status', [], setupApiRoute.getStatus, apiResultHandler);
