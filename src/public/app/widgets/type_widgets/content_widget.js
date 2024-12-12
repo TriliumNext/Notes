@@ -35,6 +35,7 @@ import RibbonOptions from "./options/appearance/ribbon.js";
 import LocalizationOptions from "./options/appearance/i18n.js";
 import CodeBlockOptions from "./options/appearance/code_block.js";
 import EditorOptions from "./options/text_notes/editor.js";
+import LLMOptions from "./options/other/llm.js";
 
 const TPL = `<div class="note-detail-content-widget note-detail-printable">
     <style>
@@ -101,6 +102,7 @@ const CONTENT_WIDGETS = {
         AdvancedSyncOptions,
         VacuumDatabaseOptions
     ],
+    _optionsLLM: [ LLMOptions ],
     _backendLog: [ BackendLogWidget ]
 };
 
@@ -134,5 +136,10 @@ export default class ContentWidgetTypeWidget extends TypeWidget {
         } else {
             this.$content.append(`Unknown widget for "${note.noteId}"`);
         }
+    }
+
+    async optionsLoaded(options) {
+        console.log('LLM options loading', options);
+        // ... rest of code
     }
 }
