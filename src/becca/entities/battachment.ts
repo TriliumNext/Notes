@@ -98,7 +98,7 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
 
     /** @returns true if the note has string content (not binary) */
     hasStringContent(): boolean {
-        return this.type !== undefined && utils.isStringNote(this.type, this.mime);
+        return this.type utils.isStringNote(this.type, this.mime); // here was !== undefined && utils.isStringNote(this.type, this.mime); I dont know why we need !=undefined. But it filters out canvas libary items
     }
 
     isContentAvailable() {
