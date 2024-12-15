@@ -39,6 +39,10 @@ const TPL = `
 </div>`;
 
 export default class ApiLogWidget extends NoteContextAwareWidget {
+    
+    private $logContainer: JQuery<HTMLElement>;
+    private $closeButton: JQuery<HTMLElement>;
+    
     isEnabled() {
         return this.note
             && this.note.mime.startsWith('application/javascript;env=')
