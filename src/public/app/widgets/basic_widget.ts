@@ -9,6 +9,14 @@ import toastService from "../services/toast.js";
  * For information on using widgets, see the tutorial {@tutorial widget_basics}.
  */
 class BasicWidget extends Component {
+
+    protected $widget: JQuery<HTMLElement>;
+    private attrs: Record<string, string>;
+    private classes: string[];
+    private childPositionCounter: number;
+    private cssEl: string;
+    private _noteId: string;
+
     constructor() {
         super();
 
@@ -175,7 +183,7 @@ class BasicWidget extends Component {
                     icon: "alert",
                     message: t("toast.widget-error.message-custom", {
                         id: noteId,
-                        title: note.title,
+                        title: note?.title,
                         message: e.message
                     })
                 });
