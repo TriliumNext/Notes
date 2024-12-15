@@ -7,6 +7,7 @@ import imageService from "../services/image.js";
 import linkService from "../services/link.js";
 import contentRenderer from "../services/content_renderer.js";
 import toastService from "../services/toast.js";
+import FAttachment from "../entities/fattachment.js";
 
 const TPL = `
 <div class="attachment-detail-widget">
@@ -97,7 +98,13 @@ const TPL = `
 </div>`;
 
 export default class AttachmentDetailWidget extends BasicWidget {
-    constructor(attachment, isFullDetail) {
+
+    private attachment: FAttachment;
+    private attachmentActionsWidget: AttachmentActionsWidget;
+    private isFullDetail: boolean;
+    private $wrapper: JQuery<HTMLElement>;
+
+    constructor(attachment: FAttachment, isFullDetail: boolean) {
         super();
 
         this.contentSized();

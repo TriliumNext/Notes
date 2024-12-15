@@ -19,17 +19,17 @@ export interface FAttachmentRow {
 class FAttachment {
     private froca: Froca;
     attachmentId!: string;
-    private ownerId!: string;
+    ownerId!: string;
     role!: string;
     private mime!: string;
-    private title!: string;
+    title!: string;
     private dateModified!: string;
     private utcDateModified!: string;
-    private utcDateScheduledForErasureSince!: string;
+    utcDateScheduledForErasureSince!: string;
     /**
      * optionally added to the entity 
      */
-    private contentLength!: number;
+    contentLength!: number;
 
     constructor(froca: Froca, row: FAttachmentRow) {
         /** @type {Froca} */
