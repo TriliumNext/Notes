@@ -28,7 +28,29 @@ function register(app: express.Application) {
           desktop: './src/public/app/desktop.js',
         },
         devtool: 'source-map',
-        target: 'electron-renderer'
+        target: 'electron-renderer',
+        module: {
+          rules: [
+            {
+              test: /\.ts$/,
+              use: [{
+                loader: 'ts-loader',
+                options: {
+                  configFile: path.join(srcRoot, "..", "tsconfig.webpack.json")
+                }
+              }],
+              exclude: /node_modules/,
+            },
+          ]
+        },
+        resolve: {
+          extensions: ['.ts', '.js'],
+          extensionAlias: {
+            ".js": [".js", ".ts"],
+            ".cjs": [".cjs", ".cts"],
+            ".mjs": [".mjs", ".mts"]
+          }
+        }
       });
       
       app.use(`/${assetPath}/app`, webpackMiddleware(frontendCompiler));

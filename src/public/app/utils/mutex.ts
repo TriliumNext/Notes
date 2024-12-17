@@ -1,12 +1,13 @@
 export default class Mutex {
+    private current: Promise<void>;
+
     constructor() {
         this.current = Promise.resolve();
     }
 
-    /** @returns {Promise} */
     lock() {
-        let resolveFun;
-        const subPromise = new Promise(resolve => resolveFun = () => resolve());
+        let resolveFun: () => void;
+        const subPromise = new Promise<void>(resolve => resolveFun = () => resolve());
         // Caller gets a promise that resolves when the current outstanding lock resolves
         const newPromise = this.current.then(() => resolveFun);
         // Don't allow the next request until the new promise is done
@@ -15,7 +16,7 @@ export default class Mutex {
         return newPromise;
     };
 
-    async runExclusively(cb) {
+    async runExclusively(cb: () => Promise<void>) {
         const unlock = await this.lock();
 
         try {

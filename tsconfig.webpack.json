@@ -13,19 +13,12 @@
 		"downlevelIteration": true,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
+		"allowJs": true
 	},
 	"include": [
-		"./src/**/*.js",
-		"./src/**/*.ts",
-		"./*.ts",
-		"./spec/**/*.ts",
-		"./spec-es6/**/*.ts"
-	],
-	"exclude": [
-		"./src/public/**/*",
-		"./node_modules/**/*"
+        "./src/public/app/**/*",		
 	],
 	"files": [
-		"src/types.d.ts"
+		"./src/public/app/types.d.ts"
 	]
 }

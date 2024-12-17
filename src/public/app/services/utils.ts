@@ -1,4 +1,7 @@
-function reloadFrontendApp(reason) {
+import dayjs from "dayjs";
+import { Modal } from "bootstrap";
+
+function reloadFrontendApp(reason?: string) {
     if (reason) {
         logInfo(`Frontend app reload: ${reason}`);
     }
@@ -6,33 +9,33 @@ function reloadFrontendApp(reason) {
     window.location.reload();
 }
 
-function parseDate(str) {
+function parseDate(str: string) {
     try {
         return new Date(Date.parse(str));
     }
-    catch (e) {
+    catch (e: any) {
         throw new Error(`Can't parse date from '${str}': ${e.message} ${e.stack}`);
     }
 }
 
-function padNum(num) {
+function padNum(num: number) {
     return `${num <= 9 ? "0" : ""}${num}`;
 }
 
-function formatTime(date) {
+function formatTime(date: Date) {
     return `${padNum(date.getHours())}:${padNum(date.getMinutes())}`;
 }
 
-function formatTimeWithSeconds(date) {
+function formatTimeWithSeconds(date: Date) {
     return `${padNum(date.getHours())}:${padNum(date.getMinutes())}:${padNum(date.getSeconds())}`;
 }
 
-function formatTimeInterval(ms) {
+function formatTimeInterval(ms: number) {
     const seconds = Math.round(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
-    const plural = (count, name) => `${count} ${name}${count > 1 ? 's' : ''}`;
+    const plural = (count: number, name: string) => `${count} ${name}${count > 1 ? 's' : ''}`;
     const segments = [];
 
     if (days > 0) {
@@ -60,20 +63,20 @@ function formatTimeInterval(ms) {
     return segments.join(", ");
 }
 
-// this is producing local time!
-function formatDate(date) {
+/** this is producing local time! **/
+function formatDate(date: Date) {
     //    return padNum(date.getDate()) + ". " + padNum(date.getMonth() + 1) + ". " + date.getFullYear();
     // instead of european format we'll just use ISO as that's pretty unambiguous
 
     return formatDateISO(date);
 }
 
-// this is producing local time!
-function formatDateISO(date) {
+/** this is producing local time! **/
+function formatDateISO(date: Date) {
     return `${date.getFullYear()}-${padNum(date.getMonth() + 1)}-${padNum(date.getDate())}`;
 }
 
-function formatDateTime(date) {
+function formatDateTime(date: Date) {
     return `${formatDate(date)} ${formatTime(date)}`;
 }
 
@@ -96,20 +99,20 @@ function isMac() {
     return navigator.platform.indexOf('Mac') > -1;
 }
 
-function isCtrlKey(evt) {
+function isCtrlKey(evt: KeyboardEvent) {
     return (!isMac() && evt.ctrlKey)
         || (isMac() && evt.metaKey);
 }
 
-function assertArguments() {
-    for (const i in arguments) {
-        if (!arguments[i]) {
-            console.trace(`Argument idx#${i} should not be falsy: ${arguments[i]}`);
+function assertArguments(...args: string[]) {
+    for (const i in args) {
+        if (!args[i]) {
+            console.trace(`Argument idx#${i} should not be falsy: ${args[i]}`);
         }
     }
 }
 
-const entityMap = {
+const entityMap: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
@@ -120,11 +123,11 @@ const entityMap = {
     '=': '&#x3D;'
 };
 
-function escapeHtml(str) {
+function escapeHtml(str: string) {
     return str.replace(/[&<>"'`=\/]/g, s => entityMap[s]);
 }
 
-function formatSize(size) {
+function formatSize(size: number) {
     size = Math.max(Math.round(size / 1024), 1);
 
     if (size < 1024) {
@@ -135,8 +138,8 @@ function formatSize(size) {
     }
 }
 
-function toObject(array, fn) {
-    const obj = {};
+function toObject<T>(array: T[], fn: (arg0: T) => [key: string, value: T]) {
+    const obj: Record<string, T> = {};
 
     for (const item of array) {
         const [key, value] = fn(item);
@@ -147,7 +150,7 @@ function toObject(array, fn) {
     return obj;
 }
 
-function randomString(len) {
+function randomString(len: number) {
     let text = "";
     const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -164,27 +167,28 @@ function isMobile() {
         || (!window.glob?.device && /Mobi/.test(navigator.userAgent));
 }
 
-function isDesktop() {
+function isDesktop() {    
     return window.glob?.device === "desktop"
         // window.glob.device is not available in setup
         || (!window.glob?.device && !/Mobi/.test(navigator.userAgent));
 }
 
-// the cookie code below works for simple use cases only - ASCII only
-// not setting a path so that cookies do not leak into other websites if multiplexed with reverse proxy
-
-function setCookie(name, value) {
+/**
+ * the cookie code below works for simple use cases only - ASCII only
+ * not setting a path so that cookies do not leak into other websites if multiplexed with reverse proxy
+ */
+function setCookie(name: string, value: string) {
     const date = new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000);
     const expires = `; expires=${date.toUTCString()}`;
 
     document.cookie = `${name}=${value || ""}${expires};`;
 }
 
-function getNoteTypeClass(type) {
+function getNoteTypeClass(type: string) {
     return `type-${type}`;
 }
 
-function getMimeTypeClass(mime) {
+function getMimeTypeClass(mime: string) {
     if (!mime) {
         return "";
     }
@@ -201,12 +205,12 @@ function getMimeTypeClass(mime) {
 
 function closeActiveDialog() {
     if (glob.activeDialog) {
-        bootstrap.Modal.getOrCreateInstance(glob.activeDialog).hide();
+        Modal.getOrCreateInstance(glob.activeDialog[0]).hide();
         glob.activeDialog = null;
     }
 }
 
-let $lastFocusedElement = null;
+let $lastFocusedElement: JQuery<HTMLElement> | null;
 
 // perhaps there should be saved focused element per tab?
 function saveFocusedElement() {
@@ -238,14 +242,14 @@ function focusSavedElement() {
     $lastFocusedElement = null;
 }
 
-async function openDialog($dialog, closeActDialog = true) {
+async function openDialog($dialog: JQuery<HTMLElement>, closeActDialog = true) {
     if (closeActDialog) {
         closeActiveDialog();
         glob.activeDialog = $dialog;
     }
 
     saveFocusedElement();
-    bootstrap.Modal.getOrCreateInstance($dialog).show();
+    Modal.getOrCreateInstance($dialog[0]).show();
 
     $dialog.on('hidden.bs.modal', () => {
         $(".aa-input").autocomplete("close");
@@ -255,11 +259,13 @@ async function openDialog($dialog, closeActDialog = true) {
         }
     });
 
+    // TODO: Fix once keyboard_actions is ported.
+    // @ts-ignore
     const keyboardActionsService = (await import("./keyboard_actions.js")).default;
     keyboardActionsService.updateDisplayedShortcuts($dialog);
 }
 
-function isHtmlEmpty(html) {
+function isHtmlEmpty(html: string) {
     if (!html) {
         return true;
     } else if (typeof html !== 'string') {
@@ -283,13 +289,13 @@ async function clearBrowserCache() {
 }
 
 function copySelectionToClipboard() {
-    const text = window.getSelection().toString();
-    if (navigator.clipboard) {
+    const text = window?.getSelection()?.toString();
+    if (text && navigator.clipboard) {
         navigator.clipboard.writeText(text);
     }
 }
 
-function dynamicRequire(moduleName) {
+function dynamicRequire(moduleName: string) {
     if (typeof __non_webpack_require__ !== 'undefined') {
         return __non_webpack_require__(moduleName);
     }
@@ -298,7 +304,7 @@ function dynamicRequire(moduleName) {
     }
 }
 
-function timeLimit(promise, limitMs, errorMessage) {
+function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: string) {
     if (!promise || !promise.then) { // it's not actually a promise
         return promise;
     }
@@ -306,7 +312,7 @@ function timeLimit(promise, limitMs, errorMessage) {
     // better stack trace if created outside of promise
     const error = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
 
-    return new Promise((res, rej) => {
+    return new Promise<T>((res, rej) => {
         let resolved = false;
 
         promise.then(result => {
@@ -323,7 +329,7 @@ function timeLimit(promise, limitMs, errorMessage) {
     });
 }
 
-function initHelpDropdown($el) {
+function initHelpDropdown($el: JQuery<HTMLElement>) {
     // stop inside clicks from closing the menu
     const $dropdownMenu = $el.find('.help-dropdown .dropdown-menu');
     $dropdownMenu.on('click', e => e.stopPropagation());
@@ -334,7 +340,7 @@ function initHelpDropdown($el) {
 
 const wikiBaseUrl = "https://triliumnext.github.io/Docs/Wiki/";
 
-function openHelp($button) {
+function openHelp($button: JQuery<HTMLElement>) {
     const helpPage = $button.attr("data-help-page");
 
     if (helpPage) {
@@ -344,7 +350,7 @@ function openHelp($button) {
     }
 }
 
-function initHelpButtons($el) {
+function initHelpButtons($el: JQuery<HTMLElement>) {
     // for some reason, the .on(event, listener, handler) does not work here (e.g. Options -> Sync -> Help button)
     // so we do it manually
     $el.on("click", e => {
@@ -353,35 +359,38 @@ function initHelpButtons($el) {
     });
 }
 
-function filterAttributeName(name) {
+function filterAttributeName(name: string) {
     return name.replace(/[^\p{L}\p{N}_:]/ug, "");
 }
 
 const ATTR_NAME_MATCHER = new RegExp("^[\\p{L}\\p{N}_:]+$", "u");
 
-function isValidAttributeName(name) {
+function isValidAttributeName(name: string) {
     return ATTR_NAME_MATCHER.test(name);
 }
 
-function sleep(time_ms) {
+function sleep(time_ms: number) {
     return new Promise((resolve) => {
         setTimeout(resolve, time_ms);
     });
 }
 
-function escapeRegExp(str) {
+function escapeRegExp(str: string) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
-function areObjectsEqual() {
-    let i, l, leftChain, rightChain;
+function areObjectsEqual () {
+    let i;
+    let l;
+    let leftChain: Object[];
+    let rightChain: Object[];
 
-    function compare2Objects(x, y) {
+    function compare2Objects (x: unknown, y: unknown) {
         let p;
 
         // remember that NaN === NaN returns false
         // and isNaN(undefined) returns true
-        if (isNaN(x) && isNaN(y) && typeof x === 'number' && typeof y === 'number') {
+        if (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y)) {
             return true;
         }
 
@@ -416,7 +425,7 @@ function areObjectsEqual() {
             return false;
         }
 
-        if (x.prototype !== y.prototype) {
+        if ((x as any).prototype !== (y as any).prototype) {
             return false;
         }
 
@@ -431,7 +440,7 @@ function areObjectsEqual() {
             if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
                 return false;
             }
-            else if (typeof y[p] !== typeof x[p]) {
+            else if (typeof (y as any)[p] !== typeof (x as any)[p]) {
                 return false;
             }
         }
@@ -440,18 +449,18 @@ function areObjectsEqual() {
             if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
                 return false;
             }
-            else if (typeof y[p] !== typeof x[p]) {
+            else if (typeof (y as any)[p] !== typeof (x as any)[p]) {
                 return false;
             }
 
-            switch (typeof (x[p])) {
+            switch (typeof ((x as any)[p])) {
                 case 'object':
                 case 'function':
 
                     leftChain.push(x);
                     rightChain.push(y);
 
-                    if (!compare2Objects(x[p], y[p])) {
+                    if (!compare2Objects((x as any)[p], (y as any)[p])) {
                         return false;
                     }
 
@@ -460,7 +469,7 @@ function areObjectsEqual() {
                     break;
 
                 default:
-                    if (x[p] !== y[p]) {
+                    if ((x as any)[p] !== (y as any)[p]) {
                         return false;
                     }
                     break;
@@ -488,10 +497,12 @@ function areObjectsEqual() {
     return true;
 }
 
-function copyHtmlToClipboard(content) {
-    function listener(e) {
-        e.clipboardData.setData("text/html", content);
-        e.clipboardData.setData("text/plain", content);
+function copyHtmlToClipboard(content: string) {
+    function listener(e: ClipboardEvent) {
+        if (e.clipboardData) {
+            e.clipboardData.setData("text/html", content);
+            e.clipboardData.setData("text/plain", content);
+        }
         e.preventDefault();
     }
     document.addEventListener("copy", listener);
@@ -499,21 +510,18 @@ function copyHtmlToClipboard(content) {
     document.removeEventListener("copy", listener);
 }
 
-/**
- * @param {FNote} note
- * @return {string}
- */
-function createImageSrcUrl(note) {
+// TODO: Set to FNote once the file is ported.
+function createImageSrcUrl(note: { noteId: string; title: string }) {
     return `api/images/${note.noteId}/${encodeURIComponent(note.title)}?timestamp=${Date.now()}`;
 }
 
 /**
  * Given a string representation of an SVG, triggers a download of the file on the client device.
  * 
- * @param {string} nameWithoutExtension the name of the file. The .svg suffix is automatically added to it.
- * @param {string} svgContent the content of the SVG file download.
+ * @param nameWithoutExtension the name of the file. The .svg suffix is automatically added to it.
+ * @param svgContent the content of the SVG file download.
  */
-function downloadSvg(nameWithoutExtension, svgContent) {
+function downloadSvg(nameWithoutExtension: string, svgContent: string) {
     const filename = `${nameWithoutExtension}.svg`;
     const element = document.createElement('a');
     element.setAttribute('href', `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`);
@@ -534,11 +542,11 @@ function downloadSvg(nameWithoutExtension, svgContent) {
  *   0  if v1 is equal to v2
  *   -1 if v1 is less than v2
  * 
- * @param {string} v1 First version string
- * @param {string} v2 Second version string
- * @returns {number}
+ * @param v1 First version string
+ * @param v2 Second version string
+ * @returns 
  */
-function compareVersions(v1, v2) {
+function compareVersions(v1: string, v2: string): number {
 
     // Remove 'v' prefix and everything after dash if present
     v1 = v1.replace(/^v/, '').split('-')[0];
@@ -571,11 +579,8 @@ function compareVersions(v1, v2) {
 
 /**
  * Compares two semantic version strings and returns `true` if the latest version is greater than the current version.
- * @param {string} latestVersion
- * @param {string} currentVersion
- * @returns {boolean}
  */
-function isUpdateAvailable(latestVersion, currentVersion) {
+function isUpdateAvailable(latestVersion: string, currentVersion: string): boolean {
     return compareVersions(latestVersion, currentVersion) > 0;
 }
 

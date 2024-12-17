@@ -1,5 +1,13 @@
+type Callback = () => Promise<void>;
+
 export default class SpacedUpdate {
-    constructor(updater, updateInterval = 1000) {
+    private updater: Callback;
+    private lastUpdated: number;
+    private changed: boolean;
+    private updateInterval: number;
+    private changeForbidden?: boolean;
+
+    constructor(updater: Callback, updateInterval = 1000) {
         this.updater = updater;
         this.lastUpdated = Date.now();
         this.changed = false;
@@ -52,7 +60,7 @@ export default class SpacedUpdate {
         }
     }
 
-    async allowUpdateWithoutChange(callback) {
+    async allowUpdateWithoutChange(callback: Callback) {
         this.changeForbidden = true;
 
         try {

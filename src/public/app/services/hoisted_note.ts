@@ -1,7 +1,8 @@
 import appContext from "../components/app_context.js";
-import treeService from "./tree.js";
+import treeService, { Node } from "./tree.js";
 import dialogService from "./dialog.js";
 import froca from "./froca.js";
+import NoteContext from "../components/note_context.js";
 import { t } from "./i18n.js";
 
 function getHoistedNoteId() {
@@ -18,11 +19,11 @@ async function unhoist() {
     }
 }
 
-function isTopLevelNode(node) {
+function isTopLevelNode(node: Node) {
     return isHoistedNode(node.getParent());
 }
 
-function isHoistedNode(node) {
+function isHoistedNode(node: Node) {
     // even though check for 'root' should not be necessary, we keep it just in case
     return node.data.noteId === "root"
         || node.data.noteId === getHoistedNoteId();
@@ -36,10 +37,10 @@ async function isHoistedInHiddenSubtree() {
     }
 
     const hoistedNote = await froca.getNote(hoistedNoteId);
-    return hoistedNote.isHiddenCompletely();
+    return hoistedNote?.isHiddenCompletely();
 }
 
-async function checkNoteAccess(notePath, noteContext) {
+async function checkNoteAccess(notePath: string, noteContext: NoteContext) {
     const resolvedNotePath = await treeService.resolveNotePath(notePath, noteContext.hoistedNoteId);
 
     if (!resolvedNotePath) {
@@ -50,11 +51,15 @@ async function checkNoteAccess(notePath, noteContext) {
     const hoistedNoteId = noteContext.hoistedNoteId;
 
     if (!resolvedNotePath.includes(hoistedNoteId) && (!resolvedNotePath.includes('_hidden') || resolvedNotePath.includes('_lbBookmarks'))) {
-        const requestedNote = await froca.getNote(treeService.getNoteIdFromUrl(resolvedNotePath));
+        const noteId = treeService.getNoteIdFromUrl(resolvedNotePath);
+        if (!noteId) {
+            return false;
+        }
+        const requestedNote = await froca.getNote(noteId);
         const hoistedNote = await froca.getNote(hoistedNoteId);
 
-        if ((!hoistedNote.hasAncestor('_hidden') || resolvedNotePath.includes('_lbBookmarks'))
-            && !await dialogService.confirm(t("hoisted_note.confirm_unhoisting", { requestedNote: requestedNote.title, hoistedNote: hoistedNote.title }))) {
+        if ((!hoistedNote?.hasAncestor('_hidden') || resolvedNotePath.includes('_lbBookmarks'))
+            && !await dialogService.confirm(t("hoisted_note.confirm_unhoisting", { requestedNote: requestedNote?.title, hoistedNote: hoistedNote?.title }))) {
             return false;
         }
 
