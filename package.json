@@ -67,7 +67,7 @@
     "bootstrap": "5.3.3",
     "boxicons": "2.1.4",
     "cheerio": "1.0.0",
-    "chokidar": "4.0.2",
+    "chokidar": "4.0.3",
     "cls-hooked": "4.2.2",
     "codemirror": "5.65.18",
     "compression": "1.7.5",
