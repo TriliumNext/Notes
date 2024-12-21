@@ -21,10 +21,11 @@ class FAttachment {
     attachmentId!: string;
     private ownerId!: string;
     role!: string;
-    private mime!: string;
-    private title!: string;
+    mime!: string;
+    title!: string;
+    isProtected!: boolean;  // TODO: Is this used?
     private dateModified!: string;
-    private utcDateModified!: string;
+    utcDateModified!: string;
     private utcDateScheduledForErasureSince!: string;
     /**
      * optionally added to the entity 

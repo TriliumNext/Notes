@@ -1,4 +1,4 @@
-import { EntityChange } from "../../../services/entity_changes_interface.js";
+import { EntityChange } from "../server_types.js";
 
 interface BranchRow {
     branchId: string;

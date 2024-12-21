@@ -6,9 +6,14 @@ import appContext from "../components/app_context.js";
 
 export interface Node {
     getParent(): Node;
+    getChildren(): Node[];
+    folder: boolean;
+    renderTitle(): void,
     data: {
         noteId?: string;
         isProtected?: boolean;
+        branchId: string;
+        noteType: string;
     }
 }
 

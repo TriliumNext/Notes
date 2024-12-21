@@ -16,6 +16,7 @@ export default class Component {
     children: Component[];
     initialized: Promise<void> | null;
     parent?: Component;
+    position!: number;
 
     constructor() {
         this.componentId = `${this.sanitizedClassName}-${utils.randomString(8)}`;

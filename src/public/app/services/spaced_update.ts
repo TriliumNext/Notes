@@ -1,4 +1,4 @@
-type Callback = () => Promise<void>;
+type Callback = () => Promise<void> | void;
 
 export default class SpacedUpdate {
     private updater: Callback;

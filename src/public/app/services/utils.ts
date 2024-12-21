@@ -138,8 +138,8 @@ function formatSize(size: number) {
     }
 }
 
-function toObject<T>(array: T[], fn: (arg0: T) => [key: string, value: T]) {
-    const obj: Record<string, T> = {};
+function toObject<T, R>(array: T[], fn: (arg0: T) => [key: string, value: R]) {
+    const obj: Record<string, R> = {};
 
     for (const item of array) {
         const [key, value] = fn(item);
@@ -350,7 +350,7 @@ function openHelp($button: JQuery<HTMLElement>) {
     }
 }
 
-function initHelpButtons($el: JQuery<HTMLElement>) {
+function initHelpButtons($el: JQuery<HTMLElement> | JQuery<Window>) {
     // for some reason, the .on(event, listener, handler) does not work here (e.g. Options -> Sync -> Help button)
     // so we do it manually
     $el.on("click", e => {

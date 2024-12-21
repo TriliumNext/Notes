@@ -10,4 +10,4 @@ echo By file
 cloc HEAD \
     --git --md \
     --include-lang=javascript,typescript \
-    --by-file
+    --by-file | grep \.js\|

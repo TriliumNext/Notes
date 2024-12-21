@@ -7,7 +7,7 @@ import FBranch, { FBranchRow } from "../entities/fbranch.js";
 import FAttribute, { FAttributeRow } from "../entities/fattribute.js";
 import FAttachment, { FAttachmentRow } from "../entities/fattachment.js";
 import FNote, { FNoteRow } from "../entities/fnote.js";
-import { EntityChange } from "../../../services/entity_changes_interface.js";
+import type { EntityChange } from "../server_types.js"
 
 async function processEntityChanges(entityChanges: EntityChange[]) {
     const loadResults = new LoadResults(entityChanges);

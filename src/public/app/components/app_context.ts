@@ -14,6 +14,10 @@ import MainTreeExecutors from "./main_tree_executors.js";
 import toast from "../services/toast.js";
 import ShortcutComponent from "./shortcut_component.js";
 import { t, initLocale } from "../services/i18n.js";
+import NoteDetailWidget from "../widgets/note_detail.js";
+import { ResolveOptions } from "../widgets/dialogs/delete_notes.js";
+import { PromptDialogOptions } from "../widgets/dialogs/prompt.js";
+import { ConfirmWithMessageOptions } from "../widgets/dialogs/confirm.js";
 
 interface Layout {
     getRootWidget: (appContext: AppContext) => RootWidget;
@@ -27,12 +31,34 @@ interface BeforeUploadListener extends Component {
     beforeUnloadEvent(): boolean;
 }
 
-interface TriggerData {
+export type TriggerData = {
     noteId?: string;
     noteIds?: string[];
-    messages?: unknown[];
-    callback?: () => void;
+    messages?: unknown[];    
+} | {
+    ntxId: string;
+    notePath?: string;
+} | {
+    text: string;
+} | {
+    callback: (value: NoteDetailWidget | PromiseLike<NoteDetailWidget>) => void
+} | {
+    // For "searchNotes"
+    searchString: string | undefined;
+} | {
+    // For "showDeleteNotesDialog"
+    branchIdsToDelete: string[];
+    callback: (value: ResolveOptions) => void;
+    forceDeleteAllClones: boolean;
+} | {
+    // For "openedFileUpdated"
+    entityType: string;
+    entityId: string;
+    lastModifiedMs: number;
+    filePath: string;
 }
+    | PromptDialogOptions    // For "showPromptDialog"
+    | ConfirmWithMessageOptions   // For "showConfirmDialog"
 
 class AppContext extends Component {
 

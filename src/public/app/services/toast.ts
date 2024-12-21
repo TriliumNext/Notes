@@ -1,7 +1,7 @@
 import ws from "./ws.js";
 import utils from "./utils.js";
 
-interface ToastOptions {
+export interface ToastOptions {
     id?: string;
     icon: string;
     title: string;

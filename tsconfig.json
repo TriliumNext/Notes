@@ -7,6 +7,7 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"resolveJsonModule": true,
+		"allowJs": true,
 		"lib": [
 			"ES2022"
 		],
@@ -18,14 +19,14 @@
 		"./src/**/*.js",
 		"./src/**/*.ts",
 		"./*.ts",
-		"./spec/**/*.ts",
-		"./spec-es6/**/*.ts"
+		"./spec/**/*.ts"
 	],
 	"exclude": [
-		"./src/public/**/*",
-		"./node_modules/**/*"
+		"./node_modules/**/*",
+		"./spec-es6/**/*.ts"
 	],
 	"files": [
-		"src/types.d.ts"
+		"src/types.d.ts",
+		"src/public/app/types.d.ts"
 	]
 }

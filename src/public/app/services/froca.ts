@@ -243,7 +243,7 @@ class FrocaImpl implements Froca {
         }).filter(note => !!note) as FNote[];
     }
 
-    async getNotes(noteIds: string[], silentNotFoundError = false): Promise<FNote[]> {
+    async getNotes(noteIds: string[] | JQuery<string>, silentNotFoundError = false): Promise<FNote[]> {
         noteIds = Array.from(new Set(noteIds)); // make unique
         const missingNoteIds = noteIds.filter(noteId => !this.notes[noteId]);
 
