@@ -3,11 +3,13 @@ import froca from "./froca.js";
 import utils from "./utils.js";
 import options from "./options.js";
 import noteAttributeCache from "./note_attribute_cache.js";
-import FBranch from "../entities/fbranch.js";
-import FAttribute from "../entities/fattribute.js";
-import FAttachment from "../entities/fattachment.js";
+import FBranch, { FBranchRow } from "../entities/fbranch.js";
+import FAttribute, { FAttributeRow } from "../entities/fattribute.js";
+import FAttachment, { FAttachmentRow } from "../entities/fattachment.js";
+import FNote, { FNoteRow } from "../entities/fnote.js";
+import { EntityChange } from "../../../services/entity_changes_interface.js";
 
-async function processEntityChanges(entityChanges) {
+async function processEntityChanges(entityChanges: EntityChange[]) {
     const loadResults = new LoadResults(entityChanges);
 
     for (const ec of entityChanges) {
@@ -23,13 +25,14 @@ async function processEntityChanges(entityChanges) {
             } else if (ec.entityName === 'revisions') {
                 loadResults.addRevision(ec.entityId, ec.noteId, ec.componentId);
             } else if (ec.entityName === 'options') {
-                if (ec.entity.name === 'openNoteContexts') {
+                const attributeEntity = ec.entity as FAttributeRow;
+                if (attributeEntity.name === 'openNoteContexts') {
                     continue; // only noise
                 }
 
-                options.set(ec.entity.name, ec.entity.value);
+                options.set(attributeEntity.name, attributeEntity.value);
 
-                loadResults.addOption(ec.entity.name);
+                loadResults.addOption(attributeEntity.name);
             } else if (ec.entityName === 'attachments') {
                 processAttachment(loadResults, ec);
             } else if (ec.entityName === 'blobs' || ec.entityName === 'etapi_tokens') {
@@ -39,7 +42,7 @@ async function processEntityChanges(entityChanges) {
                 throw new Error(`Unknown entityName '${ec.entityName}'`);
             }
         }
-        catch (e) {
+        catch (e: any) {
             throw new Error(`Can't process entity ${JSON.stringify(ec)} with error ${e.message} ${e.stack}`);
         }
     }
@@ -56,15 +59,16 @@ async function processEntityChanges(entityChanges) {
             continue;
         }
 
-        if (entityName === 'branches' && !(entity.parentNoteId in froca.notes)) {
-            missingNoteIds.push(entity.parentNoteId);
+        if (entityName === 'branches' && !((entity as FBranchRow).parentNoteId in froca.notes)) {
+            missingNoteIds.push((entity as FBranchRow).parentNoteId);
         }
-        else if (entityName === 'attributes'
-            && entity.type === 'relation'
-            && (entity.name === 'template' || entity.name === 'inherit')
-            && !(entity.value in froca.notes)) {
-
-            missingNoteIds.push(entity.value);
+        else if (entityName === 'attributes') {
+            let attributeEntity = entity as FAttributeRow;
+            if (attributeEntity.type === 'relation'
+                && (attributeEntity.name === 'template' || attributeEntity.name === 'inherit')
+                && !(attributeEntity.value in froca.notes)) {
+                missingNoteIds.push(attributeEntity.value);
+            }
         }
     }
 
@@ -77,12 +81,14 @@ async function processEntityChanges(entityChanges) {
             noteAttributeCache.invalidate();
         }
 
-        const appContext = (await import("../components/app_context.js")).default;
+        // TODO: Remove after porting the file
+        // @ts-ignore
+        const appContext = (await import("../components/app_context.js")).default as any;
         await appContext.triggerEvent('entitiesReloaded', {loadResults});
     }
 }
 
-function processNoteChange(loadResults, ec) {
+function processNoteChange(loadResults: LoadResults, ec: EntityChange) {
     const note = froca.notes[ec.entityId];
 
     if (!note) {
@@ -102,21 +108,23 @@ function processNoteChange(loadResults, ec) {
         delete froca.notes[ec.entityId];
     }
     else {
-        if (note.blobId !== ec.entity.blobId) {
+        if (note.blobId !== (ec.entity as FNoteRow).blobId) {
             for (const key of Object.keys(froca.blobPromises)) {
                 if (key.includes(note.noteId)) {
                     delete froca.blobPromises[key];
                 }
             }
 
-            loadResults.addNoteContent(note.noteId, ec.componentId);
+            if (ec.componentId) {
+                loadResults.addNoteContent(note.noteId, ec.componentId);
+            }
         }
 
-        note.update(ec.entity);
+        note.update(ec.entity as FNoteRow);
     }
 }
 
-async function processBranchChange(loadResults, ec) {
+async function processBranchChange(loadResults: LoadResults, ec: EntityChange) {
     if (ec.isErased && ec.entityId in froca.branches) {
         utils.reloadFrontendApp(`${ec.entityName} '${ec.entityId}' is erased, need to do complete reload.`);
         return;
@@ -139,7 +147,9 @@ async function processBranchChange(loadResults, ec) {
                 delete parentNote.childToBranch[branch.noteId];
             }
 
-            loadResults.addBranch(ec.entityId, ec.componentId);
+            if (ec.componentId) {
+                loadResults.addBranch(ec.entityId, ec.componentId);
+            }
 
             delete froca.branches[ec.entityId];
         }
@@ -147,24 +157,27 @@ async function processBranchChange(loadResults, ec) {
         return;
     }
 
-    loadResults.addBranch(ec.entityId, ec.componentId);
+    if (ec.componentId) {
+        loadResults.addBranch(ec.entityId, ec.componentId);
+    }
 
-    const childNote = froca.notes[ec.entity.noteId];
-    let parentNote = froca.notes[ec.entity.parentNoteId];
+    const branchEntity = ec.entity as FBranchRow;
+    const childNote = froca.notes[branchEntity.noteId];
+    let parentNote: FNote | null = froca.notes[branchEntity.parentNoteId];
 
     if (childNote && !childNote.isRoot() && !parentNote) {
         // a branch cannot exist without the parent
         // a note loaded into froca has to also contain all its ancestors,
         // this problem happened, e.g., in sharing where _share was hidden and thus not loaded
         // sharing meant cloning into _share, which crashed because _share was not loaded
-        parentNote = await froca.getNote(ec.entity.parentNoteId);
+        parentNote = await froca.getNote(branchEntity.parentNoteId);
     }
 
     if (branch) {
-        branch.update(ec.entity);
+        branch.update(ec.entity as FBranch);
     }
     else if (childNote || parentNote) {
-        froca.branches[ec.entityId] = branch = new FBranch(froca, ec.entity);
+        froca.branches[ec.entityId] = branch = new FBranch(froca, branchEntity);
     }
 
     if (childNote) {
@@ -176,8 +189,8 @@ async function processBranchChange(loadResults, ec) {
     }
 }
 
-function processNoteReordering(loadResults, ec) {
-    const parentNoteIdsToSort = new Set();
+function processNoteReordering(loadResults: LoadResults, ec: EntityChange) {
+    const parentNoteIdsToSort = new Set<string>();
 
     for (const branchId in ec.positions) {
         const branch = froca.branches[branchId];
@@ -197,10 +210,12 @@ function processNoteReordering(loadResults, ec) {
         }
     }
 
-    loadResults.addNoteReordering(ec.entityId, ec.componentId);
+    if (ec.componentId) {
+        loadResults.addNoteReordering(ec.entityId, ec.componentId);
+    }
 }
 
-function processAttributeChange(loadResults, ec) {
+function processAttributeChange(loadResults: LoadResults, ec: EntityChange) {
     let attribute = froca.attributes[ec.entityId];
 
     if (ec.isErased && ec.entityId in froca.attributes) {
@@ -221,7 +236,9 @@ function processAttributeChange(loadResults, ec) {
                 targetNote.targetRelations = targetNote.targetRelations.filter(attributeId => attributeId !== attribute.attributeId);
             }
 
-            loadResults.addAttribute(ec.entityId, ec.componentId);
+            if (ec.componentId) {
+                loadResults.addAttribute(ec.entityId, ec.componentId);
+            }
 
             delete froca.attributes[ec.entityId];
         }
@@ -229,15 +246,18 @@ function processAttributeChange(loadResults, ec) {
         return;
     }
 
-    loadResults.addAttribute(ec.entityId, ec.componentId);
+    if (ec.componentId) {
+        loadResults.addAttribute(ec.entityId, ec.componentId);
+    }
 
-    const sourceNote = froca.notes[ec.entity.noteId];
-    const targetNote = ec.entity.type === 'relation' && froca.notes[ec.entity.value];
+    const attributeEntity = ec.entity as FAttributeRow;
+    const sourceNote = froca.notes[attributeEntity.noteId];
+    const targetNote = attributeEntity.type === 'relation' && froca.notes[attributeEntity.value];
 
     if (attribute) {
-        attribute.update(ec.entity);
+        attribute.update(ec.entity as FAttributeRow);
     } else if (sourceNote || targetNote) {
-        attribute = new FAttribute(froca, ec.entity);
+        attribute = new FAttribute(froca, ec.entity as FAttributeRow);
 
         froca.attributes[attribute.attributeId] = attribute;
 
@@ -251,15 +271,16 @@ function processAttributeChange(loadResults, ec) {
     }
 }
 
-function processAttachment(loadResults, ec) {
+function processAttachment(loadResults: LoadResults, ec: EntityChange) {
     if (ec.isErased && ec.entityId in froca.attachments) {
         utils.reloadFrontendApp(`${ec.entityName} '${ec.entityId}' is erased, need to do complete reload.`);
         return;
     }
 
     const attachment = froca.attachments[ec.entityId];
+    const attachmentEntity = ec.entity as FAttachmentRow;
 
-    if (ec.isErased || ec.entity?.isDeleted) {
+    if (ec.isErased || (ec.entity as any)?.isDeleted) {
         if (attachment) {
             const note = attachment.getNote();
 
@@ -267,7 +288,7 @@ function processAttachment(loadResults, ec) {
                 note.attachments = note.attachments.filter(att => att.attachmentId !== attachment.attachmentId);
             }
 
-            loadResults.addAttachmentRow(ec.entity);
+            loadResults.addAttachmentRow(attachmentEntity);
 
             delete froca.attachments[ec.entityId];
         }
@@ -276,16 +297,17 @@ function processAttachment(loadResults, ec) {
     }
 
     if (attachment) {
-        attachment.update(ec.entity);
+        attachment.update(ec.entity as FAttachmentRow);
     } else {
-        const note = froca.notes[ec.entity.ownerId];
+        const attachmentRow = ec.entity as FAttachmentRow;
+        const note = froca.notes[attachmentRow.ownerId];
 
         if (note?.attachments) {
-            note.attachments.push(new FAttachment(froca, ec.entity));
+            note.attachments.push(new FAttachment(froca, attachmentRow));
         }
     }
 
-    loadResults.addAttachmentRow(ec.entity);
+    loadResults.addAttachmentRow(attachmentEntity);
 }
 
 export default {

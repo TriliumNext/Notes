@@ -1,13 +1,39 @@
 import utils from './utils.js';
 import ValidationError from "./validation_error.js";
 
-async function getHeaders(headers) {
+type Headers = Record<string, string | null | undefined>;
+
+type Method = string;
+
+interface Response {
+    headers: Headers;
+    body: unknown;
+}
+
+interface Arg extends Response {
+    statusCode: number;
+    method: Method;
+    url: string;
+    requestId: string;
+}
+
+interface RequestData {
+    resolve: (value: unknown) => any;
+    reject: (reason: unknown) => any;
+    silentNotFound: boolean;
+}
+
+export interface StandardResponse {
+    success: boolean;
+}
+
+async function getHeaders(headers?: Headers) {
     const appContext = (await import('../components/app_context.js')).default;
     const activeNoteContext = appContext.tabManager ? appContext.tabManager.getActiveContext() : null;
 
     // headers need to be lowercase because node.js automatically converts them to lower case
     // also avoiding using underscores instead of dashes since nginx filters them out by default
-    const allHeaders = {
+    const allHeaders: Headers = {
         'trilium-component-id': glob.componentId,
         'trilium-local-now-datetime': utils.localNowDateTime(),
         'trilium-hoisted-note-id': activeNoteContext ? activeNoteContext.hoistedNoteId : null,
@@ -28,31 +54,31 @@ async function getHeaders(headers) {
     return allHeaders;
 }
 
-async function getWithSilentNotFound(url, componentId) {
-    return await call('GET', url, componentId, { silentNotFound: true });
+async function getWithSilentNotFound<T>(url: string, componentId?: string) {
+    return await call<T>('GET', url, componentId, { silentNotFound: true });
 }
 
-async function get(url, componentId) {
-    return await call('GET', url, componentId);
+async function get<T>(url: string, componentId?: string) {
+    return await call<T>('GET', url, componentId);
 }
 
-async function post(url, data, componentId) {
-    return await call('POST', url, componentId, { data });
+async function post<T>(url: string, data?: unknown, componentId?: string) {
+    return await call<T>('POST', url, componentId, { data });
 }
 
-async function put(url, data, componentId) {
-    return await call('PUT', url, componentId, { data });
+async function put<T>(url: string, data?: unknown, componentId?: string) {
+    return await call<T>('PUT', url, componentId, { data });
 }
 
-async function patch(url, data, componentId) {
-    return await call('PATCH', url, componentId, { data });
+async function patch<T>(url: string, data: unknown, componentId?: string) {
+    return await call<T>('PATCH', url, componentId, { data });
 }
 
-async function remove(url, componentId) {
-    return await call('DELETE', url, componentId);
+async function remove<T>(url: string, componentId?: string) {
+    return await call<T>('DELETE', url, componentId);
 }
 
-async function upload(url, fileToUpload) {
+async function upload(url: string, fileToUpload: File) {
     const formData = new FormData();
     formData.append('upload', fileToUpload);
 
@@ -68,11 +94,17 @@ async function upload(url, fileToUpload) {
 }
 
 let idCounter = 1;
-const idToRequestMap = {};
+
+const idToRequestMap: Record<string, RequestData> = {};
 
 let maxKnownEntityChangeId = 0;
 
-async function call(method, url, componentId, options = {}) {
+interface CallOptions {
+    data?: unknown;
+    silentNotFound?: boolean;
+}
+
+async function call<T>(method: string, url: string, componentId?: string, options: CallOptions = {}) {
     let resp;
 
     const headers = await getHeaders({
@@ -98,7 +130,7 @@ async function call(method, url, componentId, options = {}) {
                 url: `/${window.glob.baseApiUrl}${url}`,
                 data: data
             });
-        });
+        }) as any;
     }
     else {
         resp = await ajax(url, method, data, headers, !!options.silentNotFound);
@@ -110,23 +142,25 @@ async function call(method, url, componentId, options = {}) {
         maxKnownEntityChangeId = Math.max(maxKnownEntityChangeId, parseInt(maxEntityChangeIdStr));
     }
 
-    return resp.body;
+    return resp.body as T;
 }
 
-function ajax(url, method, data, headers, silentNotFound) {
+function ajax(url: string, method: string, data: unknown, headers: Headers, silentNotFound: boolean): Promise<Response> {
     return new Promise((res, rej) => {
-        const options = {
+        const options: JQueryAjaxSettings = {
             url: window.glob.baseApiUrl + url,
             type: method,
             headers: headers,
             timeout: 60000,
             success: (body, textStatus, jqXhr) => {
-                const respHeaders = {};
+                const respHeaders: Headers = {};
 
                 jqXhr.getAllResponseHeaders().trim().split(/[\r\n]+/).forEach(line => {
                     const parts = line.split(': ');
                     const header = parts.shift();
-                    respHeaders[header] = parts.join(': ');
+                    if (header) {
+                        respHeaders[header] = parts.join(': ');
+                    }
                 });
 
                 res({
@@ -165,7 +199,7 @@ function ajax(url, method, data, headers, silentNotFound) {
 if (utils.isElectron()) {
     const ipc = utils.dynamicRequire('electron').ipcRenderer;
 
-    ipc.on('server-response', async (event, arg) => {
+    ipc.on('server-response', async (event: string, arg: Arg) => {
         if (arg.statusCode >= 200 && arg.statusCode < 300) {
             handleSuccessfulResponse(arg);
         }
@@ -182,8 +216,8 @@ if (utils.isElectron()) {
         delete idToRequestMap[arg.requestId];
     });
 
-    function handleSuccessfulResponse(arg) {
-        if (arg.headers['Content-Type'] === 'application/json') {
+    function handleSuccessfulResponse(arg: Arg) {
+        if (arg.headers['Content-Type'] === 'application/json' && typeof arg.body === "string") {
             arg.body = JSON.parse(arg.body);
         }
 
@@ -199,21 +233,23 @@ if (utils.isElectron()) {
     }
 }
 
-async function reportError(method, url, statusCode, response) {
+async function reportError(method: string, url: string, statusCode: number, response: unknown) {
     let message = response;
 
     if (typeof response === 'string') {
         try {
             response = JSON.parse(response);
-            message = response.message;
+            message = (response as any).message;
         }
         catch (e) {}
     }
 
     const toastService = (await import("./toast.js")).default;
 
+    const messageStr = (typeof message === "string" ? message : JSON.stringify(message));
+
     if ([400, 404].includes(statusCode) && response && typeof response === 'object') {
-        toastService.showError(message);
+        toastService.showError(messageStr);
         throw new ValidationError({
             requestUrl: url,
             method,
@@ -222,7 +258,7 @@ async function reportError(method, url, statusCode, response) {
         });
     } else {
         const title = `${statusCode} ${method} ${url}`;
-        toastService.showErrorTitleAndMessage(title, message);
+        toastService.showErrorTitleAndMessage(title, messageStr);
         toastService.throwError(`${title} - ${message}`);
     }
 }

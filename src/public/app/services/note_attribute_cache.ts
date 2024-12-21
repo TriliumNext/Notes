@@ -1,3 +1,5 @@
+import FAttribute from "../entities/fattribute.js";
+
 /**
  * The purpose of this class is to cache the list of attributes for notes.
  *
@@ -6,8 +8,9 @@
  * as loading the tree which uses attributes heavily.
  */
 class NoteAttributeCache {
+    attributes: Record<string, FAttribute[]>;
+    
     constructor() {
-        /** @property {Object.<string, BAttribute[]>} */
         this.attributes = {};
     }
 

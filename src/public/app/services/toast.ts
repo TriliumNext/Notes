@@ -1,7 +1,17 @@
 import ws from "./ws.js";
 import utils from "./utils.js";
 
-function toast(options) {
+interface ToastOptions {
+    id?: string;
+    icon: string;
+    title: string;
+    message: string;
+    delay?: number;
+    autohide?: boolean;
+    closeAfter?: number;
+}
+
+function toast(options: ToastOptions) {
     const $toast = $(
         `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
@@ -36,7 +46,7 @@ function toast(options) {
     return $toast;
 }
 
-function showPersistent(options) {
+function showPersistent(options: ToastOptions) {
     let $toast = $(`#toast-${options.id}`);
 
     if ($toast.length > 0) {
@@ -53,11 +63,11 @@ function showPersistent(options) {
     }
 }
 
-function closePersistent(id) {
+function closePersistent(id: string) {
     $(`#toast-${id}`).remove();
 }
 
-function showMessage(message, delay = 2000) {
+function showMessage(message: string, delay = 2000) {
     console.debug(utils.now(), "message:", message);
 
     toast({
@@ -69,13 +79,13 @@ function showMessage(message, delay = 2000) {
     });
 }
 
-function showAndLogError(message, delay = 10000) {
+function showAndLogError(message: string, delay = 10000) {
     showError(message, delay);
 
     ws.logError(message);
 }
 
-function showError(message, delay = 10000) {
+function showError(message: string, delay = 10000) {
     console.log(utils.now(), "error: ", message);
 
     toast({
@@ -87,7 +97,7 @@ function showError(message, delay = 10000) {
     });
 }
 
-function showErrorTitleAndMessage(title, message, delay = 10000) {
+function showErrorTitleAndMessage(title: string, message: string, delay = 10000) {
     console.log(utils.now(), "error: ", message);
 
     toast({
@@ -99,7 +109,7 @@ function showErrorTitleAndMessage(title, message, delay = 10000) {
     });
 }
 
-function throwError(message) {
+function throwError(message: string) {
     ws.logError(message);
 
     throw new Error(message);

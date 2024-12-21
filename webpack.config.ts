@@ -15,6 +15,28 @@ export default {
         path: path.resolve(rootDir, 'src/public/app-dist'),
         filename: '[name].js',
     },
+    module: {
+        rules: [
+            {
+            test: /\.ts$/,
+            use: [{
+                loader: 'ts-loader',
+                options: {
+                    configFile: path.join(rootDir, "tsconfig.webpack.json")
+                }
+            }],
+            exclude: /node_modules/,
+            },
+        ]
+    },
+    resolve: {
+        extensions: ['.ts', '.js'],
+        extensionAlias: {
+            ".js": [".js", ".ts"],
+            ".cjs": [".cjs", ".cts"],
+            ".mjs": [".mjs", ".mts"]
+        }
+    },
     devtool: 'source-map',
     target: 'electron-renderer',
 };

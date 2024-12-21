@@ -15,8 +15,34 @@ import toast from "../services/toast.js";
 import ShortcutComponent from "./shortcut_component.js";
 import { t, initLocale } from "../services/i18n.js";
 
+interface Layout {
+    getRootWidget: (appContext: AppContext) => RootWidget;
+}
+
+interface RootWidget extends Component {
+    render: () => JQuery<HTMLElement>;    
+}
+
+interface BeforeUploadListener extends Component {
+    beforeUnloadEvent(): boolean;
+}
+
+interface TriggerData {
+    noteId?: string;
+    noteIds?: string[];
+    messages?: unknown[];
+    callback?: () => void;
+}
+
 class AppContext extends Component {
-    constructor(isMainWindow) {
+
+    isMainWindow: boolean;
+    components: Component[];
+    beforeUnloadListeners: WeakRef<BeforeUploadListener>[];
+    tabManager!: TabManager;
+    layout?: Layout;
+
+    constructor(isMainWindow: boolean) {
         super();
 
         this.isMainWindow = isMainWindow;
@@ -33,7 +59,7 @@ class AppContext extends Component {
         await initLocale();
     }
 
-    setLayout(layout) {
+    setLayout(layout: Layout) {
         this.layout = layout;
     }
 
@@ -73,6 +99,10 @@ class AppContext extends Component {
     }
 
     renderWidgets() {
+        if (!this.layout) {
+            throw new Error("Missing layout.");
+        }
+
         const rootWidget = this.layout.getRootWidget(this);
         const $renderedWidget = rootWidget.render();
 
@@ -97,15 +127,13 @@ class AppContext extends Component {
         this.triggerEvent('initialRenderComplete');
     }
 
-    /** @returns {Promise<void>} */
-    triggerEvent(name, data = {}) {
+    triggerEvent(name: string, data: TriggerData = {}) {
         return this.handleEvent(name, data);
     }
 
-    /** @returns {Promise<*>} */
-    triggerCommand(name, data = {}) {
+    triggerCommand(name: string, data: TriggerData = {}) {
         for (const executor of this.components) {
-            const fun = executor[`${name}Command`];
+            const fun = (executor as any)[`${name}Command`];
 
             if (fun) {
                 return executor.callMethod(fun, data);
@@ -119,17 +147,17 @@ class AppContext extends Component {
         return this.triggerEvent(name, data);
     }
 
-    getComponentByEl(el) {
+    getComponentByEl(el: HTMLElement) {
         return $(el).closest(".component").prop('component');
     }
 
-    addBeforeUnloadListener(obj) {
+    addBeforeUnloadListener(obj: BeforeUploadListener) {
         if (typeof WeakRef !== "function") {
             // older browsers don't support WeakRef
             return;
         }
 
-        this.beforeUnloadListeners.push(new WeakRef(obj));
+        this.beforeUnloadListeners.push(new WeakRef<BeforeUploadListener>(obj));
     }
 }
 
