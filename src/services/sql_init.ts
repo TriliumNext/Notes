@@ -47,6 +47,21 @@ async function initDbConnection() {
 
     sql.execute('CREATE TEMP TABLE "param_list" (`paramId` TEXT NOT NULL PRIMARY KEY)');
 
+    sql.execute(`
+    CREATE TABLE IF NOT EXISTS "user_data"
+    (
+        tmpID INT,
+        username TEXT,
+        email TEXT,
+        userIDEcnryptedDataKey TEXT,
+        userIDVerificationHash TEXT,
+        salt TEXT,
+        derivedKey TEXT,
+        isSetup TEXT DEFAULT "false",
+        UNIQUE (tmpID),
+        PRIMARY KEY (tmpID)
+    );`)
+
     dbReady.resolve();
 }
 
