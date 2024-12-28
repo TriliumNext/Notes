@@ -57,7 +57,7 @@ app.use(`/icon.png`, express.static(path.join(scriptDir, 'public/icon.png')));
 app.use(sessionParser);
 app.use(favicon(`${scriptDir}/../images/app-icons/icon.ico`));
 
-assets.register(app);
+await assets.register(app);
 routes.register(app);
 custom.register(app);
 error_handlers.register(app);

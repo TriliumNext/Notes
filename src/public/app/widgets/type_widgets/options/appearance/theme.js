@@ -31,8 +31,8 @@ const TPL = `
     
     <div class="form-group row">
         <div class="col-6">
-            <label>${t("theme.theme_label")}</label>
-            <select class="theme-select form-select"></select>
+            <label for="theme-select">${t("theme.theme_label")}</label>
+            <select id="theme-select" class="theme-select form-select"></select>
         </div>
         
         <div class="col-6 side-checkbox">
@@ -69,8 +69,11 @@ export default class ThemeOptions extends OptionsWidget {
     async optionsLoaded(options) {
         const themes = [
             { val: 'next', title: t("theme.triliumnext") },
+            { val: 'next-light', title: t("theme.triliumnext-light") },
+            { val: 'next-dark', title: t("theme.triliumnext-dark") },
+            { val: 'auto', title: t('theme.auto_theme') },
             { val: 'light', title: t('theme.light_theme') },
-            { val: 'dark', title: t('theme.dark_theme') }            
+            { val: 'dark', title: t('theme.dark_theme') }
         ].concat(await server.get('options/user-themes'));
 
         this.$themeSelect.empty();

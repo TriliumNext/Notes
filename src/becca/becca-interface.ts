@@ -44,7 +44,7 @@ export default class Becca {
         this.notes = {};
         this.branches = {};
         this.childParentToBranch = {};
-        this.attributes = {};        
+        this.attributes = {};
         this.attributeIndex = {};
         this.options = {};
         this.etapiTokens = {};
@@ -172,9 +172,9 @@ export default class Becca {
 
         const query = opts.includeContentLength
             ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
-               FROM attachments 
-               JOIN blobs USING (blobId) 
-               WHERE attachmentId = ? AND isDeleted = 0`
+                FROM attachments
+                JOIN blobs USING (blobId)
+                WHERE attachmentId = ? AND isDeleted = 0`
             : `SELECT * FROM attachments WHERE attachmentId = ? AND isDeleted = 0`;
 
         return sql.getRows<AttachmentRow>(query, [attachmentId])
@@ -279,7 +279,7 @@ export default class Becca {
 
 /**
  * This interface contains the data that is shared across all the objects of a given derived class of {@link AbstractBeccaEntity}.
- * For example, all BAttributes will share their content, but all BBranches will have another set of this data. 
+ * For example, all BAttributes will share their content, but all BBranches will have another set of this data.
  */
 export interface ConstructorData<T extends AbstractBeccaEntity<T>> {
     primaryKeyName: string;

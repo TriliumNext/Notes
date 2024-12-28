@@ -22,7 +22,7 @@ const dbReady = utils.deferred<void>();
 
 function schemaExists() {
     return !!sql.getValue(`SELECT name FROM sqlite_master
-                                 WHERE type = 'table' AND name = 'options'`);
+                                WHERE type = 'table' AND name = 'options'`);
 }
 
 function isDbInitialized() {
@@ -87,7 +87,7 @@ async function createInitialDatabase() {
             isExpanded: true,
             notePosition: 10
         }).save();
-        
+
         optionsInitService.initDocumentOptions();
         optionsInitService.initNotSyncedOptions(true, {});
         optionsInitService.initStartupOptions();
@@ -131,7 +131,7 @@ async function createDatabaseForSync(options: OptionRow[], syncServerHost = '', 
 
     // We have to import async since options init requires keyboard actions which require translations.
     const optionsInitService = (await import("./options_init.js")).default;
-    
+
     sql.transactional(() => {
         sql.executeScript(schema);
 
@@ -171,22 +171,22 @@ function initializeDb() {
     cls.init(initDbConnection);
 
     log.info(`DB size: ${getDbSize()} KB`);
- 
+
     dbReady.then(() => {
         if (config.General && config.General.noBackup === true) {
             log.info("Disabling scheduled backups.");
-    
+
             return;
         }
-    
+
         setInterval(() => backup.regularBackup(), 4 * 60 * 60 * 1000);
-    
+
         // kickoff first backup soon after start up
         setTimeout(() => backup.regularBackup(), 5 * 60 * 1000);
-    
+
         // optimize is usually inexpensive no-op, so running it semi-frequently is not a big deal
         setTimeout(() => optimize(), 60 * 60 * 1000);
-    
+
         setInterval(() => optimize(), 10 * 60 * 60 * 1000);
     });
 }

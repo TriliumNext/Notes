@@ -2,7 +2,7 @@ import libraryLoader from '../../services/library_loader.js';
 import TypeWidget from './type_widget.js';
 import utils from '../../services/utils.js';
 import linkService from '../../services/link.js';
-
+import server from '../../services/server.js';
 const TPL = `
     <div class="canvas-widget note-detail-canvas note-detail-printable note-detail">
         <style>
@@ -115,6 +115,11 @@ export default class ExcalidrawTypeWidget extends TypeWidget {
         this.reactHandlers; // used to control react state
 
         this.libraryChanged = false;
+
+        // these 2 variables are needed to compare the library state (all library items) after loading to the state when the library changed. So we can find attachments to be deleted.
+        //every libraryitem is saved on its own json file in the attachments of the note.
+        this.librarycache = [];
+        this.attachmentMetadata=[]
     }
 
     static getType() {
@@ -236,23 +241,47 @@ export default class ExcalidrawTypeWidget extends TypeWidget {
                 fileArray.push(file);
             }
 
+            Promise.all(
+                (await note.getAttachmentsByRole('canvasLibraryItem'))
+                    .map(async attachment => {
+                        const blob = await attachment.getBlob();
+                        return {
+                            blob, // Save the blob for libraryItems
+                            metadata: { // metadata to use in the cache variables for comparing old library state and new one. We delete unnecessary items later, calling the server directly
+                                attachmentId: attachment.attachmentId,
+                                title: attachment.title,
+                            },
+                        };
+                    })
+            ).then(results => {
+                if (note.noteId !== this.currentNoteId) {
+                    // current note changed in the course of the async operation
+                    return;
+                }
+            
+                // Extract libraryItems from the blobs
+                const libraryItems = results
+                    .map(result => result.blob.getJsonContentSafely())
+                    .filter(item => !!item);
+            
+                // Extract metadata for each attachment
+                const metadata = results.map(result => result.metadata);
+            
+                // Update the library and save to independent variables
+                this.excalidrawApi.updateLibrary({ libraryItems, merge: false });
+                
+                // save state of library to compare it to the new state later.
+                this.librarycache = libraryItems;
+                this.attachmentMetadata = metadata;
+            });
+            
+            // Update the scene
             this.excalidrawApi.updateScene(sceneData);
             this.excalidrawApi.addFiles(fileArray);
             this.excalidrawApi.history.clear();
         }
-
-        Promise.all(
-            (await note.getAttachmentsByRole('canvasLibraryItem'))
-                .map(attachment => attachment.getBlob())
-        ).then(blobs => {
-            if (note.noteId !== this.currentNoteId) {
-                // current note changed in the course of the async operation
-                return;
-            }
-
-            const libraryItems = blobs.map(blob => blob.getJsonContentSafely()).filter(item => !!item);
-            this.excalidrawApi.updateLibrary({libraryItems, merge: false});
-        });
+        
+        
 
         // set initial scene version
         if (this.currentSceneVersion === this.SCENE_VERSION_INITIAL) {
@@ -313,19 +342,54 @@ export default class ExcalidrawTypeWidget extends TypeWidget {
             // there's no separate method to get library items, so have to abuse this one
             const libraryItems = await this.excalidrawApi.updateLibrary({merge: true});
 
+            // excalidraw saves the library as a own state. the items are saved to libraryItems. then we compare the library right now with a libraryitemcache. The cache is filled when we first load the Library into the note.
+            //We need the cache to delete old attachments later in the server.
+
+            const libraryItemsMissmatch = this.librarycache.filter(obj1 => !libraryItems.some(obj2 => obj1.id === obj2.id));
+
+
+            // before we saved the metadata of the attachments in a cache. the title of the attachment is a combination of libraryitem  ´s ID und it´s name.
+            // we compare the library items in the libraryitemmissmatch variable (this one saves all libraryitems that are different to the state right now. E.g. you delete 1 item, this item is saved as mismatch)
+            // then we combine its id and title and search the according attachmentID.
+            
+            const matchingItems = this.attachmentMetadata.filter(meta => {
+                // Loop through the second array and check for a match
+                return libraryItemsMissmatch.some(item => {
+                    // Combine the `name` and `id` from the second array
+                    const combinedTitle = `${item.id}${item.name}`;
+                    return meta.title === combinedTitle;
+                });
+            });
+            
+            // we save the attachment ID`s in a variable and delete every attachmentID. Now the items that the user deleted will be deleted.
+            const attachmentIds = matchingItems.map(item => item.attachmentId);
+
+
+
+            //delete old attachments that are no longer used
+            for (const item of attachmentIds){
+                
+                 await server.remove(`attachments/${item}`);
+
+            }
+
             let position = 10;
 
+                // prepare data to save to server e.g. new library items.
             for (const libraryItem of libraryItems) {
+                
                 attachments.push({
                     role: 'canvasLibraryItem',
-                    title: libraryItem.id,
+                    title: libraryItem.id + libraryItem.name,
                     mime: 'application/json',
                     content: JSON.stringify(libraryItem),
                     position: position
+                    
                 });
-
+                
                 position += 10;
             }
+          
         }
 
         return {

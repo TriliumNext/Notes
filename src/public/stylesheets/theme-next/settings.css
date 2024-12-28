@@ -57,3 +57,17 @@
     padding: 0;
     margin: 0;
 }
+
+.options-section .form-group {
+    margin-bottom: 1em;
+}
+
+.options-section .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.options-section ul {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 1em;
+}

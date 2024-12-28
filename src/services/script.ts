@@ -27,7 +27,7 @@ function executeNote(note: BNote, apiParams: ApiParams) {
     if (!bundle) {
         throw new Error("Unable to determine bundle.");
     }
-    
+
     return executeBundle(bundle, apiParams);
 }
 

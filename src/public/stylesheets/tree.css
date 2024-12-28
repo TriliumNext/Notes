@@ -40,6 +40,8 @@ span.fancytree-node.fancytree-hide {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 }
 
 .fancytree-node:not(.fancytree-loading) .fancytree-expander {

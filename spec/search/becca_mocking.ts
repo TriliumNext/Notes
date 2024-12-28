@@ -24,12 +24,12 @@ class NoteBuilder {
 
   label(name: string, value = "", isInheritable = false) {
     new BAttribute({
-      attributeId: id(),
-      noteId: this.note.noteId,
-      type: "label",
-      isInheritable,
-      name,
-      value,
+    attributeId: id(),
+    noteId: this.note.noteId,
+    type: "label",
+    isInheritable,
+    name,
+    value,
     });
 
     return this;
@@ -37,11 +37,11 @@ class NoteBuilder {
 
   relation(name: string, targetNote: BNote) {
     new BAttribute({
-      attributeId: id(),
-      noteId: this.note.noteId,
-      type: "relation",
-      name,
-      value: targetNote.noteId,
+    attributeId: id(),
+    noteId: this.note.noteId,
+    type: "relation",
+    name,
+    value: targetNote.noteId,
     });
 
     return this;
@@ -49,11 +49,11 @@ class NoteBuilder {
 
   child(childNoteBuilder: NoteBuilder, prefix = "") {
     new BBranch({
-      branchId: id(),
-      noteId: childNoteBuilder.note.noteId,
-      parentNoteId: this.note.noteId,
-      prefix,
-      notePosition: 10,
+    branchId: id(),
+    noteId: childNoteBuilder.note.noteId,
+    parentNoteId: this.note.noteId,
+    prefix,
+    notePosition: 10,
     });
 
     return this;
@@ -67,10 +67,10 @@ function id() {
 function note(title: string, extraParams = {}) {
   const row = Object.assign(
     {
-      noteId: id(),
-      title: title,
-      type: "text" as NoteType,
-      mime: "text/html",
+    noteId: id(),
+    title: title,
+    type: "text" as NoteType,
+    mime: "text/html",
     },
     extraParams
   );

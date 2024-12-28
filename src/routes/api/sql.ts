@@ -40,7 +40,7 @@ function execute(req: Request) {
                 const pivot = query.indexOf('\n');
                 query = pivot > 0 ? query.substr(pivot + 1).trim() : "";
             }
-            
+
             if (!query) {
                 continue;
             }

@@ -11,9 +11,9 @@ function getNoteSize(req: Request) {
         LEFT JOIN notes ON notes.blobId = blobs.blobId AND notes.noteId = ? AND notes.isDeleted = 0
         LEFT JOIN attachments ON attachments.blobId = blobs.blobId AND attachments.ownerId = ? AND attachments.isDeleted = 0
         LEFT JOIN revisions ON revisions.blobId = blobs.blobId AND revisions.noteId = ?
-        WHERE notes.noteId IS NOT NULL 
-           OR attachments.attachmentId IS NOT NULL
-           OR revisions.revisionId IS NOT NULL`, [noteId, noteId, noteId]);
+        WHERE notes.noteId IS NOT NULL
+            OR attachments.attachmentId IS NOT NULL
+            OR revisions.revisionId IS NOT NULL`, [noteId, noteId, noteId]);
 
     const noteSize = Object.values(blobSizes).reduce((acc, blobSize) => acc + blobSize, 0);
 

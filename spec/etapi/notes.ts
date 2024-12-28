@@ -4,11 +4,11 @@ import etapi from "../support/etapi.js";
 etapi.describeEtapi("notes", () => {
   it("create", async () => {
     const { note, branch } = await etapi.postEtapi("create-note", {
-      parentNoteId: "root",
-      type: "text",
-      title: "Hello World!",
-      content: "Content",
-      prefix: "Custom prefix",
+    parentNoteId: "root",
+    type: "text",
+    title: "Hello World!",
+    content: "Content",
+    prefix: "Custom prefix",
     });
 
     expect(note.title).toEqual("Hello World!");
@@ -19,7 +19,7 @@ etapi.describeEtapi("notes", () => {
     expect(rNote.title).toEqual("Hello World!");
 
     const rContent = await (
-      await etapi.getEtapiContent(`notes/${note.noteId}/content`)
+    await etapi.getEtapiContent(`notes/${note.noteId}/content`)
     ).text();
     expect(rContent).toEqual("Content");
 
@@ -30,18 +30,18 @@ etapi.describeEtapi("notes", () => {
 
   it("patch", async () => {
     const { note } = await etapi.postEtapi("create-note", {
-      parentNoteId: "root",
-      type: "text",
-      title: "Hello World!",
-      content: "Content",
+    parentNoteId: "root",
+    type: "text",
+    title: "Hello World!",
+    content: "Content",
     });
 
     await etapi.patchEtapi(`notes/${note.noteId}`, {
-      title: "new title",
-      type: "code",
-      mime: "text/apl",
-      dateCreated: "2000-01-01 12:34:56.999+0200",
-      utcDateCreated: "2000-01-01 10:34:56.999Z",
+    title: "new title",
+    type: "code",
+    mime: "text/apl",
+    dateCreated: "2000-01-01 12:34:56.999+0200",
+    utcDateCreated: "2000-01-01 10:34:56.999Z",
     });
 
     const rNote = await etapi.getEtapi(`notes/${note.noteId}`);
@@ -54,26 +54,26 @@ etapi.describeEtapi("notes", () => {
 
   it("update content", async () => {
     const { note } = await etapi.postEtapi("create-note", {
-      parentNoteId: "root",
-      type: "text",
-      title: "Hello World!",
-      content: "Content",
+    parentNoteId: "root",
+    type: "text",
+    title: "Hello World!",
+    content: "Content",
     });
 
     await etapi.putEtapiContent(`notes/${note.noteId}/content`, "new content");
 
     const rContent = await (
-      await etapi.getEtapiContent(`notes/${note.noteId}/content`)
+    await etapi.getEtapiContent(`notes/${note.noteId}/content`)
     ).text();
     expect(rContent).toEqual("new content");
   });
 
   it("create / update binary content", async () => {
     const { note } = await etapi.postEtapi("create-note", {
-      parentNoteId: "root",
-      type: "file",
-      title: "Hello World!",
-      content: "ZZZ",
+    parentNoteId: "root",
+    type: "file",
+    title: "Hello World!",
+    content: "ZZZ",
     });
 
     const updatedContent = crypto.randomBytes(16);
@@ -81,17 +81,17 @@ etapi.describeEtapi("notes", () => {
     await etapi.putEtapiContent(`notes/${note.noteId}/content`, updatedContent);
 
     const rContent = await (
-      await etapi.getEtapiContent(`notes/${note.noteId}/content`)
+    await etapi.getEtapiContent(`notes/${note.noteId}/content`)
     ).arrayBuffer();
     expect(Buffer.from(new Uint8Array(rContent))).toEqual(updatedContent);
   });
 
   it("delete note", async () => {
     const { note } = await etapi.postEtapi("create-note", {
-      parentNoteId: "root",
-      type: "text",
-      title: "Hello World!",
-      content: "Content",
+    parentNoteId: "root",
+    type: "text",
+    title: "Hello World!",
+    content: "Content",
     });
 
     await etapi.deleteEtapi(`notes/${note.noteId}`);

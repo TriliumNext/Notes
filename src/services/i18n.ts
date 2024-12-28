@@ -11,19 +11,19 @@ export async function initializeTranslations() {
 
   // Initialize translations
   await i18next.use(Backend).init({
-      lng: getCurrentLanguage(),
-      fallbackLng: "en",
-      ns: "server",
-      backend: {
-          loadPath: join(resourceDir, "translations/{{lng}}/{{ns}}.json")
-      }
+    lng: getCurrentLanguage(),
+    fallbackLng: "en",
+    ns: "server",
+    backend: {
+        loadPath: join(resourceDir, "translations/{{lng}}/{{ns}}.json")
+    }
   });
 }
 
 function getCurrentLanguage() {
   let language;
   if (sql_init.isDbInitialized()) {
-    language = options.getOptionOrNull("locale");  
+    language = options.getOptionOrNull("locale");
   }
 
   if (!language) {

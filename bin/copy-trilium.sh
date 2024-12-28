@@ -44,7 +44,7 @@ cp -R "$script_dir/../build/src" "$DIR"
 cp "$script_dir/../build/electron-main.js" "$DIR"
 
 # run in subshell (so we return to original dir)
-(cd $DIR && npm install --omit=dev)
+(cd $DIR && npm install --omit=dev --legacy-peer-deps)
 
 if [[ -d "$DIR"/node_modules ]]; then
     # cleanup of useless files in dependencies

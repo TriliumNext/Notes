@@ -15,7 +15,7 @@ function getAutocomplete(req: Request) {
     }
     const query = (req.query.query || "").trim();
     const fastSearch = String(req.query.fastSearch).toLowerCase() === "false" ? false : true;
-    
+
     const activeNoteId = req.query.activeNoteId || 'none';
 
     let results;
@@ -49,18 +49,18 @@ function getRecentNotes(activeNoteId: string) {
     }
 
     const recentNotes = becca.getRecentNotesFromQuery(`
-      SELECT 
-        recent_notes.* 
-      FROM 
+    SELECT
+        recent_notes.*
+    FROM
         recent_notes
         JOIN notes USING(noteId)
-      WHERE
+    WHERE
         notes.isDeleted = 0
         AND notes.noteId != ?
         ${extraCondition}
-      ORDER BY 
+    ORDER BY
         utcDateCreated DESC
-      LIMIT 200`, params);
+    LIMIT 200`, params);
 
     return recentNotes.map(rn => {
         const notePathArray = rn.notePath.split('/');

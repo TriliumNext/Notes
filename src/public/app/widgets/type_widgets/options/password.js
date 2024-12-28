@@ -14,18 +14,18 @@ const TPL = `
     
     <form class="change-password-form">
         <div class="old-password-form-group form-group">
-            <label>${t("password.old_password")}</label>
-            <input class="old-password form-control" type="password">
+            <label for="old-password">${t("password.old_password")}</label>
+            <input id="old-password" class="old-password form-control" type="password">
         </div>
     
         <div class="form-group">
-            <label>${t("password.new_password")}</label>
-            <input class="new-password1 form-control" type="password">
+            <label for="new-password1">${t("password.new_password")}</label>
+            <input id="new-password1" class="new-password1 form-control" type="password">
         </div>
     
         <div class="form-group">
-            <label>${t("password.new_password_confirmation")}</label>
-            <input class="new-password2 form-control" type="password">
+            <label for="new-password2">${t("password.new_password_confirmation")}</label>
+            <input id="new-password2" class="new-password2 form-control" type="password">
         </div>
     
         <button class="save-password-button btn btn-primary">${t("password.change_password")}</button>
@@ -38,8 +38,8 @@ const TPL = `
     <p>${t("password.protected_session_timeout_description")} <a href="https://triliumnext.github.io/Docs/Wiki/protected-notes.html" class="external">${t("password.wiki")}</a> ${t("password.for_more_info")}</p>
 
     <div class="form-group">
-        <label>${t("password.protected_session_timeout_label")}</label>
-        <input class="protected-session-timeout-in-seconds form-control options-number-input" type="number" min="60">
+        <label for="protected-session-timeout-in-seconds">${t("password.protected_session_timeout_label")}</label>
+        <input id="protected-session-timeout-in-seconds" class="protected-session-timeout-in-seconds form-control options-number-input" type="number" min="60">
     </div>
 </div>`;
 

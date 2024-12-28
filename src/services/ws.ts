@@ -35,12 +35,12 @@ interface Message {
         shrinkImages?: boolean
     } | null,
     lastSyncedPush?: number | null,
-    
+
     progressCount?: number;
     taskId?: string;
     taskType?: string | null;
     message?: string;
-    reason?: string;    
+    reason?: string;
     result?: string | Record<string, string | undefined>;
 
     script?: string;

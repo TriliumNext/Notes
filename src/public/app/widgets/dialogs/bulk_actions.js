@@ -45,8 +45,8 @@ const TPL = `
                 <h4>${t('bulk_actions.affected_notes')}: <span class="affected-note-count">0</span></h4>
 
                 <div class="form-check">
-                    <input class="include-descendants form-check-input" type="checkbox" value="">
-                    <label class="form-check-label">${t('bulk_actions.include_descendants')}</label>
+                    <input id="include-descendants" class="include-descendants form-check-input" type="checkbox" value="">
+                    <label for="include-descendants" class="form-check-label">${t('bulk_actions.include_descendants')}</label>
                 </div>
 
                 <h4>${t('bulk_actions.available_actions')}</h4>

@@ -1,12 +1,12 @@
 /**
  * @module
- * 
+ *
  * Options are key-value pairs that are used to store information such as user preferences (for example
  * the current theme, sync server information), but also information about the state of the application.
- * 
+ *
  * Although options internally are represented as strings, their value can be interpreted as a number or
  * boolean by calling the appropriate methods from this service (e.g. {@link #getOptionInt}).\
- * 
+ *
  * Generally options are shared across multiple instances of the application via the sync mechanism,
  * however it is possible to have options that are local to an instance. For example, the user can select
  * a theme on a device and it will not affect other devices.
@@ -90,7 +90,7 @@ function setOption(name: string, value: string | number | boolean) {
 
 /**
  * Creates a new option in the database, with the given name, value and whether it should be synced.
- * 
+ *
  * @param name the name of the option to be created.
  * @param value the value of the option, as a string. It can then be interpreted as other types such as a number of boolean.
  * @param isSynced `true` if the value should be synced across multiple instances (e.g. locale) or `false` if it should be local-only (e.g. theme).

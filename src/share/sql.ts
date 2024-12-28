@@ -8,7 +8,7 @@ let dbConnection!: Database.Database;
 
 sql_init.dbReady.then(() => {
     dbConnection = new Database(dataDir.DOCUMENT_PATH, { readonly: true });
-    
+
     [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach(eventType => {
         process.on(eventType, () => {
             if (dbConnection) {

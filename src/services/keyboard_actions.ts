@@ -13,7 +13,7 @@ function getDefaultKeyboardActions() {
     if (!t("keyboard_actions.note-navigation")) {
         throw new Error("Keyboard actions loaded before translations.");
     }
-    
+
     const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
         {
             separator: t("keyboard_actions.note-navigation")
@@ -76,8 +76,8 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.sort-child-notes"),
             scope: "note-tree"
         },
-    
-    
+
+
         {
             separator: t("keyboard_actions.creating-and-moving-notes")
         },
@@ -149,11 +149,11 @@ function getDefaultKeyboardActions() {
             defaultShortcuts: ["CommandOrControl+Shift+X"],
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.note-clipboard")
         },
-    
+
         {
             actionName: "copyNotesToClipboard",
             defaultShortcuts: ["CommandOrControl+C"],
@@ -196,8 +196,8 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.duplicate-subtree"),
             scope: "note-tree"
         },
-    
-    
+
+
         {
             separator: t("keyboard_actions.tabs-and-windows")
         },
@@ -303,8 +303,8 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.last-tab"),
             scope: "window"
         },
-    
-    
+
+
         {
             separator: t("keyboard_actions.dialogs")
         },
@@ -350,12 +350,12 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.show-help"),
             scope: "window"
         },
-    
-    
+
+
         {
             separator: t("keyboard_actions.text-note-operations")
         },
-    
+
         {
             actionName: "addLinkToText",
             defaultShortcuts: ["CommandOrControl+L"],
@@ -398,11 +398,11 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.edit-readonly-note"),
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.attributes-labels-and-relations")
         },
-    
+
         {
             actionName: "addNewLabel",
             defaultShortcuts: ["Alt+L"],
@@ -415,11 +415,11 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.create-new-relation"),
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.ribbon-tabs")
         },
-    
+
         {
             actionName: "toggleRibbonTabClassicEditor",
             defaultShortcuts: [],
@@ -492,11 +492,11 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.toggle-similar-notes"),
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.other")
         },
-    
+
         {
             actionName: "toggleRightPane",
             defaultShortcuts: [],
@@ -601,10 +601,10 @@ function getDefaultKeyboardActions() {
     ];
 
     /*
-     * Apply macOS-specific tweaks.
-     */
+    * Apply macOS-specific tweaks.
+    */
     const platformModifier = isMac ? 'Meta' : 'Ctrl';
-    
+
     for (const action of DEFAULT_KEYBOARD_ACTIONS) {
         if (action.defaultShortcuts) {
             action.defaultShortcuts = action.defaultShortcuts.map(shortcut => shortcut.replace("CommandOrControl", platformModifier));

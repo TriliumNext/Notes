@@ -27,6 +27,7 @@ import { AttachmentRow, AttributeRow, BranchRow, NoteRow, NoteType } from '../be
 import TaskContext from "./task_context.js";
 import { NoteParams } from './note-interface.js';
 import imageService from "./image.js";
+import { t } from "i18next";
 
 interface FoundLink {
     name: "imageLink" | "internalLink" | "includeNoteLink" | "relationMapLink",
@@ -95,7 +96,7 @@ function copyChildAttributes(parentNote: BNote, childNote: BNote) {
 }
 
 function getNewNoteTitle(parentNote: BNote) {
-    let title = "new note";
+    let title = t("notes.new-note");
 
     const titleTemplate = parentNote.getLabelValue('titleTemplate');
 
@@ -489,7 +490,7 @@ async function downloadImage(noteId: string, imageUrl: string) {
         const title = path.basename(parsedUrl.pathname || "");
 
         const attachment = imageService.saveImageToAttachment(noteId, imageBuffer, title, true, true);
-        
+
         if (attachment.attachmentId) {
             imageUrlToAttachmentIdMapping[imageUrl] = attachment.attachmentId;
         } else {
@@ -809,11 +810,11 @@ function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskCon
         noteEntity.save();
 
         const attributeRows = sql.getRows<AttributeRow>(`
-                SELECT * FROM attributes 
-                WHERE isDeleted = 1 
-                  AND deleteId = ? 
-                  AND (noteId = ? 
-                           OR (type = 'relation' AND value = ?))`, [deleteId, noteRow.noteId, noteRow.noteId]);
+                SELECT * FROM attributes
+                WHERE isDeleted = 1
+                AND deleteId = ?
+                AND (noteId = ?
+                            OR (type = 'relation' AND value = ?))`, [deleteId, noteRow.noteId, noteRow.noteId]);
 
         for (const attributeRow of attributeRows) {
             // relation might point to a note which hasn't been undeleted yet and would thus throw up
@@ -823,8 +824,8 @@ function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskCon
         const attachmentRows = sql.getRows<AttachmentRow>(`
             SELECT * FROM attachments
             WHERE isDeleted = 1
-              AND deleteId = ?
-              AND ownerId = ?`, [deleteId, noteRow.noteId]);
+            AND deleteId = ?
+            AND ownerId = ?`, [deleteId, noteRow.noteId]);
 
         for (const attachmentRow of attachmentRows) {
             new BAttachment(attachmentRow).save();
@@ -834,8 +835,8 @@ function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskCon
             SELECT branches.branchId
             FROM branches
             WHERE branches.isDeleted = 1
-              AND branches.deleteId = ?
-              AND branches.parentNoteId = ?`, [deleteId, noteRow.noteId]);
+            AND branches.deleteId = ?
+            AND branches.parentNoteId = ?`, [deleteId, noteRow.noteId]);
 
         for (const childBranchId of childBranchIds) {
             undeleteBranch(childBranchId, deleteId, taskContext);
@@ -852,9 +853,9 @@ function getUndeletedParentBranchIds(noteId: string, deleteId: string) {
                     FROM branches
                     JOIN notes AS parentNote ON parentNote.noteId = branches.parentNoteId
                     WHERE branches.noteId = ?
-                      AND branches.isDeleted = 1
-                      AND branches.deleteId = ?
-                      AND parentNote.isDeleted = 0`, [noteId, deleteId]);
+                    AND branches.isDeleted = 1
+                    AND branches.deleteId = ?
+                    AND parentNote.isDeleted = 0`, [noteId, deleteId]);
 }
 
 function scanForLinks(note: BNote, content: string | Buffer) {
@@ -940,7 +941,7 @@ function duplicateSubtreeWithoutRoot(origNoteId: string, newNoteId: string) {
     if (origNote == null) {
         throw new Error("Unable to find note to duplicate.");
     }
-    
+
     const noteIdMapping = getNoteIdMapping(origNote);
     for (const childBranch of origNote.getChildBranches()) {
         if (childBranch) {

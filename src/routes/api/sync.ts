@@ -103,7 +103,7 @@ function getChanged(req: Request) {
             SELECT *
             FROM entity_changes
             WHERE isSynced = 1
-              AND id > ?
+            AND id > ?
             ORDER BY id
             LIMIT 1000`, [lastEntityChangeId]);
 
@@ -130,11 +130,11 @@ function getChanged(req: Request) {
         entityChanges: entityChangeRecords,
         lastEntityChangeId,
         outstandingPullCount: sql.getValue(`
-            SELECT COUNT(id) 
-            FROM entity_changes 
-            WHERE isSynced = 1 
-              AND instanceId != ?
-              AND id > ?`, [clientInstanceId, lastEntityChangeId])
+            SELECT COUNT(id)
+            FROM entity_changes
+            WHERE isSynced = 1
+            AND instanceId != ?
+            AND id > ?`, [clientInstanceId, lastEntityChangeId])
     };
 }
 

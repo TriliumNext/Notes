@@ -63,7 +63,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
         if (fileName.length > 30) {
             // We use regex to match the extension to preserve multiple dots in extensions (e.g. .tar.gz).
             let match = fileName.match(/(\.[a-zA-Z0-9_.!#-]+)$/);
-            let ext = match ? match[0] : ''; 
+            let ext = match ? match[0] : '';
             // Crop the extension if extension length exceeds 30
             const croppedExt = ext.slice(-30);
             // Crop the file name section and append the cropped extension
@@ -324,9 +324,9 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
 </head>
 <body>
   <div class="content">
-      <h1 data-trilium-h1>${htmlTitle}</h1>
-      
-      <div class="ck-content">${content}</div>
+    <h1 data-trilium-h1>${htmlTitle}</h1>
+
+    <div class="ck-content">${content}</div>
   </div>
 </body>
 </html>`;

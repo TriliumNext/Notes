@@ -208,7 +208,7 @@ async function resize(buffer: Buffer, quality: number) {
 
     const start = Date.now();
 
-    const image = await Jimp.read(buffer);    
+    const image = await Jimp.read(buffer);
 
     if (image.bitmap.width > image.bitmap.height && image.bitmap.width > imageMaxWidthHeight) {
         image.resize({ w: imageMaxWidthHeight });

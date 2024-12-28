@@ -19,11 +19,11 @@ function describeEtapi(
     let appProcess: ReturnType<typeof child_process.spawn>;
 
     beforeAll(async () => {
-      
+
     });
 
     afterAll(() => {
-      
+
     });
 
     specDefinitions();
@@ -34,7 +34,7 @@ async function getEtapiResponse(url: string): Promise<Response> {
   return await fetch(`${HOST}/etapi/${url}`, {
     method: "GET",
     headers: {
-      Authorization: getEtapiAuthorizationHeader(),
+    Authorization: getEtapiAuthorizationHeader(),
     },
   });
 }
@@ -48,7 +48,7 @@ async function getEtapiContent(url: string): Promise<Response> {
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "GET",
     headers: {
-      Authorization: getEtapiAuthorizationHeader(),
+    Authorization: getEtapiAuthorizationHeader(),
     },
   });
 
@@ -64,8 +64,8 @@ async function postEtapi(
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: getEtapiAuthorizationHeader(),
+    "Content-Type": "application/json",
+    Authorization: getEtapiAuthorizationHeader(),
     },
     body: JSON.stringify(data),
   });
@@ -79,8 +79,8 @@ async function postEtapiContent(
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/octet-stream",
-      Authorization: getEtapiAuthorizationHeader(),
+    "Content-Type": "application/octet-stream",
+    Authorization: getEtapiAuthorizationHeader(),
     },
     body: data,
   });
@@ -97,8 +97,8 @@ async function putEtapi(
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: getEtapiAuthorizationHeader(),
+    "Content-Type": "application/json",
+    Authorization: getEtapiAuthorizationHeader(),
     },
     body: JSON.stringify(data),
   });
@@ -112,8 +112,8 @@ async function putEtapiContent(
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/octet-stream",
-      Authorization: getEtapiAuthorizationHeader(),
+    "Content-Type": "application/octet-stream",
+    Authorization: getEtapiAuthorizationHeader(),
     },
     body: data,
   });
@@ -130,8 +130,8 @@ async function patchEtapi(
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "PATCH",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: getEtapiAuthorizationHeader(),
+    "Content-Type": "application/json",
+    Authorization: getEtapiAuthorizationHeader(),
     },
     body: JSON.stringify(data),
   });
@@ -142,7 +142,7 @@ async function deleteEtapi(url: string): Promise<any> {
   const response = await fetch(`${HOST}/etapi/${url}`, {
     method: "DELETE",
     headers: {
-      Authorization: getEtapiAuthorizationHeader(),
+    Authorization: getEtapiAuthorizationHeader(),
     },
   });
   return await processEtapiResponse(response);

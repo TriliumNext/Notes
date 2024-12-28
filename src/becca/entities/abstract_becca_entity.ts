@@ -19,7 +19,7 @@ interface ContentOpts {
 
 /**
  * Base class for all backend entities.
- * 
+ *
  * @type T the same entity type needed for self-reference in {@link ConstructorData}.
  */
 abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
@@ -27,7 +27,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     utcDateModified?: string;
     dateCreated?: string;
     dateModified?: string;
-    
+
     utcDateCreated!: string;
 
     isProtected?: boolean;
@@ -99,15 +99,15 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     /**
-     * Saves entity - executes SQL, but doesn't commit the transaction on its own
-     */
+    * Saves entity - executes SQL, but doesn't commit the transaction on its own
+    */
     save(opts?: {}): this {
         const constructorData = (this.constructor as unknown as ConstructorData<T>);
         const entityName = constructorData.entityName;
         const primaryKeyName = constructorData.primaryKeyName;
 
         const isNewEntity = !(this as any)[primaryKeyName];
-        
+
         this.beforeSaving(opts);
 
         const pojo = this.getPojoToSave();
@@ -160,7 +160,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
             if (protectedSessionService.isProtectedSessionAvailable()) {
                 const encryptedContent = protectedSessionService.encrypt(content);
                 if (!encryptedContent) {
-                    throw new Error(`Unable to encrypt the content of the entity.`);    
+                    throw new Error(`Unable to encrypt the content of the entity.`);
                 }
                 content = encryptedContent;
             } else {
@@ -216,11 +216,11 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
 
     private saveBlob(content: string | Buffer, unencryptedContentForHashCalculation: string | Buffer, opts: ContentOpts = {}) {
         /*
-         * We're using the unencrypted blob for the hash calculation, because otherwise the random IV would
-         * cause every content blob to be unique which would balloon the database size (esp. with revisioning).
-         * This has minor security implications (it's easy to infer that given content is shared between different
-         * notes/attachments), but the trade-off comes out clearly positive.
-         */
+        * We're using the unencrypted blob for the hash calculation, because otherwise the random IV would
+        * cause every content blob to be unique which would balloon the database size (esp. with revisioning).
+        * This has minor security implications (it's easy to infer that given content is shared between different
+        * notes/attachments), but the trade-off comes out clearly positive.
+        */
         const newBlobId = utils.hashedBlobId(unencryptedContentForHashCalculation);
         const blobNeedsInsert = !sql.getValue('SELECT 1 FROM blobs WHERE blobId = ?', [newBlobId]);
 
@@ -261,7 +261,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         return newBlobId;
     }
 
-    protected _getContent(): string | Buffer {        
+    protected _getContent(): string | Buffer {
         const row = sql.getRow<{ content: string | Buffer }>(`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
 
         if (!row) {
@@ -273,10 +273,10 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     /**
-     * Mark the entity as (soft) deleted. It will be completely erased later.
-     *
-     * This is a low-level method, for notes and branches use `note.deleteNote()` and 'branch.deleteBranch()` instead.
-     */
+    * Mark the entity as (soft) deleted. It will be completely erased later.
+    *
+    * This is a low-level method, for notes and branches use `note.deleteNote()` and 'branch.deleteBranch()` instead.
+    */
     markAsDeleted(deleteId: string | null = null) {
         const constructorData = (this.constructor as unknown as ConstructorData<T>);
         const entityId = (this as any)[constructorData.primaryKeyName];
@@ -285,7 +285,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         this.utcDateModified = dateUtils.utcNowDateTime();
 
         sql.execute(`UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
-                           WHERE ${constructorData.primaryKeyName} = ?`,
+                            WHERE ${constructorData.primaryKeyName} = ?`,
             [deleteId, this.utcDateModified, entityId]);
 
         if (this.dateModified) {
@@ -310,7 +310,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         this.utcDateModified = dateUtils.utcNowDateTime();
 
         sql.execute(`UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
-                           WHERE ${constructorData.primaryKeyName} = ?`,
+                            WHERE ${constructorData.primaryKeyName} = ?`,
             [this.utcDateModified, entityId]);
 
         log.info(`Marking ${entityName} ${entityId} as deleted`);

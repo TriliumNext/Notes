@@ -3,7 +3,7 @@ import NoteTitleWidget from "../widgets/note_title.js";
 import NoteDetailWidget from "../widgets/note_detail.js";
 import QuickSearchWidget from "../widgets/quick_search.js";
 import NoteTreeWidget from "../widgets/note_tree.js";
-import CloseDetailButtonWidget from "../widgets/mobile_widgets/close_detail_button.js";
+import ToggleSidebarButtonWidget from "../widgets/mobile_widgets/toggle_sidebar_button.js";
 import MobileDetailMenuWidget from "../widgets/mobile_widgets/mobile_detail_menu.js";
 import ScreenContainer from "../widgets/mobile_widgets/screen_container.js";
 import ScrollingContainer from "../widgets/containers/scrolling_container.js";
@@ -24,7 +24,7 @@ import RootContainer from "../widgets/containers/root_container.js";
 import SharedInfoWidget from "../widgets/shared_info.js";
 import PromotedAttributesWidget from "../widgets/ribbon_widgets/promoted_attributes.js";
 import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolbar.js";
-import options from "../services/options.js";
+import SidebarContainer from "../widgets/mobile_widgets/sidebar_container.js";
 
 const MOBILE_CSS = `
 <style>
@@ -98,9 +98,9 @@ span.fancytree-expander {
     border-style: solid;
 }
 
-.tree-wrapper .collapse-tree-button, 
-.tree-wrapper .scroll-to-active-note-button, 
-.tree-wrapper .tree-settings-button {    
+.tree-wrapper .collapse-tree-button,
+.tree-wrapper .scroll-to-active-note-button,
+.tree-wrapper .tree-settings-button {
     position: fixed;
     margin-right: 16px;
     display: none;
@@ -113,24 +113,26 @@ span.fancytree-expander {
 
 export default class MobileLayout {
     getRootWidget(appContext) {
-        const launcherPaneIsHorizontal = (options.get("layoutOrientation") === "horizontal");
-
-        return new RootContainer(launcherPaneIsHorizontal)
+        return new RootContainer(true)
             .setParent(appContext)
-            .class((launcherPaneIsHorizontal ? "horizontal" : "vertical") + "-layout")
+            .class("horizontal-layout")
             .cssBlock(MOBILE_CSS)
-            .child(this.#buildLauncherPane(launcherPaneIsHorizontal))
             .child(new FlexContainer("row")
                 .filling()
-                .child(new ScreenContainer("tree", 'column')
+                .child(new SidebarContainer("tree", 'column')
                     .class("d-sm-flex d-md-flex d-lg-flex d-xl-flex col-12 col-sm-5 col-md-4 col-lg-3 col-xl-3")
+                    .id("mobile-sidebar-container")
                     .css("max-height", "100%")
                     .css('padding-left', "0")
                     .css('padding-right', "0")
                     .css('contain', 'content')
-                    .child(new QuickSearchWidget())
-                    .child(new NoteTreeWidget()
-                        .cssBlock(FANCYTREE_CSS)))
+                    .child(new FlexContainer("column")
+                        .filling()
+                        .id("mobile-sidebar-wrapper")
+                        .child(new QuickSearchWidget())
+                        .child(new NoteTreeWidget()
+                            .cssBlock(FANCYTREE_CSS))
+                    ))
                 .child(new ScreenContainer("detail", "column")
                     .class("d-sm-flex d-md-flex d-lg-flex d-xl-flex col-12 col-sm-7 col-md-8 col-lg-9")
                     .css("padding-left", "0")
@@ -139,15 +141,14 @@ export default class MobileLayout {
                     .child(new FlexContainer('row').contentSized()
                         .css('font-size', 'larger')
                         .css('align-items', 'center')
-                        .optChild(!launcherPaneIsHorizontal, new MobileDetailMenuWidget(false).contentSized())
+                        .child(new ToggleSidebarButtonWidget().contentSized())
                         .child(new NoteTitleWidget()
                             .contentSized()
                             .css("position: relative;")
                             .css("top: 5px;")
-                            .optCss(launcherPaneIsHorizontal, "padding-left", "0.5em")
-                        )
-                        .optChild(launcherPaneIsHorizontal, new MobileDetailMenuWidget(true).contentSized())
-                        .child(new CloseDetailButtonWidget().contentSized()))
+                            .css("padding-left", "0.5em"))
+                        .child(new MobileDetailMenuWidget(true).contentSized())
+                    )
                     .child(new SharedInfoWidget())
                     .child(new FloatingButtons()
                         .child(new EditButton())
@@ -173,27 +174,12 @@ export default class MobileLayout {
                 )
                 .child(new ProtectedSessionPasswordDialog())
                 .child(new ConfirmDialog())
-            );
-    }
-
-    #buildLauncherPane(isHorizontal) {
-        let launcherPane;
-
-        if (isHorizontal) {
-            launcherPane = new FlexContainer("row")
+            )
+            .child(new FlexContainer("row")
                 .class("horizontal")
                 .css("height", "53px")
                 .child(new LauncherContainer(true))
-                .child(new GlobalMenuWidget(true));
-        } else {
-            launcherPane = new FlexContainer("column")                
-                .class("vertical")
-                .css("width", "53px")
-                .child(new GlobalMenuWidget(false))
-                .child(new LauncherContainer(false));
-        }
-
-        launcherPane.id("launcher-pane");
-        return launcherPane;
+                .child(new GlobalMenuWidget(true))
+                .id("launcher-pane"));
     }
 }

@@ -42,8 +42,8 @@ class SearchResult {
         else if (normalizedTitle.startsWith(normalizedQuery)) {
             this.score += 500;  // Increased to give more weight to prefix matches
         }
-        else if (normalizedTitle.includes(` ${normalizedQuery} `) || 
-                normalizedTitle.startsWith(`${normalizedQuery} `) || 
+        else if (normalizedTitle.includes(` ${normalizedQuery} `) ||
+                normalizedTitle.startsWith(`${normalizedQuery} `) ||
                 normalizedTitle.endsWith(` ${normalizedQuery}`)) {
             this.score += 300;  // Increased to better distinguish word matches
         }

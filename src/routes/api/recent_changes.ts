@@ -25,7 +25,7 @@ function getRecentChanges(req: Request) {
     let recentChanges = [];
 
     const revisionRows = sql.getRows<RecentChangeRow>(`
-        SELECT 
+        SELECT
             notes.noteId,
             notes.isDeleted AS current_isDeleted,
             notes.deleteId AS current_deleteId,
@@ -34,7 +34,7 @@ function getRecentChanges(req: Request) {
             revisions.title,
             revisions.utcDateCreated AS utcDate,
             revisions.dateCreated AS date
-        FROM 
+        FROM
             revisions
             JOIN notes USING(noteId)`);
 

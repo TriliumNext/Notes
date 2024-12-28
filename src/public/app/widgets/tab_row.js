@@ -116,7 +116,6 @@ const TAB_ROW_TPL = `
     
     .tab-row-widget .note-tab,
     .tab-row-widget .note-tab * {
-        user-select: none;
         cursor: default;
     }
     
@@ -140,7 +139,7 @@ const TAB_ROW_TPL = `
         pointer-events: all;
         color: var(--inactive-tab-text-color);
         --tab-background-color: var(--workspace-tab-background-color);
-        background-color: var(--tab-background-color, var(--inactive-tab-background-color));
+        background-color: var(--tab-background-color, var(--inactive-tab-background-color));        
     }
     
     .tab-row-widget .note-tab[active] .note-tab-wrapper {
@@ -177,6 +176,7 @@ const TAB_ROW_TPL = `
         bottom: 0;
         right: 0;
         left: 0;
+        z-index: 50;
     }
     
     .tab-row-widget .note-tab .note-tab-close {

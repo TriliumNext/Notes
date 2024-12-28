@@ -8,7 +8,7 @@ const TPL = `
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">${t("password_not_set.title")}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("password_not_set.close")}"></button>
             </div>
             <div class="modal-body">
                 ${t("password_not_set.body1")}

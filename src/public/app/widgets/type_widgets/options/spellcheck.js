@@ -24,8 +24,8 @@ const TPL_ELECTRON = `
     <br/>
 
     <div class="form-group">
-        <label>${t('spellcheck.language_code_label')}</label>
-        <input type="text" class="spell-check-language-code form-control" placeholder="${t('spellcheck.language_code_placeholder')}">
+        <label for="spell-check-language-code">${t('spellcheck.language_code_label')}</label>
+        <input id="spell-check-language-code" type="text" class="spell-check-language-code form-control" placeholder="${t('spellcheck.language_code_placeholder')}">
     </div>
 
     <p>${t('spellcheck.multiple_languages_info')}</p>

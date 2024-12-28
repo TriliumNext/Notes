@@ -8,8 +8,8 @@ const TPL = `
     <p>${t("text_auto_read_only_size.description")}</p>
 
     <div class="form-group">
-        <label>${t("text_auto_read_only_size.label")}</label>
-        <input class="auto-readonly-size-text form-control options-number-input" type="number" min="0">
+        <label for="auto-readonly-size-text">${t("text_auto_read_only_size.label")}</label>
+        <input id="auto-readonly-size-text" class="auto-readonly-size-text form-control options-number-input" type="number" min="0">
     </div>
 </div>`;
 

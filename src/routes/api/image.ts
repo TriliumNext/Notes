@@ -107,7 +107,7 @@ function updateImage(req: Request) {
             message: "Invalid image content."
         };
     }
-    
+
     imageService.updateImage(noteId, file.buffer, file.originalname);
 
     return { uploaded: true };

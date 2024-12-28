@@ -32,14 +32,14 @@ const TPL = `
         position: relative;
         min-height: 0;
     }
-    
+
     .tree {
         height: 100%;
         overflow: auto;
         padding-bottom: 35px;
         padding-top: 5px;
     }
-    
+
     .tree-actions {
         background-color: var(--launcher-pane-background-color);
         z-index: 100;
@@ -52,7 +52,7 @@ const TPL = `
         border-radius: 7px;
         border: 1px solid var(--main-border-color);
     }
-    
+
     button.tree-floating-button {
         margin: 1px;
         font-size: 1.5em;
@@ -63,75 +63,76 @@ const TPL = `
         border-radius: var(--button-border-radius);
         border: 1px solid transparent;
     }
-    
+
     button.tree-floating-button:hover {
         border: 1px solid var(--button-border-color);
     }
-    
+
     .collapse-tree-button {
         right: 100px;
     }
-    
+
     .scroll-to-active-note-button {
         right: 55px;
     }
-    
+
     .tree-settings-button {
         right: 10px;
     }
-    
+
     .tree-settings-popup {
-        display: none; 
-        position: absolute; 
-        background-color: var(--accented-background-color); 
-        border: 1px solid var(--main-border-color); 
-        padding: 20px; 
+        display: none;
+        position: absolute;
+        background-color: var(--accented-background-color);
+        border: 1px solid var(--main-border-color);
+        padding: 20px;
         z-index: 1000;
-        width: 340px; 
+        width: 340px;
         border-radius: 10px;
     }
-    
+
     .tree .hidden-node-is-hidden {
         display: none;
     }
     </style>
-    
+
     <div class="tree"></div>
-    
+
     <div class="tree-actions">
-        <button class="tree-floating-button bx bx-layer-minus collapse-tree-button" 
-                title="${t("note_tree.collapse-title")}" 
+        <button class="tree-floating-button bx bx-layer-minus collapse-tree-button"
+                title="${t("note_tree.collapse-title")}"
                 data-trigger-command="collapseTree"></button>
-        
-        <button class="tree-floating-button bx bx-crosshair scroll-to-active-note-button" 
-                title="${t("note_tree.scroll-active-title")}" 
+
+        <button class="tree-floating-button bx bx-crosshair scroll-to-active-note-button"
+                title="${t("note_tree.scroll-active-title")}"
                 data-trigger-command="scrollToActiveNote"></button>
-        
-        <button class="tree-floating-button bx bxs-tree tree-settings-button" 
+
+        <button class="tree-floating-button bx bxs-tree tree-settings-button"
                 title="${t("note_tree.tree-settings-title")}"></button>
     </div>
-    
-    
+
+
     <div class="tree-settings-popup">
+        <h4>${t("note_tree.tree-settings-title")}</h4>
         <div class="form-check">
             <label class="form-check-label">
                 <input class="form-check-input hide-archived-notes" type="checkbox" value="">
-            
+
                 ${t("note_tree.hide-archived-notes")}
             </label>
         </div>
         <div class="form-check">
             <label class="form-check-label">
                 <input class="form-check-input auto-collapse-note-tree" type="checkbox" value="">
-                
+
                 ${t("note_tree.automatically-collapse-notes")}
-                <span class="bx bx-info-circle" 
+                <span class="bx bx-info-circle"
                       title="${t("note_tree.automatically-collapse-notes-title")}"></span>
             </label>
         </div>
-    
+
         <br/>
-    
+
         <button class="btn btn-sm btn-primary save-tree-settings-button" type="submit">${t("note_tree.save-changes")}</button>
     </div>
 </div>
@@ -600,7 +601,31 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
             }
         });
 
-        if (!utils.isMobile()) {
+        const isMobile = utils.isMobile();
+
+        if (isMobile) {
+            let showTimeout;
+
+            this.$tree.on("touchstart", ".fancytree-node", (e) => {
+                touchStart = new Date().getTime();
+                showTimeout = setTimeout(() => {
+                    this.showContextMenu(e);
+                }, 300)
+            });
+
+            this.$tree.on("touchmove", ".fancytree-node", (e) => {
+                clearTimeout(showTimeout);
+            });
+
+            this.$tree.on("touchend", ".fancytree-node", (e) => {
+                clearTimeout(showTimeout);
+            });
+        } else {
+            this.$tree.on('contextmenu', '.fancytree-node', e => {
+                this.showContextMenu(e);
+                return false; // blocks default browser right click menu
+            });
+
             this.getHotKeys().then(hotKeys => {
                 for (const key in hotKeys) {
                     const handler = hotKeys[key];
@@ -614,26 +639,26 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
             });
         }
 
-        this.$tree.on('contextmenu', '.fancytree-node', e => {
-            const node = $.ui.fancytree.getNode(e);
-            const note = froca.getNoteFromCache(node.data.noteId);
-
-            if (note.isLaunchBarConfig()) {
-                import("../menus/launcher_context_menu.js").then(({default: LauncherContextMenu}) => {
-                    const launcherContextMenu = new LauncherContextMenu(this, node);
-                    launcherContextMenu.show(e);
-                });
-            } else {
-                import("../menus/tree_context_menu.js").then(({default: TreeContextMenu}) => {
-                    const treeContextMenu = new TreeContextMenu(this, node);
-                    treeContextMenu.show(e);
-                });
-            }
-
-            return false; // blocks default browser right click menu
-        });
+        let touchStart;
 
         this.tree = $.ui.fancytree.getTree(this.$tree);
+    }
+
+    showContextMenu(e) {
+        const node = $.ui.fancytree.getNode(e);
+        const note = froca.getNoteFromCache(node.data.noteId);
+
+        if (note.isLaunchBarConfig()) {
+            import("../menus/launcher_context_menu.js").then(({default: LauncherContextMenu}) => {
+                const launcherContextMenu = new LauncherContextMenu(this, node);
+                launcherContextMenu.show(e);
+            });
+        } else {
+            import("../menus/tree_context_menu.js").then(({default: TreeContextMenu}) => {
+                const treeContextMenu = new TreeContextMenu(this, node);
+                treeContextMenu.show(e);
+            });
+        }
     }
 
     prepareRootNode() {

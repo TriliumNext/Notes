@@ -160,7 +160,7 @@ const STRING_MIME_TYPES = [
     "image/svg+xml"
 ];
 
-function isStringNote(type: string | null, mime: string) {
+function isStringNote(type: string | undefined, mime: string) {
     // render and book are string note in the sense that they are expected to contain empty string
     return (type && ["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"].includes(type))
         || mime.startsWith('text/')
@@ -272,14 +272,14 @@ function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: strin
 }
 
 interface DeferredPromise<T> extends Promise<T> {
-	resolve: (value: T | PromiseLike<T>) => void,
-	reject: (reason?: any) => void
+    resolve: (value: T | PromiseLike<T>) => void,
+    reject: (reason?: any) => void
 }
 
 function deferred<T>(): DeferredPromise<T> {
     return (() => {
         let resolve!: (value: T | PromiseLike<T>) => void;
-		let reject!: (reason?: any) => void;
+        let reject!: (reason?: any) => void;
 
         let promise = new Promise<T>((res, rej) => {
             resolve = res;
@@ -321,7 +321,7 @@ function isString(x: any) {
 /**
  * Returns the directory for resources. On Electron builds this corresponds to the `resources` subdirectory inside the distributable package.
  * On development builds, this simply refers to the root directory of the application.
- * 
+ *
  * @returns the resource dir.
  */
 export function getResourceDir() {
@@ -329,7 +329,7 @@ export function getResourceDir() {
         return process.resourcesPath;
     } else {
         return join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-    }    
+    }
 }
 
 export default {

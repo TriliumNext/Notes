@@ -42,21 +42,21 @@ startTrilium();
 
 async function startTrilium() {
     /**
-     * The intended behavior is to detect when a second instance is running, in that case open the old instance
-     * instead of the new one. This is complicated by the fact that it is possible to run multiple instances of Trilium
-     * if port and data dir are configured separately. This complication is the source of the following weird usage.
-     *
-     * The line below makes sure that the "second-instance" (process in window.ts) is fired. Normally it returns a boolean
-     * indicating whether another instance is running or not, but we ignore that and kill the app only based on the port conflict.
-     *
-     * A bit weird is that "second-instance" is triggered also on the valid usecases (different port/data dir) and
-     * focuses the existing window. But the new process is start as well and will steal the focus too, it will win, because
-     * its startup is slower than focusing the existing process/window. So in the end, it works out without having
-     * to do a complex evaluation.
-     */
+    * The intended behavior is to detect when a second instance is running, in that case open the old instance
+    * instead of the new one. This is complicated by the fact that it is possible to run multiple instances of Trilium
+    * if port and data dir are configured separately. This complication is the source of the following weird usage.
+    *
+    * The line below makes sure that the "second-instance" (process in window.ts) is fired. Normally it returns a boolean
+    * indicating whether another instance is running or not, but we ignore that and kill the app only based on the port conflict.
+    *
+    * A bit weird is that "second-instance" is triggered also on the valid usecases (different port/data dir) and
+    * focuses the existing window. But the new process is start as well and will steal the focus too, it will win, because
+    * its startup is slower than focusing the existing process/window. So in the end, it works out without having
+    * to do a complex evaluation.
+    */
     if (utils.isElectron()) {
         (await import('electron')).app.requestSingleInstanceLock();
-    }   
+    }
 
     log.info(JSON.stringify(appInfo, null, 2));
 
@@ -116,8 +116,8 @@ function startHttpServer() {
     }
 
     /**
-     * Listen on provided port, on all network interfaces.
-     */
+    * Listen on provided port, on all network interfaces.
+    */
 
     httpServer.keepAliveTimeout = 120000 * 5;
     const listenOnTcp = port !== 0;
@@ -149,7 +149,7 @@ function startHttpServer() {
         if (utils.isElectron()) {
             import("electron").then(({ app, dialog }) => {
                 // Not all situations require showing an error dialog. When Trilium is already open,
-                // clicking the shortcut, the software icon, or the taskbar icon, or when creating a new window, 
+                // clicking the shortcut, the software icon, or the taskbar icon, or when creating a new window,
                 // should simply focus on the existing window or open a new one, without displaying an error message.
                 if ("code" in error && error.code == 'EADDRINUSE') {
                     if (process.argv.includes('--new-window') || !app.requestSingleInstanceLock()) {

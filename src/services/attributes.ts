@@ -65,11 +65,11 @@ function getAttributeNames(type: string, nameLike: string) {
     nameLike = nameLike.toLowerCase();
 
     let names = sql.getColumn<string>(
-        `SELECT DISTINCT name 
-             FROM attributes 
-             WHERE isDeleted = 0
-               AND type = ?
-               AND name LIKE ?`, [type, `%${nameLike}%`]);
+        `SELECT DISTINCT name
+            FROM attributes
+            WHERE isDeleted = 0
+                AND type = ?
+                AND name LIKE ?`, [type, `%${nameLike}%`]);
 
     for (const attr of BUILTIN_ATTRIBUTES) {
         if (attr.type === type && attr.name.toLowerCase().includes(nameLike) && !names.includes(attr.name)) {

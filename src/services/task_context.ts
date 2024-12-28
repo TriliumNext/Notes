@@ -14,7 +14,7 @@ class TaskContext {
     private lastSentCountTs: number;
     data: TaskData | null;
     noteDeletionHandlerTriggered: boolean;
-    
+
     constructor(taskId: string, taskType: string | null = null, data: {} | null = {}) {
         this.taskId = taskId;
         this.taskType = taskType;

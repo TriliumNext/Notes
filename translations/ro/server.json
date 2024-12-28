@@ -240,5 +240,8 @@
     "go-to-next-note-title": "Mergi la notița următoare",
     "launch-bar-templates-title": "Șabloane bară de lansare",
     "visible-launchers-title": "Lansatoare vizibile"
+  },
+  "notes": {
+    "new-note": "Notiță nouă"
   }
 }

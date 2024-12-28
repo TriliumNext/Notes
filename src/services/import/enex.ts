@@ -240,8 +240,8 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
     function updateDates(note: BNote, utcDateCreated?: string, utcDateModified?: string) {
         // it's difficult to force custom dateCreated and dateModified to Note entity, so we do it post-creation with SQL
         sql.execute(`
-                UPDATE notes 
-                SET dateCreated = ?, 
+                UPDATE notes
+                SET dateCreated = ?,
                     utcDateCreated = ?,
                     dateModified = ?,
                     utcDateModified = ?
@@ -314,7 +314,7 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
                 if (typeof resource.content !== "string") {
                     throw new Error("Missing or wrong content type for resource.");
                 }
-                
+
                 const resourceNote = noteService.createNewNote({
                     parentNoteId: noteEntity.noteId,
                     title: resource.title,

@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 function setupPage(req: Request, res: Response) {
     if (sqlInit.isDbInitialized()) {
         if (utils.isElectron()) {
-            handleElectronRedirect();  
+            handleElectronRedirect();
         } else {
             res.redirect('.');
         }

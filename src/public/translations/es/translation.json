@@ -92,14 +92,14 @@
   "export": {
     "export_note_title": "Exportar nota",
     "close": "Cerrar",
-    "export_type_subtree": "esta nota y todos sus descendientes",
+    "export_type_subtree": "Esta nota y todos sus descendientes",
     "format_html": "HTML - ya que preserva todo el formato",
     "format_html_zip": "HTML en un archivo ZIP: se recomienda ya que conserva todo el formato.",
     "format_markdown": "Markdown: esto conserva la mayor parte del formato.",
     "format_opml": "OPML: formato de intercambio de esquemas solo para texto. El formato, las imágenes y los archivos no están incluidos.",
     "opml_version_1": "OPML v1.0: solo texto sin formato",
     "opml_version_2": "OPML v2.0 - también permite HTML",
-    "export_type_single": "solo esta nota sin sus descendientes",
+    "export_type_single": "Sólo esta nota sin sus descendientes",
     "export": "Exportar",
     "choose_export_type": "Por favor, elija primero el tipo de exportación",
     "export_status": "Estado de exportación",
@@ -153,7 +153,7 @@
     "numberedList": "<kbd>1.</kbd> o <kbd>1)</kbd> seguido de espacio para la lista numerada",
     "blockQuote": "comience una línea con <kbd>></kbd> seguido de espacio para el bloque de cita",
     "troubleshooting": "Solución de problemas",
-    "reloadFrontend": "recargar la interfaz de Trillium",
+    "reloadFrontend": "recargar la interfaz de Trilium",
     "showDevTools": "mostrar herramientas de desarrollador",
     "showSQLConsole": "mostrar consola SQL",
     "other": "Otro",
@@ -359,6 +359,7 @@
     "auto_read_only_disabled": "las notas de texto/código se pueden configurar automáticamente en modo lectura cuando son muy grandes. Puede desactivar este comportamiento por nota agregando esta etiqueta a la nota",
     "app_css": "marca notas CSS que se cargan en la aplicación Trilium y, por lo tanto, se pueden usar para modificar la apariencia de Trilium.",
     "app_theme": "marca notas CSS que son temas completos de Trilium y, por lo tanto, están disponibles en las opciones de Trilium.",
+    "app_theme_base": "establecer a \"siguiente\" para utilizar el tema TriliumNext como base para un tema personalizado en lugar del tema anterior.",
     "css_class": "el valor de esta etiqueta se agrega como clase CSS al nodo que representa la nota dada en el árbol. Esto puede resultar útil para temas avanzados. Se puede utilizar en notas de plantilla.",
     "icon_class": "el valor de esta etiqueta se agrega como una clase CSS al ícono en el árbol, lo que puede ayudar a distinguir visualmente las notas en el árbol. El ejemplo podría ser bx bx-home: los iconos se toman de boxicons. Se puede utilizar en notas de plantilla.",
     "page_size": "número de elementos por página en el listado de notas",
@@ -1554,7 +1555,8 @@
       "fixed": {
         "title": "Fijo",
         "description": "las herramientas de edición aparecen en la pestaña de la cinta \"Formato\")."
-      }
+      },
+      "multiline-toolbar": "Mostrar la barra de herramientas en múltiples líneas si no cabe."
     }
   },
   "electron_context_menu": {
@@ -1574,5 +1576,22 @@
     "open_note_in_new_tab": "Abrir nota en una pestaña nueva",
     "open_note_in_new_split": "Abrir nota en una nueva división",
     "open_note_in_new_window": "Abrir nota en una nueva ventana"
+  },
+  "electron_integration": {
+    "desktop-application": "Aplicación de escritorio",
+    "native-title-bar": "Barra de título nativa",
+    "native-title-bar-description": "Para Windows y macOS, quitar la barra de título nativa hace que la aplicación se vea más compacta. En Linux, mantener la barra de título nativa hace que se integre mejor con el resto del sistema.",
+    "background-effects": "Habilitar efectos de fondo (sólo en Windows 11)",
+    "background-effects-description": "El efecto Mica agrega un fondo borroso y elegante a las ventanas de aplicaciones, creando profundidad y un aspecto moderno.",
+    "restart-app-button": "Reiniciar la aplicación para ver los cambios",
+    "zoom-factor": "Factor de zoom"
+  },
+  "note_autocomplete": {
+    "search-for": "Buscar por \"{{term}}\"",
+    "create-note": "Crear y enlazar subnota \"{{term}}\"",
+    "insert-external-link": "Insertar enlace externo a \"{{term}}\"",
+    "clear-text-field": "Limpiar campo de texto",
+    "show-recent-notes": "Mostrar notas recientes",
+    "full-text-search": "Búsqueda de texto completo"
   }
 }

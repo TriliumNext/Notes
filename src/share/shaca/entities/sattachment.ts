@@ -62,7 +62,7 @@ class SAttachment extends AbstractShacaEntity {
 
     /** @returns true if the attachment has string content (not binary) */
     hasStringContent() {
-        return utils.isStringNote(null, this.mime);
+        return utils.isStringNote(undefined, this.mime);
     }
 
     getPojo() {

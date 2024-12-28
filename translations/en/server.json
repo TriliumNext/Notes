@@ -239,7 +239,10 @@
     "sync-title": "Sync",
     "other": "Other",
     "advanced-title": "Advanced",
-    "visible-launchers-title": "Visible Launchers",
-    "llm-title": "LLM Integration"
+    "llm-title": "LLM Integration",
+    "visible-launchers-title": "Visible Launchers"
+  },
+  "notes": {
+    "new-note": "New note"
   }
 }

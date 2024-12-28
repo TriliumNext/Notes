@@ -8,7 +8,7 @@ export declare module "express-serve-static-core" {
         headers: {
             "x-local-date"?: string;
             "x-labels"?: string;
-            
+
             "authorization"?: string;
             "trilium-cred"?: string;
             "x-csrf-token"?: string;

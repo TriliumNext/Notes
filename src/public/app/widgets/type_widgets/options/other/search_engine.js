@@ -10,8 +10,8 @@ const TPL = `
     
     <form class="sync-setup-form">
         <div class="form-group">
-            <label>${t("search_engine.predefined_templates_label")}</label>
-            <select class="predefined-search-engine-select form-control">
+            <label for="predefined-search-engine-select">${t("search_engine.predefined_templates_label")}</label>
+            <select id="predefined-search-engine-select" class="predefined-search-engine-select form-control">
                 <option value="Bing">${t("search_engine.bing")}</option>
                 <option value="Baidu">${t("search_engine.baidu")}</option>
                 <option value="DuckDuckGo">${t("search_engine.duckduckgo")}</option>

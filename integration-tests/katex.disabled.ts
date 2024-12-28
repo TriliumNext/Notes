@@ -9,7 +9,7 @@ test("Can insert equations", async ({ page }) => {
 
     // Create a new note
     // await page.locator("button.button-widget.bx-file-blank")
-    //     .click();    
+    //     .click();
 
     const activeNote = page.locator(".component.note-split:visible");
     const noteContent = activeNote

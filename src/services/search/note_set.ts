@@ -3,9 +3,9 @@
 import BNote from "../../becca/entities/bnote.js";
 
 class NoteSet {
-    
+
     private noteIdSet: Set<string>;
-    
+
     notes: BNote[];
     sorted: boolean;
 

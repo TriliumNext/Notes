@@ -81,19 +81,19 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     }
 
     /*
-     * Note revision content has quite special handling - it's not a separate entity, but a lazily loaded
-     * part of Revision entity with its own sync. The reason behind this hybrid design is that
-     * content can be quite large, and it's not necessary to load it / fill memory for any note access even
-     * if we don't need a content, especially for bulk operations like search.
-     *
-     * This is the same approach as is used for Note's content.
-     */
+    * Note revision content has quite special handling - it's not a separate entity, but a lazily loaded
+    * part of Revision entity with its own sync. The reason behind this hybrid design is that
+    * content can be quite large, and it's not necessary to load it / fill memory for any note access even
+    * if we don't need a content, especially for bulk operations like search.
+    *
+    * This is the same approach as is used for Note's content.
+    */
     getContent(): string | Buffer {
         return this._getContent();
     }
 
     /**
-     * @throws Error in case of invalid JSON */
+    * @throws Error in case of invalid JSON */
     getJsonContent(): {} | null {
         const content = this.getContent();
 
@@ -121,9 +121,9 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     getAttachments(): BAttachment[] {
         return sql.getRows<AttachmentRow>(`
                 SELECT attachments.*
-                FROM attachments 
-                WHERE ownerId = ? 
-                  AND isDeleted = 0`, [this.revisionId])
+                FROM attachments
+                WHERE ownerId = ?
+                AND isDeleted = 0`, [this.revisionId])
             .map(row => new BAttachment(row));
     }
 
@@ -132,9 +132,9 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
 
         const query = opts.includeContentLength
             ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
-               FROM attachments 
-               JOIN blobs USING (blobId) 
-               WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
+                FROM attachments
+                JOIN blobs USING (blobId)
+                WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
             : `SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
 
         return sql.getRows<AttachmentRow>(query, [this.revisionId, attachmentId])
@@ -144,10 +144,10 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     getAttachmentsByRole(role: string): BAttachment[] {
         return sql.getRows<AttachmentRow>(`
                 SELECT attachments.*
-                FROM attachments 
-                WHERE ownerId = ? 
-                  AND role = ?
-                  AND isDeleted = 0
+                FROM attachments
+                WHERE ownerId = ?
+                AND role = ?
+                AND isDeleted = 0
                 ORDER BY position`, [this.revisionId, role])
             .map(row => new BAttachment(row));
     }
@@ -158,8 +158,8 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     }
 
     /**
-     * Revisions are not soft-deletable, they are immediately hard-deleted (erased).
-     */
+    * Revisions are not soft-deletable, they are immediately hard-deleted (erased).
+    */
     eraseRevision() {
         if (this.revisionId) {
             eraseService.eraseRevisions([this.revisionId]);

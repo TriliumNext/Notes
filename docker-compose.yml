@@ -13,7 +13,9 @@ services:
     ports:
       # By default, Trilium will be available at http://localhost:8080
       # It will also be accessible at http://<host-ip>:8080
-      # You might want to limit this with something like Docker Networks, reverse proxies, or firewall rules, such as UFW
+      # You might want to limit this with something like Docker Networks, reverse proxies, or firewall rules,
+      # however be aware that using UFW is known to not work with default Docker installations, see:
+      # https://docs.docker.com/engine/network/packet-filtering-firewalls/#docker-and-ufw
       - '8080:8080'
     volumes:
       # Unless TRILIUM_DATA_DIR is set, the data will be stored in the "trilium-data" directory in the home directory.

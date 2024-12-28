@@ -11,7 +11,7 @@ const TPL = `
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">${t("upload_attachments.upload_attachments_to_note")}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('upload_attachments.close')}"></button>
             </div>
             <form class="upload-attachment-form">
                 <div class="modal-body">

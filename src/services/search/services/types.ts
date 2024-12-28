@@ -12,6 +12,8 @@ export interface SearchParams {
     includeArchivedNotes?: boolean;
     includeHiddenNotes?: boolean;
     ignoreHoistedNote?: boolean;
+    /** Whether to ignore certain attributes from the search such as ~internalLink. */
+    ignoreInternalAttributes?: boolean;
     ancestorNoteId?: string;
     ancestorDepth?: string;
     orderBy?: string;

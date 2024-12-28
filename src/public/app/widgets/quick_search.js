@@ -76,7 +76,7 @@ export default class QuickSearchWidget extends BasicWidget {
         });
 
         shortcutService.bindElShortcut(this.$searchString, 'down', () => {
-            this.$dropdownMenu.find('.dropdown-item:first').focus();
+            this.$dropdownMenu.find('.dropdown-item:not(.disabled):first').focus();
         });
 
         shortcutService.bindElShortcut(this.$searchString, 'esc', () => {

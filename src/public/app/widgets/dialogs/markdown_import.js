@@ -12,7 +12,7 @@ const TPL = `
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">${t("markdown_import.dialog_title")}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("markdown_import.close")}"></button>
             </div>
             <div class="modal-body">
                 <p>${t("markdown_import.modal_body_text")}</p>

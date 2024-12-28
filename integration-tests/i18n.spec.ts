@@ -13,7 +13,7 @@ test("User can change language from settings", async ({ page }) => {
     await page.locator('#center-pane').getByText('Appearance').click();
 
     // Check that the default value (English) is set.
-    await expect(page.locator('#center-pane')).toContainText('Theme');    
+    await expect(page.locator('#center-pane')).toContainText('Theme');
     const languageCombobox = await page.getByRole('combobox').first();
     await expect(languageCombobox).toHaveValue("en");
 
@@ -25,7 +25,7 @@ test("User can change language from settings", async ({ page }) => {
     languageCombobox.selectOption("en");
 });
 
-test("Restores language on start-up on desktop", async ({ page, context }) => {    
+test("Restores language on start-up on desktop", async ({ page, context }) => {
     await page.goto('http://localhost:8082');
     await expect(page.locator('#launcher-pane').first()).toContainText("Open New Window");
 });

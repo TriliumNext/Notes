@@ -10,6 +10,11 @@
     }
 }
 
+:root {
+    --dropdown-backdrop-filter: blur(10px) saturate(6);
+    --dropdown-border-radius: 10px;
+}
+
 #root-widget {
     background-color: var(--root-background);
 }
@@ -17,10 +22,6 @@
 body {
     --native-titlebar-darwin-x-offset: 10;
     --native-titlebar-darwin-y-offset: 17 !important;
-}
-
-body.layout-vertical {
-    --native-titlebar-background: var(--root-background);
 }
 
 body.layout-horizontal {
@@ -34,6 +35,10 @@ body.layout-horizontal {
     --native-titlebar-darwin-y-offset: 14 !important;
 }
 
+body.mobile {
+    --hover-item-background-color: transparent;
+}
+
 /* #region Mica */
 body.background-effects.platform-win32 {
     --launcher-pane-horizontal-border-color: rgba(0, 0, 0, 0.15);
@@ -41,7 +46,6 @@ body.background-effects.platform-win32 {
     --tab-background-color: transparent;
     --new-tab-button-background: transparent;
     --active-tab-background-color: var(--launcher-pane-background-color);
-    --native-titlebar-background: #00000000;
     --background-material: tabbed;    
 }
 
@@ -109,6 +113,7 @@ body.layout-horizontal > .horizontal {
 #launcher-pane.horizontal {
     height: var(--launcher-pane-size) !important;
     border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
+    align-items: center;
 }
 
 #launcher-pane .launcher-button,
@@ -138,8 +143,10 @@ body.layout-horizontal > .horizontal {
 }
 
 #launcher-pane .launcher-button:hover,
-#launcher-pane .launcher-button.right-dropdown-button.show {
-    background: var(--launcher-pane-button-hover-background);
+#launcher-pane .launcher-button.right-dropdown-button.show,
+#launcher-pane.horizontal .global-menu-button:hover,
+#launcher-pane.horizontal .global-menu-button.show {
+    background: var(--launcher-pane-button-hover-background) !important;
     color: var(--launcher-pane-button-hover-color);
     box-shadow: var(--launcher-pane-button-hover-shadow);
     transition: background-color 100ms ease-in,
@@ -151,6 +158,14 @@ body.layout-horizontal > .horizontal {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#launcher-pane.vertical .spacer {
+    width: var(--launcher-pane-size);
+}
+
+#launcher-pane.horizontal .spacer {
+    height: var(--launcher-pane-size);
 }
 
 /* Protected session enabled button */
@@ -345,13 +360,8 @@ div.quick-search .search-button.show  {
 
 /* Tree */
 
-#left-pane .tree-actions {
-    /* TODO: relocate instead of hiding */
-    display: none;
-}
-
 #left-pane div.tree {
-    padding: 3px 6px;
+    padding: 3px 6px 40px 6px;
     animation: fade-in 200ms ease-in;
 }
 
@@ -415,6 +425,12 @@ div.quick-search .search-button.show  {
     border-radius: 50%;
 }
 
+body.mobile .fancytree-expander::before,
+body.mobile .fancytree-title,
+body.mobile .fancytree-node > span {
+    font-size: 1rem !important;
+}
+
 #left-pane .fancytree-expander {
     opacity: .65;
     transition: opacity 150ms ease-in;
@@ -430,7 +446,7 @@ div.quick-search .search-button.show  {
 }
 
 #left-pane span .fancytree-title {
-    margin-top: -5px;
+    margin-top: -5px;    
 }
 
 #left-pane span.fancytree-active .fancytree-title {
@@ -469,6 +485,101 @@ div.quick-search .search-button.show  {
 #context-menu-container {
     /* The context menu of the tree */
     --menu-item-icon-vert-offset: 1.5px;
+}
+
+/* Tree actions toolbar */
+
+/* Toolbar container (collapsed state) */
+#left-pane .tree-actions {
+    max-width: var(--tree-actions-toolbar-collapsed-width);
+    right: var(--tree-actions-toolbar-horizontal-margin);
+    bottom: var(--tree-actions-toolbar-vertical-margin);
+    overflow: hidden;
+    border: 1px solid transparent;
+    padding: var(--tree-actions-toolbar-padding-size);
+    padding-right: var(--tree-actions-toolbar-collapsed-width);
+    background: transparent;
+    transition: max-width 400ms ease-out,
+                background-color 400ms ease-out,
+                border-color 400ms ease-out;
+}
+
+/* Toolbar container (expanded state) */
+#left-pane .tree-actions:hover {
+    max-width: 200px;
+    border-color: var(--dropdown-border-color);
+    background: var(--menu-background-color);
+    backdrop-filter: blur(10px) saturate(6);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
+}
+
+/* Toolbar button (toolbar collapsed)*/
+#left-pane .tree-actions button {
+    border: unset;
+    color: var(--menu-item-icon-color);
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
+
+/* Toolbar button on hover */
+#left-pane .tree-actions button:hover {
+    background: var(--hover-item-background-color);
+}
+
+/* Toolbar button (toolbar expanded) */
+#left-pane .tree-actions:hover button {
+    opacity: 1;
+    transition: opacity 250ms ease-in;
+}
+
+/* The floating expand button (toolbar collapsed) */
+#left-pane .tree-actions::after {
+    display: flex;
+    content: "\eab4";
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    right: calc((var(--tree-actions-toolbar-collapsed-width) - var(--tree-actions-toolbar-expand-button-size)) / 2);
+    width: var(--tree-actions-toolbar-expand-button-size);
+    height: var(--tree-actions-toolbar-expand-button-size);
+    box-shadow: 2px 2px 6px var(--left-pane-background-color);
+    border-radius: 50%;
+    background: var(--left-pane-item-action-button-background);
+    backdrop-filter: blur(10px);
+    color: var(--left-pane-item-action-button-color);
+    font-family: boxicons;
+    font-size: 18px;
+    line-height: 1;
+    transform: translateY(-50%);
+    transition: color 200ms ease-in;
+}
+
+/* The floating expand button (toolbar expanded) */
+#left-pane .tree-actions:hover::after {
+    background: transparent;
+    color: var(--menu-item-icon-color);
+    opacity: var(--menu-item-disabled-opacity);
+    transition: color 200ms ease-out;
+}
+
+/*
+ * Tree settings popup
+ */
+
+#left-pane .tree-settings-popup {
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
+    border: 1px solid var(--dropdown-border-color);
+    padding: 25px;
+    background: var(--menu-background-color);
+    backdrop-filter: blur(10px) saturate(6);
+    color: var(--menu-text-color);
+}
+
+#left-pane .tree-settings-popup h4 {
+    margin-bottom: .75em;
+    font-size: 1.5em;
+    line-height: 1;
 }
 
 /*
@@ -779,17 +890,69 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
  */
 
 .dropdown-menu {
-    border-radius: 10px;
-    backdrop-filter: blur(10px) saturate(6);
+    border-radius: var(--dropdown-border-radius);
     padding: var(--menu-padding-size) !important;
-    font-size: .90rem !important;
+    font-size: .90rem !important;    
 }
 
-.dropdown-item {
+body.mobile .dropdown-menu {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    border-radius: var(--dropdown-border-radius);
+    position: relative;
+}
+
+body.mobile .dropdown-menu .dropdown-menu {
+    backdrop-filter: unset !important;
+    border-radius: unset !important;
+}
+
+body.desktop .dropdown-menu::before {
+    content: "";
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    border-radius: var(--dropdown-border-radius);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+}
+
+body.desktop .dropdown-submenu .dropdown-menu::before {
+    content: unset;
+}
+
+body.mobile .dropdown-submenu .dropdown-menu {
+    background: transparent !important;
+}
+
+body.desktop .dropdown-submenu .dropdown-menu {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    background: transparent;
+}
+
+.dropdown-item,
+body.mobile .dropdown-submenu .dropdown-toggle {
     padding: 2px 16px 2px 8px !important;
     /* Note: the right padding should also accommodate the submenu arrow. */
     border-radius: 6px;
     cursor: default !important;
+}
+
+body.mobile .dropdown-submenu {
+    padding: 0 !important;
+}
+
+body.mobile .dropdown-item:not(:last-of-type) {
+    margin-bottom: 0.5em;
+}
+
+body.mobile #launcher-pane .dropdown-submenu > .dropdown-toggle {
+    display: none;
+}
+
+body.mobile .dropdown-submenu:hover {
+    background: transparent !important;
 }
 
 html body .dropdown-item.disabled {
@@ -836,13 +999,24 @@ html body .dropdown-item.disabled {
     justify-content: center;
     top: 0;
     right: 0;
-    height: 100%;
     margin: unset !important;
     border: unset !important;
     padding: 0 4px;
     font-family: boxicons;
     font-size: 1.2em;
     color: var(--menu-item-arrow-color) !important;
+}
+
+body.desktop .dropdown-menu .dropdown-toggle::after {
+    height: 100%;
+}
+
+body.mobile .dropdown-menu .dropdown-toggle::after {
+    transform: rotate(90deg);
+}
+
+body.mobile .dropdown-menu .dropdown-item.submenu-open .dropdown-toggle::after {
+    transform: rotate(270deg);
 }
 
 /*
@@ -869,12 +1043,17 @@ html body .dropdown-item.disabled {
 }
 
 .calendar-dropdown-widget .calendar-header input,
-.calendar-dropdown-widget .calendar-header select {
+.calendar-dropdown-widget .calendar-header [data-calendar-input="month"] {
     /* TODO: Provide styling for background and states */
+    background: transparent !important;
     border: unset;
     text-align: center;
     font-size: 1.4em;
     font-weight: 300;
+}
+
+.calendar-dropdown-widget .calendar-header .dropdown-toggle::after {
+    content: unset !important;
 }
 
 .calendar-dropdown-widget .calendar-week span {
@@ -937,27 +1116,6 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 }
 
-.note-tooltip-content .note-title-with-path .path-bracket {
-    /* Hide the leading and trailing bracket from the path */
-    display: none;
-}
-
-.note-tooltip-content .note-title-with-path .path-delimiter {
-    /* Hide the path delimiters (slashes) */
-    display: none;
-}
-
-.note-tooltip-content .note-title-with-path .path-delimiter + span::before {
-    /* Replace the path delimiters with arrows */
-    display: inline-block;
-    content: "\ebe6";
-    padding: 0 4px;
-    line-height: 1;
-    vertical-align: bottom;
-    font-family: boxicons;
-    opacity: .75;
-}
-
 .note-tooltip-content .note-path {
     display: block;
     color: var(--muted-text-color);
@@ -974,6 +1132,97 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /*
+ * Jump to note
+ */
+
+.jump-to-note-dialog .modal-dialog {
+    --modal-background-color: var(--menu-background-color);
+    --bs-modal-header-border-width: 0;
+    --bs-modal-footer-border-width: 0;
+    --bs-modal-footer-gap: 0;
+
+    backdrop-filter: var(--dropdown-backdrop-filter);
+}
+
+.jump-to-note-dialog .modal-content {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
+    border: 1px solid var(--dropdown-border-color);
+    padding: 32px;
+    border-radius: 8px;
+}
+
+.jump-to-note-dialog .modal-header {
+    padding: unset !important;
+}
+
+.jump-to-note-dialog .modal-body {
+    padding: 26px 0 !important;
+}
+
+/* Search box wrapper */
+.jump-to-note-dialog .input-group {
+    margin-right: 16px;
+    background: var(--quick-search-background);
+    border: 2px solid transparent;
+    border-radius: 6px;
+    color: var(--quick-search-color);
+}
+
+.jump-to-note-dialog .input-group:hover {
+    background: var(--quick-search-hover-background);
+}
+
+/* Focused search box */
+.jump-to-note-dialog .input-group:focus-within {
+    border-color: var(--quick-search-focus-border);
+    background: var(--quick-search-focus-background);
+    color: var(--quick-search-focus-color)
+}
+
+/* Search box input */
+.jump-to-note-dialog .input-group input {
+    --bs-border-width: 0;
+
+    box-shadow: unset;
+    background: transparent;
+    color: currentColor;
+}
+
+/* Search box buttons */
+.jump-to-note-dialog .input-group button {
+    --bs-border-width: 0;
+    --accented-background-color: transparent;
+    padding: 0 4px;
+}
+
+.jump-to-note-dialog .input-group button:last-child {
+    padding-right: .75em;
+}
+
+.jump-to-note-dialog .input-clearer-button {
+    background: transparent !important;
+}
+
+/* List body */
+.jump-to-note-dialog .jump-to-note-results .aa-suggestions {
+    padding: 0;
+}
+
+/* List item */
+.jump-to-note-dialog .aa-suggestions div {
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+/* Selected list item */
+.jump-to-note-dialog  .aa-suggestions div.aa-cursor {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
+}
+
+/*
  * Recent changes list
  */
 
@@ -985,21 +1234,13 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     margin: var(--bs-modal-padding);
 }
 
-.recent-changes-content small {
-    color: var(--muted-text-color);
-}
-
-.recent-changes-content > div {
-    padding-left: var(--timeline-left-gap);
-}
-
 /* Date headings */
 .recent-changes-content > div > b {
     position: sticky;
     display: block;
     top: 0;
     background: var(--modal-background-color);
-    padding: 10px 0;
+    padding: 10px 0 10px calc(var(--timeline-left-gap) + var(--timeline-right-gap));
     font-size: 1.25em;
     font-weight: 300;
     z-index: 10;
@@ -1012,14 +1253,69 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /* Timeline items */
-.recent-changes-content ul li,
-.recent-changes-content > div > b {
+.recent-changes-content ul li {
+    display: flex;
+    position: relative;
     margin: 0;
-    padding-left: var(--timeline-right-gap);
+    border: unset;
+    padding-top: var(--timeline-item-top-padding);
+    padding-bottom: var(--timeline-item-bottom-padding);
+    padding-left: calc(var(--timeline-left-gap) + var(--timeline-right-gap));
+    padding-right: var(--timeline-left-gap);
+    color: var(--active-item-text-color);
 }
 
-.recent-changes-content ul li {
-    position: relative;
+.recent-changes-content li > span:first-child::after {
+    /* Remove the dash between time and note title */
+    content: "" !important;
+}
+
+
+.recent-changes-content ul li:not(.deleted-note):hover {
+    border-radius: 8px;
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
+}
+
+.recent-changes-content ul li .note-path {
+    color: var(--muted-text-color);
+    font-size: .75em;
+}
+
+/* Item time */
+.recent-changes-content ul li > span:first-child {
+    display: inline-block;
+    min-width: 80px;
+    vertical-align: top;
+    color: var(--muted-text-color);
+}
+
+/* Item title & path container */
+.recent-changes-content ul li > span:nth-child(2) {
+    display: inline-block;
+}
+
+/* Item title link */
+
+.recent-changes-content ul li .note-title a {
+    color: currentColor;
+}
+
+.recent-changes-content ul li .note-title a:hover {
+    text-decoration: underline;
+}
+
+/* Item title for deleted notes */
+.recent-changes-content ul li.deleted-note .note-title {
+    text-decoration: line-through;
+}
+
+
+/* Item path */
+.recent-changes-content ul li > span:nth-child(2) small {
+    display: block;
+    line-height: 1;
+    opacity: .75;
 }
 
 /* Timeline connector */
@@ -1028,12 +1324,16 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     position: absolute;
     content: "";
     top: var(--connector-top, 0);
-    left: calc((var(--timeline-bullet-size) - var(--timeline-connector-size)) / 2);
+    left: calc(var(--timeline-left-gap) + ((var(--timeline-bullet-size) - var(--timeline-connector-size)) / 2));
     bottom: var(--connector-bottom, 0);
     width: var(--timeline-connector-size);
     border-radius: var(--connector-radius, 0) var(--connector-radius, 0) 0 0;
     background: var(--timeline-connector-color);
     transition: background-color 400ms ease-in-out;
+}
+
+.recent-changes-content ul li:hover:before {
+    mix-blend-mode: var(--timeline-connector-hover-blend-mode);
 }
 
 .recent-changes-content > div:hover {
@@ -1055,8 +1355,8 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 .recent-changes-content ul li::after {
     position: absolute;
     content: "";
-    top: var(--timeline-bullet-vertical-pos);
-    left: 0;
+    top: calc(var(--timeline-item-top-padding) + var(--timeline-bullet-vertical-pos));
+    left: var(--timeline-left-gap);
     width: var(--timeline-bullet-size);
     height: var(--timeline-bullet-size);
     border-radius: 50%;
@@ -1190,4 +1490,37 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 .note-list.grid-view .ck-content figure.image {
     width: 25%;
+}
+
+/* Note paths */
+
+.note-path .path-bracket {
+    /* Hide the leading and trailing bracket from the path */
+    display: none;
+}
+
+.note-path .path-delimiter {
+    /* Hide the path delimiters (slashes) */
+    display: none;
+}
+
+.note-path .path-delimiter + span::before {
+    /* Replace the path delimiters with arrows */
+    display: inline-block;
+    content: "\ed3b";
+    padding: 0 .25em;
+    font-family: boxicons;
+    opacity: .75;
+    transform: translateY(4%);
+}
+
+/* Search */
+
+.search-result-widget-content .note-path .path-bracket {
+    display: inline;
+}
+
+.search-result-widget-content .note-path {
+    opacity: .75;
+    font-weight: normal;
 }

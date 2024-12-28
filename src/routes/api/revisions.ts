@@ -35,9 +35,9 @@ function getRevisionBlob(req: Request) {
 function getRevisions(req: Request) {
     return becca.getRevisionsFromQuery(`
         SELECT revisions.*,
-               LENGTH(blobs.content) AS contentLength
+                LENGTH(blobs.content) AS contentLength
         FROM revisions
-        JOIN blobs ON revisions.blobId = blobs.blobId 
+        JOIN blobs ON revisions.blobId = blobs.blobId
         WHERE revisions.noteId = ?
         ORDER BY revisions.utcDateCreated DESC`, [req.params.noteId]);
 }
@@ -158,9 +158,9 @@ function getEditedNotesOnDate(req: Request) {
         SELECT notes.*
         FROM notes
         WHERE noteId IN (
-                SELECT noteId FROM notes 
+                SELECT noteId FROM notes
                 WHERE notes.dateCreated LIKE :date
-                   OR notes.dateModified LIKE :date
+                    OR notes.dateModified LIKE :date
             UNION ALL
                 SELECT noteId FROM revisions
                 WHERE revisions.dateLastEdited LIKE :date

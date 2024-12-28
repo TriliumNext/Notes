@@ -4,11 +4,13 @@ import hoistedNoteService from "../hoisted_note.js";
 import { SearchParams } from './services/types.js';
 
 class SearchContext {
-    
+
     fastSearch: boolean;
     includeArchivedNotes: boolean;
     includeHiddenNotes: boolean;
     ignoreHoistedNote: boolean;
+    /** Whether to ignore certain attributes from the search such as ~internalLink. */
+    ignoreInternalAttributes: boolean;
     ancestorNoteId?: string;
     ancestorDepth?: string;
     orderBy?: string;
@@ -28,6 +30,7 @@ class SearchContext {
         this.includeArchivedNotes = !!params.includeArchivedNotes;
         this.includeHiddenNotes = !!params.includeHiddenNotes;
         this.ignoreHoistedNote = !!params.ignoreHoistedNote;
+        this.ignoreInternalAttributes = !!params.ignoreInternalAttributes;
         this.ancestorNoteId = params.ancestorNoteId;
 
         if (!this.ancestorNoteId && !this.ignoreHoistedNote) {

@@ -80,6 +80,14 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
     right: 0.35em;            
 }
 
+.ck-content h2,
+.ck-content h3,
+.ck-content h4,
+.ck-content h5,
+.ck-content h6 {
+    font-weight: 300;
+}
+
 .ck-content hr {
     margin: 5px 0;
     height: 1px;

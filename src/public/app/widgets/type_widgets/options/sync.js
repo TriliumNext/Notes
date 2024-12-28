@@ -9,18 +9,18 @@ const TPL = `
     
     <form class="sync-setup-form">
         <div class="form-group">
-            <label>${t('sync_2.server_address')}</label>
-            <input class="sync-server-host form-control" placeholder="https://<host>:<port>">
+            <label for="sync-server-host" >${t('sync_2.server_address')}</label>
+            <input id="sync-server-host" class="sync-server-host form-control" placeholder="https://<host>:<port>">
         </div>
     
         <div class="form-group">
-            <label>${t('sync_2.timeout')}</label>
-            <input class="sync-server-timeout form-control" min="1" max="10000000" type="number" style="text-align: left;">
+            <label for="sync-server-timeout" >${t('sync_2.timeout')}</label>
+            <input id="sync-server-timeout" class="sync-server-timeout form-control" min="1" max="10000000" type="number" style="text-align: left;">
         </div>
     
         <div class="form-group">
-            <label>${t('sync_2.proxy_label')}</label>
-            <input class="sync-proxy form-control" placeholder="https://<host>:<port>">
+            <label for="sync-proxy form-control" >${t('sync_2.proxy_label')}</label>
+            <input id="sync-proxy form-control" class="sync-proxy form-control" placeholder="https://<host>:<port>">
     
             <p><strong>${t('sync_2.note')}:</strong> ${t('sync_2.note_description')}</p>
             <p>${t('sync_2.special_value_description')}</p>

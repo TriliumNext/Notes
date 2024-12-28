@@ -10,7 +10,7 @@ import cls from "../services/cls.js";
 import sql from "../services/sql.js";
 import entityChangesService from "../services/entity_changes.js";
 import csurf from "csurf";
-import { createPartialContentHandler } from "express-partial-content";
+import { createPartialContentHandler } from "@triliumnext/express-partial-content";
 import rateLimit from "express-rate-limit";
 import AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
 import NotFoundError from "../errors/not_found_error.js";

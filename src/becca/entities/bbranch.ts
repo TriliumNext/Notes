@@ -87,7 +87,7 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
             if (!childNote.parents.includes(parentNote)) {
                 childNote.parents.push(parentNote);
             }
-    
+
             if (!parentNote.children.includes(childNote)) {
                 parentNote.children.push(childNote);
             }
@@ -122,23 +122,23 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
     }
 
     /**
-     * Branch is weak when its existence should not hinder deletion of its note.
-     * As a result, note with only weak branches should be immediately deleted.
-     * An example is shared or bookmarked clones - they are created automatically and exist for technical reasons,
-     * not as user-intended actions. From user perspective, they don't count as real clones and for the purpose
-     * of deletion should not act as a clone.
-     */
+    * Branch is weak when its existence should not hinder deletion of its note.
+    * As a result, note with only weak branches should be immediately deleted.
+    * An example is shared or bookmarked clones - they are created automatically and exist for technical reasons,
+    * not as user-intended actions. From user perspective, they don't count as real clones and for the purpose
+    * of deletion should not act as a clone.
+    */
     get isWeak() {
         return ['_share', '_lbBookmarks'].includes(this.parentNoteId);
     }
 
     /**
-     * Delete a branch. If this is a last note's branch, delete the note as well.
-     *
-     * @param deleteId - optional delete identified
-     *
-     * @returns true if note has been deleted, false otherwise
-     */
+    * Delete a branch. If this is a last note's branch, delete the note as well.
+    *
+    * @param deleteId - optional delete identified
+    *
+    * @returns true if note has been deleted, false otherwise
+    */
     deleteBranch(deleteId?: string, taskContext?: TaskContext): boolean {
         if (!deleteId) {
             deleteId = utils.randomString(10);

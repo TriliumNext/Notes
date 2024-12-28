@@ -227,7 +227,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
                 .attr('data-ribbon-component-name', ribbonWidget.name)
                 .append($('<span class="ribbon-tab-title-icon">')
                             .addClass(ret.icon)
-                            .attr("data-title", ret.title)
+                            .attr("title", ret.title)
                             .attr('data-toggle-command', ribbonWidget.toggleCommand))
                 .append(" ")
                 .append($('<span class="ribbon-tab-title-label">').text(ret.title));

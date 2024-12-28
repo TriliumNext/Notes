@@ -88,7 +88,7 @@ async function setupSyncFromSyncServer(syncServerHost: string, syncProxy: string
         }
 
         await sqlInit.createDatabaseForSync(resp.options, syncServerHost, syncProxy);
-        
+
         triggerSync();
 
         return { result: 'success' };

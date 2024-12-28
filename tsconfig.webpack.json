@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"module": "NodeNext",
+		"declaration": false,
+		"sourceMap": true,
+		"outDir": "./build",
+		"strict": true,
+		"noImplicitAny": true,
+		"resolveJsonModule": true,
+		"lib": [
+			"ES2022"
+		],
+		"downlevelIteration": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowJs": true
+	},
+	"include": [
+        "./src/public/app/**/*",		
+	],
+	"files": [
+		"./src/public/app/types.d.ts"
+	]
+}

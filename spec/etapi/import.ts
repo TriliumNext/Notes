@@ -9,12 +9,12 @@ etapi.describeEtapi("import", () => {
     const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
     const zipFileBuffer = fs.readFileSync(
-      path.resolve(scriptDir, "test-export.zip")
+    path.resolve(scriptDir, "test-export.zip")
     );
 
     const response = await etapi.postEtapiContent(
-      "notes/root/import",
-      zipFileBuffer
+    "notes/root/import",
+    zipFileBuffer
     );
     expect(response.status).toEqual(201);
 
@@ -24,7 +24,7 @@ etapi.describeEtapi("import", () => {
     expect(branch.parentNoteId).toEqual("root");
 
     const content = await (
-      await etapi.getEtapiContent(`notes/${note.noteId}/content`)
+    await etapi.getEtapiContent(`notes/${note.noteId}/content`)
     ).text();
     expect(content).toContain("test export content");
   });

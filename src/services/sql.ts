@@ -19,7 +19,7 @@ let statementCache: Record<string, Statement> = {};
 
 function buildDatabase() {
     if (process.env.TRILIUM_INTEGRATION_TEST === "memory") {
-        return buildIntegrationTestDatabase();        
+        return buildIntegrationTestDatabase();
     }
 
     return new Database(dataDir.DOCUMENT_PATH);
@@ -95,8 +95,8 @@ function upsert<T extends {}>(tableName: string, primaryKey: string, rec: T) {
 
     const updateMarks = keys.map(colName => `${colName} = @${colName}`).join(", ");
 
-    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${questionMarks}) 
-                   ON CONFLICT (${primaryKey}) DO UPDATE SET ${updateMarks}`;
+    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${questionMarks})
+                    ON CONFLICT (${primaryKey}) DO UPDATE SET ${updateMarks}`;
 
     for (const idx in rec) {
         if (rec[idx] === true || rec[idx] === false) {
@@ -345,60 +345,60 @@ export default {
     replace,
 
     /**
-     * Get single value from the given query - first column from first returned row.
-     *
-     * @param query - SQL query with ? used as parameter placeholder
-     * @param params - array of params if needed
-     * @returns single value
-     */
+    * Get single value from the given query - first column from first returned row.
+    *
+    * @param query - SQL query with ? used as parameter placeholder
+    * @param params - array of params if needed
+    * @returns single value
+    */
     getValue,
 
     /**
-     * Get first returned row.
-     *
-     * @param query - SQL query with ? used as parameter placeholder
-     * @param params - array of params if needed
-     * @returns - map of column name to column value
-     */
+    * Get first returned row.
+    *
+    * @param query - SQL query with ? used as parameter placeholder
+    * @param params - array of params if needed
+    * @returns - map of column name to column value
+    */
     getRow,
     getRowOrNull,
 
     /**
-     * Get all returned rows.
-     *
-     * @param query - SQL query with ? used as parameter placeholder
-     * @param params - array of params if needed
-     * @returns - array of all rows, each row is a map of column name to column value
-     */
+    * Get all returned rows.
+    *
+    * @param query - SQL query with ? used as parameter placeholder
+    * @param params - array of params if needed
+    * @returns - array of all rows, each row is a map of column name to column value
+    */
     getRows,
     getRawRows,
     iterateRows,
     getManyRows,
 
     /**
-     * Get a map of first column mapping to second column.
-     *
-     * @param query - SQL query with ? used as parameter placeholder
-     * @param params - array of params if needed
-     * @returns - map of first column to second column
-     */
+    * Get a map of first column mapping to second column.
+    *
+    * @param query - SQL query with ? used as parameter placeholder
+    * @param params - array of params if needed
+    * @returns - map of first column to second column
+    */
     getMap,
 
     /**
-     * Get a first column in an array.
-     *
-     * @param query - SQL query with ? used as parameter placeholder
-     * @param params - array of params if needed
-     * @returns array of first column of all returned rows
-     */
+    * Get a first column in an array.
+    *
+    * @param query - SQL query with ? used as parameter placeholder
+    * @param params - array of params if needed
+    * @returns array of first column of all returned rows
+    */
     getColumn,
 
     /**
-     * Execute SQL
-     *
-     * @param query - SQL query with ? used as parameter placeholder
-     * @param params - array of params if needed
-     */
+    * Execute SQL
+    *
+    * @param query - SQL query with ? used as parameter placeholder
+    * @param params - array of params if needed
+    */
     execute,
     executeMany,
     executeScript,

@@ -9,7 +9,7 @@ export default class OpenNoteButtonWidget extends OnClickButtonWidget {
 
         this.noteToOpen = noteToOpen;
 
-        this.title(() => this.noteToOpen.title)
+        this.title(() => utils.escapeHtml(this.noteToOpen.title))
             .icon(() => this.noteToOpen.getIcon())
             .onClick((widget, evt) => this.launch(evt))
             .onAuxClick((widget, evt) => this.launch(evt))

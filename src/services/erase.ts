@@ -100,9 +100,9 @@ function eraseUnusedBlobs() {
         LEFT JOIN notes ON notes.blobId = blobs.blobId
         LEFT JOIN attachments ON attachments.blobId = blobs.blobId
         LEFT JOIN revisions ON revisions.blobId = blobs.blobId
-        WHERE notes.noteId IS NULL 
-          AND attachments.attachmentId IS NULL
-          AND revisions.revisionId IS NULL`);
+        WHERE notes.noteId IS NULL
+        AND attachments.attachmentId IS NULL
+        AND revisions.revisionId IS NULL`);
 
     if (unusedBlobIds.length === 0) {
         return;
@@ -181,7 +181,7 @@ export function startScheduledCleanup() {
         // first cleanup kickoff 5 minutes after startup
         setTimeout(cls.wrap(() => eraseDeletedEntities()), 5 * 60 * 1000);
         setTimeout(cls.wrap(() => eraseScheduledAttachments()), 6 * 60 * 1000);
-    
+
         setInterval(cls.wrap(() => eraseDeletedEntities()), 4 * 3600 * 1000);
         setInterval(cls.wrap(() => eraseScheduledAttachments()), 3600 * 1000);
     });

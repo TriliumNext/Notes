@@ -12,7 +12,7 @@ class ScriptContext {
     notes: {};
     apis: {};
     allNotes: BNote[];
-    
+
     constructor(allNotes: BNote[], apiParams: ApiParams) {
         this.allNotes = allNotes;
         this.modules = {};

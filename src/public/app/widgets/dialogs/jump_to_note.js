@@ -12,7 +12,7 @@ const TPL = `<div class="jump-to-note-dialog modal mx-auto" tabindex="-1" role="
                 <div class="input-group">
                     <input class="jump-to-note-autocomplete form-control" placeholder="${t('jump_to_note.search_placeholder')}">
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('jump_to_note.close')}"></button>
             </div>
             <div class="modal-body">
                 <div class="algolia-autocomplete-container jump-to-note-results"></div>

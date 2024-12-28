@@ -1,0 +1,79 @@
+@import url(./shell.css);
+@import url(./settings.css);
+@import url(./notes/text.css);
+
+@font-face {
+    font-family: "Noto Sans";
+    src: url(../fonts/Noto_Sans/NotoSans-VariableFont_wdth\,wght.ttf);
+}
+
+@font-face {
+    font-family: "Ubuntu Sans";
+    src: url(../fonts/Ubuntu_Sans/UbuntuSans-VariableFont_wdth\,wght.ttf);
+}
+
+@font-face {
+    font-family: "Nunito";
+    src: url(../fonts/Nunito/Nunito-VariableFont_wght.ttf);
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url(../fonts/Inter/Inter-VariableFont_opsz\,wght.ttf);
+}
+
+:root {
+    /* --main-font-family: "Noto Sans", sans-serif; */
+    --main-font-family: "Segoe UI", sans-serif;
+    /* --main-font-family: "Ubuntu", sans-serif; */
+    /* --main-font-family: "Nunito", sans-serif; */
+    /* --main-font-family: "Inter", sans-serif; */
+
+    --main-font-size: normal;
+
+    --tree-font-family: var(--main-font-family);
+    --tree-font-size: normal;
+
+    --detail-font-family: var(--main-font-family);
+    --detail-font-size: normal;
+
+    --monospace-font-family: JetBrainsLight;
+    --monospace-font-size: normal;
+
+    --left-pane-item-selected-shadow-size: 2px;
+
+    --launcher-pane-size: 58px;
+    --launcher-pane-horizontal-size: 54px;
+    --launcher-pane-horizontal-icon-size: 20px;    
+    --launcher-pane-button-margin: 6px;
+    --launcher-pane-button-gap: 3px;
+
+    --tree-actions-toolbar-horizontal-margin: 8px;
+    --tree-actions-toolbar-vertical-margin: 8px;
+    --tree-actions-toolbar-padding-size: 4px;
+    --tree-actions-toolbar-collapsed-width: 40px;
+    --tree-actions-toolbar-expand-button-size: 25px;
+
+    --tab-bar-height: 50px;
+    --tab-height: 36px;
+    --tab-first-item-horiz-offset: 1px;
+    --new-tab-button-size: 24px;
+
+    --center-pane-border-radius: 10px;
+
+    --menu-padding-size: 8px;
+    --menu-item-icon-vert-offset: 0;    
+
+    --more-accented-background-color: var(--card-background-hover-color);
+
+    --timeline-left-gap: 20px;
+    --timeline-right-gap: 20px;
+    --timeline-item-top-padding: 4px;
+    --timeline-item-bottom-padding: 8px;
+    --timeline-bullet-size: 10px;
+    --timeline-bullet-vertical-pos: .75em;
+    --timeline-connector-size: 4px;
+
+    /* Theme capabilities */
+    --tab-note-icons: true;
+}

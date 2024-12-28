@@ -160,9 +160,9 @@ function importHtml(taskContext: TaskContext, file: File, parentNote: BNote) {
 
     if (taskContext?.data?.safeImport) {
         content = htmlSanitizer.sanitize(content);
-    }    
+    }
 
-    
+
     const {note} = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title,
@@ -171,9 +171,9 @@ function importHtml(taskContext: TaskContext, file: File, parentNote: BNote) {
         mime: 'text/html',
         isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
     });
-    
+
     taskContext.increaseProgressCount();
-    
+
     return note;
 }
 

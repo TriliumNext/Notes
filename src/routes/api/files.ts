@@ -176,7 +176,7 @@ function saveToTmpDir(fileName: string, content: string | Buffer, entityType: st
     if (typeof content === "string") {
         fs.writeSync(tmpObj.fd, content);
     } else {
-        fs.writeSync(tmpObj.fd, content);   
+        fs.writeSync(tmpObj.fd, content);
     }
 
     fs.closeSync(tmpObj.fd);

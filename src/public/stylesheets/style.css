@@ -20,37 +20,43 @@
 }
 
 :root {
-    --submenu-opening-delay: 300ms;    
+    --submenu-opening-delay: 300ms;
+    --launcher-pane-size: 53px;
 }
 
 html {
     /* this fixes FF filter vs. position fixed bug: https://github.com/zadam/trilium/issues/233 */
-    height: 100%;
+    height: 100vh;
+    overscroll-behavior: none;
 }
 
 body {
     /* Fix for CKEditor block gutter icon "stretching" body and causing scrollbar to appear after pressing enter
-       on the last line of the editor. */
+        on the last line of the editor. */
     position: fixed;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-color: var(--main-background-color);
     color: var(--main-text-color);
     font-family: var(--main-font-family);
     font-size: var(--main-font-size);
 
-    --native-titlebar-background: var(--main-background-color);
     --native-titlebar-foreground: var(--main-text-color);
     --native-titlebar-darwin-x-offset: 10;
     --native-titlebar-darwin-y-offset: 12;
 }
 
-body.layout-horizontal {
-    --native-titlebar-background: var(--left-pane-background-color);
-}
-
 body.mobile .desktop-only {
     display: none !important;
+}
+
+body.mobile.context-menu-shown * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+#root-widget {
+    padding-top: env(safe-area-inset-top);
 }
 
 a {
@@ -257,18 +263,21 @@ div.ui-tooltip {
     }
 }
 
-.dropdown-menu {
-    border: 1px solid var(--dropdown-border-color);
+.dropdown-menu {    
     color: var(--menu-text-color) !important;
+    font-size: inherit;       
     background-color: var(--menu-background-color) !important;
-    font-size: inherit;
+}
+
+body.desktop .dropdown-menu {
+    border: 1px solid var(--dropdown-border-color);
     box-shadow: 0px 10px 20px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
     animation: dropdown-menu-opening 100ms ease-in;
 }
 
 @supports(animation-fill-mode: forwards) {
     /* Delay the opening of submenus */
-    .dropdown-submenu .dropdown-menu {
+    body.desktop .dropdown-submenu .dropdown-menu {
         opacity: 0;
         animation-fill-mode: forwards;
         animation-delay: var(--submenu-opening-delay);
@@ -956,9 +965,43 @@ a.external:not(.no-arrow):after, a[href^="http://"]:not(.no-arrow):after, a[href
     cursor: row-resize;
 }
 
+#context-menu-cover.show {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.1);
+}
+
 #context-menu-container {
     max-height: 100vh;
     /* !!! Cannot set overflow: auto, submenus will break !!! */
+}
+
+body.mobile #context-menu-container {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: unset !important;
+    max-height: 70vh;
+    overflow: auto !important;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body.mobile .dropdown-menu {
+    position: static !important;
+}
+
+body.mobile .dropdown-submenu > .dropdown-menu {
+    border: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    top: unset !important;
+    margin-top: 0 !important;
 }
 
 #context-menu-container, #context-menu-container .dropdown-menu {
@@ -969,9 +1012,11 @@ a.external:not(.no-arrow):after, a[href^="http://"]:not(.no-arrow):after, a[href
 #context-menu-container .dropdown-item {
     padding: 0 7px 0 10px;
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-li.dropdown-submenu:hover > ul.dropdown-menu {
+body.desktop li.dropdown-submenu:hover > ul.dropdown-menu {
     display: block;
 }
 
@@ -1102,7 +1147,7 @@ body:not(.mobile) #launcher-pane.horizontal .dropdown-submenu > .dropdown-menu {
     cursor: pointer;
     border: none;
     color: var(--launcher-pane-text-color);
-    background-color: var(--launcher-pane-background-color);    
+    background-color: var(--launcher-pane-background-color);
 }
 
 #launcher-pane.vertical .launcher-button {
@@ -1128,9 +1173,50 @@ body:not(.mobile) #launcher-pane.horizontal .dropdown-submenu > .dropdown-menu {
     background-color: var(--left-pane-background-color);
 }
 
+#mobile-sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;   
+    right: 0; 
+    bottom: var(--launcher-pane-size);    
+    z-index: -1000;
+}
+
+#mobile-sidebar-container.show {
+    padding-top: env(safe-area-inset-top);
+    z-index: 1000;        
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: background-color 250ms ease-in-out;
+}
+
+#mobile-sidebar-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 80vw;
+    padding-top: env(safe-area-inset-top);
+    transform: translateX(-100%);
+    transition: transform 250ms ease-in-out;
+    background: var(--main-background-color);
+}
+
+#mobile-sidebar-container.show #mobile-sidebar-wrapper {
+    transform: translateX(0);
+}
+
 #launcher-pane {
     color: var(--launcher-pane-text-color);
     background-color: var(--launcher-pane-background-color);
+}
+
+body.mobile #launcher-pane .dropdown-menu.show {
+    position: fixed !important;
+    bottom: var(--launcher-pane-size) !important;
+    top: unset !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: unset !important;
 }
 
 #right-pane {
@@ -1302,6 +1388,20 @@ body.electron.platform-darwin:not(.native-titlebar) .tab-row-container {
     width: 24px;
     height: 24px;
     color: var(--launcher-pane-text-color);
-    margin: 8px 10px;    
+    margin: 8px 10px;
     font-size: 18px;
+}
+
+.recent-changes-content li > span:first-child::after {
+    content: " - ";
+}
+
+.recent-changes-content li {
+    border: 1px solid transparent;
+}
+
+.recent-changes-content li:not(.deleted-note):hover {
+    border-color: var(--hover-item-border-color);
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
 }

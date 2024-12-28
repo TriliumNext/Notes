@@ -153,7 +153,7 @@ async function doLogin(): Promise<SyncContext> {
     return syncContext;
 }
 
-async function pullChanges(syncContext: SyncContext) {    
+async function pullChanges(syncContext: SyncContext) {
     while (true) {
         const lastSyncedPull = getLastSyncedPull();
         const logMarkerId = utils.randomString(10); // to easily pair sync events between client and server logs

@@ -61,53 +61,53 @@ interface NoteAndBranch {
 
 interface Api {
     /**
-     * Note where the script started executing (entrypoint).
-     * As an analogy, in C this would be the file which contains the main() function of the current process.
-     */
+    * Note where the script started executing (entrypoint).
+    * As an analogy, in C this would be the file which contains the main() function of the current process.
+    */
     startNote?: BNote | null;
 
     /**
-     * Note where the script is currently executing. This comes into play when your script is spread in multiple code
-     * notes, the script starts in "startNote", but then through function calls may jump into another note (currentNote).
-     * A similar concept in C would be __FILE__
-     * Don't mix this up with the concept of active note.
-     */
+    * Note where the script is currently executing. This comes into play when your script is spread in multiple code
+    * notes, the script starts in "startNote", but then through function calls may jump into another note (currentNote).
+    * A similar concept in C would be __FILE__
+    * Don't mix this up with the concept of active note.
+    */
     currentNote: BNote;
 
     /**
-     * Entity whose event triggered this execution
-     */
+    * Entity whose event triggered this execution
+    */
     originEntity?: AbstractBeccaEntity<any> | null;
-    
+
     /**
-     * Axios library for HTTP requests. See {@link https://axios-http.com} for documentation
-     * @deprecated use native (browser compatible) fetch() instead
-     */
+    * Axios library for HTTP requests. See {@link https://axios-http.com} for documentation
+    * @deprecated use native (browser compatible) fetch() instead
+    */
     axios: typeof axios;
 
     /**
-     * day.js library for date manipulation. See {@link https://day.js.org} for documentation
-     */
+    * day.js library for date manipulation. See {@link https://day.js.org} for documentation
+    */
     dayjs: typeof dayjs;
 
     /**
-     * xml2js library for XML parsing. See {@link https://github.com/Leonidas-from-XIV/node-xml2js} for documentation
-     */
+    * xml2js library for XML parsing. See {@link https://github.com/Leonidas-from-XIV/node-xml2js} for documentation
+    */
 
     xml2js: typeof xml2js;
 
     /**
-     * cheerio library for HTML parsing and manipulation. See {@link https://cheerio.js.org} for documentation
-     */
+    * cheerio library for HTML parsing and manipulation. See {@link https://cheerio.js.org} for documentation
+    */
 
     cheerio: typeof cheerio;
-    
+
     /**
-     * Instance name identifies particular Trilium instance. It can be useful for scripts
-     * if some action needs to happen on only one specific instance.
-     */
+    * Instance name identifies particular Trilium instance. It can be useful for scripts
+    * if some action needs to happen on only one specific instance.
+    */
     getInstanceName(): string | null;
-    
+
     getNote(noteId: string): BNote | null;
     getBranch(branchId: string): BBranch | null;
     getAttribute(attachmentId: string): BAttribute | null;
@@ -118,78 +118,78 @@ interface Api {
     getOption(optionName: string): BOption | null;
     getOptions(): BOption[];
     getAttribute(attributeId: string): BAttribute | null;
-    
+
     /**
-     * This is a powerful search method - you can search by attributes and their values, e.g.:
-     * "#dateModified =* MONTH AND #log". See {@link https://triliumnext.github.io/Docs/Wiki/search.html} for full documentation for all options
-     */
+    * This is a powerful search method - you can search by attributes and their values, e.g.:
+    * "#dateModified =* MONTH AND #log". See {@link https://triliumnext.github.io/Docs/Wiki/search.html} for full documentation for all options
+    */
     searchForNotes(query: string, searchParams: SearchParams): BNote[];
-    
+
     /**
-     * This is a powerful search method - you can search by attributes and their values, e.g.:
-     * "#dateModified =* MONTH AND #log". See {@link https://triliumnext.github.io/Docs/Wiki/search.html} for full documentation for all options
-     */
+    * This is a powerful search method - you can search by attributes and their values, e.g.:
+    * "#dateModified =* MONTH AND #log". See {@link https://triliumnext.github.io/Docs/Wiki/search.html} for full documentation for all options
+    */
     searchForNote(query: string, searchParams: SearchParams): BNote | null;
-    
+
     /**
-     * Retrieves notes with given label name & value
-     *
-     * @param name - attribute name
-     * @param value - attribute value
-     */
+    * Retrieves notes with given label name & value
+    *
+    * @param name - attribute name
+    * @param value - attribute value
+    */
     getNotesWithLabel(name: string, value?: string): BNote[];
 
     /**
-     * Retrieves first note with given label name & value
-     *
-     * @param name - attribute name
-     * @param value - attribute value
-     */
+    * Retrieves first note with given label name & value
+    *
+    * @param name - attribute name
+    * @param value - attribute value
+    */
     getNoteWithLabel(name: string, value?: string): BNote | null;
 
     /**
-     * If there's no branch between note and parent note, create one. Otherwise, do nothing. Returns the new or existing branch.
-     *
-     * @param prefix - if branch is created between note and parent note, set this prefix
-     */
+    * If there's no branch between note and parent note, create one. Otherwise, do nothing. Returns the new or existing branch.
+    *
+    * @param prefix - if branch is created between note and parent note, set this prefix
+    */
     ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefix: string): {
         branch: BBranch | null
     };
 
     /**
-     * If there's a branch between note and parent note, remove it. Otherwise, do nothing.
-     */
+    * If there's a branch between note and parent note, remove it. Otherwise, do nothing.
+    */
     ensureNoteIsAbsentFromParent(noteId: string, parentNoteId: string): void;
 
     /**
-     * Based on the value, either create or remove branch between note and parent note.
-     *
-     * @param present - true if we want the branch to exist, false if we want it gone
-     * @param prefix - if branch is created between note and parent note, set this prefix
-     */
+    * Based on the value, either create or remove branch between note and parent note.
+    *
+    * @param present - true if we want the branch to exist, false if we want it gone
+    * @param prefix - if branch is created between note and parent note, set this prefix
+    */
     toggleNoteInParent(present: true, noteId: string, parentNoteId: string, prefix: string): void;
 
     /**
-     * Create text note. See also createNewNote() for more options.
-     */
+    * Create text note. See also createNewNote() for more options.
+    */
     createTextNote(parentNoteId: string, title: string, content: string): NoteAndBranch;
 
     /**
-     * Create data note - data in this context means object serializable to JSON. Created note will be of type 'code' and
-     * JSON MIME type. See also createNewNote() for more options.
-     */
+    * Create data note - data in this context means object serializable to JSON. Created note will be of type 'code' and
+    * JSON MIME type. See also createNewNote() for more options.
+    */
     createDataNote(parentNoteId: string, title: string, content: {}): NoteAndBranch;
 
     /**
-     * @returns object contains newly created entities note and branch
-     */
+    * @returns object contains newly created entities note and branch
+    */
     createNewNote(params: NoteParams): NoteAndBranch;
 
     /**
-     * @deprecated please use createTextNote() with similar API for simpler use cases or createNewNote() for more complex needs
-     * @param parentNoteId - create new note under this parent
-     * @returns object contains newly created entities note and branch
-     */
+    * @deprecated please use createTextNote() with similar API for simpler use cases or createNewNote() for more complex needs
+    * @param parentNoteId - create new note under this parent
+    * @returns object contains newly created entities note and branch
+    */
     createNote(parentNoteId: string, title: string, content: string, extraOptions: Omit<NoteParams, "title" | "content" | "type" | "parentNoteId"> & {
         /** should the note be JSON */
         json?: boolean;
@@ -200,37 +200,37 @@ interface Api {
     logSpacedUpdates: Record<string, SpacedUpdate>;
 
     /**
-     * Log given message to trilium logs and log pane in UI
-     */
+    * Log given message to trilium logs and log pane in UI
+    */
     log(message: string): void;
 
     /**
-     * Returns root note of the calendar.
-     */
+    * Returns root note of the calendar.
+    */
     getRootCalendarNote(): BNote | null;
 
     /**
-     * Returns day note for given date. If such note doesn't exist, it is created.
-     *
-     * @method
-     * @param date in YYYY-MM-DD format
-     * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
-     */
+    * Returns day note for given date. If such note doesn't exist, it is created.
+    *
+    * @method
+    * @param date in YYYY-MM-DD format
+    * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
+    */
     getDayNote(date: string, rootNote?: BNote): BNote | null;
 
     /**
-     * Returns today's day note. If such note doesn't exist, it is created.
-     * 
-     * @param rootNote specify calendar root note, normally leave empty to use the default calendar
-     */
+    * Returns today's day note. If such note doesn't exist, it is created.
+    *
+    * @param rootNote specify calendar root note, normally leave empty to use the default calendar
+    */
     getTodayNote(rootNote?: BNote): BNote | null;
 
     /**
-     * Returns note for the first date of the week of the given date.
-     *
-     * @param date in YYYY-MM-DD format
-     * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
-     */
+    * Returns note for the first date of the week of the given date.
+    *
+    * @param date in YYYY-MM-DD format
+    * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
+    */
     getWeekNote(date: string, options: {
         // TODO: Deduplicate type with date_notes.ts once ES modules are added.
         /** either "monday" (default) or "sunday" */
@@ -238,90 +238,90 @@ interface Api {
     }, rootNote: BNote): BNote | null;
 
     /**
-     * Returns month note for given date. If such a note doesn't exist, it is created.
-     *
-     * @param date in YYYY-MM format
-     * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
-     */
+    * Returns month note for given date. If such a note doesn't exist, it is created.
+    *
+    * @param date in YYYY-MM format
+    * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
+    */
     getMonthNote(date: string, rootNote: BNote): BNote | null;
 
     /**
-     * Returns year note for given year. If such a note doesn't exist, it is created.
-     *
-     * @param year in YYYY format
-     * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
-     */
+    * Returns year note for given year. If such a note doesn't exist, it is created.
+    *
+    * @param year in YYYY format
+    * @param rootNote - specify calendar root note, normally leave empty to use the default calendar
+    */
     getYearNote(year: string, rootNote?: BNote): BNote | null;
 
     /**
-     * Sort child notes of a given note.
-     */
+    * Sort child notes of a given note.
+    */
     sortNotes(parentNoteId: string, sortConfig: {
         /** 'title', 'dateCreated', 'dateModified' or a label name
-          * See {@link https://triliumnext.github.io/Docs/Wiki/sorting.html} for details. */
+        * See {@link https://triliumnext.github.io/Docs/Wiki/sorting.html} for details. */
         sortBy?: string;
         reverse?: boolean;
         foldersFirst?: boolean;
     }): void;
 
     /**
-     * This method finds note by its noteId and prefix and either sets it to the given parentNoteId
-     * or removes the branch (if parentNoteId is not given).
-     *
-     * This method looks similar to toggleNoteInParent() but differs because we're looking up branch by prefix.
-     *
-     * @deprecated this method is pretty confusing and serves specialized purpose only
-     */
+    * This method finds note by its noteId and prefix and either sets it to the given parentNoteId
+    * or removes the branch (if parentNoteId is not given).
+    *
+    * This method looks similar to toggleNoteInParent() but differs because we're looking up branch by prefix.
+    *
+    * @deprecated this method is pretty confusing and serves specialized purpose only
+    */
     setNoteToParent(noteId: string, prefix: string, parentNoteId: string | null): void;
 
     /**
-     * This functions wraps code which is supposed to be running in transaction. If transaction already
-     * exists, then we'll use that transaction.
-     *
-     * @param func
-     * @returns result of func callback
-     */
+    * This functions wraps code which is supposed to be running in transaction. If transaction already
+    * exists, then we'll use that transaction.
+    *
+    * @param func
+    * @returns result of func callback
+    */
     transactional(func: () => void): any;
 
     /**
-     * Return randomly generated string of given length. This random string generation is NOT cryptographically secure.
-     *
-     * @param length of the string
-     * @returns random string
-     */
+    * Return randomly generated string of given length. This random string generation is NOT cryptographically secure.
+    *
+    * @param length of the string
+    * @returns random string
+    */
     randomString(length: number): string;
 
     /**
-     * @param to escape
-     * @returns escaped string
-     */
+    * @param to escape
+    * @returns escaped string
+    */
     escapeHtml(string: string): string;
 
     /**
-     * @param string to unescape
-     * @returns unescaped string
-     */
+    * @param string to unescape
+    * @returns unescaped string
+    */
     unescapeHtml(string: string): string;
 
     /**
-     * sql
-     * @type {module:sql}
-     */
+    * sql
+    * @type {module:sql}
+    */
     sql: any;
 
     getAppInfo(): typeof appInfo;
 
     /**
-     * Creates a new launcher to the launchbar. If the launcher (id) already exists, it will be updated.
-     */
+    * Creates a new launcher to the launchbar. If the launcher (id) already exists, it will be updated.
+    */
     createOrUpdateLauncher(opts: {
         /** id of the launcher, only alphanumeric at least 6 characters long */
         id: string;
         /** one of
-         * - "note" - activating the launcher will navigate to the target note (specified in targetNoteId param)
-         * - "script" -  activating the launcher will execute the script (specified in scriptNoteId param)
-         * - "customWidget" - the launcher will be rendered with a custom widget (specified in widgetNoteId param)
-         */
+        * - "note" - activating the launcher will navigate to the target note (specified in targetNoteId param)
+        * - "script" -  activating the launcher will execute the script (specified in scriptNoteId param)
+        * - "customWidget" - the launcher will be rendered with a custom widget (specified in widgetNoteId param)
+        */
         type: "note" | "script" | "customWidget";
         title: string;
         /** if true, will be created in the "Visible launchers", otherwise in "Available launchers" */
@@ -339,44 +339,44 @@ interface Api {
     }): { note: BNote };
 
     /**
-     * @param format - either 'html' or 'markdown'
-     */
+    * @param format - either 'html' or 'markdown'
+    */
     exportSubtreeToZipFile(noteId: string, format: "markdown" | "html", zipFilePath: string): Promise<void>;
 
     /**
-     * Executes given anonymous function on the frontend(s).
-     * Internally, this serializes the anonymous function into string and sends it to frontend(s) via WebSocket.
-     * Note that there can be multiple connected frontend instances (e.g. in different tabs). In such case, all
-     * instances execute the given function.
-     *
-     * @param script - script to be executed on the frontend
-     * @param params - list of parameters to the anonymous function to be sent to frontend
-     * @returns no return value is provided.
-     */
+    * Executes given anonymous function on the frontend(s).
+    * Internally, this serializes the anonymous function into string and sends it to frontend(s) via WebSocket.
+    * Note that there can be multiple connected frontend instances (e.g. in different tabs). In such case, all
+    * instances execute the given function.
+    *
+    * @param script - script to be executed on the frontend
+    * @param params - list of parameters to the anonymous function to be sent to frontend
+    * @returns no return value is provided.
+    */
     runOnFrontend(script: () => void | string, params: []): void;
 
     /**
-     * Sync process can make data intermittently inconsistent. Scripts which require strong data consistency
-     * can use this function to wait for a possible sync process to finish and prevent new sync process from starting
-     * while it is running.
-     *
-     * Because this is an async process, the inner callback doesn't have automatic transaction handling, so in case
-     * you need to make some DB changes, you need to surround your call with api.transactional(...)
-     *
-     * @param callback - function to be executed while sync process is not running
-     * @returns resolves once the callback is finished (callback is awaited)
-     */
+    * Sync process can make data intermittently inconsistent. Scripts which require strong data consistency
+    * can use this function to wait for a possible sync process to finish and prevent new sync process from starting
+    * while it is running.
+    *
+    * Because this is an async process, the inner callback doesn't have automatic transaction handling, so in case
+    * you need to make some DB changes, you need to surround your call with api.transactional(...)
+    *
+    * @param callback - function to be executed while sync process is not running
+    * @returns resolves once the callback is finished (callback is awaited)
+    */
     runOutsideOfSync(callback: () => void): Promise<void>;
 
     /**
-     * @param backupName - If the backupName is e.g. "now", then the backup will be written to "backup-now.db" file
-     * @returns resolves once the backup is finished
-     */
+    * @param backupName - If the backupName is e.g. "now", then the backup will be written to "backup-now.db" file
+    * @returns resolves once the backup is finished
+    */
     backupNow(backupName: string): Promise<string>;
 
-     /**
-     * This object contains "at your risk" and "no BC guarantees" objects for advanced use cases.
-     */
+    /**
+    * This object contains "at your risk" and "no BC guarantees" objects for advanced use cases.
+    */
     __private: {
         /** provides access to the backend in-memory object graph, see {@link Becca} */
         becca: Becca;
@@ -392,9 +392,9 @@ interface Api {
  */
 function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.startNote = apiParams.startNote;
-    
+
     this.currentNote = currentNote;
-    
+
     this.originEntity = apiParams.originEntity;
 
     for (const key in apiParams) {
@@ -416,7 +416,7 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.getOption = optionName => becca.getOption(optionName);
     this.getOptions = () => optionsService.getOptions();
     this.getAttribute = attributeId => becca.getAttribute(attributeId);
-    
+
     this.searchForNotes = (query, searchParams = {}) => {
         if (searchParams.includeArchivedNotes === undefined) {
             searchParams.includeArchivedNotes = true;
@@ -432,14 +432,14 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
         return becca.getNotes(noteIds);
     };
 
-    
+
     this.searchForNote = (query, searchParams = {}) => {
         const notes = this.searchForNotes(query, searchParams);
 
         return notes.length > 0 ? notes[0] : null;
     };
 
-    this.getNotesWithLabel = attributeService.getNotesWithLabel;    
+    this.getNotesWithLabel = attributeService.getNotesWithLabel;
     this.getNoteWithLabel = attributeService.getNoteWithLabel;
     this.ensureNoteIsPresentInParent = cloningService.ensureNoteIsPresentInParent;
     this.ensureNoteIsAbsentFromParent = cloningService.ensureNoteIsAbsentFromParent;
@@ -458,9 +458,9 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
         type: 'code',
         mime: 'application/json'
     });
-    
+
     this.createNewNote = noteService.createNewNote;
-    
+
     this.createNote = (parentNoteId, title, content = "", _extraOptions = {}) => {
         const parentNote = becca.getNote(parentNoteId);
         if (!parentNote) {
@@ -507,7 +507,7 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
 
     this.logMessages = {};
     this.logSpacedUpdates = {};
-    
+
     this.log = message => {
         log.info(message);
 
@@ -555,7 +555,7 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
     this.sql = sql;
     this.getAppInfo = () => appInfo;
 
-    
+
     this.createOrUpdateLauncher = opts => {
         if (!opts.id) { throw new Error("ID is a mandatory parameter for api.createOrUpdateLauncher(opts)"); }
         if (!opts.id.match(/[a-z0-9]{6,1000}/i)) { throw new Error(`ID must be an alphanumeric string at least 6 characters long.`); }
@@ -650,10 +650,10 @@ function BackendScriptApi(this: Api, currentNote: BNote, apiParams: ApiParams) {
             });
         }
     };
-    
+
     this.runOutsideOfSync = syncMutex.doExclusively;
     this.backupNow = backupService.backupNow;
-   
+
     this.__private = {
         becca
     }

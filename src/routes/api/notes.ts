@@ -219,9 +219,9 @@ function getDeleteNotesPreview(req: Request) {
         brokenRelations = sql.getRows<AttributeRow>(`
             SELECT attr.noteId, attr.name, attr.value
             FROM attributes attr
-                     JOIN param_list ON param_list.paramId = attr.value
+                    JOIN param_list ON param_list.paramId = attr.value
             WHERE attr.isDeleted = 0
-              AND attr.type = 'relation'`).filter(attr => attr.noteId && !noteIdsToBeDeleted.has(attr.noteId));
+            AND attr.type = 'relation'`).filter(attr => attr.noteId && !noteIdsToBeDeleted.has(attr.noteId));
     }
 
     return {

@@ -11,7 +11,7 @@ const TPL = `
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">${t('include_note.dialog_title')}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('include_note.close')}"></button>
             </div>
             <form class="include-note-form">
                 <div class="modal-body">

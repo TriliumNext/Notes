@@ -48,7 +48,7 @@ function installLocalAppIcon() {
 
             fs.writeFile(desktopFilePath, getDesktopFileContent(), function (err) {
                 if (err) {
-                   log.error("Desktop icon installation to ~/.local/share/applications failed.");
+                    log.error("Desktop icon installation to ~/.local/share/applications failed.");
                 }
             });
         }
@@ -66,7 +66,7 @@ function escapePath(path: string) {
 }
 
 function getExePath() {
-     return path.resolve(resourceDir.ELECTRON_APP_ROOT_DIR, 'trilium');
+    return path.resolve(resourceDir.ELECTRON_APP_ROOT_DIR, 'trilium');
 }
 
 export default {

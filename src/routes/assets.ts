@@ -15,9 +15,26 @@ const persistentCacheStatic = (root: string, options?: serveStatic.ServeStaticOp
     return express.static(root, options);
 };
 
-function register(app: express.Application) {
+async function register(app: express.Application) {
     const srcRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+    if (env.isDev()) {
+    const webpack = (await import("webpack")).default;
+    const webpackMiddleware = (await import("webpack-dev-middleware")).default;
+    const productionConfig = (await import("../../webpack.config.js")).default;
+
+    const frontendCompiler = webpack({
+        mode: "development",
+        entry: productionConfig.entry,
+        module: productionConfig.module,
+        resolve: productionConfig.resolve,
+        devtool: productionConfig.devtool,
+        target: productionConfig.target
+    });
+
+    app.use(`/${assetPath}/app`, webpackMiddleware(frontendCompiler));
+    } else {
     app.use(`/${assetPath}/app`, persistentCacheStatic(path.join(srcRoot, 'public/app')));
+    }
     app.use(`/${assetPath}/app-dist`, persistentCacheStatic(path.join(srcRoot, 'public/app-dist')));
     app.use(`/${assetPath}/fonts`, persistentCacheStatic(path.join(srcRoot, 'public/fonts')));
     app.use(`/assets/vX/fonts`, express.static(path.join(srcRoot, 'public/fonts')));
@@ -39,19 +56,19 @@ function register(app: express.Application) {
 
     // KaTeX
     app.use(
-      `/${assetPath}/node_modules/katex/dist/katex.min.js`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/katex.min.js')));
+    `/${assetPath}/node_modules/katex/dist/katex.min.js`,
+    persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/katex.min.js')));
     app.use(
-      `/${assetPath}/node_modules/katex/dist/contrib/mhchem.min.js`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/mhchem.min.js')));
+    `/${assetPath}/node_modules/katex/dist/contrib/mhchem.min.js`,
+    persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/mhchem.min.js')));
     app.use(
-      `/${assetPath}/node_modules/katex/dist/contrib/auto-render.min.js`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/auto-render.min.js')));
+    `/${assetPath}/node_modules/katex/dist/contrib/auto-render.min.js`,
+    persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/contrib/auto-render.min.js')));
     // expose the whole dist folder
     app.use(`/node_modules/katex/dist/`,
-      express.static(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
+    express.static(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
     app.use(`/${assetPath}/node_modules/katex/dist/`,
-      persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
+    persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/katex/dist/')));
 
     app.use(`/${assetPath}/node_modules/dayjs/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/dayjs/')));
     app.use(`/${assetPath}/node_modules/force-graph/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/force-graph/dist/')));
@@ -81,9 +98,9 @@ function register(app: express.Application) {
     app.use(`/${assetPath}/node_modules/jsplumb/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/jsplumb/dist/')));
 
     app.use(`/${assetPath}/node_modules/vanilla-js-wheel-zoom/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/vanilla-js-wheel-zoom/dist/')));
-    
+
     app.use(`/${assetPath}/node_modules/mark.js/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/mark.js/dist/')));
-    
+
     // Deprecated, https://www.npmjs.com/package/autocomplete.js?activeTab=readme
     app.use(`/${assetPath}/node_modules/autocomplete.js/dist/`, persistentCacheStatic(path.join(srcRoot, '..', 'node_modules/autocomplete.js/dist/')));
 

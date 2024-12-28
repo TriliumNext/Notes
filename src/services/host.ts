@@ -6,7 +6,7 @@ function getHost() {
     if (envHost && !utils.isElectron) {
         return envHost;
     }
-    
+
     return config['Network']['host'] || '0.0.0.0';
 }
 

@@ -18,12 +18,12 @@ function getEntityHashes() {
     const hashRows = sql.disableSlowQueryLogging(
         () => sql.getRawRows<HashRow>(`
             SELECT entityName,
-                   entityId,
-                   hash,
-                   isErased
+                    entityId,
+                    hash,
+                    isErased
             FROM entity_changes
             WHERE isSynced = 1
-              AND entityName != 'note_reordering'`)
+            AND entityName != 'note_reordering'`)
     );
 
     // sorting is faster in memory

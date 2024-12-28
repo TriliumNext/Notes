@@ -48,11 +48,11 @@ electron.app.on("ready", async () => {
     await windowService.createMainWindow(electron.app);
 
     if (process.platform === "darwin") {
-      electron.app.on("activate", async () => {
+    electron.app.on("activate", async () => {
         if (electron.BrowserWindow.getAllWindows().length === 0) {
-          await windowService.createMainWindow(electron.app);
+        await windowService.createMainWindow(electron.app);
         }
-      });
+    });
     }
 
     tray.createTray();

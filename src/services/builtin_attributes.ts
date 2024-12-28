@@ -8,6 +8,7 @@ export default [
     { type: 'label', name: 'disableInclusion' },
     { type: 'label', name: 'appCss' },
     { type: 'label', name: 'appTheme' },
+    { type: 'label', name: 'appThemeBase' },
     { type: 'label', name: 'hidePromotedAttributes' },
     { type: 'label', name: 'readOnly' },
     { type: 'label', name: 'autoReadOnlyDisabled' },

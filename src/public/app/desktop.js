@@ -16,7 +16,7 @@ bundleService.getWidgetBundlesByParent().then(async widgetBundles => {
     // A dynamic import is required for layouts since they initialize components which require translations.
     const DesktopLayout = (await import("./layouts/desktop_layout.js")).default;
 
-    appContext.setLayout(new DesktopLayout(widgetBundles));    
+    appContext.setLayout(new DesktopLayout(widgetBundles));
     appContext.start()
         .catch((e) => {
             toastService.showPersistent({
@@ -47,16 +47,16 @@ if (utils.isElectron()) {
 function initOnElectron() {
     const electron = utils.dynamicRequire('electron');
     electron.ipcRenderer.on('globalShortcut', async (event, actionName) => appContext.triggerCommand(actionName));
-    
-    const electronRemote = utils.dynamicRequire("@electron/remote");    
-    const currentWindow = electronRemote.getCurrentWindow();    
+
+    const electronRemote = utils.dynamicRequire("@electron/remote");
+    const currentWindow = electronRemote.getCurrentWindow();
     const style = window.getComputedStyle(document.body);
 
     initTransparencyEffects(style, currentWindow);
 
     if (options.get("nativeTitleBarVisible") !== "true") {
         initTitleBarButtons(style, currentWindow);
-    }    
+    }
 }
 
 function initTitleBarButtons(style, currentWindow) {
@@ -68,7 +68,7 @@ function initTitleBarButtons(style, currentWindow) {
                 currentWindow.setTitleBarOverlay({ color, symbolColor });
             }
         };
-        
+
         applyWindowsOverlay();
 
         // Register for changes to the native title bar colors.
@@ -80,7 +80,7 @@ function initTitleBarButtons(style, currentWindow) {
         const xOffset = parseInt(style.getPropertyValue("--native-titlebar-darwin-x-offset"), 10);
         const yOffset = parseInt(style.getPropertyValue("--native-titlebar-darwin-y-offset"), 10);
         currentWindow.setWindowButtonPosition({ x: xOffset, y: yOffset });
-    }    
+    }
 }
 
 function initTransparencyEffects(style, currentWindow) {

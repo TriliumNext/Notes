@@ -26,17 +26,17 @@ interface NotSyncedOpts {
 interface DefaultOption {
     name: string;
     /**
-     * The value to initialize the option with, if the option is not already present in the database.
-     * 
-     * If a function is passed in instead, the function is called if the option does not exist (with access to the current options) and the return value is used instead. Useful to migrate a new option with a value depending on some other option that might be initialized.
-     */
+    * The value to initialize the option with, if the option is not already present in the database.
+    *
+    * If a function is passed in instead, the function is called if the option does not exist (with access to the current options) and the return value is used instead. Useful to migrate a new option with a value depending on some other option that might be initialized.
+    */
     value: string | ((options: OptionMap) => string);
     isSynced: boolean;
 }
 
 /**
  * Initializes the default options for new databases only.
- * 
+ *
  * @param initialized `true` if the database has been fully initialized (i.e. a new database was created), or `false` if the database is created for sync.
  * @param opts additional options to be initialized, for example the sync configuration.
  */
@@ -56,10 +56,10 @@ async function initNotSyncedOptions(initialized: boolean, opts: NotSyncedOpts = 
     optionService.createOption('initialized', initialized ? 'true' : 'false', false);
 
     optionService.createOption('lastSyncedPull', '0', false);
-    optionService.createOption('lastSyncedPush', '0', false);    
+    optionService.createOption('lastSyncedPush', '0', false);
 
     optionService.createOption('theme', 'next', false);
-    
+
     optionService.createOption('syncServerHost', opts.syncServerHost || '', false);
     optionService.createOption('syncServerTimeout', '120000', false);
     optionService.createOption('syncProxy', opts.syncProxy || '', false);
@@ -134,6 +134,7 @@ const defaultOptions: DefaultOption[] = [
 
     // Text note configuration
     { name: "textNoteEditorType", value: "ckeditor-balloon", isSynced: true },
+    { name: "textNoteEditorMultilineToolbar", value: "false", isSynced: true },
 
     // HTML import configuration
     { name: "layoutOrientation", value: "vertical", isSynced: false },
@@ -163,7 +164,7 @@ const defaultOptions: DefaultOption[] = [
 
 /**
  * Initializes the options, by checking which options from {@link #allDefaultOptions()} are missing and registering them. It will also check some environment variables such as safe mode, to make any necessary adjustments.
- * 
+ *
  * This method is called regardless of whether a new database is created, or an existing database is used.
  */
 function initStartupOptions() {

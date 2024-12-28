@@ -15,7 +15,7 @@ const TPL = `
             <div class="modal-header">
                 <h5 class="modal-title flex-grow-1">${t('clone_to.clone_notes_to')}</h5>
                 <button type="button" class="help-button" title="${t('clone_to.help_on_links')}" data-help-page="cloning-notes.html">?</button>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('clone_to.close')}"></button>
             </div>
             <form class="clone-to-form">
                 <div class="modal-body">

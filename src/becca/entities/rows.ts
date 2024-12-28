@@ -40,7 +40,7 @@ export interface RecentNoteRow {
 
 /**
  * Database representation of an option.
- * 
+ *
  * Options are key-value pairs that are used to store information such as user preferences (for example
  * the current theme, sync server information), but also information about the state of the application).
  */

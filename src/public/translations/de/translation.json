@@ -87,13 +87,13 @@
   "export": {
     "export_note_title": "Notiz exportieren",
     "close": "Schließen",
-    "export_type_subtree": "diese Notiz und alle ihre Unternotizen",
+    "export_type_subtree": "Diese Notiz und alle ihre Unternotizen",
     "format_html_zip": "HTML im ZIP-Archiv – dies wird empfohlen, da dadurch die gesamte Formatierung erhalten bleibt.",
     "format_markdown": "Markdown – dadurch bleiben die meisten Formatierungen erhalten.",
     "format_opml": "OPML – Outliner-Austauschformat nur für Text. Formatierungen, Bilder und Dateien sind nicht enthalten.",
     "opml_version_1": "OPML v1.0 – nur Klartext",
     "opml_version_2": "OPML v2.0 – erlaubt auch HTML",
-    "export_type_single": "nur diese Notiz ohne ihre Unternotizen",
+    "export_type_single": "Nur diese Notiz ohne ihre Unternotizen",
     "export": "Export",
     "choose_export_type": "Bitte wähle zuerst den Exporttypen aus",
     "export_status": "Exportstatus",
@@ -147,7 +147,7 @@
     "numberedList": "<kbd>1.</kbd> oder <kbd>1)</kbd> gefolgt von Leerzeichen für nummerierte Liste",
     "blockQuote": "Beginne eine Zeile mit <kbd>></kbd> gefolgt von einem Leerzeichen für Blockzitate",
     "troubleshooting": "Fehlerbehebung",
-    "reloadFrontend": "Trillium-Frontend neuladen",
+    "reloadFrontend": "Trilium-Frontend neuladen",
     "showDevTools": "Entwicklertools anzeigen",
     "showSQLConsole": "SQL-Konsole anzeigen",
     "other": "Andere",
@@ -660,7 +660,7 @@
   },
   "code_buttons": {
     "execute_button_title": "Skript ausführen",
-    "trilium_api_docs_button_title": "Öffne die Trillium-API-Dokumentation",
+    "trilium_api_docs_button_title": "Öffne die Trilium-API-Dokumentation",
     "save_to_note_button_title": "In die Notiz speichern",
     "opening_api_docs_message": "API-Dokumentation wird geöffnet...",
     "sql_console_saved_message": "SQL-Konsolennotiz wurde in {{note_path}} gespeichert"

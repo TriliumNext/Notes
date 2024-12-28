@@ -82,9 +82,10 @@ export default class RootCommandExecutor extends Component {
     async showBackendLogCommand() {
         await appContext.tabManager.openTabWithNoteWithHoisting('_backendLog', { activate: true });
     }
-
+    
     async showLaunchBarSubtreeCommand() {
         await this.showAndHoistSubtree('_lbRoot');
+        this.showLeftPaneCommand();
     }
 
     async showShareSubtreeCommand() {

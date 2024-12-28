@@ -29,7 +29,7 @@ function changePassword(currentPassword: string, newPassword: string) {
         optionService.setOption('passwordDerivedKeySalt', utils.randomSecureToken(32));
 
         const newPasswordVerificationKey = utils.toBase64(myScryptService.getVerificationHash(newPassword));
-        
+
         if (decryptedDataKey) {
             // TODO: what should happen if the decrypted data key is null?
             passwordEncryptionService.setDataKey(newPassword, decryptedDataKey);

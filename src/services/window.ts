@@ -58,7 +58,7 @@ async function createMainWindow(app: App) {
             }
         ]);
     }
-    
+
     const windowStateKeeper = (await import('electron-window-state')).default; // should not be statically imported
 
     const mainWindowState = windowStateKeeper({
@@ -71,7 +71,7 @@ async function createMainWindow(app: App) {
 
     const { BrowserWindow } = (await import('electron')); // should not be statically imported
 
-    
+
 
     mainWindow = new BrowserWindow({
         x: mainWindowState.x,
@@ -84,7 +84,7 @@ async function createMainWindow(app: App) {
             contextIsolation: false,
             spellcheck: spellcheckEnabled,
             webviewTag: true
-        },        
+        },
         icon: getIcon(),
         ...getWindowExtraOpts()
     });
@@ -99,7 +99,7 @@ async function createMainWindow(app: App) {
 
     app.on('second-instance', (event, commandLine) => {
         if (commandLine.includes('--new-window')) {
-            createExtraWindow("");  
+            createExtraWindow("");
         } else if (mainWindow) {
             // Someone tried to run a second instance, we should focus our window.
             // see www.ts "requestSingleInstanceLock" for the rest of this logic with explanation
@@ -146,7 +146,7 @@ function configureWebContents(webContents: WebContents, spellcheckEnabled: boole
         async function openExternal() {
             (await import('electron')).shell.openExternal(details.url);
         }
-        
+
         openExternal();
         return { action: 'deny' }
     });

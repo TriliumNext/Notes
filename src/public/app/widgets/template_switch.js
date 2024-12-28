@@ -22,7 +22,6 @@ export default class TemplateSwitchWidget extends SwitchWidget {
         this.$switchOffButton.attr("title", t("template_switch.toggle-off-hint"));
 
         this.$helpButton.attr("data-help-page", "template.html").show();
-        this.$helpButton.on('click', e => utils.openHelp($(e.target)));
     }
 
     async switchOn() {

@@ -46,7 +46,7 @@ const TPL = `
                         title="${t("revisions.delete_all_revisions")}"
                         style="padding: 0 10px 0 10px;" type="button">${t("revisions.delete_all_button")}</button>
                 <button class="help-button" type="button" data-help-page="note-revisions.html" title="${t("revisions.help_title")}">?</button>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("revisions.close")}"></button>
             </div>
             <div class="modal-body" style="display: flex; height: 80vh;">
                 <div class="dropdown">

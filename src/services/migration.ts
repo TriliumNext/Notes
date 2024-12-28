@@ -75,8 +75,8 @@ async function migrate() {
                 await executeMigration(mig);
 
                 sql.execute(`UPDATE options
-                             SET value = ?
-                             WHERE name = ?`, [mig.dbVersion.toString(), "dbVersion"]);
+                            SET value = ?
+                            WHERE name = ?`, [mig.dbVersion.toString(), "dbVersion"]);
 
                 log.info(`Migration to version ${mig.dbVersion} has been successful.`);
             } catch (e: any) {

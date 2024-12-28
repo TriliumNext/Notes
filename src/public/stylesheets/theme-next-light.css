@@ -1,0 +1,145 @@
+/* Import the Next theme base style */
+@import url(./theme-next/base.css);
+
+/*
+ * Color scheme
+ */
+:root {
+    --theme-style: light;
+    --native-titlebar-background: #ffffff00;
+
+    --main-background-color: white;
+    --main-text-color: black;
+    --main-border-color: #dbdbdb;
+    --subtle-border-color: rgba(0, 0, 0, 0.1);
+    --dropdown-border-color: #ccc;
+    --dropdown-shadow-opacity: .2;
+    --dropdown-item-icon-destructive-color: #ec5138;
+    --disabled-tooltip-icon-color: #004382;
+
+    --accented-background-color: #f5f5f5;
+
+    --button-background-color: transparent;
+    --button-border-color: #ddd;
+    --button-text-color: black;
+    --button-border-radius: 5px;
+    --button-disabled-background-color: #ddd;
+    --button-disabled-text-color: black;
+
+    --primary-button-background-color: #6c757d;
+    --primary-button-text-color: white;
+    --primary-button-border-color: #6c757d;
+
+    --muted-text-color: #666;
+
+    --input-text-color: black;
+    --input-background-color: transparent;
+
+    --hover-item-text-color: black;
+    --hover-item-background-color: #0000001a;
+    --hover-item-border-color: transparent;
+
+    --active-item-text-color: var(--left-pane-text-color);
+    --active-item-background-color: #ddd;
+    --active-item-border-color: transparent;
+
+    --menu-text-color: #272727;
+    --menu-background-color: #ffffffd9;
+    --menu-item-icon-color: #727272;
+    --menu-item-disabled-opacity: .5;
+    --menu-item-keyboard-shortcut-color: #666666a8;
+    --menu-item-arrow-color: #00000080;
+    --menu-item-delimiter-color: #00000030;
+
+    --modal-background-color: white;
+    --modal-backdrop-color: black;
+
+    --quick-search-background: #00000012;
+    --quick-search-color: #06060682;
+    --quick-search-hover-background: #00000020;
+    --quick-search-focus-border: #00000029;
+    --quick-search-focus-background: #ffffff80;
+    --quick-search-focus-color: #000;
+
+    --left-pane-collapsed-border-color: #0000000d;
+    --left-pane-background-color: #f2f2f2;
+    --left-pane-text-color: #383838;
+    --left-pane-item-hover-background: #eaeaea;
+    --left-pane-item-selected-background: white;
+    --left-pane-item-selected-color: black;
+    --left-pane-item-selected-shadow: 1px 1px 2px rgba(0, 0, 0, .2);
+    --left-pane-item-action-button-background: #d7d7d7;
+    --left-pane-item-action-button-color: inherit;
+    --left-pane-item-action-button-hover-background: white;
+    --left-pane-item-action-button-hover-shadow: 2px 2px 3px rgba(0, 0, 0, .15);
+    --left-pane-item-selected-action-button-hover-shadow: 2px 2px 10px rgba(0, 0, 0, .25);
+
+    --launcher-pane-background-color: #e8e8e8;
+    --launcher-pane-horizontal-background-color: #fafafa;
+    --launcher-pane-horizontal-border-color: rgba(0, 0, 0, 0.1);
+    --launcher-pane-text-color: #000000bd;
+    --launcher-pane-button-hover-color: black;
+    --launcher-pane-button-hover-background: white;
+    --launcher-pane-button-hover-shadow: 4px 4px 4px rgba(0, 0, 0, .075);
+
+    --protected-session-active-icon-color: #16b516;
+    --sync-status-error-pulse-color: #ff5528;
+
+    --root-background: var(--left-pane-background-color);
+
+    --gutter-color: transparent;
+    --gutter-hover-color: #bfbfbf;
+
+    --tab-close-button-hover-background: #c95a5a;
+    --tab-close-button-hover-color: white;
+
+    --active-tab-background-color: white;
+    --active-tab-hover-background-color: var(--active-tab-background-color);
+    --active-tab-text-color: black;
+    --active-tab-shadow: 3px 3px 6px rgba(0, 0, 0, .1), -1px -1px 3px rgba(0, 0, 0, .05);
+    --active-tab-dragging-shadow: var(--active-tab-shadow), 0 0 20px rgba(0, 0, 0, .1);
+
+    --inactive-tab-background-color: transparent;
+    --inactive-tab-hover-background-color: #00000016;
+    --inactive-tab-text-color: #4e4e4e;
+
+    --new-tab-button-background: #d8d8d8;
+    --new-tab-button-color: #3a3a3a;
+    --new-tab-button-shadow: 2px 2px 4px rgba(0, 0, 0, .2);
+    --new-tab-button-hover-background: white;
+    --new-tab-button-hover-color: black;
+
+    --right-pane-item-hover-background: #ececec;
+    --right-pane-item-hover-color: inherit;
+
+    --scrollbar-border-color: #ddd;
+    --scrollbar-background-color: #ddd;
+    --link-color: blue;
+
+    --mermaid-theme: default;
+
+    --code-block-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.2);
+
+    --card-background-color: var(--accented-background-color);
+    --card-background-hover-color: #f9f9f9;
+    --card-background-press-color: #efefef;
+    --card-border-color: #eaeaea;
+    --card-shadow-color: rgba(0, 0, 0, 0.1);
+    --card-box-shadow: 0 0 12px var(--card-shadow-color);
+
+    --calendar-color: var(--menu-text-color);
+    --calendar-weekday-labels-color: var(--muted-text-color);
+    --calendar-day-hover-color: var(--hover-item-text-color);
+    --calendar-day-hover-background: var(--active-item-background-color);
+    --calendar-day-highlight-background: #80808024;
+
+    --timeline-bullet-color: #a5a5a5;
+    --timeline-bullet-hover-color: black;
+    --timeline-connector-color: #f1f1f1;
+    --timeline-connector-active-color: #ddd;
+    --timeline-connector-hover-blend-mode: multiply;
+
+    --tooltip-background-color: rgba(255, 255, 255, 0.85);
+    --tooltip-foreground-color: #000000ba;
+    --tooltip-shadow-color: rgba(0, 0, 0, .15);
+ }

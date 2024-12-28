@@ -75,6 +75,7 @@
     --link-color: lightskyblue;
 
     --mermaid-theme: dark;
+    --native-titlebar-background: #00000000;
 }
 
 body ::-webkit-calendar-picker-indicator {

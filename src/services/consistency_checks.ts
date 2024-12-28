@@ -23,12 +23,12 @@ class ConsistencyChecks {
 
     private autoFix: boolean;
     private unrecoveredConsistencyErrors: boolean;
-    private fixedIssues: boolean;    
+    private fixedIssues: boolean;
     private reloadNeeded: boolean;
 
     /**
-     * @param autoFix - automatically fix all encountered problems. False is only for debugging during development (fail fast)
-     */
+    * @param autoFix - automatically fix all encountered problems. False is only for debugging during development (fail fast)
+    */
     constructor(autoFix: boolean) {
         this.autoFix = autoFix;
         this.unrecoveredConsistencyErrors = false;
@@ -138,9 +138,9 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT branchId, branches.noteId
                     FROM branches
-                      LEFT JOIN notes USING (noteId)
+                    LEFT JOIN notes USING (noteId)
                     WHERE branches.isDeleted = 0
-                      AND notes.noteId IS NULL`,
+                    AND notes.noteId IS NULL`,
             ({branchId, noteId}) => {
                 if (this.autoFix) {
                     const branch = becca.getBranch(branchId);
@@ -160,10 +160,10 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT branchId, branches.parentNoteId AS parentNoteId
                     FROM branches
-                      LEFT JOIN notes ON notes.noteId = branches.parentNoteId
+                    LEFT JOIN notes ON notes.noteId = branches.parentNoteId
                     WHERE branches.isDeleted = 0
-                      AND branches.noteId != 'root'
-                      AND notes.noteId IS NULL`,
+                    AND branches.noteId != 'root'
+                    AND notes.noteId IS NULL`,
             ({branchId, parentNoteId}) => {
                 if (this.autoFix) {
                     // Delete the old branch and recreate it with root as parent.
@@ -205,9 +205,9 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT attributeId, attributes.noteId
                     FROM attributes
-                      LEFT JOIN notes USING (noteId)
+                    LEFT JOIN notes USING (noteId)
                     WHERE attributes.isDeleted = 0
-                      AND notes.noteId IS NULL`,
+                    AND notes.noteId IS NULL`,
             ({attributeId, noteId}) => {
                 if (this.autoFix) {
                     const attribute = becca.getAttribute(attributeId);
@@ -227,10 +227,10 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT attributeId, attributes.value AS noteId
                     FROM attributes
-                      LEFT JOIN notes ON notes.noteId = attributes.value
+                    LEFT JOIN notes ON notes.noteId = attributes.value
                     WHERE attributes.isDeleted = 0
-                      AND attributes.type = 'relation'
-                      AND notes.noteId IS NULL`,
+                    AND attributes.type = 'relation'
+                    AND notes.noteId IS NULL`,
             ({attributeId, noteId}) => {
                 if (this.autoFix) {
                     const attribute = becca.getAttribute(attributeId);
@@ -255,7 +255,7 @@ class ConsistencyChecks {
                             UNION ALL
                             SELECT revisionId FROM revisions
                         )
-                      AND attachments.isDeleted = 0`,
+                    AND attachments.isDeleted = 0`,
             ({attachmentId, ownerId}) => {
                 if (this.autoFix) {
                     const attachment = becca.getAttachment(attachmentId);
@@ -282,11 +282,11 @@ class ConsistencyChecks {
         // another check might create missing branch
         this.findAndFixIssues(`
                     SELECT branchId,
-                           noteId
+                            noteId
                     FROM branches
-                      JOIN notes USING (noteId)
+                    JOIN notes USING (noteId)
                     WHERE notes.isDeleted = 1
-                      AND branches.isDeleted = 0`,
+                    AND branches.isDeleted = 0`,
             ({branchId, noteId}) => {
                 if (this.autoFix) {
                     const branch = becca.getBranch(branchId);
@@ -303,11 +303,11 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
             SELECT branchId,
-                   parentNoteId
+                    parentNoteId
             FROM branches
-              JOIN notes AS parentNote ON parentNote.noteId = branches.parentNoteId
+            JOIN notes AS parentNote ON parentNote.noteId = branches.parentNoteId
             WHERE parentNote.isDeleted = 1
-              AND branches.isDeleted = 0
+            AND branches.isDeleted = 0
         `, ({branchId, parentNoteId}) => {
             if (this.autoFix) {
                 const branch = becca.getBranch(branchId);
@@ -327,9 +327,9 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
             SELECT DISTINCT notes.noteId
             FROM notes
-              LEFT JOIN branches ON notes.noteId = branches.noteId AND branches.isDeleted = 0
+            LEFT JOIN branches ON notes.noteId = branches.noteId AND branches.isDeleted = 0
             WHERE notes.isDeleted = 0
-              AND branches.branchId IS NULL
+            AND branches.branchId IS NULL
         `, ({noteId}) => {
             if (this.autoFix) {
                 const branch = new BBranch({
@@ -349,21 +349,21 @@ class ConsistencyChecks {
         // there should be a unique relationship between note and its parent
         this.findAndFixIssues(`
                     SELECT noteId,
-                           parentNoteId
+                            parentNoteId
                     FROM branches
                     WHERE branches.isDeleted = 0
                     GROUP BY branches.parentNoteId,
-                             branches.noteId
+                            branches.noteId
                     HAVING COUNT(1) > 1`,
             ({noteId, parentNoteId}) => {
                 if (this.autoFix) {
                     const branchIds = sql.getColumn<string>(
                             `SELECT branchId
-                             FROM branches
-                             WHERE noteId = ?
-                               and parentNoteId = ?
-                               and isDeleted = 0
-                             ORDER BY utcDateModified`, [noteId, parentNoteId]);
+                            FROM branches
+                            WHERE noteId = ?
+                                and parentNoteId = ?
+                                and isDeleted = 0
+                            ORDER BY utcDateModified`, [noteId, parentNoteId]);
 
                     const branches = branchIds.map(branchId => becca.getBranch(branchId));
 
@@ -393,11 +393,11 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
                     SELECT attachmentId,
-                           attachments.ownerId AS noteId
+                            attachments.ownerId AS noteId
                     FROM attachments
-                      JOIN notes ON notes.noteId = attachments.ownerId
+                    JOIN notes ON notes.noteId = attachments.ownerId
                     WHERE notes.isDeleted = 1
-                      AND attachments.isDeleted = 0`,
+                    AND attachments.isDeleted = 0`,
             ({attachmentId, noteId}) => {
                 if (this.autoFix) {
                     const attachment = becca.getAttachment(attachmentId);
@@ -420,7 +420,7 @@ class ConsistencyChecks {
                     SELECT noteId, type
                     FROM notes
                     WHERE isDeleted = 0
-                      AND type NOT IN (${noteTypesStr})`,
+                    AND type NOT IN (${noteTypesStr})`,
             ({noteId, type}) => {
                 if (this.autoFix) {
                     const note = becca.getNote(noteId);
@@ -439,7 +439,7 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT notes.noteId, notes.isProtected, notes.type, notes.mime
                     FROM notes
-                      LEFT JOIN blobs USING (blobId)
+                    LEFT JOIN blobs USING (blobId)
                     WHERE blobs.blobId IS NULL
                         AND notes.isDeleted = 0`,
             ({noteId, isProtected, type, mime}) => {
@@ -494,10 +494,10 @@ class ConsistencyChecks {
             this.findAndFixIssues(`
                         SELECT notes.noteId, notes.type, notes.mime
                         FROM notes
-                          JOIN blobs USING (blobId)
+                        JOIN blobs USING (blobId)
                         WHERE isDeleted = 0
-                          AND isProtected = 0
-                          AND content IS NULL`,
+                        AND isProtected = 0
+                        AND content IS NULL`,
                 ({noteId, type, mime}) => {
                     if (this.autoFix) {
                         const note = becca.getNote(noteId);
@@ -520,7 +520,7 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT revisions.revisionId, blobs.blobId
                     FROM revisions
-                      LEFT JOIN blobs USING (blobId)
+                    LEFT JOIN blobs USING (blobId)
                     WHERE blobs.blobId IS NULL`,
             ({revisionId, blobId}) => {
                 if (this.autoFix) {
@@ -537,7 +537,7 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT attachments.attachmentId, blobs.blobId
                     FROM attachments
-                      LEFT JOIN blobs USING (blobId)
+                    LEFT JOIN blobs USING (blobId)
                     WHERE blobs.blobId IS NULL`,
             ({attachmentId, blobId}) => {
                 if (this.autoFix) {
@@ -554,17 +554,17 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
                     SELECT parentNoteId
                     FROM branches
-                      JOIN notes ON notes.noteId = branches.parentNoteId
+                    JOIN notes ON notes.noteId = branches.parentNoteId
                     WHERE notes.isDeleted = 0
-                      AND notes.type == 'search'
-                      AND branches.isDeleted = 0`,
+                    AND notes.type == 'search'
+                    AND branches.isDeleted = 0`,
             ({parentNoteId}) => {
                 if (this.autoFix) {
                     const branchIds = sql.getColumn<string>(`
                         SELECT branchId
                         FROM branches
                         WHERE isDeleted = 0
-                          AND parentNoteId = ?`, [parentNoteId]);
+                        AND parentNoteId = ?`, [parentNoteId]);
 
                     const branches = branchIds.map(branchId => becca.getBranch(branchId));
 
@@ -594,8 +594,8 @@ class ConsistencyChecks {
                     SELECT attributeId
                     FROM attributes
                     WHERE isDeleted = 0
-                      AND type = 'relation'
-                      AND value = ''`,
+                    AND type = 'relation'
+                    AND value = ''`,
             ({attributeId}) => {
                 if (this.autoFix) {
                     const relation = becca.getAttribute(attributeId);
@@ -612,11 +612,11 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
                     SELECT attributeId,
-                           type
+                            type
                     FROM attributes
                     WHERE isDeleted = 0
-                      AND type != 'label'
-                      AND type != 'relation'`,
+                    AND type != 'label'
+                    AND type != 'relation'`,
             ({attributeId, type}) => {
                 if (this.autoFix) {
                     const attribute = becca.getAttribute(attributeId);
@@ -634,11 +634,11 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
                     SELECT attributeId,
-                           attributes.noteId
+                            attributes.noteId
                     FROM attributes
                     JOIN notes ON attributes.noteId = notes.noteId
                     WHERE attributes.isDeleted = 0
-                      AND notes.isDeleted = 1`,
+                    AND notes.isDeleted = 1`,
             ({attributeId, noteId}) => {
                 if (this.autoFix) {
                     const attribute = becca.getAttribute(attributeId);
@@ -655,12 +655,12 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
                     SELECT attributeId,
-                           attributes.value AS targetNoteId
+                            attributes.value AS targetNoteId
                     FROM attributes
                     JOIN notes ON attributes.value = notes.noteId
                     WHERE attributes.type = 'relation'
-                      AND attributes.isDeleted = 0
-                      AND notes.isDeleted = 1`,
+                    AND attributes.isDeleted = 0
+                    AND notes.isDeleted = 1`,
             ({attributeId, targetNoteId}) => {
                 if (this.autoFix) {
                     const attribute = becca.getAttribute(attributeId);
@@ -680,7 +680,7 @@ class ConsistencyChecks {
         this.findAndFixIssues(`
             SELECT ${key} as entityId
             FROM ${entityName}
-            LEFT JOIN entity_changes ec ON ec.entityName = '${entityName}' AND ec.entityId = ${entityName}.${key} 
+            LEFT JOIN entity_changes ec ON ec.entityName = '${entityName}' AND ec.entityId = ${entityName}.${key}
             WHERE ec.id IS NULL`,
             ({entityId}) => {
                 const entityRow = sql.getRow<EntityChange>(`SELECT * FROM ${entityName} WHERE ${key} = ?`, [entityId]);
@@ -703,12 +703,12 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
             SELECT id, entityId
-            FROM entity_changes 
-            LEFT JOIN ${entityName} ON entityId = ${entityName}.${key} 
+            FROM entity_changes
+            LEFT JOIN ${entityName} ON entityId = ${entityName}.${key}
             WHERE
-              entity_changes.isErased = 0
-              AND entity_changes.entityName = '${entityName}' 
-              AND ${entityName}.${key} IS NULL`,
+            entity_changes.isErased = 0
+            AND entity_changes.entityName = '${entityName}'
+            AND ${entityName}.${key} IS NULL`,
                 ({id, entityId}) => {
                     if (this.autoFix) {
                         sql.execute("DELETE FROM entity_changes WHERE entityName = ? AND entityId = ?", [entityName, entityId]);
@@ -721,11 +721,11 @@ class ConsistencyChecks {
 
         this.findAndFixIssues(`
             SELECT id, entityId
-            FROM entity_changes 
-            JOIN ${entityName} ON entityId = ${entityName}.${key} 
+            FROM entity_changes
+            JOIN ${entityName} ON entityId = ${entityName}.${key}
             WHERE
-              entity_changes.isErased = 1
-              AND entity_changes.entityName = '${entityName}'`,
+            entity_changes.isErased = 1
+            AND entity_changes.entityName = '${entityName}'`,
             ({id, entityId}) => {
                 if (this.autoFix) {
                     sql.execute(`DELETE FROM ${entityName} WHERE ${key} = ?`, [entityId]);

@@ -23,13 +23,13 @@ async function copyNodeModuleFileOrFolder(source: string) {
 }
 
 const copy = async () => {
-  for (const srcFile of fs.readdirSync("build")) {    
+  for (const srcFile of fs.readdirSync("build")) {
     const destFile = path.join(DEST_DIR, path.basename(srcFile));
     log(`Copying source ${srcFile} -> ${destFile}.`);
     fs.copySync(path.join("build", srcFile), destFile, { recursive: true });
   }
 
-  const filesToCopy = ["config-sample.ini"];
+  const filesToCopy = ["config-sample.ini", "tsconfig.webpack.json"];
   for (const file of filesToCopy) {
     log(`Copying ${file}`);
     await fs.copy(file, path.join(DEST_DIR, file));
@@ -45,11 +45,11 @@ const copy = async () => {
   for (const dir of srcDirsToCopy) {
     log(`Copying ${dir}`);
     await fs.copy(dir, path.join(DEST_DIR_SRC, path.basename(dir)));
-  }  
+  }
 
   /**
-   * Directories to be copied relative to the project root into <resource_dir>/src/public/app-dist.
-   */
+    * Directories to be copied relative to the project root into <resource_dir>/src/public/app-dist.
+    */
   const publicDirsToCopy = [ "./src/public/app/doc_notes" ];
   const PUBLIC_DIR = path.join(DEST_DIR, "src", "public", "app-dist");
   for (const dir of publicDirsToCopy) {

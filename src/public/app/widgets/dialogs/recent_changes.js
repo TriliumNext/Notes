@@ -18,7 +18,7 @@ const TPL = `
             <div class="modal-header">
                 <h5 class="modal-title flex-grow-1">${t('recent_changes.title')}</h5>
                 <button class="erase-deleted-notes-now-button btn btn-sm" style="padding: 0 10px">${t('recent_changes.erase_notes_button')}</button>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('recent_changes.close')}"></button>
             </div>
             <div class="modal-body">
                 <div class="recent-changes-content"></div>
@@ -81,7 +81,12 @@ export default class RecentChangesDialog extends BasicWidget {
                 let $noteLink;
 
                 if (change.current_isDeleted) {
-                    $noteLink = $("<span>").text(change.current_title);
+                    $noteLink = $("<span>");
+
+                    $noteLink.append($("<span>")
+                        .addClass("note-title")
+                        .text(change.current_title)
+                    );
 
                     if (change.canBeUndeleted) {
                         const $undeleteLink = $(`<a href="javascript:">`)
@@ -120,13 +125,22 @@ export default class RecentChangesDialog extends BasicWidget {
                 }
 
                 $changesList.append($('<li>')
+                    .on("click", (e) => {
+                        // Skip clicks on the link or deleted notes
+                        if (e.target?.nodeName !== "A" && !change.current_isDeleted) {
+                            // Open the current note
+                            appContext.tabManager.getActiveContext().setNote(change.noteId);
+                        }
+                    })
+                    .addClass(() => {
+                        if (change.current_isDeleted) return "deleted-note";
+                    })
                     .append(
                         $("<span>")
                             .text(formattedTime)
                             .attr("title", change.date)
                     )
-                    .append(' - ')
-                    .append($noteLink));
+                    .append($noteLink.addClass("note-title")));
             }
 
             this.$content.append(dayEl);

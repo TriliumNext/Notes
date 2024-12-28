@@ -18,6 +18,6 @@ test('Complete help in search', async ({ page }) => {
 
     await page.locator('#launcher-container').getByRole('button', { name: '' }).first().click();
     await page.getByRole('cell', { name: ' ' }).locator('span').first().click();
-    await page.getByRole('button', { name: 'complete help on search syntax' }).click();    
+    await page.getByRole('button', { name: 'complete help on search syntax' }).click();
     expect((await page.waitForEvent('popup')).url()).toBe("https://triliumnext.github.io/Docs/Wiki/search.html");
 });
