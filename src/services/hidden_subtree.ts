@@ -266,6 +266,7 @@ function buildHiddenSubtreeDefinition(): Item {
                     { id: '_optionsImages', title: t("hidden-subtree.images-title"), type: 'contentWidget', icon: 'bx-image' },
                     { id: '_optionsSpellcheck', title: t("hidden-subtree.spellcheck-title"), type: 'contentWidget', icon: 'bx-check-double' },
                     { id: '_optionsPassword', title: t("hidden-subtree.password-title"), type: 'contentWidget', icon: 'bx-lock' },
+                    { id: '_optionsMFA', title: 'MFA', type: 'contentWidget', icon: 'bx-lock '},
                     { id: '_optionsEtapi', title: t("hidden-subtree.etapi-title"), type: 'contentWidget', icon: 'bx-extension' },
                     { id: '_optionsBackup', title: t("hidden-subtree.backup-title"), type: 'contentWidget', icon: 'bx-data' },
                     { id: '_optionsSync', title: t("hidden-subtree.sync-title"), type: 'contentWidget', icon: 'bx-wifi' },

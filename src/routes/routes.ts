@@ -6,6 +6,9 @@ import log from "../services/log.js";
 import express from "express";
 const router = express.Router();
 import auth from "../services/auth.js";
+import openID from '../services/open_id.js';
+import totp from './api/totp.js';
+import recoveryCodes from './api/recovery_codes.js';
 import cls from "../services/cls.js";
 import sql from "../services/sql.js";
 import entityChangesService from "../services/entity_changes.js";
@@ -71,6 +74,7 @@ import etapiSpecialNoteRoutes from "../etapi/special_notes.js";
 import etapiSpecRoute from "../etapi/spec.js";
 import etapiBackupRoute from "../etapi/backup.js";
 
+
 const csrfMiddleware = csurf({
     cookie: {
         path: ""       // empty, so cookie is valid only for the current path
@@ -116,6 +120,20 @@ function register(app: express.Application) {
     route(PST, '/logout', [csrfMiddleware, auth.checkAuth], loginRoute.logout);
     route(PST, '/set-password', [auth.checkAppInitialized, auth.checkPasswordNotSet], loginRoute.setPassword);
     route(GET, '/setup', [], setupRoute.setupPage);
+
+
+    apiRoute(GET, '/api/totp/generate', totp.generateSecret);
+    apiRoute(GET, '/api/totp/status', totp.getTOTPStatus);
+    apiRoute(GET, '/api/totp/get', totp.getSecret);
+
+    apiRoute(GET, '/api/oauth/status', openID.getOAuthStatus);
+    apiRoute(GET, '/api/oauth/validate', openID.isTokenValid);
+
+    apiRoute(PST, '/api/totp_recovery/set', recoveryCodes.setRecoveryCodes);
+    apiRoute(PST, '/api/totp_recovery/verify', recoveryCodes.veryifyRecoveryCode);
+    apiRoute(GET, '/api/totp_recovery/generate', recoveryCodes.generateRecoveryCodes);
+    apiRoute(GET, '/api/totp_recovery/enabled', recoveryCodes.checkForRecoveryKeys);
+    apiRoute(GET, '/api/totp_recovery/used', recoveryCodes.getUsedRecoveryCodes);
 
     apiRoute(GET, '/api/tree', treeApiRoute.getTree);
     apiRoute(PST, '/api/tree/load', treeApiRoute.load);
