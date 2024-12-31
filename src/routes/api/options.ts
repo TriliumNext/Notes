@@ -70,7 +70,14 @@ const ALLOWED_OPTIONS = new Set([
     'textNoteEditorMultilineToolbar',
     'layoutOrientation',
     'backgroundEffects',
-    'allowedHtmlTags' // Allow configuring HTML import tags
+    'allowedHtmlTags',
+    'llmEnabled',
+    'llmProvider',
+    'llmModel',
+    'llmBaseUrl',
+    'llmMaxTokens',
+    'llmTemperature',
+    'llmApiKey'
 ]);
 
 function getOptions() {

@@ -1604,6 +1604,21 @@
     "restart-app-button": "Restart the application to view the changes",
     "zoom-factor": "Zoom factor"
   },
+  "llm": {
+    "title": "LLM Integration",
+    "enable_integration": "Enable LLM Integration",
+    "enable_description": "When enabled, this allows Trilium to use LLM features like chat and embeddings.",
+    "provider": "LLM Provider",
+    "model": "Model",
+    "api_key": "OpenAI API Key",
+    "base_url": "Ollama Base URL",
+    "api_key_description": "Your API key will be stored securely in the database.",
+    "base_url_description": "URL where your local Ollama instance is running.",
+    "max_tokens": "Max Tokens",
+    "max_tokens_description": "Maximum length of generated responses.",
+    "temperature": "Temperature",
+    "temperature_description": "Controls randomness in responses (0 = deterministic, 2 = very random)."
+  },
   "note_autocomplete": {
     "search-for": "Search for \"{{term}}\"",
     "create-note": "Create and link child note \"{{term}}\"",

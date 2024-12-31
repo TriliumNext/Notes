@@ -269,6 +269,7 @@ function buildHiddenSubtreeDefinition(): Item {
                     { id: '_optionsEtapi', title: t("hidden-subtree.etapi-title"), type: 'contentWidget', icon: 'bx-extension' },
                     { id: '_optionsBackup', title: t("hidden-subtree.backup-title"), type: 'contentWidget', icon: 'bx-data' },
                     { id: '_optionsSync', title: t("hidden-subtree.sync-title"), type: 'contentWidget', icon: 'bx-wifi' },
+                    { id: '_optionsLLM', title: t("hidden-subtree.llm-title"), type: 'contentWidget', icon: 'bx-bot' },
                     { id: '_optionsOther', title: t("hidden-subtree.other"), type: 'contentWidget', icon: 'bx-dots-horizontal' },
                     { id: '_optionsAdvanced', title: t("hidden-subtree.advanced-title"), type: 'contentWidget' }
                 ]

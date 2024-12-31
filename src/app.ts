@@ -63,6 +63,8 @@ custom.register(app);
 error_handlers.register(app);
 
 // triggers sync timer
+// initialize LLM service
+await import("./services/llm/llm_service.js");
 await import("./services/sync.js");
 
 // triggers backup timer
