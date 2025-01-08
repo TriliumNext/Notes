@@ -8,6 +8,8 @@ import passwordEncryptionService from "./encryption/password_encryption.js";
 import config from "./config.js";
 import passwordService from "./encryption/password.js";
 import type { NextFunction, Request, Response } from 'express';
+import { AppRequest } from '../routes/route-interface.js';
+import optionService from "./options.js";
 
 const noAuthentication = config.General && config.General.noAuthentication === true;
 
@@ -16,7 +18,11 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
         res.redirect("setup");
     }
     else if (!req.session.loggedIn && !isElectron() && !noAuthentication) {
-        res.redirect("login");
+        if (optionService.getOption('redirectBareDomain') === 'true') {
+            res.redirect('/share');
+        } else {
+            res.redirect('login');
+        }
     }
     else {
         next();

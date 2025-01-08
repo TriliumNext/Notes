@@ -151,6 +151,11 @@ const defaultOptions: DefaultOption[] = [
         'fieldset', 'form', 'legend', 'meter', 'noscript', 'option', 'progress', 'rp',
         'samp', 'small', 'sub', 'sup', 'template', 'textarea', 'tt'
     ]), isSynced: true },
+    { name: "layoutOrientation", value: "vertical", isSynced: false },
+
+    // Share settings
+    { name: 'redirectBareDomain', value: 'false', isSynced: true },
+    { name: 'showLoginInShareTheme', value: 'false', isSynced: true }
 ];
 
 /**

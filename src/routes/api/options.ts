@@ -71,7 +71,9 @@ const ALLOWED_OPTIONS = new Set([
     'textNoteEditorMultilineToolbar',
     'layoutOrientation',
     'backgroundEffects',
-    'allowedHtmlTags' // Allow configuring HTML import tags
+    'allowedHtmlTags', // Allow configuring HTML import tags
+    'redirectBareDomain',
+    'showLoginInShareTheme'
 ]);
 
 function getOptions() {
