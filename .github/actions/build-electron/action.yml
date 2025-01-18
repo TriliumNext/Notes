@@ -13,26 +13,22 @@ runs:
   steps:
     - name: Set up Python for appdmg to be installed
       if: ${{ inputs.os == 'macos' }}
+      shell: bash
       run: brew install python-setuptools
     - name: Install dependencies
+      shell: bash
       run: npm ci
     - name: Update build info
+      shell: bash
       run: npm run update-build-info
     - name: Run electron-forge
+      shell: bash
       run: npm run make-electron -- --arch=${{ inputs.arch }}
-    - name: Prepare artifacts (Unix)
-      if: inputs.os != 'windows'
+    - name: Prepare artifacts
+      shell: bash
       run: |
         mkdir -p upload
         file=$(find out/make -name '*.zip' -print -quit)
         cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.zip"
         file=$(find out/make -name '*.${{ matrix.os.extension }}' -print -quit)
         cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.${{ matrix.os.extension }}"
-    - name: Prepare artifacts (Windows)
-      if: inputs.os == 'windows'
-      run: |
-        mkdir upload
-        $file = Get-ChildItem -Path out/make -Filter '*.zip' -Recurse | Select-Object -First 1
-        Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.zip"
-        $file = Get-ChildItem -Path out/make -Filter '*.${{ matrix.os.extension }}' -Recurse | Select-Object -First 1
-        Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.${{ matrix.os.extension }}"      
