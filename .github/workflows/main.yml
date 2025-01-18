@@ -48,3 +48,21 @@ jobs:
         with:
           name: TriliumNextNotes ${{ matrix.os.name }} ${{ matrix.arch }}.${{matrix.os.extension}}
           path: upload/*.${{ matrix.os.extension }}
+  sign-windows:
+    name: Sign Windows build
+    runs-on: win-signing
+    needs:
+      - make-electron
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Artifacts
+          path: ./sign
+      - run: find sign
+      - run: npx electron-windows-sign
+        env:
+          WINDOWS_SIGNTOOL_PATH: "C:\\ev_signer_trilium\\ev_signer_trilium.exe"
+          WINDOWS_SIGN_WITH_PARAMS: "--executable"
+
