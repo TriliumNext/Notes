@@ -41,22 +41,7 @@ jobs:
         with:
           os: ${{ matrix.os.name }}      
           arch: ${{ matrix.arch }}
-      - name: Prepare artifacts (Unix)
-        if: runner.os != 'windows'
-        run: |
-          mkdir -p upload
-          file=$(find out/make -name '*.zip' -print -quit)
-          cp "$file" "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.zip"
-          file=$(find out/make -name '*.${{ matrix.os.extension }}' -print -quit)
-          cp "$file" "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }}"
-      - name: Prepare artifacts (Windows)
-        if: runner.os == 'windows'
-        run: |
-          mkdir upload
-          $file = Get-ChildItem -Path out/make -Filter '*.zip' -Recurse | Select-Object -First 1
-          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.zip"
-          $file = Get-ChildItem -Path out/make -Filter '*.${{ matrix.os.extension }}' -Recurse | Select-Object -First 1
-          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}.${{ matrix.os.extension }}"
+          extension: ${{ matrix.os.extension }}
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
         with:
