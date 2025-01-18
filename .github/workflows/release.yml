@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: 20
       - name: Run the build
-        uses: ./.github/actions/build
+        uses: ./.github/actions/build-electron
         with:
           os: ${{ matrix.os.name }}        
           arch: ${{ matrix.arch }}      
