@@ -8,7 +8,7 @@ on:
     paths-ignore:
       - "docs/**"
       - ".github/workflows/main-docker.yml"
-  workflow_dispatch:    
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,14 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64, arm64]
+        arch: [x64]
         os:
-          - name: macos
-            image: macos-latest
-            extension: dmg
-          - name: linux
-            image: ubuntu-latest
-            extension: deb
           - name: windows
             image: windows-latest
             extension: exe
@@ -37,13 +31,13 @@ jobs:
       - name: Set up node & dependencies
         uses: actions/setup-node@v4
         with:
-          node-version: 20      
+          node-version: 20
       - name: Run the build
         uses: ./.github/actions/build-electron
         with:
-          os: ${{ matrix.os.name }}     
+          os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
-          extension: ${{ matrix.os.extension }}      
+          extension: ${{ matrix.os.extension }}
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
         with:
