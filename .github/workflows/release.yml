@@ -37,9 +37,8 @@ jobs:
       - name: Run the build
         uses: ./.github/actions/build
         with:
-          os: ${{ matrix.os.name }}      
-      - name: Run electron-forge
-        run: npm run make-electron -- --arch=${{ matrix.arch }}
+          os: ${{ matrix.os.name }}        
+          arch: ${{ matrix.arch }}
       - name: Prepare artifacts (Unix)
         if: runner.os != 'windows'
         run: |

@@ -36,13 +36,12 @@ jobs:
       - name: Set up node & dependencies
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20      
       - name: Run the build
         uses: ./.github/actions/build
         with:
           os: ${{ matrix.os.name }}     
-      - name: Run electron-forge
-        run: npm run make-electron -- --arch=${{ matrix.arch }}
+          arch: ${{ matrix.arch }}
       - name: Prepare artifacts (Unix)
         if: runner.os != 'windows'
         run: |

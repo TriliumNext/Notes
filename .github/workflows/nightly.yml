@@ -34,14 +34,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Update nightly version
+        run: npm run ci-update-nightly-version
       - name: Run the build
         uses: ./.github/actions/build
         with:
           os: ${{ matrix.os.name }}      
-      - name: Update nightly version
-        run: npm run ci-update-nightly-version
-      - name: Run electron-forge
-        run: npm run make-electron -- --arch=${{ matrix.arch }}
+          arch: ${{ matrix.arch }}
       - name: Prepare artifacts (Unix)
         if: runner.os != 'windows'
         run: |
