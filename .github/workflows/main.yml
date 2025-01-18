@@ -4,6 +4,7 @@ on:
     branches:
       - "feature/update**"
       - "feature/server_esm**"
+      - "feature/windows_signing"
     paths-ignore:
       - "docs/**"
       - ".github/workflows/main-docker.yml"
@@ -28,7 +29,7 @@ jobs:
             image: ubuntu-latest
             extension: deb
           - name: windows
-            image: windows-latest
+            image: win-signing
             extension: exe
     runs-on: ${{ matrix.os.image }}
     steps:
