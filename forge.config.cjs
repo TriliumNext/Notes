@@ -12,10 +12,7 @@ module.exports = {
         signToolPath: "C:\\ev_signer_trilium\\ev_signer_trilium.exe",
         signWithParams: "--executable",
         windowsSign: {
-            signToolPath: "C:\\ev_signer_trilium\\ev_signer_trilium.exe",
-            signWithParams: [
-                "--executable"
-            ]
+            hookModulePath: "bin\\sign-windows.js"
         },
         extraResource: [
             // Moved to root
@@ -72,10 +69,7 @@ module.exports = {
                 setupIcon: "./images/app-icons/icon.ico",
                 loadingGif: "./images/app-icons/win/setup-banner.gif",
                 windowsSign: {
-                    signToolPath: "C:\\ev_signer_trilium\\ev_signer_trilium.exe",
-                    signWithParams: [
-                        "--executable"
-                    ]
+                    hookModulePath: "bin\\sign-windows.js"
                 }
             }
         },
