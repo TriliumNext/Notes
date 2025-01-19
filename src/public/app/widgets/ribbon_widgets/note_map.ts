@@ -1,6 +1,6 @@
-import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import NoteMapWidget from "../note_map.js";
 import { t } from "../../services/i18n.js";
+import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `
 <div class="note-map-ribbon-widget">
@@ -32,7 +32,7 @@ const TPL = `
     <div class="note-map-container"></div>
 </div>`;
 
-export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
+export default class NoteMapRibbonWidget extends RightPanelWidget {
 
     private openState!: "small" | "full";
     private noteMapWidget: NoteMapWidget;
@@ -55,23 +55,20 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
         return "toggleRibbonTabNoteMap";
     }
 
-    getTitle() {
-        return {
-            show: this.isEnabled(),
-            title: t("note_map.title"),
-            icon: "bx bxs-network-chart"
-        };
+    get widgetTitle() {
+        return t("note_map.title");
     }
 
-    doRender() {
-        this.$widget = $(TPL);
+    async doRenderBody() {
+        this.$body.empty().append($(TPL));
+
         this.contentSized();
-        this.$container = this.$widget.find(".note-map-container");
+        this.$container = this.$body.find(".note-map-container");
         this.$container.append(this.noteMapWidget.render());
 
         this.openState = "small";
 
-        this.$openFullButton = this.$widget.find(".open-full-button");
+        this.$openFullButton = this.$body.find(".open-full-button");
         this.$openFullButton.on("click", () => {
             this.setFullHeight();
 
@@ -83,7 +80,7 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
             this.noteMapWidget.setDimensions();
         });
 
-        this.$collapseButton = this.$widget.find(".collapse-button");
+        this.$collapseButton = this.$body.find(".collapse-button");
         this.$collapseButton.on("click", () => {
             this.setSmallSize();
 
@@ -108,23 +105,23 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
             }
         };
 
-        new ResizeObserver(handleResize).observe(this.$widget[0]);
+        new ResizeObserver(handleResize).observe(this.$body[0]);
     }
 
     setSmallSize() {
         const SMALL_SIZE_HEIGHT = 300;
-        const width = this.$widget.width() ?? 0;
+        const width = this.$body.width() ?? 0;
 
-        this.$widget.find(".note-map-container").height(SMALL_SIZE_HEIGHT).width(width);
+        this.$body.find(".note-map-container").height(SMALL_SIZE_HEIGHT).width(width);
     }
 
     setFullHeight() {
-        const { top } = this.$widget[0].getBoundingClientRect();
+        const { top } = this.$body[0].getBoundingClientRect();
 
         const height = ($(window).height() ?? 0) - top;
-        const width = (this.$widget.width() ?? 0);
+        const width = (this.$body.width() ?? 0);
 
-        this.$widget.find(".note-map-container")
+        this.$body.find(".note-map-container")
             .height(height)
             .width(width);
     }
