@@ -35,7 +35,7 @@ const NOTE_TYPE_ICONS = {
  * end user. Those types should be used only for checking against, they are
  * not for direct use.
  */
-type NoteType = "file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code" | "mindMap";
+export type NoteType = "file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code" | "mindMap";
 
 export interface NotePathRecord {
     isArchived: boolean;

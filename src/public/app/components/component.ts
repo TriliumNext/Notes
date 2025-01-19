@@ -46,7 +46,7 @@ export class TypedComponent<ChildT extends TypedComponent<ChildT>> {
         return this;
     }
 
-    handleEvent<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown[] | unknown> | null {
+    handleEvent<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown[] | unknown> | null | undefined {
         try {
             const callMethodPromise = this.initialized ? this.initialized.then(() => this.callMethod((this as any)[`${name}Event`], data)) : this.callMethod((this as any)[`${name}Event`], data);
 

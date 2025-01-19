@@ -1,6 +1,10 @@
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import keyboardActionsService from "../../services/keyboard_actions.js";
 import attributeService from "../../services/attributes.js";
+import type CommandButtonWidget from "../buttons/command_button.js";
+import type FNote from "../../entities/fnote.js";
+import type { NoteType } from "../../entities/fnote.js";
+import type { EventData, EventNames } from "../../components/app_context.js";
 
 const TPL = `
 <div class="ribbon-container">
@@ -8,11 +12,11 @@ const TPL = `
     .ribbon-container {
         margin-bottom: 5px;
     }
-    
+
     .ribbon-top-row {
         display: flex;
     }
-    
+
     .ribbon-tab-container {
         display: flex;
         flex-direction: row;
@@ -21,10 +25,10 @@ const TPL = `
         flex-grow: 1;
         flex-flow: row wrap;
     }
-    
+
     .ribbon-tab-title {
         color: var(--muted-text-color);
-        border-bottom: 1px solid var(--main-border-color); 
+        border-bottom: 1px solid var(--main-border-color);
         min-width: 24px;
         flex-basis: 24px;
         max-width: max-content;
@@ -36,7 +40,7 @@ const TPL = `
         position: relative;
         top: 3px;
     }
-    
+
     .ribbon-tab-title.active {
         color: var(--main-text-color);
         border-bottom: 3px solid var(--main-text-color);
@@ -44,7 +48,7 @@ const TPL = `
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     .ribbon-tab-title:hover {
         cursor: pointer;
     }
@@ -52,11 +56,11 @@ const TPL = `
     .ribbon-tab-title:hover {
         color: var(--main-text-color);
     }
-    
+
     .ribbon-tab-title:first-of-type {
         padding-left: 10px;
     }
-    
+
     .ribbon-tab-spacer {
         flex-basis: 0;
         min-width: 0;
@@ -64,41 +68,41 @@ const TPL = `
         flex-grow: 1;
         border-bottom: 1px solid var(--main-border-color);
     }
-        
+
     .ribbon-tab-spacer:last-of-type {
         flex-grow: 1;
         flex-basis: 0;
         min-width: 0;
         max-width: 10000px;
     }
-    
+
     .ribbon-button-container {
         display: flex;
-        border-bottom: 1px solid var(--main-border-color); 
+        border-bottom: 1px solid var(--main-border-color);
         margin-right: 5px;
     }
-    
+
     .ribbon-button-container > * {
         position: relative;
         top: -3px;
         margin-left: 10px;
     }
-    
+
     .ribbon-body {
         display: none;
         border-bottom: 1px solid var(--main-border-color);
         margin-left: 10px;
         margin-right: 5px; /* needs to have this value so that the bottom border is the same width as the top one */
     }
-    
+
     .ribbon-body.active {
         display: block;
     }
-    
+
     .ribbon-tab-title-label {
         display: none;
     }
-    
+
     .ribbon-tab-title.active .ribbon-tab-title-label {
         display: inline;
     }
@@ -108,11 +112,21 @@ const TPL = `
         <div class="ribbon-tab-container"></div>
         <div class="ribbon-button-container"></div>
     </div>
-    
+
     <div class="ribbon-body-container"></div>
 </div>`;
 
 export default class RibbonContainer extends NoteContextAwareWidget {
+
+    private lastActiveComponentId?: string | null;
+    private lastNoteType?: NoteType;
+
+    private ribbonWidgets: NoteContextAwareWidget[];
+    private buttonWidgets: CommandButtonWidget[];
+    private $tabContainer!: JQuery<HTMLElement>;
+    private $buttonContainer!: JQuery<HTMLElement>;
+    private $bodyContainer!: JQuery<HTMLElement>;
+
     constructor() {
         super();
 
@@ -122,10 +136,10 @@ export default class RibbonContainer extends NoteContextAwareWidget {
     }
 
     isEnabled() {
-        return super.isEnabled() && this.noteContext.viewScope.viewMode === "default";
+        return super.isEnabled() && this.noteContext?.viewScope?.viewMode === "default";
     }
 
-    ribbon(widget) {
+    ribbon(widget: NoteContextAwareWidget) { // TODO: Base class
         super.child(widget);
 
         this.ribbonWidgets.push(widget);
@@ -133,7 +147,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         return this;
     }
 
-    button(widget) {
+    button(widget: CommandButtonWidget) {
         super.child(widget);
 
         this.buttonWidgets.push(widget);
@@ -163,7 +177,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         });
     }
 
-    toggleRibbonTab($ribbonTitle, refreshActiveTab = true) {
+    toggleRibbonTab($ribbonTitle: JQuery<HTMLElement>, refreshActiveTab = true) {
         const activate = !$ribbonTitle.hasClass("active");
 
         this.$tabContainer.find(".ribbon-tab-title").removeClass("active");
@@ -181,14 +195,15 @@ export default class RibbonContainer extends NoteContextAwareWidget {
 
             const activeChild = this.getActiveRibbonWidget();
 
-            if (activeChild && (refreshActiveTab || !wasAlreadyActive)) {
+            if (activeChild && (refreshActiveTab || !wasAlreadyActive) && this.noteContext && this.notePath) {
                 const handleEventPromise = activeChild.handleEvent("noteSwitched", { noteContext: this.noteContext, notePath: this.notePath });
 
                 if (refreshActiveTab) {
                     if (handleEventPromise) {
-                        handleEventPromise.then(() => activeChild.focus?.());
+                        handleEventPromise.then(() => (activeChild as any).focus()); // TODO: Base class
                     } else {
-                        activeChild.focus?.();
+                        // TODO: Base class
+                        (activeChild as any)?.focus();
                     }
                 }
             }
@@ -203,7 +218,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         await super.noteSwitched();
     }
 
-    async refreshWithNote(note, noExplicitActivation = false) {
+    async refreshWithNote(note: FNote, noExplicitActivation = false) {
         this.lastNoteType = note.type;
 
         let $ribbonTabToActivate, $lastActiveRibbon;
@@ -211,7 +226,8 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         this.$tabContainer.empty();
 
         for (const ribbonWidget of this.ribbonWidgets) {
-            const ret = await ribbonWidget.getTitle(note);
+            // TODO: Base class for ribbon widget
+            const ret = await (ribbonWidget as any).getTitle(note);
 
             if (!ret.show) {
                 continue;
@@ -219,8 +235,8 @@ export default class RibbonContainer extends NoteContextAwareWidget {
 
             const $ribbonTitle = $('<div class="ribbon-tab-title">')
                 .attr("data-ribbon-component-id", ribbonWidget.componentId)
-                .attr("data-ribbon-component-name", ribbonWidget.name)
-                .append($('<span class="ribbon-tab-title-icon">').addClass(ret.icon).attr("title", ret.title).attr("data-toggle-command", ribbonWidget.toggleCommand))
+                .attr("data-ribbon-component-name", (ribbonWidget as any).name as string) // TODO: base class for ribbon widgets
+                .append($('<span class="ribbon-tab-title-icon">').addClass(ret.icon).attr("title", ret.title).attr("data-toggle-command", (ribbonWidget as any).toggleCommand)) // TODO: base class
                 .append(" ")
                 .append($('<span class="ribbon-tab-title-label">').text(ret.title));
 
@@ -238,7 +254,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
 
         keyboardActionsService.getActions().then((actions) => {
             this.$tabContainer.find(".ribbon-tab-title-icon").tooltip({
-                title: function () {
+                title: () => {
                     const toggleCommandName = $(this).attr("data-toggle-command");
                     const action = actions.find((act) => act.actionName === toggleCommandName);
                     const title = $(this).attr("data-title");
@@ -246,7 +262,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
                     if (action && action.effectiveShortcuts.length > 0) {
                         return `${title} (${action.effectiveShortcuts.join(", ")})`;
                     } else {
-                        return title;
+                        return title ?? "";
                     }
                 }
             });
@@ -263,27 +279,27 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         }
     }
 
-    isRibbonTabActive(name) {
+    isRibbonTabActive(name: string) {
         const $ribbonComponent = this.$widget.find(`.ribbon-tab-title[data-ribbon-component-name='${name}']`);
 
         return $ribbonComponent.hasClass("active");
     }
 
-    ensureOwnedAttributesAreOpen(ntxId) {
-        if (this.isNoteContext(ntxId) && !this.isRibbonTabActive("ownedAttributes")) {
+    ensureOwnedAttributesAreOpen(ntxId: string | null | undefined) {
+        if (ntxId && this.isNoteContext(ntxId) && !this.isRibbonTabActive("ownedAttributes")) {
             this.toggleRibbonTabWithName("ownedAttributes", ntxId);
         }
     }
 
-    addNewLabelEvent({ ntxId }) {
+    addNewLabelEvent({ ntxId }: EventData<"addNewLabel">) {
         this.ensureOwnedAttributesAreOpen(ntxId);
     }
 
-    addNewRelationEvent({ ntxId }) {
+    addNewRelationEvent({ ntxId }: EventData<"addNewRelation">) {
         this.ensureOwnedAttributesAreOpen(ntxId);
     }
 
-    toggleRibbonTabWithName(name, ntxId) {
+    toggleRibbonTabWithName(name: string, ntxId?: string) {
         if (!this.isNoteContext(ntxId)) {
             return false;
         }
@@ -295,23 +311,23 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         }
     }
 
-    handleEvent(name, data) {
+    handleEvent<T extends EventNames>(name: T, data: EventData<T>) {
         const PREFIX = "toggleRibbonTab";
 
         if (name.startsWith(PREFIX)) {
             let componentName = name.substr(PREFIX.length);
             componentName = componentName[0].toLowerCase() + componentName.substr(1);
 
-            this.toggleRibbonTabWithName(componentName, data.ntxId);
+            this.toggleRibbonTabWithName(componentName, (data as any).ntxId);
         } else {
             return super.handleEvent(name, data);
         }
     }
 
-    async handleEventInChildren(name, data) {
+    async handleEventInChildren<T extends EventNames>(name: T, data: EventData<T>) {
         if (["activeContextChanged", "setNoteContext"].includes(name)) {
             // won't trigger .refresh();
-            await super.handleEventInChildren("setNoteContext", data);
+            await super.handleEventInChildren("setNoteContext", data as EventData<"activeContextChanged" | "setNoteContext">);
         } else if (this.isEnabled() || name === "initialRenderComplete") {
             const activeRibbonWidget = this.getActiveRibbonWidget();
 
@@ -326,8 +342,12 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         }
     }
 
-    entitiesReloadedEvent({ loadResults }) {
-        if (loadResults.isNoteReloaded(this.noteId) && this.lastNoteType !== this.note.type) {
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
+        if (!this.note) {
+            return;
+        }
+
+        if (this.noteId && loadResults.isNoteReloaded(this.noteId) && this.lastNoteType !== this.note.type) {
             // note type influences the list of available ribbon tabs the most
             // check for the type is so that we don't update on each title rename
             this.lastNoteType = this.note.type;
@@ -338,7 +358,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         }
     }
 
-    noteTypeMimeChangedEvent() {
+    async noteTypeMimeChangedEvent() {
         // We are ignoring the event which triggers a refresh since it is usually already done by a different
         // event and causing a race condition in which the items appear twice.
     }
