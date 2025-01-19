@@ -85,6 +85,7 @@ import ScrollPaddingWidget from "../widgets/scroll_padding.js";
 import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolbar.js";
 import options from "../services/options.js";
 import utils from "../services/utils.js";
+import RightPaneToggleWidget from "../widgets/buttons/right_pane_toggle.js";
 
 export default class DesktopLayout {
     constructor(customWidgets) {
@@ -118,6 +119,7 @@ export default class DesktopLayout {
                     .child(new FlexContainer("row").id("tab-row-left-spacer"))
                     .optChild(launcherPaneIsHorizontal, new LeftPaneToggleWidget(true))
                     .child(new TabRowWidget().class("full-width"))
+                    .child(new RightPaneToggleWidget())
                     .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
                     .css("height", "40px")
                     .css("background-color", "var(--launcher-pane-background-color)")
@@ -139,7 +141,11 @@ export default class DesktopLayout {
                         new FlexContainer("column")
                             .id("rest-pane")
                             .css("flex-grow", "1")
-                            .optChild(!fullWidthTabBar, new FlexContainer("row").child(new TabRowWidget()).optChild(customTitleBarButtons, new TitleBarButtonsWidget()).css("height", "40px"))
+                            .optChild(!fullWidthTabBar, new FlexContainer("row")
+                                .child(new TabRowWidget())
+                                .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
+                                .child(new RightPaneToggleWidget())
+                                .css("height", "40px"))
                             .child(
                                 new FlexContainer("row")
                                     .filling()
