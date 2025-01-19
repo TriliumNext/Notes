@@ -8,6 +8,8 @@ import linkService from "../../services/link.js";
 import server from "../../services/server.js";
 import froca from "../../services/froca.js";
 import type FNote from "../../entities/fnote.js";
+import RightPaneContainer from "../containers/right_pane_container.js";
+import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `
 <div class="backlinks-widget">
@@ -72,17 +74,21 @@ interface Backlink {
     excerpts?: string[];
 }
 
-export default class BacklinksWidget extends NoteContextAwareWidget {
+export default class BacklinksWidget extends RightPanelWidget {
 
     private $count!: JQuery<HTMLElement>;
     private $items!: JQuery<HTMLElement>;
     private $ticker!: JQuery<HTMLElement>;
 
-    doRender() {
-        this.$widget = $(TPL);
-        this.$count = this.$widget.find(".backlinks-count");
-        this.$items = this.$widget.find(".backlinks-items");
-        this.$ticker = this.$widget.find(".backlinks-ticker");
+    get widgetTitle() {
+        return "Backlinks";
+    }
+
+    async doRenderBody() {
+        this.$body.empty().append($(TPL));
+        this.$count = this.$body.find(".backlinks-count");
+        this.$items = this.$body.find(".backlinks-items");
+        this.$ticker = this.$body.find(".backlinks-ticker");
 
         this.$count.on("click", () => {
             this.$items.toggle();
@@ -121,7 +127,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
     }
 
     toggle(show: boolean) {
-        this.$widget.toggleClass("hidden-no-content", !show);
+        this.$body.toggleClass("hidden-no-content", !show);
     }
 
     clearItems() {
