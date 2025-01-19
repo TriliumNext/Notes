@@ -60,7 +60,6 @@ jobs:
         with:
           name: Artifacts
           path: ./sign
-      - run: find sign
       - run: npx electron-windows-sign
         env:
           WINDOWS_SIGNTOOL_PATH: "C:\\ev_signer_trilium\\ev_signer_trilium.exe"
