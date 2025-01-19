@@ -8,18 +8,18 @@ const TPL = `
         .note-map-ribbon-widget {
             position: relative;
         }
-        
+
         .note-map-ribbon-widget .note-map-container {
             height: 300px;
         }
-    
+
         .open-full-button, .collapse-button {
             position: absolute;
             right: 5px;
             bottom: 5px;
             z-index: 1000;
         }
-        
+
         .style-resolver {
             color: var(--muted-text-color);
             display: none;
@@ -33,6 +33,13 @@ const TPL = `
 </div>`;
 
 export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
+
+    private openState!: "small" | "full";
+    private noteMapWidget: NoteMapWidget;
+    private $container!: JQuery<HTMLElement>;
+    private $openFullButton!: JQuery<HTMLElement>;
+    private $collapseButton!: JQuery<HTMLElement>;
+
     constructor() {
         super();
 
@@ -106,7 +113,7 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
 
     setSmallSize() {
         const SMALL_SIZE_HEIGHT = 300;
-        const width = this.$widget.width();
+        const width = this.$widget.width() ?? 0;
 
         this.$widget.find(".note-map-container").height(SMALL_SIZE_HEIGHT).width(width);
     }
@@ -114,9 +121,11 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
     setFullHeight() {
         const { top } = this.$widget[0].getBoundingClientRect();
 
-        const height = $(window).height() - top;
-        const width = this.$widget.width();
+        const height = ($(window).height() ?? 0) - top;
+        const width = (this.$widget.width() ?? 0);
 
-        this.$widget.find(".note-map-container").height(height).width(width);
+        this.$widget.find(".note-map-container")
+            .height(height)
+            .width(width);
     }
 }
