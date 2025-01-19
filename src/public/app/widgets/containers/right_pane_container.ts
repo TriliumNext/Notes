@@ -36,16 +36,7 @@ export default class RightPaneContainer extends FlexContainer<RightPanelWidget> 
     }
 
     reEvaluateRightPaneVisibilityCommand() {
-        const newToggle = this.isEnabled();
-
-        if (newToggle) {
-            this.toggleInt(newToggle);
-
-            splitService.setupRightPaneResizer();
-            console.log("Toggle on")
-        } else {
-            console.log("Toggle of")
-        }
+        this.toggleInt(this.isEnabled());
     }
 
     entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
