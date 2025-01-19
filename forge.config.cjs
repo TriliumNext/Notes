@@ -10,7 +10,7 @@ module.exports = {
         asar: true,
         icon: "./images/app-icons/icon",
         windowsSign: {
-            hookModulePath: "bin\\sign-windows.js"
+            hookModulePath: "bin\\sign-windows.cjs"
         },
         extraResource: [
             // Moved to root
