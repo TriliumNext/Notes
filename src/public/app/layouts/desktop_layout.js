@@ -190,7 +190,6 @@ export default class DesktopLayout {
                                                                 .ribbon(new BasicPropertiesWidget())
                                                                 .ribbon(new OwnedAttributeListWidget())
                                                                 .ribbon(new InheritedAttributesWidget())
-                                                                .ribbon(new NotePathsWidget())
                                                                 .ribbon(new NoteMapRibbonWidget())
                                                                 .ribbon(new SimilarNotesWidget())
                                                                 .ribbon(new NoteInfoWidget())
@@ -235,6 +234,7 @@ export default class DesktopLayout {
                                     )
                                     .child(
                                         new RightPaneContainer()
+                                            .child(new NotePathsWidget())
                                             .child(new TocWidget())
                                             .child(new HighlightsListWidget())
                                             .child(...this.customWidgets.get("right-pane"))

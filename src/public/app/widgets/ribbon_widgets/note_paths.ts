@@ -1,10 +1,10 @@
-import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import treeService from "../../services/tree.js";
 import linkService from "../../services/link.js";
 import { t } from "../../services/i18n.js";
 import type FNote from "../../entities/fnote.js";
 import type { NotePathRecord } from "../../entities/fnote.js";
 import type { EventData } from "../../components/app_context.js";
+import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `
 <div class="note-paths-widget">
@@ -39,7 +39,7 @@ const TPL = `
     <button class="btn btn-sm" data-trigger-command="cloneNoteIdsTo">${t("note_paths.clone_button")}</button>
 </div>`;
 
-export default class NotePathsWidget extends NoteContextAwareWidget {
+export default class NotePathsWidget extends RightPanelWidget {
 
     private $notePathIntro!: JQuery<HTMLElement>;
     private $notePathList!: JQuery<HTMLElement>;
@@ -52,20 +52,15 @@ export default class NotePathsWidget extends NoteContextAwareWidget {
         return "toggleRibbonTabNotePaths";
     }
 
-    getTitle() {
-        return {
-            show: true,
-            title: t("note_paths.title"),
-            icon: "bx bx-collection"
-        };
+    get widgetTitle() {
+        return t("note_paths.title");
     }
 
-    doRender() {
-        this.$widget = $(TPL);
-        this.contentSized();
+    async doRenderBody() {
+        this.$body.empty().append($(TPL));
 
-        this.$notePathIntro = this.$widget.find(".note-path-intro");
-        this.$notePathList = this.$widget.find(".note-path-list");
+        this.$notePathIntro = this.$body.find(".note-path-intro");
+        this.$notePathList = this.$body.find(".note-path-list");
     }
 
     async refreshWithNote(note: FNote) {
