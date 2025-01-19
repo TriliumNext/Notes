@@ -100,10 +100,6 @@ const TPL = `
     }
 
     .ribbon-tab-title-label {
-        display: none;
-    }
-
-    .ribbon-tab-title.active .ribbon-tab-title-label {
         display: inline;
     }
     </style>
