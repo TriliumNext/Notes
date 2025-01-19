@@ -37,8 +37,12 @@ const TPL = `
         <tr>
             <th>${t("note_info_widget.note_id")}:</th>
             <td class="note-info-note-id"></td>
+        </tr>
+        <tr>
             <th>${t("note_info_widget.created")}:</th>
             <td class="note-info-date-created"></td>
+        </tr>
+        <tr>
             <th>${t("note_info_widget.modified")}:</th>
             <td class="note-info-date-modified"></td>
         </tr>
@@ -48,7 +52,8 @@ const TPL = `
                 <span class="note-info-type"></span>
                 <span class="note-info-mime"></span>
             </td>
-
+        </tr>
+        <tr>
             <th title="${t("note_info_widget.note_size_info")}">${t("note_info_widget.note_size")}:</th>
             <td colspan="3">
                 <button class="btn btn-sm calculate-button" style="padding: 0px 10px 0px 10px;">
