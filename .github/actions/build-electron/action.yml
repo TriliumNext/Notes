@@ -20,6 +20,7 @@ runs:
       run: npm ci
     - name: Update build info
       shell: cmd
+      if: false
       run: npm run update-build-info
     - name: Run electron-forge
       shell: cmd
