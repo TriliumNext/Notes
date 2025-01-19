@@ -6,7 +6,8 @@ export default class RightPaneToggleWidget extends CommandButtonWidget {
         super();
 
         this.class("toggle-button");
-        this.settings.icon = "bx-dock-right";
+        this.css("transform", "scaleX(-1)");
+        this.settings.icon = "bx-sidebar";
     }
 
 }
