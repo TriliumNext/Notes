@@ -896,7 +896,7 @@ body.mobile .note-title {
  */
 
 #right-pane {
-    background: var(--main-background-color);
+    background: var(--left-pane-background-color);
 }
 
 #right-pane .toc li,
