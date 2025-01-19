@@ -5,6 +5,7 @@ import froca from "../../services/froca.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import type FNote from "../../entities/fnote.js";
 import type { EventData } from "../../components/app_context.js";
+import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `
 <div class="similar-notes-widget">
@@ -41,7 +42,7 @@ interface SimilarNote {
 }
 
 
-export default class SimilarNotesWidget extends NoteContextAwareWidget {
+export default class SimilarNotesWidget extends RightPanelWidget {
 
     private $similarNotesWrapper!: JQuery<HTMLElement>;
     private title?: string;
@@ -59,19 +60,14 @@ export default class SimilarNotesWidget extends NoteContextAwareWidget {
         return super.isEnabled() && this.note?.type !== "search" && !this.note?.isLabelTruthy("similarNotesWidgetDisabled");
     }
 
-    getTitle() {
-        return {
-            show: this.isEnabled(),
-            title: t("similar_notes.title"),
-            icon: "bx bx-bar-chart"
-        };
+    get widgetTitle() {
+        return t("similar_notes.title");
     }
 
-    doRender() {
-        this.$widget = $(TPL);
-        this.contentSized();
+    async doRenderBody() {
+        this.$body.empty().append($(TPL));
 
-        this.$similarNotesWrapper = this.$widget.find(".similar-notes-wrapper");
+        this.$similarNotesWrapper = this.$body.find(".similar-notes-wrapper");
     }
 
     async refreshWithNote(note: FNote) {
