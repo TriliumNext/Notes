@@ -2,9 +2,9 @@ import FlexContainer from "./flex_container.js";
 import splitService from "../../services/resizer.js";
 import type RightPanelWidget from "../right_panel_widget.js";
 import type { EventData, EventNames } from "../../components/app_context.js";
+import options from "../../services/options.js";
 
 export default class RightPaneContainer extends FlexContainer<RightPanelWidget> {
-    private rightPaneHidden: boolean;
 
     constructor() {
         super("column");
@@ -12,12 +12,10 @@ export default class RightPaneContainer extends FlexContainer<RightPanelWidget> 
         this.id("right-pane");
         this.css("height", "100%");
         this.collapsible();
-
-        this.rightPaneHidden = false;
     }
 
     isEnabled() {
-        return super.isEnabled() && !this.rightPaneHidden;
+        return super.isEnabled() && options.is("rightPaneVisible");
     }
 
     handleEventInChildren<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown[] | unknown> | null {
@@ -50,9 +48,11 @@ export default class RightPaneContainer extends FlexContainer<RightPanelWidget> 
         }
     }
 
-    toggleRightPaneEvent() {
-        this.rightPaneHidden = !this.rightPaneHidden;
-
-        this.reEvaluateRightPaneVisibilityCommand();
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
+        if (loadResults.isOptionReloaded("rightPaneVisible")) {
+            const visible = this.isEnabled();
+            this.toggleInt(visible);
+        }
     }
+
 }

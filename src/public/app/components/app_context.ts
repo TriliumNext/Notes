@@ -104,6 +104,8 @@ export type CommandMappings = {
     openNoteInNewWindow: CommandData;
     hideLeftPane: CommandData;
     showLeftPane: CommandData;
+    toggleLeftPane: CommandData;
+    toggleRightPane: CommandData;
 
     openInTab: ContextMenuCommandData;
     openNoteInSplit: ContextMenuCommandData;

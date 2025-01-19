@@ -8,6 +8,7 @@ export default class RightPaneToggleWidget extends CommandButtonWidget {
         this.class("toggle-button");
         this.css("transform", "scaleX(-1)");
         this.settings.icon = "bx-sidebar";
+        this.settings.command = "toggleRightPane";
     }
 
 }
