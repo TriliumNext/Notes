@@ -16,13 +16,13 @@ runs:
       shell: bash
       run: brew install python-setuptools
     - name: Install dependencies
-      shell: bash
+      shell: cmd
       run: npm ci
     - name: Update build info
-      shell: bash
+      shell: cmd
       run: npm run update-build-info
     - name: Run electron-forge
-      shell: bash
+      shell: cmd
       run: npm run make-electron -- --arch=${{ inputs.arch }}
     - uses: actions/upload-artifact@v4
       with:
