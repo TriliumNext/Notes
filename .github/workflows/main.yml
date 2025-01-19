@@ -38,6 +38,9 @@ jobs:
           os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
           extension: ${{ matrix.os.extension }}
+        env:
+          WINDOWS_SIGNTOOL_PATH: "C:\\ev_signer_trilium\\ev_signer_trilium.exe"
+          WINDOWS_SIGN_WITH_PARAMS: --executable
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
         with:

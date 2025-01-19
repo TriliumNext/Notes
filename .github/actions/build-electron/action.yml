@@ -25,6 +25,9 @@ runs:
     - name: Run electron-forge
       shell: cmd
       run: npm run make-electron -- --arch=${{ inputs.arch }}
+      env:
+        WINDOWS_SIGNTOOL_PATH: "C:\\ev_signer_trilium\\ev_signer_trilium.exe"
+        WINDOWS_SIGN_WITH_PARAMS: --executable
     - uses: actions/upload-artifact@v4
       with:
         name: Artifacts
