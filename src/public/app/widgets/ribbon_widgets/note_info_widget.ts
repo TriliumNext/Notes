@@ -5,6 +5,7 @@ import server from "../../services/server.js";
 import utils from "../../services/utils.js";
 import type { EventData } from "../../components/app_context.js";
 import type FNote from "../../entities/fnote.js";
+import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `
 <div class="note-info-widget">
@@ -78,7 +79,7 @@ interface MetadataResponse {
     dateModified: number;
 }
 
-export default class NoteInfoWidget extends NoteContextAwareWidget {
+export default class NoteInfoWidget extends RightPanelWidget {
 
     private $noteId!: JQuery<HTMLElement>;
     private $dateCreated!: JQuery<HTMLElement>;
@@ -89,6 +90,10 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
     private $noteSize!: JQuery<HTMLElement>;
     private $subTreeSize!: JQuery<HTMLElement>;
     private $calculateButton!: JQuery<HTMLElement>;
+
+    get widgetTitle() {
+        return t("note_info_widget.title");
+    }
 
     get name() {
         return "noteInfo";
@@ -102,29 +107,20 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
         return !!this.note;
     }
 
-    getTitle() {
-        return {
-            show: this.isEnabled(),
-            title: t("note_info_widget.title"),
-            icon: "bx bx-info-circle"
-        };
-    }
+    async doRenderBody() {
+        this.$body.empty().append($(TPL));
 
-    doRender() {
-        this.$widget = $(TPL);
-        this.contentSized();
+        this.$noteId = this.$body.find(".note-info-note-id");
+        this.$dateCreated = this.$body.find(".note-info-date-created");
+        this.$dateModified = this.$body.find(".note-info-date-modified");
+        this.$type = this.$body.find(".note-info-type");
+        this.$mime = this.$body.find(".note-info-mime");
 
-        this.$noteId = this.$widget.find(".note-info-note-id");
-        this.$dateCreated = this.$widget.find(".note-info-date-created");
-        this.$dateModified = this.$widget.find(".note-info-date-modified");
-        this.$type = this.$widget.find(".note-info-type");
-        this.$mime = this.$widget.find(".note-info-mime");
+        this.$noteSizesWrapper = this.$body.find(".note-sizes-wrapper");
+        this.$noteSize = this.$body.find(".note-size");
+        this.$subTreeSize = this.$body.find(".subtree-size");
 
-        this.$noteSizesWrapper = this.$widget.find(".note-sizes-wrapper");
-        this.$noteSize = this.$widget.find(".note-size");
-        this.$subTreeSize = this.$widget.find(".subtree-size");
-
-        this.$calculateButton = this.$widget.find(".calculate-button");
+        this.$calculateButton = this.$body.find(".calculate-button");
         this.$calculateButton.on("click", async () => {
             this.$noteSizesWrapper.show();
             this.$calculateButton.hide();
