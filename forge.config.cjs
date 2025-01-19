@@ -9,8 +9,6 @@ module.exports = {
         overwrite: true,
         asar: true,
         icon: "./images/app-icons/icon",
-        signToolPath: "C:\\ev_signer_trilium\\ev_signer_trilium.exe",
-        signWithParams: "--executable",
         windowsSign: {
             hookModulePath: "bin\\sign-windows.js"
         },
