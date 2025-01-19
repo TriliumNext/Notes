@@ -37,10 +37,10 @@ const NOTE_TYPE_ICONS = {
  */
 type NoteType = "file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code" | "mindMap";
 
-interface NotePathRecord {
+export interface NotePathRecord {
     isArchived: boolean;
     isInHoistedSubTree: boolean;
-    isSearch: boolean;
+    isSearch?: boolean;
     notePath: string[];
     isHidden: boolean;
 }
@@ -401,14 +401,14 @@ class FNote {
         return notePaths;
     }
 
-    getSortedNotePathRecords(hoistedNoteId = "root") {
+    getSortedNotePathRecords(hoistedNoteId = "root"): NotePathRecord[] {
         const isHoistedRoot = hoistedNoteId === "root";
 
-        const notePaths = this.getAllNotePaths().map((path) => ({
+        const notePaths: NotePathRecord[] = this.getAllNotePaths().map((path) => ({
             notePath: path,
             isInHoistedSubTree: isHoistedRoot || path.includes(hoistedNoteId),
             isArchived: path.some((noteId) => froca.notes[noteId].isArchived),
-            isSearch: path.find((noteId) => froca.notes[noteId].type === "search"),
+            isSearch: path.some((noteId) => froca.notes[noteId].type === "search"),
             isHidden: path.includes("_hidden")
         }));
 

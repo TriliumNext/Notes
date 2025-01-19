@@ -9,6 +9,7 @@ interface NoteRow {
 }
 
 interface BranchRow {
+    noteId?: string;
     branchId: string;
     componentId: string;
     parentNoteId?: string;
