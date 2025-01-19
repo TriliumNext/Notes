@@ -17,7 +17,7 @@ export default class RightPaneContainer extends FlexContainer<RightPanelWidget> 
     }
 
     isEnabled() {
-        return super.isEnabled() && !this.rightPaneHidden && this.children.length > 0 && !!this.children.find((ch) => ch.isEnabled() && ch.canBeShown());
+        return super.isEnabled() && !this.rightPaneHidden;
     }
 
     handleEventInChildren<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown[] | unknown> | null {
@@ -38,13 +38,15 @@ export default class RightPaneContainer extends FlexContainer<RightPanelWidget> 
     }
 
     reEvaluateRightPaneVisibilityCommand() {
-        const oldToggle = !this.isHiddenInt();
         const newToggle = this.isEnabled();
 
-        if (oldToggle !== newToggle) {
+        if (newToggle) {
             this.toggleInt(newToggle);
 
             splitService.setupRightPaneResizer();
+            console.log("Toggle on")
+        } else {
+            console.log("Toggle of")
         }
     }
 
