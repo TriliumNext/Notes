@@ -3,6 +3,8 @@ import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
+import type { EventData } from "../../components/app_context.js";
+import type FNote from "../../entities/fnote.js";
 
 const TPL = `
 <div class="note-info-widget">
@@ -10,18 +12,18 @@ const TPL = `
         .note-info-widget {
             padding: 12px;
         }
-        
+
         .note-info-widget-table {
-            max-width: 100%;            
+            max-width: 100%;
             display: block;
             overflow-x: auto;
             white-space: nowrap;
-        } 
-   
+        }
+
         .note-info-widget-table td, .note-info-widget-table th {
             padding: 5px;
         }
-        
+
         .note-info-mime {
             max-width: 13em;
             overflow: hidden;
@@ -61,7 +63,33 @@ const TPL = `
 </div>
 `;
 
+// TODO: Deduplicate with server
+interface NoteSizeResponse {
+    noteSize: number;
+}
+
+interface SubtreeSizeResponse {
+    subTreeNoteCount: number;
+    subTreeSize: number;
+}
+
+interface MetadataResponse {
+    dateCreated: number;
+    dateModified: number;
+}
+
 export default class NoteInfoWidget extends NoteContextAwareWidget {
+
+    private $noteId!: JQuery<HTMLElement>;
+    private $dateCreated!: JQuery<HTMLElement>;
+    private $dateModified!: JQuery<HTMLElement>;
+    private $type!: JQuery<HTMLElement>;
+    private $mime!: JQuery<HTMLElement>;
+    private $noteSizesWrapper!: JQuery<HTMLElement>;
+    private $noteSize!: JQuery<HTMLElement>;
+    private $subTreeSize!: JQuery<HTMLElement>;
+    private $calculateButton!: JQuery<HTMLElement>;
+
     get name() {
         return "noteInfo";
     }
@@ -71,7 +99,7 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
     }
 
     isEnabled() {
-        return this.note;
+        return !!this.note;
     }
 
     getTitle() {
@@ -104,10 +132,10 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
             this.$noteSize.empty().append($('<span class="bx bx-loader bx-spin"></span>'));
             this.$subTreeSize.empty().append($('<span class="bx bx-loader bx-spin"></span>'));
 
-            const noteSizeResp = await server.get(`stats/note-size/${this.noteId}`);
+            const noteSizeResp = await server.get<NoteSizeResponse>(`stats/note-size/${this.noteId}`);
             this.$noteSize.text(utils.formatSize(noteSizeResp.noteSize));
 
-            const subTreeResp = await server.get(`stats/subtree-size/${this.noteId}`);
+            const subTreeResp = await server.get<SubtreeSizeResponse>(`stats/subtree-size/${this.noteId}`);
 
             if (subTreeResp.subTreeNoteCount > 1) {
                 this.$subTreeSize.text(t("note_info_widget.subtree_size", { size: utils.formatSize(subTreeResp.subTreeSize), count: subTreeResp.subTreeNoteCount }));
@@ -117,8 +145,8 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
         });
     }
 
-    async refreshWithNote(note) {
-        const metadata = await server.get(`notes/${this.noteId}/metadata`);
+    async refreshWithNote(note: FNote) {
+        const metadata = await server.get<MetadataResponse>(`notes/${this.noteId}/metadata`);
 
         this.$noteId.text(note.noteId);
         this.$dateCreated.text(formatDateTime(metadata.dateCreated)).attr("title", metadata.dateCreated);
@@ -137,8 +165,8 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
         this.$noteSizesWrapper.hide();
     }
 
-    entitiesReloadedEvent({ loadResults }) {
-        if (loadResults.isNoteReloaded(this.noteId) || loadResults.isNoteContentReloaded(this.noteId)) {
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
+        if (this.noteId && (loadResults.isNoteReloaded(this.noteId) || loadResults.isNoteContentReloaded(this.noteId))) {
             this.refresh();
         }
     }
