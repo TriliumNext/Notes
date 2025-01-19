@@ -6,6 +6,12 @@ import type BNote from "../../becca/entities/bnote.js";
 import type BAttribute from "../../becca/entities/battribute.js";
 import type { Request } from "express";
 
+interface Backlink {
+    noteId: string;
+    relationName?: string;
+    excerpts?: string[];
+}
+
 function buildDescendantCountMap(noteIdsToCount: string[]) {
     if (!Array.isArray(noteIdsToCount)) {
         throw new Error("noteIdsToCount: type error");
@@ -325,7 +331,7 @@ function findExcerpts(sourceNote: BNote, referencedNoteId: string) {
     return excerpts;
 }
 
-function getFilteredBacklinks(note: BNote) {
+function getFilteredBacklinks(note: BNote): BAttribute[] {
     return (
         note
             .getTargetRelations()
@@ -344,7 +350,7 @@ function getBacklinkCount(req: Request) {
     };
 }
 
-function getBacklinks(req: Request) {
+function getBacklinks(req: Request): Backlink[] {
     const { noteId } = req.params;
     const note = becca.getNoteOrThrow(noteId);
 

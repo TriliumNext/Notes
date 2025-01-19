@@ -7,6 +7,7 @@ import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import linkService from "../../services/link.js";
 import server from "../../services/server.js";
 import froca from "../../services/froca.js";
+import type FNote from "../../entities/fnote.js";
 
 const TPL = `
 <div class="backlinks-widget">
@@ -14,7 +15,7 @@ const TPL = `
         .backlinks-widget {
             position: relative;
         }
-    
+
         .backlinks-ticker {
             border-radius: 10px;
             border-color: var(--main-border-color);
@@ -25,11 +26,11 @@ const TPL = `
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .backlinks-count {
             cursor: pointer;
         }
-                        
+
         .backlinks-items {
             z-index: 10;
             position: absolute;
@@ -42,29 +43,41 @@ const TPL = `
             padding: 20px;
             overflow-y: auto;
         }
-        
+
         .backlink-excerpt {
             border-left: 2px solid var(--main-border-color);
             padding-left: 10px;
             opacity: 80%;
             font-size: 90%;
         }
-        
+
         .backlink-excerpt .backlink-link { /* the actual backlink */
             font-weight: bold;
             background-color: yellow;
         }
     </style>
-    
+
     <div class="backlinks-ticker">
         <span class="backlinks-count"></span>
-    </div>   
-    
+    </div>
+
     <div class="backlinks-items" style="display: none;"></div>
 </div>
 `;
 
+// TODO: Deduplicate with server
+interface Backlink {
+    noteId: string;
+    relationName?: string;
+    excerpts?: string[];
+}
+
 export default class BacklinksWidget extends NoteContextAwareWidget {
+
+    private $count!: JQuery<HTMLElement>;
+    private $items!: JQuery<HTMLElement>;
+    private $ticker!: JQuery<HTMLElement>;
+
     doRender() {
         this.$widget = $(TPL);
         this.$count = this.$widget.find(".backlinks-count");
@@ -73,7 +86,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
 
         this.$count.on("click", () => {
             this.$items.toggle();
-            this.$items.css("max-height", $(window).height() - this.$items.offset().top - 10);
+            this.$items.css("max-height", ($(window).height() ?? 0) - (this.$items.offset()?.top ?? 0) - 10);
 
             if (this.$items.is(":visible")) {
                 this.renderBacklinks();
@@ -83,7 +96,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
         this.contentSized();
     }
 
-    async refreshWithNote(note) {
+    async refreshWithNote(note: FNote) {
         this.clearItems();
 
         if (this.noteContext?.viewScope?.viewMode !== "default") {
@@ -92,7 +105,8 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
         }
 
         // can't use froca since that would count only relations from loaded notes
-        const resp = await server.get(`note-map/${this.noteId}/backlink-count`);
+        // TODO: Deduplicate response type
+        const resp = await server.get<{ count: number }>(`note-map/${this.noteId}/backlink-count`);
 
         if (!resp || !resp.count) {
             this.toggle(false);
@@ -106,7 +120,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
         );
     }
 
-    toggle(show) {
+    toggle(show: boolean) {
         this.$widget.toggleClass("hidden-no-content", !show);
     }
 
@@ -121,7 +135,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
 
         this.$items.empty();
 
-        const backlinks = await server.get(`note-map/${this.noteId}/backlinks`);
+        const backlinks = await server.get<Backlink[]>(`note-map/${this.noteId}/backlinks`);
 
         if (!backlinks.length) {
             return;
@@ -143,7 +157,7 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
             if (backlink.relationName) {
                 $item.append($("<p>").text(`${t("zpetne_odkazy.relation")}: ${backlink.relationName}`));
             } else {
-                $item.append(...backlink.excerpts);
+                $item.append(...backlink.excerpts ?? []);
             }
 
             this.$items.append($item);
