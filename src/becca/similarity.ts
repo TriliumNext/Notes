@@ -36,6 +36,12 @@ interface DateLimits {
     maxDate: string;
 }
 
+interface SimilarNote {
+    score: number;
+    notePath: string[];
+    noteId: string;
+}
+
 function filterUrlValue(value: string) {
     return value
         .replace(/https?:\/\//gi, "")
@@ -247,7 +253,7 @@ function hasConnectingRelation(sourceNote: BNote, targetNote: BNote) {
     return sourceNote.getAttributes().find((attr) => attr.type === "relation" && ["includenotelink", "imagelink"].includes(attr.name) && attr.value === targetNote.noteId);
 }
 
-async function findSimilarNotes(noteId: string) {
+async function findSimilarNotes(noteId: string): Promise<SimilarNote[] | undefined> {
     const results = [];
     let i = 0;
 
@@ -417,6 +423,7 @@ async function findSimilarNotes(noteId: string) {
 
             // this takes care of note hoisting
             if (!notePath) {
+                // TODO: This return is suspicious, it should probably be continue
                 return;
             }
 

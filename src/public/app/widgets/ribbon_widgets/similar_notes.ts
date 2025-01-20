@@ -3,10 +3,13 @@ import linkService from "../../services/link.js";
 import server from "../../services/server.js";
 import froca from "../../services/froca.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
+import type FNote from "../../entities/fnote.js";
+import type { EventData } from "../../components/app_context.js";
+import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `
 <div class="similar-notes-widget">
-    <style>    
+    <style>
     .similar-notes-wrapper {
         max-height: 200px;
         overflow: auto;
@@ -31,7 +34,20 @@ const TPL = `
 </div>
 `;
 
-export default class SimilarNotesWidget extends NoteContextAwareWidget {
+// TODO: Deduplicate with server
+interface SimilarNote {
+    score: number;
+    notePath: string[];
+    noteId: string;
+}
+
+
+export default class SimilarNotesWidget extends RightPanelWidget {
+
+    private $similarNotesWrapper!: JQuery<HTMLElement>;
+    private title?: string;
+    private rendered?: boolean;
+
     get name() {
         return "similarNotes";
     }
@@ -41,29 +57,28 @@ export default class SimilarNotesWidget extends NoteContextAwareWidget {
     }
 
     isEnabled() {
-        return super.isEnabled() && this.note.type !== "search" && !this.note.isLabelTruthy("similarNotesWidgetDisabled");
+        return super.isEnabled() && this.note?.type !== "search" && !this.note?.isLabelTruthy("similarNotesWidgetDisabled");
     }
 
-    getTitle() {
-        return {
-            show: this.isEnabled(),
-            title: t("similar_notes.title"),
-            icon: "bx bx-bar-chart"
-        };
+    get widgetTitle() {
+        return t("similar_notes.title");
     }
 
-    doRender() {
-        this.$widget = $(TPL);
-        this.contentSized();
+    async doRenderBody() {
+        this.$body.empty().append($(TPL));
 
-        this.$similarNotesWrapper = this.$widget.find(".similar-notes-wrapper");
+        this.$similarNotesWrapper = this.$body.find(".similar-notes-wrapper");
     }
 
-    async refreshWithNote(note) {
+    async refreshWithNote(note: FNote) {
+        if (!this.note) {
+            return;
+        }
+
         // remember which title was when we found the similar notes
         this.title = this.note.title;
 
-        const similarNotes = await server.get(`similar-notes/${this.noteId}`);
+        const similarNotes = await server.get<SimilarNote[]>(`similar-notes/${this.noteId}`);
 
         if (similarNotes.length === 0) {
             this.$similarNotesWrapper.empty().append(t("similar_notes.no_similar_notes_found"));
@@ -92,7 +107,7 @@ export default class SimilarNotesWidget extends NoteContextAwareWidget {
         this.$similarNotesWrapper.empty().append($list);
     }
 
-    entitiesReloadedEvent({ loadResults }) {
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
         if (this.note && this.title !== this.note.title) {
             this.rendered = false;
 

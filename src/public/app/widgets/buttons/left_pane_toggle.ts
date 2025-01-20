@@ -2,9 +2,11 @@ import options from "../../services/options.js";
 import splitService from "../../services/resizer.js";
 import CommandButtonWidget from "./command_button.js";
 import { t } from "../../services/i18n.js";
+import type { EventData } from "../../components/app_context.js";
 
 export default class LeftPaneToggleWidget extends CommandButtonWidget {
-    constructor(isHorizontalLayout) {
+
+    constructor(isHorizontalLayout: boolean) {
         super();
 
         this.class(isHorizontalLayout ? "toggle-button" : "launcher-button");
@@ -32,7 +34,7 @@ export default class LeftPaneToggleWidget extends CommandButtonWidget {
         splitService.setupLeftPaneResizer(options.is("leftPaneVisible"));
     }
 
-    entitiesReloadedEvent({ loadResults }) {
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
         if (loadResults.isOptionReloaded("leftPaneVisible")) {
             this.refreshIcon();
         }

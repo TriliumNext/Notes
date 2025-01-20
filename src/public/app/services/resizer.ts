@@ -31,13 +31,11 @@ function setupLeftPaneResizer(leftPaneVisible: boolean) {
     }
 }
 
-function setupRightPaneResizer() {
+function setupRightPaneResizer(rightPaneVisible: boolean) {
     if (rightInstance) {
         rightInstance.destroy();
         rightInstance = null;
     }
-
-    const rightPaneVisible = $("#right-pane").is(":visible");
 
     if (!rightPaneVisible) {
         $("#center-pane").css("width", "100%");

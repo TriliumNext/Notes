@@ -163,7 +163,7 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
     private themeStyle!: string;
     private $container!: JQuery<HTMLElement>;
     private $styleResolver!: JQuery<HTMLElement>;
-    private graph!: ForceGraph;
+    graph!: ForceGraph;
     private noteIdToSizeMap!: Record<string, number>;
     private zoomLevel!: number;
     private nodes!: Node[];
