@@ -27,7 +27,7 @@ export default class FBlob {
     /**
      * @throws Error in case of invalid JSON
      */
-    getJsonContent(): unknown {
+    getJsonContent<T>(): T | null {
         if (!this.content || !this.content.trim()) {
             return null;
         }

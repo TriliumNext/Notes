@@ -61,27 +61,28 @@ describe("data_dir.ts unit tests", async () => {
     };
 
     describe("#getPlatformAppDataDir()", () => {
-        type TestCaseGetPlatformAppDataDir = [description: string, fnValue: Parameters<typeof getPlatformAppDataDir>, expectedValueFn: (val: ReturnType<typeof getPlatformAppDataDir>) => boolean];
+        type TestCaseGetPlatformAppDataDir = [description: string, fnValue: Parameters<typeof getPlatformAppDataDir>, expectedValue: string | null, osHomedirMockValue: string | null];
+
         const testCases: TestCaseGetPlatformAppDataDir[] = [
-            ["w/ unsupported OS it should return 'null'", ["aix", undefined], (val) => val === null],
+            ["w/ unsupported OS it should return 'null'", ["aix", undefined], null, null],
 
-            ["w/ win32 and no APPDATA set it should return 'null'", ["win32", undefined], (val) => val === null],
+            ["w/ win32 and no APPDATA set it should return 'null'", ["win32", undefined], null, null],
 
-            ["w/ win32 and set APPDATA it should return set 'APPDATA'", ["win32", "AppData"], (val) => val === "AppData"],
+            ["w/ win32 and set APPDATA it should return set 'APPDATA'", ["win32", "AppData"], "AppData", null],
 
-            ["w/ linux it should return '/.local/share'", ["linux", undefined], (val) => val !== null && val.endsWith("/.local/share")],
+            ["w/ linux it should return '~/.local/share'", ["linux", undefined], "/home/mock/.local/share", "/home/mock"],
 
-            ["w/ linux and wrongly set APPDATA it should ignore APPDATA and return /.local/share", ["linux", "FakeAppData"], (val) => val !== null && val.endsWith("/.local/share")],
+            ["w/ linux and wrongly set APPDATA it should ignore APPDATA and return '~/.local/share'", ["linux", "FakeAppData"], "/home/mock/.local/share", "/home/mock"],
 
-            ["w/ darwin it should return /Library/Application Support", ["darwin", undefined], (val) => val !== null && val.endsWith("/Library/Application Support")]
+            ["w/ darwin it should return '~/Library/Application Support'", ["darwin", undefined], "/Users/mock/Library/Application Support", "/Users/mock"]
         ];
 
         testCases.forEach((testCase) => {
-            const [testDescription, value, isExpected] = testCase;
+            const [testDescription, fnValues, expected, osHomedirMockValue] = testCase;
             return it(testDescription, () => {
-                const actual = getPlatformAppDataDir(...value);
-                const result = isExpected(actual);
-                expect(result).toBeTruthy();
+                mockFn.osHomedirMock.mockReturnValue(osHomedirMockValue);
+                const actual = getPlatformAppDataDir(...fnValues);
+                expect(actual).toEqual(expected);
             });
         });
     });

@@ -1,6 +1,6 @@
 import TypeWidget from "./type_widget.js";
 import utils from "../../services/utils.js";
-import MindElixir, { type MindElixirCtor } from "mind-elixir";
+import type { MindElixirCtor } from "mind-elixir";
 import nodeMenu from "@mind-elixir/node-menu";
 import type FNote from "../../entities/fnote.js";
 import type { EventData } from "../../components/app_context.js";
@@ -141,11 +141,16 @@ const TPL = `
 </div>
 `;
 
+interface MindmapModel {
+    direction: number;
+}
+
 export default class MindMapWidget extends TypeWidget {
 
     private $content!: JQuery<HTMLElement>;
     private triggeredByUserOperation?: boolean;
     private mind?: ReturnType<MindElixirCtor["new"]>;
+    private MindElixir: any; // TODO: Fix type
 
     static getType() {
         return "mindMap";
@@ -170,6 +175,11 @@ export default class MindMapWidget extends TypeWidget {
             }
         });
 
+        // Save the mind map if the user changes the layout direction.
+        this.$content.on("click", ".mind-elixir-toolbar.lt", () => {
+            this.spacedUpdate.scheduleUpdate();
+        });
+
         super.doRender();
     }
 
@@ -179,7 +189,6 @@ export default class MindMapWidget extends TypeWidget {
             return;
         }
 
-        this.#initLibrary();
         await this.#loadData(note);
     }
 
@@ -189,23 +198,27 @@ export default class MindMapWidget extends TypeWidget {
 
     async #loadData(note: FNote) {
         const blob = await note.getBlob();
-        const content = blob?.getJsonContent() || MindElixir.new(NEW_TOPIC_NAME);
+        const content = blob?.getJsonContent<MindmapModel>();
 
-        if (this.mind) {
-            this.mind.refresh(content);
-            this.mind.toCenter();
+        if (!this.mind) {
+            await this.#initLibrary(content?.direction);
         }
+
+        this.mind.refresh(content ?? this.MindElixir.new(NEW_TOPIC_NAME));
+        this.mind.toCenter();
     }
 
-    #initLibrary() {
-        const mind = new MindElixir({
+    async #initLibrary(direction?: number) {
+        this.MindElixir = (await import("mind-elixir")).default;
+
+        const mind = new this.MindElixir({
             el: this.$content[0],
-            direction: MindElixir.LEFT
+            direction: direction ?? this.MindElixir.LEFT
         });
         mind.install(nodeMenu);
 
         this.mind = mind;
-        mind.init(MindElixir.new(NEW_TOPIC_NAME));
+        mind.init(this.MindElixir.new(NEW_TOPIC_NAME));
         // TODO: See why the typeof mindmap is not correct.
         mind.bus.addListener("operation", (operation: { name: string }) => {
             this.triggeredByUserOperation = true;
