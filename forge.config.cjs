@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs-extra");
-
 const APP_NAME = "TriliumNext Notes";
 
 module.exports = {
@@ -10,6 +9,9 @@ module.exports = {
         overwrite: true,
         asar: true,
         icon: "./images/app-icons/icon",
+        windowsSign: {
+            hookModulePath: "bin\\sign-windows.cjs"
+        },
         extraResource: [
             // Moved to root
             ...getExtraResourcesForPlatform(),
@@ -63,7 +65,7 @@ module.exports = {
             config: {
                 iconUrl: "https://raw.githubusercontent.com/TriliumNext/Notes/develop/images/app-icons/icon.ico",
                 setupIcon: "./images/app-icons/icon.ico",
-                loadingGif: "./images/app-icons/win/setup-banner.gif"
+                loadingGif: "./images/app-icons/win/setup-banner.gif",
             }
         },
         {
