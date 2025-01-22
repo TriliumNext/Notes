@@ -9,7 +9,7 @@ import config from "./config.js";
 import passwordService from "./encryption/password.js";
 import type { NextFunction, Request, Response } from "express";
 
-const noAuthentication = config.General && config.General.noAuthentication === true;
+const noAuthentication = config.General && config.General.noAuthentication === 'true';
 
 function checkAuth(req: Request, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {

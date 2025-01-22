@@ -83,7 +83,7 @@ function startHttpServer() {
 
     // Check from config whether to trust reverse proxies to supply user IPs, hostnames and protocols
     if (config["Network"]["trustedReverseProxy"]) {
-        if (config["Network"]["trustedReverseProxy"] === true || config["Network"]["trustedReverseProxy"].trim().length) {
+        if (config["Network"]["trustedReverseProxy"] === 'true' || config["Network"]["trustedReverseProxy"].trim().length) {
             app.set("trust proxy", config["Network"]["trustedReverseProxy"]);
         }
     }

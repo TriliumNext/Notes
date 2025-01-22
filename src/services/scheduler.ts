@@ -27,7 +27,7 @@ function runNotesWithLabel(runAttrValue: string) {
         const runOnInstances = note.getLabelValues("runOnInstance");
         const runAtHours = getRunAtHours(note);
 
-        if ((runOnInstances.length === 0 || runOnInstances.includes(instanceName)) && (runAtHours.length === 0 || runAtHours.includes(currentHours))) {
+        if ((runOnInstances.length === 0 || runOnInstances.includes(instanceName || '')) && (runAtHours.length === 0 || runAtHours.includes(currentHours))) {
             scriptService.executeNoteNoException(note, { originEntity: note });
         }
     }

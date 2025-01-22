@@ -175,7 +175,7 @@ function initializeDb() {
     log.info(`DB size: ${getDbSize()} KB`);
 
     dbReady.then(() => {
-        if (config.General && config.General.noBackup === true) {
+        if (config.General && config.General.noBackup === 'true') {
             log.info("Disabling scheduled backups.");
 
             return;

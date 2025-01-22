@@ -11,7 +11,7 @@ const GENERIC_CODE = "GENERIC";
 
 type HttpMethod = "all" | "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
 
-const noAuthentication = config.General && config.General.noAuthentication === true;
+const noAuthentication = config.General && config.General.noAuthentication === 'true';
 
 class EtapiError extends Error {
     statusCode: number;
