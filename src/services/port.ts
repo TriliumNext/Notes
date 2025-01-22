@@ -16,7 +16,9 @@ function parseAndValidate(portStr: string, source: string) {
 
 let port: number;
 
-if (process.env.TRILIUM_PORT) {
+if (process.env.TRILIUM_NETWORK_PORT) {
+    port = parseAndValidate(process.env.TRILIUM_NETWORK_PORT, "environment variable TRILIUM_NETWORK_PORT");
+} else if (process.env.TRILIUM_PORT) {
     port = parseAndValidate(process.env.TRILIUM_PORT, "environment variable TRILIUM_PORT");
 } else if (isElectron()) {
     port = env.isDev() ? 37740 : 37840;
