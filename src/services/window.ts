@@ -116,10 +116,10 @@ function getWindowExtraOpts() {
     const extraOpts: Partial<BrowserWindowConstructorOptions> = {};
 
     if (!optionService.getOptionBool("nativeTitleBarVisible")) {
-        if (isMac()) {
+        if (isMac) {
             extraOpts.titleBarStyle = "hiddenInset";
             extraOpts.titleBarOverlay = true;
-        } else if (isWindows()) {
+        } else if (isWindows) {
             extraOpts.titleBarStyle = "hidden";
             extraOpts.titleBarOverlay = true;
         } else {
@@ -129,7 +129,7 @@ function getWindowExtraOpts() {
     }
 
     // Window effects (Mica)
-    if (optionService.getOptionBool("backgroundEffects") && isWindows()) {
+    if (optionService.getOptionBool("backgroundEffects") && isWindows) {
         extraOpts.backgroundMaterial = "auto";
     }
 

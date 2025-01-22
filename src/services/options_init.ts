@@ -77,7 +77,7 @@ const defaultOptions: DefaultOption[] = [
     { name: "revisionSnapshotTimeInterval", value: "600", isSynced: true },
     { name: "revisionSnapshotNumberLimit", value: "-1", isSynced: true },
     { name: "protectedSessionTimeout", value: "600", isSynced: true },
-    { name: "zoomFactor", value: isWindows() ? "0.9" : "1.0", isSynced: false },
+    { name: "zoomFactor", value: isWindows ? "0.9" : "1.0", isSynced: false },
     { name: "overrideThemeFonts", value: "false", isSynced: false },
     { name: "mainFontFamily", value: "theme", isSynced: false },
     { name: "mainFontSize", value: "100", isSynced: false },

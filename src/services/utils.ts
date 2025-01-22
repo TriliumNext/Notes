@@ -321,11 +321,9 @@ export function getResourceDir() {
     }
 }
 
-export function isMac() {
-    return process.platform === "darwin";
-}
+export const isMac = process.platform === "darwin";
 
-export function isWindows() {
+export const isWindows = process.platform === "win32";
     return process.platform === "win32";
 }
 
