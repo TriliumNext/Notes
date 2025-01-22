@@ -2,7 +2,7 @@ import http from "http";
 import ini from "ini";
 import fs from "fs";
 import dataDir from "./src/services/data_dir.js";
-const config = ini.parse(fs.readFileSync(dataDir.CONFIG_INI_PATH, "utf-8"));
+import config from "./src/services/config.js";
 
 if (config.Network.https) {
     // built-in TLS (terminated by trilium) is not supported yet, PRs are welcome
