@@ -2,11 +2,11 @@ import assetPath from "../services/asset_path.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
-import env from "../services/env.js";
+import { isDev } from "../services/utils.js";
 import type serveStatic from "serve-static";
 
 const persistentCacheStatic = (root: string, options?: serveStatic.ServeStaticOptions<express.Response<any, Record<string, any>>>) => {
-    if (!env.isDev()) {
+    if (!isDev) {
         options = {
             maxAge: "1y",
             ...options
@@ -17,7 +17,7 @@ const persistentCacheStatic = (root: string, options?: serveStatic.ServeStaticOp
 
 async function register(app: express.Application) {
     const srcRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-    if (env.isDev()) {
+    if (isDev) {
         const webpack = (await import("webpack")).default;
         const webpackMiddleware = (await import("webpack-dev-middleware")).default;
         const productionConfig = (await import("../../webpack.config.js")).default;

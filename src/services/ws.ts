@@ -1,5 +1,5 @@
 import { WebSocketServer as WebSocketServer, WebSocket } from "ws";
-import { isElectron, randomString } from "./utils.js";
+import { isDev, isElectron, randomString } from "./utils.js";
 import log from "./log.js";
 import sql from "./sql.js";
 import cls from "./cls.js";
@@ -9,11 +9,10 @@ import protectedSessionService from "./protected_session.js";
 import becca from "../becca/becca.js";
 import AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
 
-import env from "./env.js";
 import type { IncomingMessage, Server as HttpServer } from "http";
 import type { EntityChange } from "./entity_changes_interface.js";
 
-if (env.isDev()) {
+if (isDev) {
     const chokidar = (await import("chokidar")).default;
     const debounce = (await import("debounce")).default;
     const debouncedReloadFrontend = debounce(() => reloadFrontend("source code change"), 200);

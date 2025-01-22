@@ -8,7 +8,6 @@ import sanitize from "sanitize-filename";
 import mimeTypes from "mime-types";
 import path from "path";
 import { fileURLToPath } from "url";
-import env from "./env.js";
 import { dirname, join } from "path";
 
 const randtoken = generator({ source: "crypto" });
@@ -18,6 +17,8 @@ export const isMac = process.platform === "darwin";
 export const isWindows = process.platform === "win32";
 
 export const isElectron = !!process.versions["electron"];
+
+export const isDev = !!(process.env.TRILIUM_ENV && process.env.TRILIUM_ENV === "dev");
 
 export function newEntityId() {
     return randomString(12);
@@ -316,7 +317,7 @@ export function envToBoolean(val: string | undefined) {
  * @returns the resource dir.
  */
 export function getResourceDir() {
-    if (isElectron && !env.isDev()) {
+    if (isElectron && !isDev) {
         return process.resourcesPath;
     } else {
         return join(dirname(fileURLToPath(import.meta.url)), "..", "..");

@@ -5,8 +5,7 @@ import attributeService from "../services/attributes.js";
 import config from "../services/config.js";
 import optionService from "../services/options.js";
 import log from "../services/log.js";
-import env from "../services/env.js";
-import { isElectron } from "../services/utils.js";
+import { isDev, isElectron } from "../services/utils.js";
 import protectedSessionService from "../services/protected_session.js";
 import packageJson from "../../package.json" with { type: "json" };
 import assetPath from "../services/asset_path.js";
@@ -52,7 +51,7 @@ function index(req: Request, res: Response) {
         maxEntityChangeSyncIdAtLoad: sql.getValue("SELECT COALESCE(MAX(id), 0) FROM entity_changes WHERE isSynced = 1"),
         instanceName: config.General ? config.General.instanceName : null,
         appCssNoteIds: getAppCssNoteIds(),
-        isDev: env.isDev(),
+        isDev,
         isMainWindow: view === "mobile" ? true : !req.query.extraWindow,
         isProtectedSessionAvailable: protectedSessionService.isProtectedSessionAvailable(),
         maxContentWidth: Math.max(640, parseInt(options.maxContentWidth)),
