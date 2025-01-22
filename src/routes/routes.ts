@@ -1,6 +1,6 @@
 "use strict";
 
-import utils from "../services/utils.js";
+import { isElectron } from "../services/utils.js";
 import multer from "multer";
 import log from "../services/log.js";
 import express from "express";
@@ -280,7 +280,7 @@ function register(app: express.Application) {
     apiRoute(DEL, "/api/etapi-tokens/:etapiTokenId", etapiTokensApiRoutes.deleteToken);
 
     // in case of local electron, local calls are allowed unauthenticated, for server they need auth
-    const clipperMiddleware = utils.isElectron() ? [] : [auth.checkEtapiToken];
+    const clipperMiddleware = isElectron ? [] : [auth.checkEtapiToken];
 
     route(GET, "/api/clipper/handshake", clipperMiddleware, clipperRoute.handshake, apiResultHandler);
     route(PST, "/api/clipper/clippings", clipperMiddleware, clipperRoute.addClipping, apiResultHandler);

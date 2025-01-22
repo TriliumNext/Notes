@@ -13,6 +13,12 @@ import { dirname, join } from "path";
 
 const randtoken = generator({ source: "crypto" });
 
+export const isMac = process.platform === "darwin";
+
+export const isWindows = process.platform === "win32";
+
+export const isElectron = !!process.versions["electron"];
+
 export function newEntityId() {
     return randomString(12);
 }
@@ -56,10 +62,6 @@ export function hmac(secret: any, value: any) {
     const hmac = crypto.createHmac("sha256", Buffer.from(secret.toString(), "ascii"));
     hmac.update(value.toString());
     return hmac.digest("base64");
-}
-
-export function isElectron() {
-    return !!process.versions["electron"];
 }
 
 export function hash(text: string) {
@@ -128,7 +130,7 @@ export function escapeRegExp(str: string) {
 }
 
 export async function crash() {
-    if (isElectron()) {
+    if (isElectron) {
         (await import("electron")).app.exit(1);
     } else {
         process.exit(1);
@@ -314,17 +316,11 @@ export function envToBoolean(val: string | undefined) {
  * @returns the resource dir.
  */
 export function getResourceDir() {
-    if (isElectron() && !env.isDev()) {
+    if (isElectron && !env.isDev()) {
         return process.resourcesPath;
     } else {
         return join(dirname(fileURLToPath(import.meta.url)), "..", "..");
     }
-}
-
-export const isMac = process.platform === "darwin";
-
-export const isWindows = process.platform === "win32";
-    return process.platform === "win32";
 }
 
 export default {

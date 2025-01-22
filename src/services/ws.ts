@@ -18,7 +18,7 @@ if (env.isDev()) {
     const debounce = (await import("debounce")).default;
     const debouncedReloadFrontend = debounce(() => reloadFrontend("source code change"), 200);
     chokidar
-        .watch(isElectron() ? "dist/src/public" : "src/public")
+        .watch(isElectron ? "dist/src/public" : "src/public")
         .on("add", debouncedReloadFrontend)
         .on("change", debouncedReloadFrontend)
         .on("unlink", debouncedReloadFrontend);
@@ -62,7 +62,7 @@ function init(httpServer: HttpServer, sessionParser: SessionParser) {
     webSocketServer = new WebSocketServer({
         verifyClient: (info, done) => {
             sessionParser(info.req, {}, () => {
-                const allowed = isElectron() || (info.req as any).session.loggedIn || (config.General && config.General.noAuthentication);
+                const allowed = isElectron || (info.req as any).session.loggedIn || (config.General && config.General.noAuthentication);
 
                 if (!allowed) {
                     log.error("WebSocket connection not allowed because session is neither electron nor logged in.");

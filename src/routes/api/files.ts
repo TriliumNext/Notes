@@ -181,7 +181,7 @@ function saveToTmpDir(fileName: string, content: string | Buffer, entityType: st
 
     log.info(`Saved temporary file ${tmpObj.name}`);
 
-    if (utils.isElectron()) {
+    if (utils.isElectron) {
         chokidar.watch(tmpObj.name).on("change", (path, stats) => {
             ws.sendMessageToAllClients({
                 type: "openedFileUpdated",

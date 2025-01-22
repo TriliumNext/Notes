@@ -8,7 +8,7 @@ const doubleCsrfUtilities = doubleCsrf({
         path: "", // empty, so cookie is valid only for the current path
         secure: false,
         sameSite: "strict",
-        httpOnly: !isElectron() // set to false for Electron, see https://github.com/TriliumNext/Notes/pull/966
+        httpOnly: !isElectron // set to false for Electron, see https://github.com/TriliumNext/Notes/pull/966
     },
     cookieName: "_csrf"
 });

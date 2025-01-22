@@ -37,7 +37,7 @@ function isDbInitialized() {
 
 async function initDbConnection() {
     if (!isDbInitialized()) {
-        log.info(`DB not initialized, please visit setup page` + (isElectron() ? "" : ` - http://[your-server-host]:${port} to see instructions on how to initialize Trilium.`));
+        log.info(`DB not initialized, please visit setup page` + (isElectron ? "" : ` - http://[your-server-host]:${port} to see instructions on how to initialize Trilium.`));
 
         return;
     }

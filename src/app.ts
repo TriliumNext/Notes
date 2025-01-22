@@ -35,7 +35,7 @@ app.use((req, res, next) => {
     return next();
 });
 
-if (!utils.isElectron()) {
+if (!utils.isElectron) {
     app.use(compression()); // HTTP compression
 }
 
@@ -77,7 +77,7 @@ await import("./services/scheduler.js");
 
 startScheduledCleanup();
 
-if (utils.isElectron()) {
+if (utils.isElectron) {
     (await import("@electron/remote/main/index.js")).initialize();
 }
 

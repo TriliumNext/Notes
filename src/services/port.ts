@@ -18,7 +18,7 @@ let port: number;
 
 if (process.env.TRILIUM_PORT) {
     port = parseAndValidate(process.env.TRILIUM_PORT, "environment variable TRILIUM_PORT");
-} else if (isElectron()) {
+} else if (isElectron) {
     port = env.isDev() ? 37740 : 37840;
 } else {
     port = parseAndValidate(config["Network"]["port"] || "3000", `Network.port in ${dataDir.CONFIG_INI_PATH}`);

@@ -23,7 +23,7 @@ Terminal=false
  * We overwrite this file during every run as it might have been updated.
  */
 function installLocalAppIcon() {
-    if (!isElectron() || ["win32", "darwin"].includes(os.platform()) || (config.General && config.General.noDesktopIcon)) {
+    if (!isElectron || ["win32", "darwin"].includes(os.platform()) || (config.General && config.General.noDesktopIcon)) {
         return;
     }
 

@@ -2,11 +2,9 @@
 
 import optionService from "./options.js";
 import log from "./log.js";
-import { isElectron as getIsElectron, isMac } from "./utils.js";
+import { isElectron, isMac } from "./utils.js";
 import type { KeyboardShortcut } from "./keyboard_actions_interface.js";
 import { t } from "i18next";
-
-const isElectron = getIsElectron();
 
 function getDefaultKeyboardActions() {
     if (!t("keyboard_actions.note-navigation")) {

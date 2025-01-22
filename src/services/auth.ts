@@ -14,7 +14,7 @@ const noAuthentication = config.General && config.General.noAuthentication === t
 function checkAuth(req: Request, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {
         res.redirect("setup");
-    } else if (!req.session.loggedIn && !isElectron() && !noAuthentication) {
+    } else if (!req.session.loggedIn && !isElectron && !noAuthentication) {
         res.redirect("login");
     } else {
         next();
@@ -24,7 +24,7 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
 // for electron things which need network stuff
 //  currently, we're doing that for file upload because handling form data seems to be difficult
 function checkApiAuthOrElectron(req: Request, res: Response, next: NextFunction) {
-    if (!req.session.loggedIn && !isElectron() && !noAuthentication) {
+    if (!req.session.loggedIn && !isElectron && !noAuthentication) {
         reject(req, res, "Logged in session not found");
     } else {
         next();
@@ -48,7 +48,7 @@ function checkAppInitialized(req: Request, res: Response, next: NextFunction) {
 }
 
 function checkPasswordSet(req: Request, res: Response, next: NextFunction) {
-    if (!isElectron() && !passwordService.isPasswordSet()) {
+    if (!isElectron && !passwordService.isPasswordSet()) {
         res.redirect("set-password");
     } else {
         next();
@@ -56,7 +56,7 @@ function checkPasswordSet(req: Request, res: Response, next: NextFunction) {
 }
 
 function checkPasswordNotSet(req: Request, res: Response, next: NextFunction) {
-    if (!isElectron() && passwordService.isPasswordSet()) {
+    if (!isElectron && passwordService.isPasswordSet()) {
         res.redirect("login");
     } else {
         next();

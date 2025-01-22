@@ -53,7 +53,7 @@ async function startTrilium() {
      * its startup is slower than focusing the existing process/window. So in the end, it works out without having
      * to do a complex evaluation.
      */
-    if (utils.isElectron()) {
+    if (utils.isElectron) {
         (await import("electron")).app.requestSingleInstanceLock();
     }
 
@@ -71,7 +71,7 @@ async function startTrilium() {
 
     ws.init(httpServer, sessionParser as any); // TODO: Not sure why session parser is incompatible.
 
-    if (utils.isElectron()) {
+    if (utils.isElectron) {
         const electronRouting = await import("./routes/electron.js");
         electronRouting.default(app);
     }
@@ -146,7 +146,7 @@ function startHttpServer() {
             }
         }
 
-        if (utils.isElectron()) {
+        if (utils.isElectron) {
             import("electron").then(({ app, dialog }) => {
                 // Not all situations require showing an error dialog. When Trilium is already open,
                 // clicking the shortcut, the software icon, or the taskbar icon, or when creating a new window,
