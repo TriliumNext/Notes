@@ -20,7 +20,8 @@ function getEnvironmentOverrides() {
     const overrides: Record<string, Record<string, string>> = {};
 
     for (const [key, value] of Object.entries(process.env)) {
-        if (!key.startsWith('TRILIUM_') || !value) {
+        // Check if key is not uppercase or doesn't start with TRILIUM_
+        if (!key.startsWith('TRILIUM_') || !value || key !== key.toUpperCase()) {
             continue;
         }
 
