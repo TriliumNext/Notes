@@ -14,46 +14,52 @@ if (!fs.existsSync(dataDir.CONFIG_INI_PATH)) {
     fs.writeFileSync(dataDir.CONFIG_INI_PATH, configSample);
 }
 
-// This function is used to override the config with environment variables - since environment variables
-// should have precedence over the config file.
-function getEnvironmentOverrides() {
-    const overrides: Record<string, Record<string, string>> = {};
+const iniConfig = ini.parse(fs.readFileSync(dataDir.CONFIG_INI_PATH, "utf-8"));
 
-    for (const [key, value] of Object.entries(process.env)) {
-        // Only process valid TRILIUM environment variables
-        const isValidEnvVar = key.startsWith('TRILIUM_') &&
-                             value &&
-                             key === key.toUpperCase();
-
-        // Skip if not a valid TRILIUM environment variable
-        if (!isValidEnvVar) continue;
-
-        // Parse the environment variable
-        const parts = key.slice(8).split('_');
-        if (parts.length < 2) continue;
-
-        // Extract section and config key
-        const section = parts[0];
-        const configKey = parts.slice(1).join('_');
-
-        // Initialize section if needed and set value
-        overrides[section] = overrides[section] || {};
-        overrides[section][configKey] = value;
+const defaultConfig = {
+    General: {
+        instanceName: '',
+        noAuthentication: false,
+        noBackup: false,
+        noDesktopIcon: false,
+    },
+    Network: {
+        host: '0.0.0.0',
+        port: 8080,
+        https: false,
+        certPath: '',
+        keyPath: '',
+        trustedReverseProxy: false,
+    },
+    Sync: {
+        syncServerHost: '',
+        syncServerTimeout: 120000,
+        syncProxy: '',
     }
-
-    return overrides;
 }
 
-const fileConfig = ini.parse(fs.readFileSync(dataDir.CONFIG_INI_PATH, "utf-8"));
-const envOverrides = getEnvironmentOverrides();
-
-// Merge file config (config.ini) with environment variable overrides
-const config = Object.keys(fileConfig).reduce((acc, section) => {
-    acc[section] = {
-        ...fileConfig[section],
-        ...(envOverrides[section] || {})
-    };
-    return acc;
-}, {} as Record<string, Record<string, string>>);
+// Strongly define the configuration values here
+// We prefer the environment variables over the ini file's values here, so that the user can "override" the values as needed.
+const config = {
+    General: {
+        instanceName: process.env.TRILIUM_INSTANCENAME || iniConfig.General.instanceName || defaultConfig.General.instanceName,
+        noAuthentication: process.env.TRILIUM_NOAUTHENTICATION || iniConfig.General.noAuthentication || defaultConfig.General.noAuthentication,
+        noBackup: process.env.TRILIUM_NOBACKUP || iniConfig.General.noBackup || defaultConfig.General.noBackup,
+        noDesktopIcon: process.env.TRILIUM_NODESKTOPICON || iniConfig.General.noDesktopIcon || defaultConfig.General.noDesktopIcon,
+    },
+    Network: {
+        host: process.env.TRILIUM_HOST || iniConfig.Network.host || defaultConfig.Network.host,
+        port: process.env.TRILIUM_PORT || iniConfig.Network.port || defaultConfig.Network.port,
+        https: process.env.TRILIUM_HTTPS || iniConfig.Network.https || defaultConfig.Network.https,
+        certPath: process.env.TRILIUM_CERTPATH || iniConfig.Network.certPath || defaultConfig.Network.certPath,
+        keyPath: process.env.TRILIUM_KEYPATH || iniConfig.Network.keyPath || defaultConfig.Network.keyPath,
+        trustedReverseProxy: process.env.TRILIUM_TRUSTEDREVERSEPROXY || iniConfig.Network.trustedReverseProxy || defaultConfig.Network.trustedReverseProxy,
+    },
+    Sync: {
+        syncServerHost: process.env.TRILIUM_SYNCSERVERHOST || iniConfig.Sync.syncServerHost || defaultConfig.Sync.syncServerHost,
+        syncServerTimeout: process.env.TRILIUM_SYNCSERVERTIMEOUT || iniConfig.Sync.syncServerTimeout || defaultConfig.Sync.syncServerTimeout,
+        syncProxy: process.env.TRILIUM_SYNCPROXY || iniConfig.Sync.syncProxy || defaultConfig.Sync.syncProxy,
+    }
+}
 
 export default config;

@@ -4,6 +4,9 @@ import optionService from "./options.js";
 import type { OptionNames } from "./options_interface.js";
 import config from "./config.js";
 
+// Define the valid sync option names that can exist in config.Sync
+type SyncConfigOptionNames = keyof typeof config.Sync;
+
 /*
  * Primary configuration for sync is in the options (document), but we allow to override
  * these settings in config file. The reason for that is to avoid a mistake of loading a live/production
@@ -11,8 +14,8 @@ import config from "./config.js";
  * to live sync server.
  */
 
-function get(name: OptionNames) {
-    return (config["Sync"] && config["Sync"][name]) || optionService.getOption(name);
+function get(name: SyncConfigOptionNames) {
+    return (config["Sync"] && config["Sync"][name]) || optionService.getOption(name as OptionNames);
 }
 
 export default {
