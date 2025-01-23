@@ -42,23 +42,23 @@ const defaultConfig = {
 // We prefer the environment variables over the ini file's values here, so that the user can "override" the values as needed.
 const config = {
     General: {
-        instanceName: process.env.TRILIUM_INSTANCENAME || iniConfig.General.instanceName || defaultConfig.General.instanceName,
-        noAuthentication: process.env.TRILIUM_NOAUTHENTICATION || iniConfig.General.noAuthentication || defaultConfig.General.noAuthentication,
-        noBackup: process.env.TRILIUM_NOBACKUP || iniConfig.General.noBackup || defaultConfig.General.noBackup,
-        noDesktopIcon: process.env.TRILIUM_NODESKTOPICON || iniConfig.General.noDesktopIcon || defaultConfig.General.noDesktopIcon,
+        instanceName: process.env.TRILIUM_GENERAL_INSTANCENAME || iniConfig.General.instanceName || defaultConfig.General.instanceName,
+        noAuthentication: process.env.TRILIUM_GENERAL_NOAUTHENTICATION || iniConfig.General.noAuthentication || defaultConfig.General.noAuthentication,
+        noBackup: process.env.TRILIUM_GENERAL_NOBACKUP || iniConfig.General.noBackup || defaultConfig.General.noBackup,
+        noDesktopIcon: process.env.TRILIUM_GENERAL_NODESKTOPICON || iniConfig.General.noDesktopIcon || defaultConfig.General.noDesktopIcon,
     },
     Network: {
-        host: process.env.TRILIUM_HOST || iniConfig.Network.host || defaultConfig.Network.host,
-        port: process.env.TRILIUM_PORT || iniConfig.Network.port || defaultConfig.Network.port,
-        https: process.env.TRILIUM_HTTPS || iniConfig.Network.https || defaultConfig.Network.https,
-        certPath: process.env.TRILIUM_CERTPATH || iniConfig.Network.certPath || defaultConfig.Network.certPath,
-        keyPath: process.env.TRILIUM_KEYPATH || iniConfig.Network.keyPath || defaultConfig.Network.keyPath,
-        trustedReverseProxy: process.env.TRILIUM_TRUSTEDREVERSEPROXY || iniConfig.Network.trustedReverseProxy || defaultConfig.Network.trustedReverseProxy,
+        host: process.env.TRILIUM_NETWORK_HOST || iniConfig.Network.host || defaultConfig.Network.host,
+        port: process.env.TRILIUM_NETWORK_PORT || iniConfig.Network.port || defaultConfig.Network.port,
+        https: process.env.TRILIUM_NETWORK_HTTPS || iniConfig.Network.https || defaultConfig.Network.https,
+        certPath: process.env.TRILIUM_NETWORK_CERTPATH || iniConfig.Network.certPath || defaultConfig.Network.certPath,
+        keyPath: process.env.TRILIUM_NETWORK_KEYPATH || iniConfig.Network.keyPath || defaultConfig.Network.keyPath,
+        trustedReverseProxy: process.env.TRILIUM_NETWORK_TRUSTEDREVERSEPROXY || iniConfig.Network.trustedReverseProxy || defaultConfig.Network.trustedReverseProxy,
     },
     Sync: {
-        syncServerHost: process.env.TRILIUM_SYNCSERVERHOST || iniConfig.Sync.syncServerHost || defaultConfig.Sync.syncServerHost,
-        syncServerTimeout: process.env.TRILIUM_SYNCSERVERTIMEOUT || iniConfig.Sync.syncServerTimeout || defaultConfig.Sync.syncServerTimeout,
-        syncProxy: process.env.TRILIUM_SYNCPROXY || iniConfig.Sync.syncProxy || defaultConfig.Sync.syncProxy,
+        syncServerHost: process.env.TRILIUM_SYNC_SYNCSERVERHOST || iniConfig.Sync.syncServerHost || defaultConfig.Sync.syncServerHost,
+        syncServerTimeout: process.env.TRILIUM_SYNC_SYNCSERVERTIMEOUT || iniConfig.Sync.syncServerTimeout || defaultConfig.Sync.syncServerTimeout,
+        syncProxy: process.env.TRILIUM_SYNC_SYNCPROXY || iniConfig.Sync.syncProxy || defaultConfig.Sync.syncProxy,
     }
 }
 
