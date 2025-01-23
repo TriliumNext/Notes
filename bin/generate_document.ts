@@ -1,15 +1,15 @@
 /**
- * Usage: node src/tools/generate_document.js 1000
+ * Usage: tsx ./generate_document.ts 1000
  * will create 1000 new notes and some clones into the current document.db
  */
 
-import sqlInit from "../services/sql_init.js";
-import noteService from "../services/notes.js";
-import attributeService from "../services/attributes.js";
-import cls from "../services/cls.js";
-import cloningService from "../services/cloning.js";
+import sqlInit from "../src/services/sql_init.js";
+import noteService from "../src/services/notes.js";
+import attributeService from "../src/services/attributes.js";
+import cls from "../src/services/cls.js";
+import cloningService from "../src/services/cloning.js";
 import loremIpsum from "lorem-ipsum";
-import "../becca/entity_constructor.js";
+import "../src/becca/entity_constructor.js";
 
 const noteCount = parseInt(process.argv[2]);
 
@@ -90,4 +90,6 @@ async function start() {
     process.exit(0);
 }
 
-sqlInit.dbReady.then(cls.wrap(start));
+// @TriliumNextTODO sqlInit.dbReady never seems to resolve so program hangs
+// see https://github.com/TriliumNext/Notes/issues/1020
+sqlInit.dbReady.then(cls.wrap(start)).catch((err) => console.error(err));

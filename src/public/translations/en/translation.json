@@ -1409,7 +1409,8 @@
     "launcher": "Launcher",
     "doc": "Doc",
     "widget": "Widget",
-    "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?"
+    "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?",
+    "geo-map": "Geo Map (beta)"
   },
   "protect_note": {
     "toggle-on": "Protect the note",
@@ -1629,5 +1630,14 @@
   },
   "note_tooltip": {
     "note-has-been-deleted": "Note has been deleted."
+  },
+  "geo-map": {
+    "create-child-note-title": "Create a new child note and add it to the map",
+    "create-child-note-instruction": "Click on the map to create a new note at that location or press Escape to dismiss.",
+    "unable-to-load-map": "Unable to load map."
+  },
+  "geo-map-context": {
+    "open-location": "Open location",
+    "remove-from-map": "Remove from map"
   }
 }

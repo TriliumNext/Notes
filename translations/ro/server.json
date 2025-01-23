@@ -248,5 +248,8 @@
   "backend_log": {
     "log-does-not-exist": "Fișierul de loguri de backend „{{ fileName }}” nu există (încă).",
     "reading-log-failed": "Nu s-a putut citi fișierul de loguri de backend „{{fileName}}”."
+  },
+  "geo-map": {
+    "create-child-note-instruction": "Clic pe hartă pentru a crea o nouă notiță la acea poziție sau apăsați Escape pentru a renunța."
   }
 }

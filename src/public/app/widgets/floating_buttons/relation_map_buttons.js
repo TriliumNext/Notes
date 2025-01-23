@@ -13,16 +13,16 @@ const TPL = `
     <button type="button"
             class="relation-map-create-child-note floating-button btn bx bx-folder-plus"
             title="${t("relation_map_buttons.create_child_note_title")}"></button>
-    
+
     <button type="button"
             class="relation-map-reset-pan-zoom floating-button btn bx bx-crop"
             title="${t("relation_map_buttons.reset_pan_zoom_title")}"></button>
-    
+
     <div class="btn-group">
         <button type="button"
                 class="relation-map-zoom-in floating-button btn bx bx-zoom-in"
                 title="${t("relation_map_buttons.zoom_in_title")}"></button>
-    
+
         <button type="button"
                 class="relation-map-zoom-out floating-button btn bx bx-zoom-out"
                 title="${t("relation_map_buttons.zoom_out_title")}"></button>
@@ -43,6 +43,7 @@ export default class RelationMapButtons extends NoteContextAwareWidget {
         this.$zoomOutButton = this.$widget.find(".relation-map-zoom-out");
         this.$resetPanZoomButton = this.$widget.find(".relation-map-reset-pan-zoom");
 
+        // TODO: Deduplicate object creation here.
         this.$createChildNote.on("click", () => this.triggerEvent("relationMapCreateChildNote", { ntxId: this.ntxId }));
         this.$resetPanZoomButton.on("click", () => this.triggerEvent("relationMapResetPanZoom", { ntxId: this.ntxId }));
 

@@ -31,6 +31,7 @@ import AttachmentListTypeWidget from "./type_widgets/attachment_list.js";
 import AttachmentDetailTypeWidget from "./type_widgets/attachment_detail.js";
 import MindMapWidget from "./type_widgets/mind_map.js";
 import { getStylesheetUrl, isSyntaxHighlightEnabled } from "../services/syntax_highlight.js";
+import GeoMapTypeWidget from "./type_widgets/geo_map.js";
 
 const TPL = `
 <div class="note-detail">
@@ -39,7 +40,7 @@ const TPL = `
         font-family: var(--detail-font-family);
         font-size: var(--detail-font-size);
     }
-    
+
     .note-detail.full-height {
         height: 100%;
     }
@@ -67,7 +68,8 @@ const typeWidgetClasses = {
     contentWidget: ContentWidgetTypeWidget,
     attachmentDetail: AttachmentDetailTypeWidget,
     attachmentList: AttachmentListTypeWidget,
-    mindMap: MindMapWidget
+    mindMap: MindMapWidget,
+    geoMap: GeoMapTypeWidget
 };
 
 export default class NoteDetailWidget extends NoteContextAwareWidget {
@@ -147,7 +149,7 @@ export default class NoteDetailWidget extends NoteContextAwareWidget {
         // https://github.com/zadam/trilium/issues/2522
         this.$widget.toggleClass(
             "full-height",
-            (!this.noteContext.hasNoteList() && ["canvas", "webView", "noteMap", "mindMap"].includes(this.type) && this.mime !== "text/x-sqlite;schema=trilium") ||
+            (!this.noteContext.hasNoteList() && ["canvas", "webView", "noteMap", "mindMap", "geoMap"].includes(this.type) && this.mime !== "text/x-sqlite;schema=trilium") ||
                 this.noteContext.viewScope.viewMode === "attachments"
         );
     }
@@ -276,7 +278,7 @@ export default class NoteDetailWidget extends NoteContextAwareWidget {
 <script src="${assetPath}/node_modules/katex/dist/contrib/auto-render.min.js"></script>
 <script>
     document.body.className += ' ck-content printed-content';
-    
+
     renderMathInElement(document.body, {trust: true});
 </script>
 `,

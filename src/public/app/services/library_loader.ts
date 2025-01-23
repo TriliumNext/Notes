@@ -106,6 +106,10 @@ const HIGHLIGHT_JS: Library = {
     }
 };
 
+const LEAFLET: Library = {
+    css: [ "node_modules/leaflet/dist/leaflet.css" ],
+}
+
 async function requireLibrary(library: Library) {
     if (library.css) {
         library.css.map((cssUrl) => requireCss(cssUrl));
@@ -196,5 +200,6 @@ export default {
     MERMAID,
     MARKJS,
     I18NEXT,
-    HIGHLIGHT_JS
+    HIGHLIGHT_JS,
+    LEAFLET
 };

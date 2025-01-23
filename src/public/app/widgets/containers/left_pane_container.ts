@@ -22,7 +22,7 @@ export default class LeftPaneContainer extends FlexContainer<Component> {
             this.toggleInt(visible);
 
             if (visible) {
-                this.triggerEvent("focusTree");
+                this.triggerEvent("focusTree", {});
             } else {
                 const activeNoteContext = appContext.tabManager.getActiveContext();
                 this.triggerEvent("focusOnDetail", { ntxId: activeNoteContext.ntxId });

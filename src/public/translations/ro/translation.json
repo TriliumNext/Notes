@@ -1379,7 +1379,8 @@
     "image": "Imagine",
     "launcher": "Scurtătură",
     "widget": "Widget",
-    "confirm-change": "Nu se recomandă schimbarea tipului notiței atunci când ea are un conținut. Procedați oricum?"
+    "confirm-change": "Nu se recomandă schimbarea tipului notiței atunci când ea are un conținut. Procedați oricum?",
+    "geo-map": "Hartă geografică (beta)"
   },
   "protect_note": {
     "toggle-off": "Deprotejează notița",
@@ -1633,5 +1634,13 @@
   "notes": {
     "duplicate-note-suffix": "(dupl.)",
     "duplicate-note-title": "{{ noteTitle }} {{ duplicateNoteSuffix }}"
+  },
+  "geo-map-context": {
+    "open-location": "Deschide locația",
+    "remove-from-map": "Înlătură de pe hartă"
+  },
+  "geo-map": {
+    "create-child-note-title": "Crează o notiță nouă și adaug-o pe hartă",
+    "unable-to-load-map": "Nu s-a putut încărca harta."
   }
 }

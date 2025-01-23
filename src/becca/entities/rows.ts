@@ -116,7 +116,8 @@ export const ALLOWED_NOTE_TYPES = [
     "book",
     "webView",
     "code",
-    "mindMap"
+    "mindMap",
+    "geoMap"
 ] as const;
 export type NoteType = (typeof ALLOWED_NOTE_TYPES)[number];
 

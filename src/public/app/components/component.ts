@@ -61,7 +61,7 @@ export class TypedComponent<ChildT extends TypedComponent<ChildT>> {
         }
     }
 
-    triggerEvent(name: string, data = {}): Promise<unknown> | undefined | null {
+    triggerEvent<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown> | undefined | null {
         return this.parent?.triggerEvent(name, data);
     }
 

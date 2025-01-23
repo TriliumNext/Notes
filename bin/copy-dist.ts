@@ -100,7 +100,8 @@ const copy = async () => {
         "node_modules/codemirror/keymap/",
         "node_modules/mind-elixir/dist/",
         "node_modules/@highlightjs/cdn-assets/languages",
-        "node_modules/@highlightjs/cdn-assets/styles"
+        "node_modules/@highlightjs/cdn-assets/styles",
+        "node_modules/leaflet/dist"
     ];
 
     for (const folder of nodeModulesFolder) {

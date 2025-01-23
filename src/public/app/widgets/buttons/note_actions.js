@@ -42,7 +42,7 @@ const TPL = `
         <li data-trigger-command="convertNoteIntoAttachment" class="dropdown-item">
             <span class="bx bx-paperclip"></span> ${t("note_actions.convert_into_attachment")}
         </li>
-        
+
         <li data-trigger-command="renderActiveNote" class="dropdown-item render-note-button">
             <span class="bx bx-extension"></span> ${t("note_actions.re_render_note")}<kbd data-command="renderActiveNote"></kbd>
         </li>
@@ -54,15 +54,15 @@ const TPL = `
         <li data-trigger-command="printActiveNote" class="dropdown-item print-active-note-button">
             <span class="bx bx-printer"></span> ${t("note_actions.print_note")}<kbd data-command="printActiveNote"></kbd></li>
 
-        
+
         <div class="dropdown-divider"></div>
 
-        
+
         <li class="dropdown-item import-files-button"><span class="bx bx-import"></span> ${t("note_actions.import_files")}</li>
 
         <li class="dropdown-item export-note-button"><span class="bx bx-export"></span> ${t("note_actions.export_note")}</li>
 
-        
+
         <div class="dropdown-divider"></div>
 
 
@@ -79,7 +79,7 @@ const TPL = `
             <span class="bx bx-code"></span> ${t("note_actions.note_source")}<kbd data-command="showNoteSource"></kbd>
         </li>
 
-        
+
         <div class="dropdown-divider"></div>
 
 
@@ -89,10 +89,10 @@ const TPL = `
 
         <li class="dropdown-item delete-note-button"><span class="bx bx-trash destructive-action-icon"></span> ${t("note_actions.delete_note")}</li>
 
-        
+
         <div class="dropdown-divider"></div>
 
-        
+
         <li data-trigger-command="showAttachments" class="dropdown-item show-attachments-button">
             <span class="bx bx-paperclip"></span> ${t("note_actions.note_attachments")}<kbd data-command="showAttachments"></kbd>
         </li>
@@ -154,7 +154,7 @@ export default class NoteActionsWidget extends NoteContextAwareWidget {
         this.toggleDisabled(this.$findInTextButton, ["text", "code", "book"].includes(note.type));
 
         this.toggleDisabled(this.$showAttachmentsButton, !isInOptions);
-        this.toggleDisabled(this.$showSourceButton, ["text", "code", "relationMap", "mermaid", "canvas", "mindMap"].includes(note.type));
+        this.toggleDisabled(this.$showSourceButton, ["text", "code", "relationMap", "mermaid", "canvas", "mindMap", "geoMap"].includes(note.type));
 
         this.toggleDisabled(this.$printActiveNoteButton, ["text", "code"].includes(note.type));
 

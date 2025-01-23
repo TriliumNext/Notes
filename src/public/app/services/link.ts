@@ -234,7 +234,7 @@ function goToLink(evt: MouseEvent | JQuery.ClickEvent) {
     return goToLinkExt(evt, hrefLink, $link);
 }
 
-function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent | React.PointerEvent<HTMLCanvasElement>, hrefLink: string | undefined, $link: JQuery<HTMLElement> | null) {
+function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent | JQuery.MouseDownEvent | React.PointerEvent<HTMLCanvasElement>, hrefLink: string | undefined, $link?: JQuery<HTMLElement> | null) {
     if (hrefLink?.startsWith("data:")) {
         return true;
     }

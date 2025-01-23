@@ -85,6 +85,7 @@ import ScrollPaddingWidget from "../widgets/scroll_padding.js";
 import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolbar.js";
 import options from "../services/options.js";
 import utils from "../services/utils.js";
+import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
 
 export default class DesktopLayout {
     constructor(customWidgets) {
@@ -200,6 +201,7 @@ export default class DesktopLayout {
                                                                 .child(new ShowHighlightsListWidgetButton())
                                                                 .child(new CodeButtonsWidget())
                                                                 .child(new RelationMapButtons())
+                                                                .child(new GeoMapButtons())
                                                                 .child(new CopyImageReferenceButton())
                                                                 .child(new SvgExportButton())
                                                                 .child(new BacklinksWidget())

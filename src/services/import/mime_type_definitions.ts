@@ -1,4 +1,4 @@
-// TODO: deduplicate with /src/services/import/mime_type_definitions.ts
+// TODO: deduplicate with /src/public/app/services/mime_type_definitions.ts
 
 /**
  * A pseudo-MIME type which is used in the editor to automatically determine the language used in code blocks via heuristics.

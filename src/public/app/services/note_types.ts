@@ -18,7 +18,8 @@ async function getNoteTypeItems(command?: NoteTypeCommandNames) {
         { title: t("note_types.mermaid-diagram"), command, type: "mermaid", uiIcon: "bx bx-selection" },
         { title: t("note_types.canvas"), command, type: "canvas", uiIcon: "bx bx-pen" },
         { title: t("note_types.web-view"), command, type: "webView", uiIcon: "bx bx-globe-alt" },
-        { title: t("note_types.mind-map"), command, type: "mindMap", uiIcon: "bx bx-sitemap" }
+        { title: t("note_types.mind-map"), command, type: "mindMap", uiIcon: "bx bx-sitemap" },
+        { title: t("note_types.geo-map"), command, type: "geoMap", uiIcon: "bx bx-map-alt" },
     ];
 
     const templateNoteIds = await server.get<string[]>("search-templates");

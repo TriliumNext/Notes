@@ -1,5 +1,6 @@
 import type { CommandNames } from "../components/app_context.js";
 import keyboardActionService from "../services/keyboard_actions.js";
+import note_tooltip from "../services/note_tooltip.js";
 import utils from "../services/utils.js";
 
 interface ContextMenuOptions<T extends CommandNames> {
@@ -31,6 +32,7 @@ export interface MenuCommandItem<T extends CommandNames> {
 
 export type MenuItem<T extends CommandNames> = MenuCommandItem<T> | MenuSeparatorItem;
 export type MenuHandler<T extends CommandNames> = (item: MenuCommandItem<T>, e: JQuery.MouseDownEvent<HTMLElement, undefined, HTMLElement, HTMLElement>) => void;
+export type ContextMenuEvent = PointerEvent | MouseEvent | JQuery.ContextMenuEvent;
 
 class ContextMenu {
     private $widget: JQuery<HTMLElement>;
@@ -55,6 +57,8 @@ class ContextMenu {
 
     async show<T extends CommandNames>(options: ContextMenuOptions<T>) {
         this.options = options;
+
+        note_tooltip.dismissAllTooltips();
 
         if (this.$widget.hasClass("show")) {
             // The menu is already visible. Hide the menu then open it again

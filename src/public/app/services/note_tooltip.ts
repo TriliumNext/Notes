@@ -18,11 +18,11 @@ function setupGlobalTooltip() {
             return;
         }
 
-        cleanUpTooltips();
+        dismissAllTooltips();
     });
 }
 
-function cleanUpTooltips() {
+function dismissAllTooltips() {
     $(".note-tooltip").remove();
 }
 
@@ -102,12 +102,12 @@ async function mouseEnterHandler(this: HTMLElement) {
             customClass: linkId
         });
 
-        cleanUpTooltips();
+        dismissAllTooltips();
         $(this).tooltip("show");
 
         // Dismiss the tooltip immediately if a link was clicked inside the tooltip.
         $(`.${tooltipClass} a`).on("click", (e) => {
-            cleanUpTooltips();
+            dismissAllTooltips();
         });
 
         // the purpose of the code below is to:
@@ -117,7 +117,7 @@ async function mouseEnterHandler(this: HTMLElement) {
         const checkTooltip = () => {
             if (!$(this).filter(":hover").length && !$(`.${linkId}:hover`).length) {
                 // cursor is neither over the link nor over the tooltip, user likely is not interested
-                cleanUpTooltips();
+                dismissAllTooltips();
             } else {
                 setTimeout(checkTooltip, 1000);
             }
@@ -172,5 +172,6 @@ function renderFootnote($link: JQuery<HTMLElement>, url: string) {
 
 export default {
     setupGlobalTooltip,
-    setupElementTooltip
+    setupElementTooltip,
+    dismissAllTooltips
 };

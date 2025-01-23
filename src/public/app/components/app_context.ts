@@ -23,6 +23,7 @@ import type LoadResults from "../services/load_results.js";
 import type { Attribute } from "../services/attribute_parser.js";
 import type NoteTreeWidget from "../widgets/note_tree.js";
 import type { default as NoteContext, GetTextEditorCallback } from "./note_context.js";
+import type { ContextMenuEvent } from "../menus/context_menu.js";
 
 interface Layout {
     getRootWidget: (appContext: AppContext) => RootWidget;
@@ -69,6 +70,7 @@ export interface ExecuteCommandData extends CommandData {
  */
 export type CommandMappings = {
     "api-log-messages": CommandData;
+    focusTree: CommandData,
     focusOnDetail: Required<CommandData>;
     focusOnSearchDefinition: Required<CommandData>;
     searchNotes: CommandData & {
@@ -193,6 +195,10 @@ export type CommandMappings = {
     setZoomFactorAndSave: {
         zoomFactor: string;
     }
+
+    // Geomap
+    deleteFromMap: { noteId: string },
+    openGeoLocation: { noteId: string, event: JQuery.MouseDownEvent }
 };
 
 type EventMappings = {
@@ -227,9 +233,12 @@ type EventMappings = {
     activeContextChanged: {
         noteContext: NoteContext;
     };
+    beforeNoteSwitch: {
+        noteContext: NoteContext;
+    };
     noteSwitched: {
         noteContext: NoteContext;
-        notePath: string;
+        notePath: string | null;
     };
     noteSwitchedAndActivatedEvent: {
         noteContext: NoteContext;
@@ -248,11 +257,15 @@ type EventMappings = {
         noteId: string;
     };
     hoistedNoteChanged: {
-        ntxId: string;
+        noteId: string;
+        ntxId: string | null;
     };
     contextsReopenedEvent: {
         mainNtxId: string;
         tabPosition: number;
+    };
+    noteDetailRefreshed: {
+        ntxId?: string | null;
     };
     noteContextReorderEvent: {
         oldMainNtxId: string;
@@ -266,7 +279,13 @@ type EventMappings = {
     };
     exportSvg: {
         ntxId: string;
-    }
+    };
+    geoMapCreateChildNote: {
+        ntxId: string | null | undefined; // TODO: deduplicate ntxId
+    };
+    tabReorder: {
+        ntxIdsInOrder: string[]
+    };
 };
 
 export type EventListener<T extends EventNames> = {

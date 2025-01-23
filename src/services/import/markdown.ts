@@ -14,7 +14,7 @@ renderer.code = ({text, lang, escaped}: Tokens.Code) => {
 
 import htmlSanitizer from "../html_sanitizer.js";
 import importUtils from "./utils.js";
-import { getMimeTypeFromHighlightJs, MIME_TYPE_AUTO, normalizeMimeTypeForCKEditor } from "../../public/app/services/mime_type_definitions.js";
+import { getMimeTypeFromHighlightJs, MIME_TYPE_AUTO, normalizeMimeTypeForCKEditor } from "./mime_type_definitions.js";
 
 function renderToHtml(content: string, title: string) {
     const html = parse(content, {
