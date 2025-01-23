@@ -20,26 +20,24 @@ function getEnvironmentOverrides() {
     const overrides: Record<string, Record<string, string>> = {};
 
     for (const [key, value] of Object.entries(process.env)) {
-        // Check if key is not uppercase or doesn't start with TRILIUM_
-        if (!key.startsWith('TRILIUM_') || !value || key !== key.toUpperCase()) {
-            continue;
-        }
+        // Only process valid TRILIUM environment variables
+        const isValidEnvVar = key.startsWith('TRILIUM_') &&
+                             value &&
+                             key === key.toUpperCase();
 
-        // Remove TRILIUM_ prefix and split by underscore
+        // Skip if not a valid TRILIUM environment variable
+        if (!isValidEnvVar) continue;
+
+        // Parse the environment variable
         const parts = key.slice(8).split('_');
+        if (parts.length < 2) continue;
 
-        if (parts.length < 2) {
-            continue;
-        }
-
-        // First part is the section, rest is the key
+        // Extract section and config key
         const section = parts[0];
         const configKey = parts.slice(1).join('_');
 
-        if (!overrides[section]) {
-            overrides[section] = {};
-        }
-
+        // Initialize section if needed and set value
+        overrides[section] = overrides[section] || {};
         overrides[section][configKey] = value;
     }
 
