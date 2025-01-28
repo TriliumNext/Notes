@@ -15,9 +15,9 @@ class SetupModel {
     setupNewDocument: ko.Observable<boolean>;
     setupSyncFromDesktop: ko.Observable<boolean>;
     setupSyncFromServer: ko.Observable<boolean>;
-    syncServerHost: ko.Observable<string|undefined>;
-    syncProxy: ko.Observable<string|undefined>;
-    password: ko.Observable<string|undefined>;
+    syncServerHost: ko.Observable<string | undefined>;
+    syncProxy: ko.Observable<string | undefined>;
+    password: ko.Observable<string | undefined>;
 
     constructor(syncInProgress: boolean) {
         this.syncInProgress = syncInProgress;
@@ -35,7 +35,6 @@ class SetupModel {
         }
         const serverAddress = `${location.protocol}//${location.host}`;
         $("#current-host").html(serverAddress);
-
     }
 
     // this is called in setup.ejs
@@ -53,15 +52,14 @@ class SetupModel {
         } else {
             this.step(this.setupType());
         }
-    };
+    }
 
     back() {
         this.step("setup-type");
         this.setupType("");
-    };
+    }
 
-
-    async finish () {
+    async finish() {
         const syncServerHost = this.syncServerHost();
         const syncProxy = this.syncProxy();
         const password = this.password();
@@ -92,7 +90,7 @@ class SetupModel {
         } else {
             showAlert(`Sync setup failed: ${resp.error}`);
         }
-    };
+    }
 }
 
 async function checkOutstandingSyncs() {
@@ -121,7 +119,7 @@ function hideAlert() {
 }
 
 function getSyncInProgress() {
-    const el = document.getElementById('syncInProgress');
+    const el = document.getElementById("syncInProgress");
     if (!el || !(el instanceof HTMLMetaElement)) return false;
     return !!parseInt(el.content);
 }
@@ -130,5 +128,3 @@ addEventListener("DOMContentLoaded", (event) => {
     ko.applyBindings(new SetupModel(getSyncInProgress()), document.getElementById("setup-dialog"));
     $("#setup-dialog").show();
 });
-
-
