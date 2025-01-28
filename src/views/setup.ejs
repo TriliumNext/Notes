@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta id="syncInProgress" content="<%= syncInProgress ? 1 : 0 %>" />
     <title><%= t("setup.title") %></title>
 
     <style>
@@ -146,8 +147,6 @@
     window.glob = {
         componentId: ''
     };
-
-    window.syncInProgress = <%= syncInProgress ? 'true' : 'false' %>;
 </script>
 
 <!-- Required for correct loading of scripts in Electron -->
