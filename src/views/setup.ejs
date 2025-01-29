@@ -54,20 +54,23 @@
         </div>
 
         <div id="setup-type" data-bind="visible: step() == 'setup-type'" style="margin-top: 20px;">
-            <div class="radio" style="margin-bottom: 15px;">
-                <label><input type="radio" name="setup-type" value="new-document" data-bind="checked: setupType">
-                    <%= t("setup.new-document") %></label>
-            </div>
-            <div class="radio" style="margin-bottom: 15px;">
-                <label><input type="radio" name="setup-type" value="sync-from-desktop" data-bind="checked: setupType">
-                    <%= t("setup.sync-from-desktop") %></label>
-            </div>
-            <div class="radio" style="margin-bottom: 15px;">
-                <label><input type="radio" name="setup-type" value="sync-from-server" data-bind="checked: setupType">
-                    <%= t("setup.sync-from-server") %></label>
-            </div>
+            <form data-bind="submit: selectSetupType">
 
-            <button type="button" data-bind="disable: !setupTypeSelected(), click: selectSetupType" class="btn btn-primary"><%= t("setup.next") %></button>
+              <div class="radio" style="margin-bottom: 15px;">
+                  <label><input type="radio" name="setup-type" value="new-document" data-bind="checked: setupType"">
+                      <%= t("setup.new-document") %></label>
+              </div>
+              <div class="radio" style="margin-bottom: 15px;">
+                  <label><input type="radio" name="setup-type" value="sync-from-desktop" data-bind="checked: setupType">
+                      <%= t("setup.sync-from-desktop") %></label>
+              </div>
+              <div class="radio" style="margin-bottom: 15px;">
+                  <label><input type="radio" name="setup-type" value="sync-from-server" data-bind="checked: setupType"">
+                      <%= t("setup.sync-from-server") %></label>
+              </div>
+
+              <button type="submit" data-bind="disable: !setupTypeSelected()" class="btn btn-primary"><%= t("setup.next") %></button>
+            </form>
         </div>
 
         <div data-bind="visible: step() == 'new-document-in-progress'">
@@ -105,6 +108,8 @@
         </div>
 
         <div data-bind="visible: step() == 'sync-from-server'">
+          <form data-bind="submit: finish">
+
             <h2><%= t("setup_sync-from-server.heading") %></h2>
 
             <p><%= t("setup_sync-from-server.instructions") %></p>
@@ -126,9 +131,9 @@
 
             <button type="button" data-bind="click: back" class="btn btn-secondary"><%= t("setup_sync-from-server.back") %></button>
 
-            &nbsp;
+            <button type="submit" class="btn btn-primary"><%= t("setup_sync-from-server.finish-setup") %></button>
+          </form>
 
-            <button type="button" data-bind="click: finish" class="btn btn-primary"><%= t("setup_sync-from-server.finish-setup") %></button>
         </div>
 
         <div data-bind="visible: step() == 'sync-in-progress'">
