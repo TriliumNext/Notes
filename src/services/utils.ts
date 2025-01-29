@@ -295,10 +295,6 @@ export function toMap<T extends Record<string, any>>(list: T[], key: keyof T): R
     return map;
 }
 
-export function isString(x: any) {
-    return Object.prototype.toString.call(x) === "[object String]";
-}
-
 // try to turn 'true' and 'false' strings from process.env variables into boolean values or undefined
 export function envToBoolean(val: string | undefined) {
     if (val === undefined || typeof val !== "string") return undefined;
@@ -357,7 +353,6 @@ export default {
     normalize,
     hashedBlobId,
     toMap,
-    isString,
     getResourceDir,
     isMac,
     isWindows,

@@ -6,7 +6,7 @@ import eventService from "./events.js";
 import cls from "../services/cls.js";
 import protectedSessionService from "../services/protected_session.js";
 import log from "../services/log.js";
-import { newEntityId, isString, unescapeHtml, quoteRegex, toMap } from "../services/utils.js";
+import { newEntityId, unescapeHtml, quoteRegex, toMap } from "../services/utils.js";
 import revisionService from "./revisions.js";
 import request from "./request.js";
 import path from "path";
@@ -884,7 +884,7 @@ async function asyncPostProcessContent(note: BNote, content: string | Buffer) {
         return;
     }
 
-    if (note.hasStringContent() && !isString(content)) {
+    if (note.hasStringContent() && typeof content !== "string") {
         content = content.toString();
     }
 

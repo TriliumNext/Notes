@@ -143,8 +143,6 @@ describe.todo("#normalize", () => {});
 
 describe.todo("#toMap", () => {});
 
-describe.todo("#isString", () => {});
-
 describe("#envToBoolean", () => {
     const testCases: TestCase<typeof utils.envToBoolean>[] = [
         ["w/ 'true' it should return boolean 'true'", ["true"], true],
