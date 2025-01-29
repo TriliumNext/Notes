@@ -88,8 +88,6 @@ async function register(app: express.Application) {
     // Deprecated, https://www.npmjs.com/package/autocomplete.js?activeTab=readme
     app.use(`/${assetPath}/node_modules/autocomplete.js/dist/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/autocomplete.js/dist/")));
 
-    app.use(`/${assetPath}/node_modules/knockout/build/output/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/knockout/build/output/")));
-
     app.use(`/${assetPath}/node_modules/normalize.css/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/normalize.css/")));
 
     app.use(`/${assetPath}/node_modules/jquery.fancytree/dist/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/jquery.fancytree/dist/")));
