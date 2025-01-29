@@ -137,9 +137,45 @@ describe.todo("#timeLimit", () => {});
 
 describe.todo("#deferred", () => {});
 
-describe.todo("#removeDiacritic", () => {});
+describe("#removeDiacritic", () => {
 
-describe.todo("#normalize", () => {});
+    const testCases: TestCase<typeof utils.removeDiacritic>[] = [
+        ["w/ 'Äpfel' it should replace the 'Ä'", ["Äpfel"], "Apfel"],
+        ["w/ 'Été' it should replace the 'É' and 'é'", ["Été"], "Ete"],
+        ["w/ 'Fête' it should replace the 'ê'", ["Fête"], "Fete"],
+        ["w/ 'Αλφαβήτα' it should replace the 'ή'", ["Αλφαβήτα"], "Αλφαβητα"],
+        ["w/ '' (empty string) it should return empty string", [""], ""],
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+            const result = utils.removeDiacritic(...fnParams);
+            expect(result).toStrictEqual(expected);
+          });
+    });
+});
+
+
+describe("#normalize", () => {
+
+    const testCases: TestCase<typeof utils.normalize>[] = [
+        ["w/ 'Äpfel' it should replace the 'Ä' and return lowercased", ["Äpfel"], "apfel"],
+        ["w/ 'Été' it should replace the 'É' and 'é' and return lowercased", ["Été"], "ete"],
+        ["w/ 'FêTe' it should replace the 'ê' and return lowercased", ["FêTe"], "fete"],
+        ["w/ 'ΑλΦαβήΤα' it should replace the 'ή' and return lowercased", ["ΑλΦαβήΤα"], "αλφαβητα"],
+        ["w/ '' (empty string) it should return empty string", [""], ""],
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+            const result = utils.normalize(...fnParams);
+            expect(result).toStrictEqual(expected);
+          });
+    });
+
+});
 
 describe.todo("#toMap", () => {});
 
