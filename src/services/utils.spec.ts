@@ -145,6 +145,34 @@ describe.todo("#toMap", () => {});
 
 describe.todo("#isString", () => {});
 
+describe("#envToBoolean", () => {
+    const testCases: TestCase<typeof utils.envToBoolean>[] = [
+        ["w/ 'true' it should return boolean 'true'", ["true"], true],
+        ["w/ 'True' it should return boolean 'true'", ["True"], true],
+        ["w/ 'TRUE' it should return boolean 'true'", ["TRUE"], true],
+        ["w/ 'true ' it should return boolean 'true'", ["true "], true],
+        ["w/ 'false' it should return boolean 'false'", ["false"], false],
+        ["w/ 'False' it should return boolean 'false'", ["False"], false],
+        ["w/ 'FALSE' it should return boolean 'false'", ["FALSE"], false],
+        ["w/ 'false ' it should return boolean 'false'", ["false "], false],
+        ["w/ 'whatever' (non-boolean string) it should return undefined", ["whatever"], undefined],
+        ["w/ '-' (non-boolean string) it should return undefined", ["-"], undefined],
+        ["w/ '' (empty string) it should return undefined", [""], undefined],
+        ["w/ ' ' (white space string) it should return undefined", [" "], undefined],
+        ["w/ undefined it should return undefined", [undefined], undefined],
+        //@ts-expect-error - pass wrong type as param
+        ["w/ number 1 it should return undefined", [1], undefined],
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+            const result = utils.envToBoolean(...fnParams);
+            expect(result).toStrictEqual(expected);
+          });
+    });
+});
+
 describe.todo("#getResourceDir", () => {});
 
 describe.todo("#isMac", () => {});
