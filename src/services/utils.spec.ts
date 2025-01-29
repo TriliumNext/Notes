@@ -43,7 +43,28 @@ describe("#isEmptyOrWhitespace", () => {
 
 });
 
-describe.todo("#sanitizeSqlIdentifier", () => {});
+describe("#sanitizeSqlIdentifier", () => {
+
+  const testCases: TestCase<typeof utils.sanitizeSqlIdentifier>[] = [
+    ["w/ 'test' it should not strip anything", ["test"], "test"],
+    ["w/ 'test123' it should not strip anything", ["test123"], "test123"],
+    ["w/ 'tEst_TeSt' it should not strip anything", ["tEst_TeSt"], "tEst_TeSt"],
+    ["w/ 'test_test' it should not strip '_'", ["test_test"], "test_test"],
+    ["w/ 'test-' it should strip the '-'", ["test-"], "test"],
+    ["w/ 'test-test' it should strip the '-'", ["test-test"], "testtest"],
+    ["w/ 'test; --test' it should strip the '; --'", ["test; --test"], "testtest"],
+    ["w/ 'test test' it should strip the ' '", ["test test"], "testtest"],
+  ];
+
+  testCases.forEach(testCase => {
+    const [desc, fnParams, expected] = testCase;
+    it(desc, () => {
+      const result = utils.sanitizeSqlIdentifier(...fnParams);
+      expect(result).toStrictEqual(expected);
+    })
+  });
+
+});
 
 describe.todo("#escapeHtml", () => {});
 
