@@ -112,7 +112,24 @@ describe.todo("#replaceAll", () => {});
 // TriliumNextTODO move existing formatDownloadTitle in here
 // describe.todo("#formatDownloadTitle", () => {});
 
-describe.todo("#removeTextFileExtension", () => {});
+describe("#removeTextFileExtension", () => {
+    const testCases: TestCase<typeof utils.removeTextFileExtension>[] = [
+        ["w/ 'test.md' it should strip '.md'", ["test.md"], "test"],
+        ["w/ 'test.markdown' it should strip '.markdown'", ["test.markdown"], "test"],
+        ["w/ 'test.html' it should strip '.html'", ["test.html"], "test"],
+        ["w/ 'test.htm' it should strip '.htm'", ["test.htm"], "test"],
+        ["w/ 'test.zip' it should NOT strip '.zip'", ["test.zip"], "test.zip"],
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+            const result = utils.removeTextFileExtension(...fnParams);
+            expect(result).toStrictEqual(expected);
+          });
+    });
+
+});
 
 describe.todo("#getNoteTitle", () => {});
 
