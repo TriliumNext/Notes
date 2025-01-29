@@ -110,7 +110,7 @@ async function checkOutstandingSyncs() {
 }
 
 function showAlert(message: string) {
-    $("#alert").html(message);
+    $("#alert").text(message);
     $("#alert").show();
 }
 
