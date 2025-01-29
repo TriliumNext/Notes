@@ -114,8 +114,6 @@ def</p>
     });
 });
 
-describe.todo("#union", () => {});
-
 describe.todo("#escapeRegExp", () => {});
 
 describe.todo("#crash", () => {});

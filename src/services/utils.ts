@@ -104,29 +104,6 @@ export function stripTags(text: string) {
     return text.replace(/<(?:.|\n)*?>/gm, "");
 }
 
-export function union<T extends string | number | symbol>(a: T[], b: T[]): T[] {
-    const obj: Record<T, T> = {} as Record<T, T>; // TODO: unsafe?
-
-    for (let i = a.length - 1; i >= 0; i--) {
-        obj[a[i]] = a[i];
-    }
-
-    for (let i = b.length - 1; i >= 0; i--) {
-        obj[b[i]] = b[i];
-    }
-
-    const res: T[] = [];
-
-    for (const k in obj) {
-        if (obj.hasOwnProperty(k)) {
-            // <-- optional
-            res.push(obj[k]);
-        }
-    }
-
-    return res;
-}
-
 export function escapeRegExp(str: string) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -337,7 +314,6 @@ export default {
     unescapeHtml,
     toObject,
     stripTags,
-    union,
     escapeRegExp,
     crash,
     getContentDisposition,
