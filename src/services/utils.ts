@@ -71,8 +71,9 @@ export function hash(text: string) {
     return crypto.createHash("sha1").update(text).digest("base64");
 }
 
-export function isEmptyOrWhitespace(str: string) {
-    return str === null || str.match(/^ *$/) !== null;
+export function isEmptyOrWhitespace(str: string | null | undefined) {
+    if (!str) return true;
+    return str.match(/^ *$/) !== null;
 }
 
 export function sanitizeSqlIdentifier(str: string) {

@@ -216,6 +216,7 @@ function deleteBranch(req: Request) {
 
 function setPrefix(req: Request) {
     const branchId = req.params.branchId;
+    //TriliumNextTODO: req.body arrives as string, so req.body.prefix will be undefined – did the code below ever even work?
     const prefix = utils.isEmptyOrWhitespace(req.body.prefix) ? null : req.body.prefix;
 
     const branch = becca.getBranchOrThrow(branchId);
