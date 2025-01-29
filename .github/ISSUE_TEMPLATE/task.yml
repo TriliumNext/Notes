@@ -1,0 +1,10 @@
+name: Task
+description: Create a new Task
+type: "Task"
+body:
+- type: textarea
+  attributes:
+    label: Describe Task
+    description: A clear and concise description of what the task is about.
+  validations:
+    required: true
