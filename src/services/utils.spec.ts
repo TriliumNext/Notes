@@ -244,6 +244,12 @@ describe("#isWindows", () => {
     });
 });
 
+describe("#isDev", () => {
+    it("should export a boolean", () => {
+        expect(utils.isDev).toBeTypeOf("boolean");
+    });
+});
+
 describe("#formatDownloadTitle", () => {
 
     //prettier-ignore
