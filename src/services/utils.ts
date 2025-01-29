@@ -332,5 +332,6 @@ export default {
     getResourceDir,
     isMac,
     isWindows,
+    isDev,
     envToBoolean
 };
