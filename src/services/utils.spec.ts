@@ -36,8 +36,6 @@ describe.todo("#fromBase64", () => {});
 
 describe.todo("#hmac", () => {});
 
-describe.todo("#isElectron", () => {});
-
 describe.todo("#hash", () => {});
 
 describe("#isEmptyOrWhitespace", () => {
@@ -228,10 +226,23 @@ describe("#envToBoolean", () => {
 
 describe.todo("#getResourceDir", () => {});
 
-describe.todo("#isMac", () => {});
+describe("#isElectron", () => {
+    it("should export a boolean", () => {
+        expect(utils.isElectron).toBeTypeOf("boolean");
+    });
+});
 
-describe.todo("#isWindows", () => {});
+describe("#isMac", () => {
+    it("should export a boolean", () => {
+        expect(utils.isMac).toBeTypeOf("boolean");
+    });
+});
 
+describe("#isWindows", () => {
+    it("should export a boolean", () => {
+        expect(utils.isWindows).toBeTypeOf("boolean");
+    });
+});
 
 describe("#formatDownloadTitle", () => {
 
