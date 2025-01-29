@@ -91,7 +91,28 @@ describe.todo("#unescapeHtml", () => {});
 
 describe.todo("#toObject", () => {});
 
-describe.todo("#stripTags", () => {});
+describe("#stripTags", () => {
+
+    //pre
+    const htmlWithNewlines =
+`<p>abc
+def</p>
+<p>ghi</p>`;
+
+    const testCases: TestCase<typeof utils.stripTags>[] = [
+        ["should strip all tags and only return the content, leaving new lines and spaces in tact", [htmlWithNewlines], "abc\ndef\nghi"],
+        //TriliumNextTODO: should this actually insert a space between content to prevent concatenated text?
+        ["should strip all tags and only return the content", ["<h1>abc</h1><p>def</p>"], "abcdef"],
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+          const result = utils.stripTags(...fnParams);
+          expect(result).toStrictEqual(expected);
+        })
+    });
+});
 
 describe.todo("#union", () => {});
 
