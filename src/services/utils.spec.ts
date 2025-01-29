@@ -1,9 +1,28 @@
 import { describe, it, expect } from "vitest";
 import utils from "./utils.js";
 
-describe.todo("#newEntityId", () => {});
+type TestCase<T extends (...args: any) => any> = [desc: string, fnParams: Parameters<T>, expected: ReturnType<T>];
 
-describe.todo("#randomString", () => {});
+describe("#newEntityId", () => {
+
+  it("should return a string with a length of 12", () => {
+    const result = utils.newEntityId();
+    expect(result).toBeTypeOf("string");
+    expect(result).toHaveLength(12);
+  });
+
+});
+
+describe("#randomString", () => {
+
+  it("should return a string with a length as per argument", () => {
+    const stringLength = 5;
+    const result = utils.randomString(stringLength);
+    expect(result).toBeTypeOf("string");
+    expect(result).toHaveLength(stringLength);
+  });
+
+});
 
 describe.todo("#randomSecureToken", () => {});
 
