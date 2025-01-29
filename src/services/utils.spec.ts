@@ -120,7 +120,49 @@ describe.todo("#sanitizeFilenameForHeader", () => {});
 
 describe.todo("#getContentDisposition", () => {});
 
-describe.todo("#isStringNote", () => {});
+describe("#isStringNote", () => {
+
+    const testCases: TestCase<typeof utils.isStringNote>[] = [
+        [
+            "w/ 'undefined' note type, but a string mime type, it should return true",
+            [undefined, "application/javascript"],
+            true
+        ],
+        [
+            "w/ non-string note type, it should return false",
+            ["image", "image/jpeg"],
+            false
+        ],
+        [
+            "w/ string note type (text), it should return true",
+            ["text", "text/html"],
+            true
+        ],
+        [
+            "w/ string note type (code), it should return true",
+            ["code", "application/json"],
+            true
+        ],
+        [
+            "w/ non-string note type (file), but string mime type, it should return true",
+            ["file", "application/json"],
+            true
+        ],
+        [
+            "w/ non-string note type (file), but mime type starting with 'text/', it should return true",
+            ["file", "text/html"],
+            true
+        ],
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+            const result = utils.isStringNote(...fnParams);
+            expect(result).toStrictEqual(expected);
+          });
+    });
+});
 
 describe.todo("#quoteRegex", () => {});
 
