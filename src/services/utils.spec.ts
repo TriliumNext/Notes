@@ -21,7 +21,27 @@ describe.todo("#isElectron", () => {});
 
 describe.todo("#hash", () => {});
 
-describe.todo("#isEmptyOrWhitespace", () => {});
+describe("#isEmptyOrWhitespace", () => {
+
+  const testCases: TestCase<typeof utils.isEmptyOrWhitespace>[] = [
+    ["w/ 'null' it should return true", [null], true],
+    ["w/ 'null' it should return true", [null], true],
+    ["w/ undefined it should return true", [undefined], true],
+    ["w/ empty string '' it should return true", [""], true],
+    ["w/ single whitespace string ' ' it should return true", [" "], true],
+    ["w/ multiple whitespace string '   ' it should return true", ["  "], true],
+    ["w/ non-empty string ' t  ' it should return false", [" t  "], false],
+  ];
+
+  testCases.forEach(testCase => {
+    const [desc, fnParams, expected] = testCase;
+    it(desc, () => {
+      const result = utils.isEmptyOrWhitespace(...fnParams);
+      expect(result).toStrictEqual(expected);
+    })
+  })
+
+});
 
 describe.todo("#sanitizeSqlIdentifier", () => {});
 
