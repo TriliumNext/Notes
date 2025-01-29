@@ -132,11 +132,12 @@ export function getContentDisposition(filename: string) {
     return `file; filename="${sanitizedFilename}"; filename*=UTF-8''${sanitizedFilename}`;
 }
 
+// render and book are string note in the sense that they are expected to contain empty string
+const STRING_NOTE_TYPES = new Set(["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"]);
 const STRING_MIME_TYPES = new Set(["application/javascript", "application/x-javascript", "application/json", "application/x-sql", "image/svg+xml"]);
 
 export function isStringNote(type: string | undefined, mime: string) {
-    // render and book are string note in the sense that they are expected to contain empty string
-    return (type && ["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"].includes(type)) || mime.startsWith("text/") || STRING_MIME_TYPES.has(mime);
+    return (type && STRING_NOTE_TYPES.has(type)) || mime.startsWith("text/") || STRING_MIME_TYPES.has(mime);
 }
 
 export function quoteRegex(url: string) {
