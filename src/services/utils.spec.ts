@@ -24,7 +24,25 @@ describe("#randomString", () => {
 
 });
 
-describe.todo("#randomSecureToken", () => {});
+describe("#randomSecureToken", () => {
+    // base64 -> 4 * (bytes/3) length -> if padding and rounding up is ignored for simplicity
+    // https://stackoverflow.com/a/13378842
+    const byteToBase64Length = (bytes: number) => 4 * (bytes / 3);
+
+    it("should return a string and use 32 bytes by default", () => {
+        const result = utils.randomSecureToken();
+        expect(result).toBeTypeOf("string");
+        expect(result.length).toBeGreaterThanOrEqual(byteToBase64Length(32));
+    });
+
+    it("should return a string and use passed byte length", () => {
+        const bytes = 16;
+        const result = utils.randomSecureToken(bytes);
+        expect(result).toBeTypeOf("string");
+        expect(result.length).toBeGreaterThanOrEqual(byteToBase64Length(bytes));
+        expect(result.length).toBeLessThan(44); // default argument uses 32 bytes -> which translates to 44 base64 legal chars
+    });
+});
 
 describe.todo("#md5", () => {});
 
