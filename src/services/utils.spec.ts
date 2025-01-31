@@ -116,7 +116,25 @@ describe.todo("#escapeRegExp", () => {});
 
 describe.todo("#crash", () => {});
 
-describe.todo("#sanitizeFilenameForHeader", () => {});
+describe("#sanitizeFilenameForHeader", () => {
+    // only test our own code, not the sanitize-filename side of things
+    const testCases: TestCase<typeof utils.sanitizeFilenameForHeader>[] = [
+        ["when passed filename is empty, it should fallback to default value 'file'", [" "], "file"],
+        ["when passed filename '..' would cause sanitized filename to be empty, it should fallback to default value 'file'", [".."], "file"],
+        // COM1 is a Windows specific "illegal filename" that sanitize filename strips away
+        ["when passed filename 'COM1' would cause sanitized filename to be empty, it should fallback to default value 'file'", ["COM1"], "file"],
+        ["sanitized passed filename should be returned URIEncoded", ["test file.csv"], "test%20file.csv"]
+    ]
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+          const result = utils.sanitizeFilenameForHeader(...fnParams);
+          expect(result).toStrictEqual(expected);
+        })
+    });
+
+});
 
 describe.todo("#getContentDisposition", () => {});
 
