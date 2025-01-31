@@ -280,11 +280,8 @@ export function envToBoolean(val: string | undefined) {
  * @returns the resource dir.
  */
 export function getResourceDir() {
-    if (isElectron && !isDev) {
-        return process.resourcesPath;
-    } else {
-        return join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-    }
+    if (isElectron && !isDev) return process.resourcesPath;
+    return join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 }
 
 export default {
