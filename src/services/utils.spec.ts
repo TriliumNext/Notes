@@ -270,6 +270,12 @@ describe("#getNoteTitle", () => {
           //@ts-expect-error - passing in incomplete noteMeta - but we only care about the title prop here
           ["test_file.md", true, { title: ""}],
           "test file"
+        ],
+        [
+            "when a noteMeta object is passed, but the title prop is empty, it should try to handle the filename as if no noteMeta was passed",
+            //@ts-expect-error - passing in incomplete noteMeta - but we only care about the title prop here
+            ["test_file.json", false, { title: " "}],
+            "test_file.json"
         ]
     ];
 
