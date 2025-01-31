@@ -182,7 +182,9 @@ export function removeTextFileExtension(filePath: string) {
 }
 
 export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: NoteMeta) {
-    if (noteMeta?.title) return noteMeta.title;
+    const trimmedNoteMeta = noteMeta?.title?.trim();
+    if (trimmedNoteMeta) return trimmedNoteMeta;
+
     const basename = path.basename(removeTextFileExtension(filePath));
     return replaceUnderscoresWithSpaces ? basename.replace(/_/g, " ").trim() : basename;
 }
