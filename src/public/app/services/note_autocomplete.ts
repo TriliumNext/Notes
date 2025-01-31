@@ -131,7 +131,6 @@ function fullTextSearch($el: JQuery<HTMLElement>, options: Options) {
     $el.trigger("focus");
     options.fastSearch = false;
     $el.autocomplete("val", "");
-    $el.autocomplete();
     $el.setSelectedNotePath("");
     $el.autocomplete("val", searchString);
     // Set a delay to avoid resetting to true before full text search (await server.get) is called.
