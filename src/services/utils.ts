@@ -81,13 +81,9 @@ export function sanitizeSqlIdentifier(str: string) {
     return str.replace(/[^A-Za-z0-9_]/g, "");
 }
 
-export function escapeHtml(str: string) {
-    return escape(str);
-}
+export const escapeHtml = escape;
 
-export function unescapeHtml(str: string) {
-    return unescape(str);
-}
+export const unescapeHtml = unescape;
 
 export function toObject<T, K extends string | number | symbol, V>(array: T[], fn: (item: T) => [K, V]): Record<K, V> {
     const obj: Record<K, V> = {} as Record<K, V>; // TODO: unsafe?
