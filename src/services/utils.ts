@@ -325,6 +325,7 @@ export default {
     removeDiacritic,
     removeTextFileExtension,
     replaceAll,
+    sanitizeFilenameForHeader,
     sanitizeSqlIdentifier,
     stripTags,
     timeLimit,
