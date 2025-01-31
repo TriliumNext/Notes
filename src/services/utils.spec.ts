@@ -192,7 +192,64 @@ describe("#removeTextFileExtension", () => {
 
 describe.todo("#getNoteTitle", () => {});
 
-describe.todo("#timeLimit", () => {});
+describe("#timeLimit", () => {
+
+    it("when promise execution does NOT exceed timeout, it should resolve with promises' value", async () => {
+        const resolvedValue = `resolved: ${new Date().toISOString()}`;
+        const testPromise = new Promise((res, rej) => {
+            setTimeout(() => {
+                return res(resolvedValue);
+            }, 200);
+            //rej("rejected!");
+        });
+        expect(utils.timeLimit(testPromise, 1_000)).resolves.toBe(resolvedValue);
+    });
+
+    it("when promise execution rejects within timeout, it should return the original promises' rejected value, not the custom set one", async () => {
+        const rejectedValue = `rejected: ${new Date().toISOString()}`;
+        const testPromise = new Promise((res, rej) => {
+            setTimeout(() => {
+                //return res("resolved");
+                rej(rejectedValue);
+            }, 100);
+        });
+        expect(utils.timeLimit(testPromise, 200, "Custom Error")).rejects.toThrow(rejectedValue)
+    });
+
+    it("when promise execution exceeds the set timeout, and 'errorMessage' is NOT set, it should reject the promise and display default error message", async () => {
+        const testPromise = new Promise((res, rej) => {
+            setTimeout(() => {
+                return res("resolved");
+            }, 500);
+            //rej("rejected!");
+        });
+        expect(utils.timeLimit(testPromise, 200)).rejects.toThrow(`Process exceeded time limit 200`)
+    });
+
+    it("when promise execution exceeds the set timeout, and 'errorMessage' is set, it should reject the promise and display set error message", async () => {
+        const customErrorMsg = "Custom Error";
+        const testPromise = new Promise((res, rej) => {
+            setTimeout(() => {
+                return res("resolved");
+            }, 500);
+            //rej("rejected!");
+        });
+        expect(utils.timeLimit(testPromise, 200, customErrorMsg)).rejects.toThrow(customErrorMsg)
+    });
+
+    // TriliumNextTODO: since TS avoids this from ever happening – do we need this check?
+    it("when the passed promise is not a promise but 'undefined', it should return 'undefined'", async () => {
+        //@ts-expect-error - passing in illegal type 'undefined'
+        expect(utils.timeLimit(undefined, 200)).toBe(undefined)
+    });
+
+    // TriliumNextTODO: since TS avoids this from ever happening – do we need this check?
+    it("when the passed promise is not a promise, it should return the passed value", async () => {
+        //@ts-expect-error - passing in illegal type 'object'
+        expect(utils.timeLimit({test: 1}, 200)).toStrictEqual({test: 1})
+    });
+
+});
 
 describe.todo("#deferred", () => {});
 
