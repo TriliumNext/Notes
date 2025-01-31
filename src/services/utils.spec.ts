@@ -222,7 +222,66 @@ describe("#removeTextFileExtension", () => {
 
 });
 
-describe.todo("#getNoteTitle", () => {});
+describe("#getNoteTitle", () => {
+    const testCases: TestCase<typeof utils.getNoteTitle>[] = [
+        [
+          "when file has no spaces, and no special file extension, it should return the filename unaltered",
+          ["test.json", true, undefined],
+          "test.json"
+        ],
+        [
+          "when replaceUnderscoresWithSpaces is false, it should keep the underscores in the title",
+          ["test_file.json", false, undefined],
+          "test_file.json"
+        ],
+        [
+          "when replaceUnderscoresWithSpaces is true, it should replace the underscores in the title",
+          ["test_file.json", true, undefined],
+          "test file.json"
+        ],
+        [
+          "when filePath ends with one of the extra handled endings (.md), it should strip the file extension from the title",
+          ["test_file.md", false, undefined],
+          "test_file"
+        ],
+        [
+          "when filePath ends with one of the extra handled endings (.md) and replaceUnderscoresWithSpaces is true, it should strip the file extension from the title and replace underscores",
+          ["test_file.md", true, undefined],
+          "test file"
+        ],
+        [
+          "when filepath contains a full path, it should only return the basename of the file",
+          ["Trilium Demo/Scripting examples/Statistics/Most cloned notes/template.zip", true, undefined],
+          "template.zip"
+        ],
+        [
+          "when filepath contains a full path and has extra handled ending (.html), it should only return the basename of the file and strip the file extension",
+          ["Trilium Demo/Scripting examples/Statistics/Most cloned notes/template.html", true, undefined],
+          "template"
+        ],
+        [
+          "when a noteMeta object is passed, it should use the title from the noteMeta, if present",
+          //@ts-expect-error - passing in incomplete noteMeta - but we only care about the title prop here
+          ["test_file.md", true, { title: "some other title"}],
+          "some other title"
+        ],
+        [
+          "when a noteMeta object is passed, but the title prop is empty, it should try to handle the filename as if no noteMeta was passed",
+          //@ts-expect-error - passing in incomplete noteMeta - but we only care about the title prop here
+          ["test_file.md", true, { title: ""}],
+          "test file"
+        ]
+    ];
+
+    testCases.forEach(testCase => {
+        const [desc, fnParams, expected] = testCase;
+        it(desc, () => {
+            const result = utils.getNoteTitle(...fnParams);
+            expect(result).toStrictEqual(expected);
+          });
+    });
+
+});
 
 describe("#timeLimit", () => {
 
