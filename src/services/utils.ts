@@ -9,7 +9,7 @@ import mimeTypes from "mime-types";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-//import type { NoteType } from "../rows.js";
+import type NoteMeta from "./meta/note_meta.js";
 
 const randtoken = generator({ source: "crypto" });
 
@@ -181,7 +181,7 @@ export function removeTextFileExtension(filePath: string) {
     }
 }
 
-export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: { title?: string }) {
+export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: NoteMeta) {
     if (noteMeta?.title) {
         return noteMeta.title;
     } else {
