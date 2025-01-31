@@ -108,11 +108,17 @@ describe("#sanitizeSqlIdentifier", () => {
 
 });
 
-// TriliumNextTODO: should use mocks and assert that functions get called
-describe.todo("#escapeHtml", () => {});
+describe("#escapeHtml", () => {
+    it("should re-export 'escape-html' npm module as escapeHtml", () => {
+        expect(utils.escapeHtml).toBeTypeOf("function");
+    });
+});
 
-// TriliumNextTODO: should use mocks and assert that functions get called
-describe.todo("#unescapeHtml", () => {});
+describe("#unescapeHtml", () => {
+    it("should re-export 'unescape' npm module as unescapeHtml", () => {
+        expect(utils.unescapeHtml).toBeTypeOf("function");
+    });
+});
 
 describe.todo("#toObject", () => {});
 
