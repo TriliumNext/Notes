@@ -182,15 +182,9 @@ export function removeTextFileExtension(filePath: string) {
 }
 
 export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: NoteMeta) {
-    if (noteMeta?.title) {
-        return noteMeta.title;
-    } else {
-        const basename = path.basename(removeTextFileExtension(filePath));
-        if (replaceUnderscoresWithSpaces) {
-            return basename.replace(/_/g, " ").trim();
-        }
-        return basename;
-    }
+    if (noteMeta?.title) return noteMeta.title;
+    const basename = path.basename(removeTextFileExtension(filePath));
+    return replaceUnderscoresWithSpaces ? basename.replace(/_/g, " ").trim() : basename;
 }
 
 export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: string): Promise<T> {
