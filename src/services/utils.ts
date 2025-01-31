@@ -209,7 +209,7 @@ export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?
     }
 
     // better stack trace if created outside of promise
-    const error = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
+    const errorTimeLimit = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
 
     return new Promise((res, rej) => {
         let resolved = false;
@@ -224,7 +224,7 @@ export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?
 
         setTimeout(() => {
             if (!resolved) {
-                rej(error);
+                rej(errorTimeLimit);
             }
         }, limitMs);
     });
