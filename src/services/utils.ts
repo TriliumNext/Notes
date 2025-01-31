@@ -9,6 +9,7 @@ import mimeTypes from "mime-types";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+//import type { NoteType } from "../rows.js";
 
 const randtoken = generator({ source: "crypto" });
 
@@ -203,6 +204,7 @@ export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boo
 }
 
 export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: string): Promise<T> {
+    // TriliumNextTODO: since TS avoids this from ever happening – do we need this check?
     if (!promise || !promise.then) {
         // it's not actually a promise
         return promise;
