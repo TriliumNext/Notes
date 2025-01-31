@@ -118,12 +118,7 @@ export async function crash() {
 }
 
 export function sanitizeFilenameForHeader(filename: string) {
-    let sanitizedFilename = sanitize(filename);
-
-    if (sanitizedFilename.trim().length === 0) {
-        sanitizedFilename = "file";
-    }
-
+    const sanitizedFilename = sanitize(filename).trim() || "file";
     return encodeURIComponent(sanitizedFilename);
 }
 
