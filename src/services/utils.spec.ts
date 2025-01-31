@@ -116,27 +116,41 @@ describe.todo("#escapeRegExp", () => {});
 
 describe.todo("#crash", () => {});
 
-describe("#sanitizeFilenameForHeader", () => {
-    // only test our own code, not the sanitize-filename side of things
-    const testCases: TestCase<typeof utils.sanitizeFilenameForHeader>[] = [
-        ["when passed filename is empty, it should fallback to default value 'file'", [" "], "file"],
-        ["when passed filename '..' would cause sanitized filename to be empty, it should fallback to default value 'file'", [".."], "file"],
+describe("#getContentDisposition", () => {
+
+    const defaultFallBackDisposition = `file; filename="file"; filename*=UTF-8''file`;
+    const testCases: TestCase<typeof utils.getContentDisposition>[] = [
+        [
+            "when passed filename is empty, it should fallback to default value 'file'", 
+            [" "],
+            defaultFallBackDisposition
+        ],
+        [
+            "when passed filename '..' would cause sanitized filename to be empty, it should fallback to default value 'file'", 
+            [".."],
+            defaultFallBackDisposition
+        ],
         // COM1 is a Windows specific "illegal filename" that sanitize filename strips away
-        ["when passed filename 'COM1' would cause sanitized filename to be empty, it should fallback to default value 'file'", ["COM1"], "file"],
-        ["sanitized passed filename should be returned URIEncoded", ["test file.csv"], "test%20file.csv"]
+        [
+            "when passed filename 'COM1' would cause sanitized filename to be empty, it should fallback to default value 'file'",
+            ["COM1"],
+            defaultFallBackDisposition
+        ],
+        [
+            "sanitized passed filename should be returned URIEncoded",
+            ["test file.csv"],
+            `file; filename="test%20file.csv"; filename*=UTF-8''test%20file.csv`
+        ]
     ]
 
     testCases.forEach(testCase => {
         const [desc, fnParams, expected] = testCase;
         it(desc, () => {
-          const result = utils.sanitizeFilenameForHeader(...fnParams);
-          expect(result).toStrictEqual(expected);
+            const result = utils.getContentDisposition(...fnParams);
+            expect(result).toStrictEqual(expected);
         })
     });
-
 });
-
-describe.todo("#getContentDisposition", () => {});
 
 describe("#isStringNote", () => {
 
