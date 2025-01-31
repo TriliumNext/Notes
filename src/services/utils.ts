@@ -117,15 +117,10 @@ export async function crash() {
     }
 }
 
-export function sanitizeFilenameForHeader(filename: string) {
-    const sanitizedFilename = sanitize(filename).trim() || "file";
-    return encodeURIComponent(sanitizedFilename);
-}
-
 export function getContentDisposition(filename: string) {
-    const sanitizedFilename = sanitizeFilenameForHeader(filename);
-
-    return `file; filename="${sanitizedFilename}"; filename*=UTF-8''${sanitizedFilename}`;
+    const sanitizedFilename = sanitize(filename).trim() || "file";
+    const uriEncodedFilename = encodeURIComponent(sanitizedFilename);
+    return `file; filename="${uriEncodedFilename}"; filename*=UTF-8''${uriEncodedFilename}`;
 }
 
 // render and book are string note in the sense that they are expected to contain empty string
@@ -325,7 +320,6 @@ export default {
     removeDiacritic,
     removeTextFileExtension,
     replaceAll,
-    sanitizeFilenameForHeader,
     sanitizeSqlIdentifier,
     stripTags,
     timeLimit,
