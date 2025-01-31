@@ -9,6 +9,7 @@ import mimeTypes from "mime-types";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import type NoteMeta from "./meta/note_meta.js";
 
 const randtoken = generator({ source: "crypto" });
 
@@ -71,8 +72,9 @@ export function hash(text: string) {
     return crypto.createHash("sha1").update(text).digest("base64");
 }
 
-export function isEmptyOrWhitespace(str: string) {
-    return str === null || str.match(/^ *$/) !== null;
+export function isEmptyOrWhitespace(str: string | null | undefined) {
+    if (!str) return true;
+    return str.match(/^ *$/) !== null;
 }
 
 export function sanitizeSqlIdentifier(str: string) {
@@ -103,29 +105,6 @@ export function stripTags(text: string) {
     return text.replace(/<(?:.|\n)*?>/gm, "");
 }
 
-export function union<T extends string | number | symbol>(a: T[], b: T[]): T[] {
-    const obj: Record<T, T> = {} as Record<T, T>; // TODO: unsafe?
-
-    for (let i = a.length - 1; i >= 0; i--) {
-        obj[a[i]] = a[i];
-    }
-
-    for (let i = b.length - 1; i >= 0; i--) {
-        obj[b[i]] = b[i];
-    }
-
-    const res: T[] = [];
-
-    for (const k in obj) {
-        if (obj.hasOwnProperty(k)) {
-            // <-- optional
-            res.push(obj[k]);
-        }
-    }
-
-    return res;
-}
-
 export function escapeRegExp(str: string) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -138,27 +117,18 @@ export async function crash() {
     }
 }
 
-export function sanitizeFilenameForHeader(filename: string) {
-    let sanitizedFilename = sanitize(filename);
-
-    if (sanitizedFilename.trim().length === 0) {
-        sanitizedFilename = "file";
-    }
-
-    return encodeURIComponent(sanitizedFilename);
-}
-
 export function getContentDisposition(filename: string) {
-    const sanitizedFilename = sanitizeFilenameForHeader(filename);
-
-    return `file; filename="${sanitizedFilename}"; filename*=UTF-8''${sanitizedFilename}`;
+    const sanitizedFilename = sanitize(filename).trim() || "file";
+    const uriEncodedFilename = encodeURIComponent(sanitizedFilename);
+    return `file; filename="${uriEncodedFilename}"; filename*=UTF-8''${uriEncodedFilename}`;
 }
 
+// render and book are string note in the sense that they are expected to contain empty string
+const STRING_NOTE_TYPES = new Set(["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"]);
 const STRING_MIME_TYPES = new Set(["application/javascript", "application/x-javascript", "application/json", "application/x-sql", "image/svg+xml"]);
 
 export function isStringNote(type: string | undefined, mime: string) {
-    // render and book are string note in the sense that they are expected to contain empty string
-    return (type && ["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"].includes(type)) || mime.startsWith("text/") || STRING_MIME_TYPES.has(mime);
+    return (type && STRING_NOTE_TYPES.has(type)) || mime.startsWith("text/") || STRING_MIME_TYPES.has(mime);
 }
 
 export function quoteRegex(url: string) {
@@ -211,26 +181,23 @@ export function removeTextFileExtension(filePath: string) {
     }
 }
 
-export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: { title?: string }) {
-    if (noteMeta?.title) {
-        return noteMeta.title;
-    } else {
-        const basename = path.basename(removeTextFileExtension(filePath));
-        if (replaceUnderscoresWithSpaces) {
-            return basename.replace(/_/g, " ").trim();
-        }
-        return basename;
-    }
+export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: NoteMeta) {
+    const trimmedNoteMeta = noteMeta?.title?.trim();
+    if (trimmedNoteMeta) return trimmedNoteMeta;
+
+    const basename = path.basename(removeTextFileExtension(filePath));
+    return replaceUnderscoresWithSpaces ? basename.replace(/_/g, " ").trim() : basename;
 }
 
 export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: string): Promise<T> {
+    // TriliumNextTODO: since TS avoids this from ever happening – do we need this check?
     if (!promise || !promise.then) {
         // it's not actually a promise
         return promise;
     }
 
     // better stack trace if created outside of promise
-    const error = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
+    const errorTimeLimit = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
 
     return new Promise((res, rej) => {
         let resolved = false;
@@ -245,7 +212,7 @@ export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?
 
         setTimeout(() => {
             if (!resolved) {
-                rej(error);
+                rej(errorTimeLimit);
             }
         }, limitMs);
     });
@@ -294,10 +261,6 @@ export function toMap<T extends Record<string, any>>(list: T[], key: keyof T): R
     return map;
 }
 
-export function isString(x: any) {
-    return Object.prototype.toString.call(x) === "[object String]";
-}
-
 // try to turn 'true' and 'false' strings from process.env variables into boolean values or undefined
 export function envToBoolean(val: string | undefined) {
     if (val === undefined || typeof val !== "string") return undefined;
@@ -325,40 +288,39 @@ export function getResourceDir() {
 }
 
 export default {
-    randomSecureToken,
-    randomString,
+    crash,
+    deferred,
+    envToBoolean,
+    escapeHtml,
+    escapeRegExp,
+    formatDownloadTitle,
+    fromBase64,
+    getContentDisposition,
+    getNoteTitle,
+    getResourceDir,
+    hash,
+    hashedBlobId,
+    hmac,
+    isDev,
+    isElectron,
+    isEmptyOrWhitespace,
+    isMac,
+    isStringNote,
+    isWindows,
     md5,
     newEntityId,
-    toBase64,
-    fromBase64,
-    hmac,
-    isElectron,
-    hash,
-    isEmptyOrWhitespace,
-    sanitizeSqlIdentifier,
-    escapeHtml,
-    unescapeHtml,
-    toObject,
-    stripTags,
-    union,
-    escapeRegExp,
-    crash,
-    getContentDisposition,
-    isStringNote,
-    quoteRegex,
-    replaceAll,
-    getNoteTitle,
-    removeTextFileExtension,
-    formatDownloadTitle,
-    timeLimit,
-    deferred,
-    removeDiacritic,
     normalize,
-    hashedBlobId,
+    quoteRegex,
+    randomSecureToken,
+    randomString,
+    removeDiacritic,
+    removeTextFileExtension,
+    replaceAll,
+    sanitizeSqlIdentifier,
+    stripTags,
+    timeLimit,
+    toBase64,
     toMap,
-    isString,
-    getResourceDir,
-    isMac,
-    isWindows,
-    envToBoolean
+    toObject,
+    unescapeHtml
 };
