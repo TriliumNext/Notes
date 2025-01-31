@@ -24,6 +24,7 @@ describe("#randomString", () => {
 
 });
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe("#randomSecureToken", () => {
     // base64 -> 4 * (bytes/3) length -> if padding and rounding up is ignored for simplicity
     // https://stackoverflow.com/a/13378842
@@ -44,16 +45,22 @@ describe("#randomSecureToken", () => {
     });
 });
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#md5", () => {});
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#hashedBlobId", () => {});
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#toBase64", () => {});
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#fromBase64", () => {});
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#hmac", () => {});
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#hash", () => {});
 
 describe("#isEmptyOrWhitespace", () => {
@@ -101,8 +108,10 @@ describe("#sanitizeSqlIdentifier", () => {
 
 });
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#escapeHtml", () => {});
 
+// TriliumNextTODO: should use mocks and assert that functions get called
 describe.todo("#unescapeHtml", () => {});
 
 describe.todo("#toObject", () => {});
