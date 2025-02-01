@@ -106,6 +106,13 @@ const TPL = `
                                 ${t("export.format_markdown")}
                             </label>
                         </div>
+
+                        <div class="form-check">
+                            <label class="form-check-label tn-radio">
+                                <input class="form-check-input" type="radio" name="export-single-format" value="pdf">
+                                ${t("export.format_pdf")}
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

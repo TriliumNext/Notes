@@ -109,7 +109,8 @@
     "choose_export_type": "Choose export type first please",
     "export_status": "Export status",
     "export_in_progress": "Export in progress: {{progressCount}}",
-    "export_finished_successfully": "Export finished successfully."
+    "export_finished_successfully": "Export finished successfully.",
+    "format_pdf": "PDF - for printing or sharing purposes."
   },
   "help": {
     "fullDocumentation": "Help (full documentation is available <a class=\"external\" href=\"https://triliumnext.github.io/Docs/\">online</a>)",
