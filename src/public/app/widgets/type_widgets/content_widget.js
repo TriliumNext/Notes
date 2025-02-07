@@ -35,6 +35,7 @@ import RibbonOptions from "./options/appearance/ribbon.js";
 import LocalizationOptions from "./options/appearance/i18n.js";
 import CodeBlockOptions from "./options/appearance/code_block.js";
 import EditorOptions from "./options/text_notes/editor.js";
+import ShareSettingsOptions from "./options/other/share_settings.js";
 
 const TPL = `<div class="note-detail-content-widget note-detail-printable">
     <style>
@@ -74,7 +75,8 @@ const CONTENT_WIDGETS = {
         RevisionsSnapshotIntervalOptions,
         RevisionSnapshotsLimitOptions,
         NetworkConnectionsOptions,
-        HtmlImportTagsOptions
+        HtmlImportTagsOptions,
+        ShareSettingsOptions
     ],
     _optionsAdvanced: [DatabaseIntegrityCheckOptions, DatabaseAnonymizationOptions, AdvancedSyncOptions, VacuumDatabaseOptions],
     _backendLog: [BackendLogWidget]

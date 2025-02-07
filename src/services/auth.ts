@@ -15,7 +15,11 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {
         res.redirect("setup");
     } else if (!req.session.loggedIn && !isElectron && !noAuthentication) {
-        res.redirect("login");
+        if (optionService.getOption('redirectBareDomain') === 'true') {
+            res.redirect('/share');
+        } else {
+            res.redirect('login');
+        }
     } else {
         next();
     }

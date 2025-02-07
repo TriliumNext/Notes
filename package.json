@@ -20,6 +20,8 @@
   },
   "type": "module",
   "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
     "start-server": "cross-env TRILIUM_DATA_DIR=./data TRILIUM_ENV=dev TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 nodemon src/main.ts",
     "start-server-safe": "cross-env TRILIUM_DATA_DIR=./data TRILIUM_ENV=dev TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 nodemon src/main.ts",
     "start-server-no-dir": "cross-env TRILIUM_ENV=dev TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 nodemon src/main.ts",
@@ -42,6 +44,7 @@
     "start-electron-forge": "npm run prepare-dist && electron-forge start",
     "make-electron": "npm run webpack && npm run prepare-dist && electron-forge make",
     "package-electron": "electron-forge package",
+    "prepare-dist": "rimraf ./dist && tsc -p tsconfig.prod.json && tsx ./bin/copy-dist.ts",
     "prepare-dist": "rimraf ./dist && tsc && tsx ./bin/copy-dist.ts",
     "watch-dist": "tsx ./bin/watch-dist.ts",
     "update-build-info": "tsx bin/update-build-info.ts",
