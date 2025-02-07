@@ -44,7 +44,7 @@ const TPL = `
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">${t("include_note.button_include")}</button>
+                    <button type="submit" class="include-note-submit btn btn-primary">${t("include_note.button_include")}</button>
                 </div>
             </form>
         </div>
@@ -57,6 +57,7 @@ export default class IncludeNoteDialog extends BasicWidget {
         this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
         this.$form = this.$widget.find(".include-note-form");
         this.$autoComplete = this.$widget.find(".include-note-autocomplete");
+        this.$submitButton = this.$widget.find(".include-note-submit")
         this.$form.on("submit", () => {
             const notePath = this.$autoComplete.getSelectedNotePath();
 
@@ -68,6 +69,9 @@ export default class IncludeNoteDialog extends BasicWidget {
             }
 
             return false;
+        });
+        this.$autoComplete.on("autocomplete:selected", () => {
+            this.$submitButton.trigger("focus");
         });
     }
 

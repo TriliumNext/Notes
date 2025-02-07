@@ -41,14 +41,14 @@ const TPL = `
                             <br/>
                             <label>
                                 ${t("add_link.link_title")}
-                                
+
                                 <input class="link-title form-control" style="width: 100%;">
                             </label>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">${t("add_link.button_add_link")}</button>
+                    <button type="submit" class="add-link-submit btn btn-primary">${t("add_link.button_add_link")}</button>
                 </div>
             </form>
         </div>
@@ -64,6 +64,7 @@ export default class AddLinkDialog extends BasicWidget {
         this.$addLinkTitleSettings = this.$widget.find(".add-link-title-settings");
         this.$addLinkTitleRadios = this.$widget.find(".add-link-title-radios");
         this.$addLinkTitleFormGroup = this.$widget.find(".add-link-title-form-group");
+        this.$submitButton = this.$widget.find(".add-link-submit")
 
         /** @var TextTypeWidget */
         this.textTypeWidget = null;
@@ -84,6 +85,9 @@ export default class AddLinkDialog extends BasicWidget {
             }
 
             return false;
+        });
+         this.$autoComplete.on("autocomplete:selected", () => {
+            this.$submitButton.trigger("focus");
         });
     }
 
