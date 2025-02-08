@@ -67,6 +67,14 @@ body.mobile #root-widget {
     padding-bottom: var(--mobile-bottom-offset);
 }
 
+.note-detail.full-height {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 #title-bar {
     position: fixed;
     top: 0;   

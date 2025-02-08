@@ -11,15 +11,7 @@ const TPL = `\
             height: 100%;
             overflow: hidden;
         }
-
-        .geo-map-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
+            
         .leaflet-top {
             margin-top: calc(env(safe-area-inset-top) + var(--mobile-title-bar-height));
         }
