@@ -23,6 +23,7 @@
     --submenu-opening-delay: 300ms;
     --launcher-pane-size: 53px;
     --mobile-bottom-offset: calc(env(safe-area-inset-bottom) * 0.75);
+    --mobile-title-bar-height: 36px;
 }
 
 html {
@@ -64,6 +65,21 @@ body.mobile #root-widget {
 
 #mobile-bottom-bar {
     padding-bottom: var(--mobile-bottom-offset);
+}
+
+#title-bar {
+    position: fixed;
+    top: 0;   
+    left: 0;
+    right: 0;    
+    z-index: 9999; 
+    padding-top: env(safe-area-inset-top);
+}
+
+#title-bar,
+#mobile-bottom-bar {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
 }
 
 body.desktop #root-widget.horizontal-layout {

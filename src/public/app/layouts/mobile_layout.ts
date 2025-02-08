@@ -147,6 +147,7 @@ export default class MobileLayout {
                             .css("position", "relative")
                             .child(
                                 new FlexContainer("row")
+                                    .id("title-bar")
                                     .contentSized()
                                     .css("font-size", "larger")
                                     .css("align-items", "center")
