@@ -1,7 +1,7 @@
 "use strict";
 
 import TurndownService from "turndown";
-import turndownPluginGfm from "joplin-turndown-plugin-gfm";
+import turndownPluginGfm from "@joplin/turndown-plugin-gfm";
 
 let instance: TurndownService | null = null;
 

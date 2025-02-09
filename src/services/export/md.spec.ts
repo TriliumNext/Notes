@@ -68,4 +68,10 @@ describe("Markdown export", () => {
 
         expect(markdownExportService.toMarkdown(html)).toBe(expected);
     });
+
+    it("exports strikethrough text correctly", () => {
+        const html = "<s>hello</s>Hello <s>world</s>";
+        const expected = "~~hello~~Hello ~~world~~";
+        expect(markdownExportService.toMarkdown(html)).toBe(expected);
+    });
 });

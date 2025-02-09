@@ -1,7 +1,7 @@
 import BasicWidget from "../basic_widget.js";
 
 const TPL = `
-<button type="button" class="action-button bx bx-sidebar" style="padding-top: 10px;"></button>`;
+<button type="button" class="action-button bx bx-sidebar"></button>`;
 
 class ToggleSidebarButtonWidget extends BasicWidget {
     doRender() {

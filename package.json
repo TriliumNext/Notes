@@ -25,12 +25,10 @@
     "start-server-no-dir": "cross-env TRILIUM_ENV=dev TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 nodemon src/main.ts",
     "start-test-server": "npm run switch-server && rimraf ./data-test && cross-env TRILIUM_DATA_DIR=./data-test TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 TRILIUM_ENV=dev TRILIUM_PORT=9999 nodemon src/main.ts",
     "qstart-server": "npm run switch-server && npm run start-server",
-
     "start-electron": "cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_DATA_DIR=./data TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 TRILIUM_ENV=dev electron ./electron-main.ts --inspect=5858 .",
     "start-electron-nix": "electron-rebuild --version 33.3.1 && cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_DATA_DIR=./data TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 TRILIUM_ENV=dev nix-shell -p electron_33 --run \"electron ./electron-main.ts --inspect=5858 .\"",
     "start-electron-no-dir": "cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_ENV=dev electron --inspect=5858 .",
     "start-electron-no-dir-nix": "electron-rebuild --version 33.3.1 && cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_ENV=dev nix-shell -p electron_33 --run \"electron ./electron-main.ts --inspect=5858 .\"",
-
     "start-electron-prod": "npm run prepare-dist && cross-env TRILIUM_DATA_DIR=./data TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 TRILIUM_ENV=dev electron ./dist/electron-main.js --inspect=5858 .",
     "start-electron-prod-nix": "electron-rebuild --version 33.3.1 && npm run prepare-dist && cross-env TRILIUM_DATA_DIR=./data TRILIUM_SYNC_SERVER_HOST=http://tsyncserver:4000 TRILIUM_ENV=dev nix-shell -p electron_33 --run \"electron ./dist/electron-main.js --inspect=5858 .\"",
     "start-electron-prod-no-dir": "npm run prepare-dist && cross-env TRILIUM_ENV=dev electron --inspect=5858 .",
@@ -64,6 +62,7 @@
     "@electron/remote": "2.1.2",
     "@excalidraw/excalidraw": "0.17.6",
     "@highlightjs/cdn-assets": "11.11.1",
+    "@joplin/turndown-plugin-gfm": "1.0.61",
     "@mermaid-js/layout-elk": "0.1.7",
     "@mind-elixir/node-menu": "1.0.4",
     "@triliumnext/express-partial-content": "1.0.1",
@@ -111,7 +110,6 @@
     "is-animated": "2.0.2",
     "is-svg": "5.1.0",
     "jimp": "1.6.0",
-    "joplin-turndown-plugin-gfm": "1.0.12",
     "jquery": "3.7.1",
     "jquery-hotkeys": "0.2.2",
     "jquery.fancytree": "2.38.4",

@@ -38,6 +38,10 @@ const TPL = `\
         user-select: none;
     }
 
+    body.mobile .classic-toolbar-widget.visible::-webkit-scrollbar {
+        height: 3px;
+    }
+
     @media (max-width: 991px) {
         body.mobile .classic-toolbar-widget.visible {
             bottom: calc(var(--tab-bar-height) + var(--launcher-pane-height) + var(--mobile-bottom-offset));

@@ -606,7 +606,10 @@ function compareVersions(v1: string, v2: string): number {
 /**
  * Compares two semantic version strings and returns `true` if the latest version is greater than the current version.
  */
-function isUpdateAvailable(latestVersion: string, currentVersion: string): boolean {
+function isUpdateAvailable(latestVersion: string | null | undefined, currentVersion: string): boolean {
+    if (!latestVersion) {
+        return false;
+    }
     return compareVersions(latestVersion, currentVersion) > 0;
 }
 

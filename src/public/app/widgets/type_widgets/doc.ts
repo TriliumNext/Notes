@@ -33,6 +33,19 @@ const TPL = `<div class="note-detail-doc note-detail-printable">
             margin: 0;
             padding-bottom: 0.25em;
         }
+
+        img {
+            max-width: 90vw;
+            height: auto;
+        }
+
+        td img {
+            max-width: 40vw;
+        }
+
+        figure.table {
+            overflow: auto !important;
+        }
     </style>
 
     <div class="note-detail-doc-content"></div>
@@ -79,6 +92,7 @@ export default class DocTypeWidget extends TypeWidget {
                 });
             } else {
                 this.$content.empty();
+                resolve();
             }
         });
     }

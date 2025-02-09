@@ -1,15 +1,22 @@
 import FlexContainer from "./containers/flex_container.js";
 import utils from "../services/utils.js";
 import attributeService from "../services/attributes.js";
+import type BasicWidget from "./basic_widget.js";
+import type { EventData } from "../components/app_context.js";
+import type NoteContext from "../components/note_context.js";
+import type FNote from "../entities/fnote.js";
 
-export default class NoteWrapperWidget extends FlexContainer {
+export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
+
+    private noteContext?: NoteContext;
+
     constructor() {
         super("column");
 
         this.css("flex-grow", "1").collapsible();
     }
 
-    setNoteContextEvent({ noteContext }) {
+    setNoteContextEvent({ noteContext }: EventData<"setNoteContext">) {
         this.noteContext = noteContext;
 
         this.refresh();
@@ -41,7 +48,7 @@ export default class NoteWrapperWidget extends FlexContainer {
             return;
         }
 
-        this.$widget.toggleClass("full-content-width", ["image", "mermaid", "book", "render", "canvas", "webView", "mindMap", "geoMap"].includes(note.type) || !!note?.isLabelTruthy("fullContentWidth"));
+        this.$widget.toggleClass("full-content-width", this.#isFullWidthNote(note));
 
         this.$widget.addClass(note.getCssClass());
 
@@ -51,7 +58,19 @@ export default class NoteWrapperWidget extends FlexContainer {
         this.$widget.toggleClass("protected", note.isProtected);
     }
 
-    async entitiesReloadedEvent({ loadResults }) {
+    #isFullWidthNote(note: FNote) {
+        if (["image", "mermaid", "book", "render", "canvas", "webView", "mindMap", "geoMap"].includes(note.type)) {
+            return true;
+        }
+
+        if (note.type === "file" && note.mime === "application/pdf") {
+            return true;
+        }
+
+        return !!note?.isLabelTruthy("fullContentWidth");
+    }
+
+    async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
         // listening on changes of note.type and CSS class
 
         const noteId = this.noteContext?.noteId;

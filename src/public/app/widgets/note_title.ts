@@ -18,11 +18,19 @@ const TPL = `
     }
 
     .note-title-widget input.note-title {
-        font-size: 180%;
+        font-size: 110%;
         border: 0;
         margin: 2px 0px;
         min-width: 5em;
         width: 100%;
+    }
+
+    body.mobile .note-title-widget input.note-title {
+        padding: 0;
+    }
+
+    body.desktop .note-title-widget input.note-title {
+        font-size: 180%;
     }
 
     .note-title-widget input.note-title.protected {

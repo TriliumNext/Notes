@@ -45,7 +45,7 @@ kbd {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.5em;
+    font-size: 1.25em;
     padding-left: 0.5em;
     padding-right: 0.5em;
     color: var(--main-text-color);
@@ -151,7 +151,7 @@ export default class MobileLayout {
                                     .css("font-size", "larger")
                                     .css("align-items", "center")
                                     .child(new ToggleSidebarButtonWidget().contentSized())
-                                    .child(new NoteTitleWidget().contentSized().css("position", "relative").css("top", "5px").css("padding-left", "0.5em"))
+                                    .child(new NoteTitleWidget().contentSized().css("position", "relative").css("padding-left", "0.5em"))
                                     .child(new MobileDetailMenuWidget(true).contentSized())
                             )
                             .child(new SharedInfoWidget())
@@ -169,7 +169,7 @@ export default class MobileLayout {
                                 new ScrollingContainer()
                                     .filling()
                                     .contentSized()
-                                    .child(new NoteDetailWidget().css("padding", "5px 0 10px 0"))
+                                    .child(new NoteDetailWidget())
                                     .child(new NoteListWidget())
                                     .child(new FilePropertiesWidget().css("font-size", "smaller"))
                             )

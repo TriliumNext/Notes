@@ -17,7 +17,7 @@ if (isDev) {
     const debounce = (await import("debounce")).default;
     const debouncedReloadFrontend = debounce(() => reloadFrontend("source code change"), 200);
     chokidar
-        .watch(isElectron ? "dist/src/public" : "src/public")
+        .watch("src/public")
         .on("add", debouncedReloadFrontend)
         .on("change", debouncedReloadFrontend)
         .on("unlink", debouncedReloadFrontend);

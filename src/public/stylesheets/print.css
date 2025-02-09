@@ -61,6 +61,10 @@ body,
     overflow: auto;
 }
 
+.ck.ck-editor__editable_inline {
+    overflow: hidden !important;
+}
+
 .note-title-widget input,
 .note-detail-editable-text,
 .note-detail-editable-text-editor {

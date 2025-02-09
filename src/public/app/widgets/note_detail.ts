@@ -167,6 +167,11 @@ export default class NoteDetailWidget extends NoteContextAwareWidget {
         }
 
         this.checkFullHeight();
+
+        if (utils.isMobile()) {
+            const hasFixedTree = this.noteContext?.hoistedNoteId === "_lbMobileRoot";
+            $("body").toggleClass("force-fixed-tree", hasFixedTree);
+        }
     }
 
     /**

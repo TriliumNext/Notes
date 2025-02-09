@@ -158,7 +158,7 @@ export default class LoadResults {
         return Object.keys(this.noteIdToComponentId);
     }
 
-    isNoteReloaded(noteId: string | undefined, componentId: string | null = null) {
+    isNoteReloaded(noteId: string | undefined | null, componentId: string | null = null) {
         if (!noteId) {
             return false;
         }
