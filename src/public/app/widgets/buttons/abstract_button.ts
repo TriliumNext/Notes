@@ -1,3 +1,4 @@
+import { Tooltip } from "bootstrap";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
 const TPL = `<button class="button-widget bx"
@@ -17,7 +18,7 @@ export interface AbstractButtonWidgetSettings {
 
 export default class AbstractButtonWidget<SettingsT extends AbstractButtonWidgetSettings> extends NoteContextAwareWidget {
     protected settings!: SettingsT;
-    protected tooltip!: bootstrap.Tooltip;
+    protected tooltip!: Tooltip;
 
     isEnabled(): boolean | null | undefined {
         return true;
@@ -25,11 +26,10 @@ export default class AbstractButtonWidget<SettingsT extends AbstractButtonWidget
 
     doRender() {
         this.$widget = $(TPL);
-        // Fix once bootstrap is available as non-UMD
-        //@ts-ignore
-        this.tooltip = new bootstrap.Tooltip(this.$widget, {
+        this.tooltip = new Tooltip(this.$widget[0], {
             html: true,
-            title: () => this.getTitle(),
+            // in case getTitle() returns null -> use empty string as fallback
+            title: () => this.getTitle() || "",
             trigger: "hover",
             placement: this.settings.titlePlacement,
             fallbackPlacements: [this.settings.titlePlacement]

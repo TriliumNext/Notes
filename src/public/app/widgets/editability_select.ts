@@ -60,7 +60,7 @@ const TPL = `
 
 export default class EditabilitySelectWidget extends NoteContextAwareWidget {
 
-    private dropdown!: bootstrap.Dropdown;
+    private dropdown!: Dropdown;
     private $editabilityActiveDesc!: JQuery<HTMLElement>;
 
     doRender() {
