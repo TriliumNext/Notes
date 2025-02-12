@@ -139,7 +139,7 @@ export default class NoteTypeChooserDialog extends BasicWidget {
         this.dropdown.show();
 
         this.$originalDialog = glob.activeDialog;
-        glob.activeDialog = this.modal;
+        glob.activeDialog = this.$widget;
         this.modal.show();
 
         this.$noteTypeDropdown.find(".dropdown-item:first").focus();
