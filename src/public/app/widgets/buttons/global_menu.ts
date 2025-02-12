@@ -294,7 +294,9 @@ export default class GlobalMenuWidget extends BasicWidget {
         }
 
         this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']")[0], {
-            alignment: "bottom"
+            popperConfig: {
+                placement: "bottom"
+            }
         });
 
         this.$widget.find(".show-about-dialog-button").on("click", () => this.triggerCommand("openAboutDialog"));
