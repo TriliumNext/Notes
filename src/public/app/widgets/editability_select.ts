@@ -3,6 +3,7 @@ import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import { t } from "../services/i18n.js";
 import type FNote from "../entities/fnote.js";
 import type { EventData } from "../components/app_context.js";
+import { Dropdown } from "bootstrap";
 
 type Editability = "auto" | "readOnly" | "autoReadOnlyDisabled";
 
@@ -65,9 +66,7 @@ export default class EditabilitySelectWidget extends NoteContextAwareWidget {
     doRender() {
         this.$widget = $(TPL);
 
-        // TODO: Remove once bootstrap is added to webpack.
-        //@ts-ignore
-        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"));
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']")[0]);
 
         this.$editabilityActiveDesc = this.$widget.find(".editability-active-desc");
 
