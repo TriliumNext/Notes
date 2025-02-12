@@ -23,7 +23,7 @@ const TPL = `
 
 export default class PasswordNoteSetDialog extends BasicWidget {
 
-    private modal!: bootstrap.Modal;
+    private modal!: Modal;
     private $openPasswordOptionsButton!: JQuery<HTMLElement>;
 
     doRender() {

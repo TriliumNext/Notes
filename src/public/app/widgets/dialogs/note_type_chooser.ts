@@ -3,6 +3,7 @@ import type { MenuCommandItem } from "../../menus/context_menu.js";
 import { t } from "../../services/i18n.js";
 import noteTypesService from "../../services/note_types.js";
 import BasicWidget from "../basic_widget.js";
+import { Dropdown, Modal } from "bootstrap";
 
 const TPL = `
 <div class="note-type-chooser-dialog modal mx-auto" tabindex="-1" role="dialog">
@@ -53,8 +54,8 @@ type Callback = (data: ChooseNoteTypeResponse) => void;
 
 export default class NoteTypeChooserDialog extends BasicWidget {
     private resolve: Callback | null;
-    private dropdown!: bootstrap.Dropdown;
-    private modal!: JQuery<HTMLElement>;
+    private dropdown!: Dropdown;
+    private modal!: Modal;
     private $noteTypeDropdown!: JQuery<HTMLElement>;
     private $originalFocused: JQuery<HTMLElement> | null;
     private $originalDialog: JQuery<HTMLElement> | null;
@@ -69,14 +70,10 @@ export default class NoteTypeChooserDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        // TODO: Remove once we import bootstrap the right way
-        //@ts-ignore
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
 
         this.$noteTypeDropdown = this.$widget.find(".note-type-dropdown");
-        // TODO: Remove once we import bootstrap the right way
-        //@ts-ignore
-        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find(".note-type-dropdown-trigger"));
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find(".note-type-dropdown-trigger")[0]);
 
         this.$widget.on("hidden.bs.modal", () => {
             if (this.resolve) {
