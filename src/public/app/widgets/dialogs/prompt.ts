@@ -1,6 +1,7 @@
 import { t } from "../../services/i18n.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="prompt-dialog modal mx-auto" tabindex="-1" role="dialog" style="z-index: 2000;">
@@ -41,7 +42,7 @@ export default class PromptDialog extends BasicWidget {
     private resolve?: ((value: string | null) => void) | undefined | null;
     private shownCb?: PromptShownDialogCallback | null;
 
-    private modal!: bootstrap.Modal;
+    private modal!: Modal;
     private $dialogBody!: JQuery<HTMLElement>;
     private $question!: JQuery<HTMLElement> | null;
     private $answer!: JQuery<HTMLElement> | null;
@@ -56,9 +57,7 @@ export default class PromptDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        // TODO: Fix once we use proper ES imports.
-        //@ts-ignore
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
         this.$dialogBody = this.$widget.find(".modal-body");
         this.$form = this.$widget.find(".prompt-dialog-form");
         this.$question = null;
