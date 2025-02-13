@@ -1,6 +1,7 @@
 import { t } from "../../services/i18n.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="password-not-set-dialog modal fade mx-auto" tabindex="-1" role="dialog">
@@ -22,13 +23,12 @@ const TPL = `
 
 export default class PasswordNoteSetDialog extends BasicWidget {
 
-    private modal!: bootstrap.Modal;
+    private modal!: Modal;
     private $openPasswordOptionsButton!: JQuery<HTMLElement>;
 
     doRender() {
         this.$widget = $(TPL);
-        //@ts-ignore fix once bootstrap is imported via JQuery.
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
         this.$openPasswordOptionsButton = this.$widget.find(".open-password-options-button");
         this.$openPasswordOptionsButton.on("click", () => {
             this.modal.hide();

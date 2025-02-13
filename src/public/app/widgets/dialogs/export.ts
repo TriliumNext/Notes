@@ -7,6 +7,7 @@ import openService from "../../services/open.js";
 import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
 import type { EventData } from "../../components/app_context.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="export-dialog modal fade mx-auto" tabindex="-1" role="dialog">
@@ -127,7 +128,7 @@ export default class ExportDialog extends BasicWidget {
 
     private taskId: string;
     private branchId: string | null;
-    private modal?: bootstrap.Modal;
+    private modal?: Modal;
     private $form!: JQuery<HTMLElement>;
     private $noteTitle!: JQuery<HTMLElement>;
     private $subtreeFormats!: JQuery<HTMLElement>;
@@ -146,9 +147,7 @@ export default class ExportDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        // Remove once bootstrap is fixed.
-        // @ts-ignore
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
         this.$form = this.$widget.find(".export-form");
         this.$noteTitle = this.$widget.find(".export-note-title");
         this.$subtreeFormats = this.$widget.find(".export-subtree-formats");

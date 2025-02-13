@@ -3,6 +3,7 @@ import BasicWidget from "../basic_widget.js";
 import utils from "../../services/utils.js";
 import UpdateAvailableWidget from "./update_available.js";
 import options from "../../services/options.js";
+import { Tooltip, Dropdown } from "bootstrap";
 
 const TPL = `
 <div class="dropdown global-menu">
@@ -246,8 +247,8 @@ const TPL = `
 export default class GlobalMenuWidget extends BasicWidget {
     private updateAvailableWidget: UpdateAvailableWidget;
     private isHorizontalLayout: boolean;
-    private tooltip!: bootstrap.Tooltip;
-    private dropdown!: bootstrap.Dropdown;
+    private tooltip!: Tooltip;
+    private dropdown!: Dropdown;
 
     private $updateToLatestVersionButton!: JQuery<HTMLElement>;
     private $zoomState!: JQuery<HTMLElement>;
@@ -286,17 +287,16 @@ export default class GlobalMenuWidget extends BasicWidget {
                     </g>
                 </svg>`)
             );
-            //TODO: Fix once bootstrap is imported via modules.
-            //@ts-ignore
-            this.tooltip = new bootstrap.Tooltip(this.$widget.find("[data-bs-toggle='tooltip']"), { trigger: "hover" });
+
+            this.tooltip = new Tooltip(this.$widget.find("[data-bs-toggle='tooltip']")[0], { trigger: "hover" });
         } else {
             $globalMenuButton.toggleClass("bx bx-menu");
         }
 
-        //TODO: Fix once bootstrap is imported via modules.
-        //@ts-ignore
-        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"), {
-            alignment: "bottom"
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']")[0], {
+            popperConfig: {
+                placement: "bottom"
+            }
         });
 
         this.$widget.find(".show-about-dialog-button").on("click", () => this.triggerCommand("openAboutDialog"));

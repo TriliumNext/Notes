@@ -1,5 +1,6 @@
 import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
+import { Modal } from "bootstrap";
 
 const DELETE_NOTE_BUTTON_CLASS = "confirm-dialog-delete-note";
 
@@ -49,7 +50,7 @@ export interface ConfirmWithTitleOptions {
 export default class ConfirmDialog extends BasicWidget {
     private resolve: ConfirmDialogCallback | null;
 
-    private modal!: bootstrap.Modal;
+    private modal!: Modal;
     private $originallyFocused!: JQuery<HTMLElement> | null;
     private $confirmContent!: JQuery<HTMLElement>;
     private $okButton!: JQuery<HTMLElement>;
@@ -65,9 +66,7 @@ export default class ConfirmDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        // TODO: Fix once we use proper ES imports.
-        //@ts-ignore
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
         this.$confirmContent = this.$widget.find(".confirm-dialog-content");
         this.$okButton = this.$widget.find(".confirm-dialog-ok-button");
         this.$cancelButton = this.$widget.find(".confirm-dialog-cancel-button");
