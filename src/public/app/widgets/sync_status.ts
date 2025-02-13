@@ -4,6 +4,7 @@ import ws from "../services/ws.js";
 import options from "../services/options.js";
 import syncService from "../services/sync.js";
 import { escapeQuotes } from "../services/utils.js";
+import { Tooltip } from "bootstrap";
 
 const TPL = `
 <div class="sync-status-widget launcher-button">
@@ -71,6 +72,15 @@ const TPL = `
 `;
 
 export default class SyncStatusWidget extends BasicWidget {
+
+    syncState: "unknown" | "in-progress" | "connected" | "disconnected";
+    allChangesPushed: boolean;
+    lastSyncedPush!: number;
+    settings: {
+        // TriliumNextTODO: narrow types and use TitlePlacement Type
+        titlePlacement: string; 
+    }
+
     constructor() {
         super();
 
@@ -90,13 +100,14 @@ export default class SyncStatusWidget extends BasicWidget {
         ws.subscribeToMessages((message) => this.processMessage(message));
     }
 
-    showIcon(className) {
+    showIcon(className: string) {
         if (!options.get("syncServerHost")) {
             this.toggleInt(false);
             return;
         }
 
-        bootstrap.Tooltip.getOrCreateInstance(this.$widget.find(`.sync-status-${className}`), {
+
+        Tooltip.getOrCreateInstance(this.$widget.find(`.sync-status-${className}`)[0], {
             html: true,
             placement: this.settings.titlePlacement,
             fallbackPlacements: [this.settings.titlePlacement]
@@ -107,7 +118,8 @@ export default class SyncStatusWidget extends BasicWidget {
         this.$widget.find(`.sync-status-${className}`).show();
     }
 
-    processMessage(message) {
+    // TriliumNextTODO: Use Type Message from "services/ws.ts"
+    processMessage(message: { type: string; lastSyncedPush: number; data: { lastSyncedPush: number } }) {
         if (message.type === "sync-pull-in-progress") {
             this.syncState = "in-progress";
             this.lastSyncedPush = message.lastSyncedPush;
