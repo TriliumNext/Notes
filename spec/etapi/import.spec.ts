@@ -2,11 +2,12 @@ import etapi from "../support/etapi.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { it, expect } from "vitest";
 
-/* TriliumNextTODO: port to Vitest 
+
 etapi.describeEtapi("import", () => {
     // temporarily skip this test since test-export.zip is missing
-    xit("import", async () => {
+    it.skip("import", async () => {
         const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
         const zipFileBuffer = fs.readFileSync(path.resolve(scriptDir, "test-export.zip"));
@@ -23,4 +24,3 @@ etapi.describeEtapi("import", () => {
         expect(content).toContain("test export content");
     });
 });
-*/

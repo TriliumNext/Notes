@@ -1,4 +1,5 @@
 import etapi from "../support/etapi.js";
+import { it, expect } from "vitest";
 
 etapi.describeEtapi("app_info", () => {
     it("get", async () => {

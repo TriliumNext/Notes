@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import etapi from "../support/etapi.js";
+import { it, expect } from "vitest";
 
-/* TriliumNextTODO: port to Vitest
 etapi.describeEtapi("notes", () => {
     it("create", async () => {
         const { note, branch } = await etapi.postEtapi("create-note", {
@@ -100,4 +100,3 @@ etapi.describeEtapi("notes", () => {
         expect(error.message).toEqual(`Note '${note.noteId}' not found.`);
     });
 });
-*/
