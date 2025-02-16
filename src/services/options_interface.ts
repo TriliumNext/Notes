@@ -67,6 +67,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     maxContentWidth: number;
     minTocHeadings: number;
     eraseUnusedAttachmentsAfterSeconds: number;
+    eraseUnusedAttachmentsAfterTimeScale: number;
     firstDayOfWeek: number;
 
     initialized: boolean;

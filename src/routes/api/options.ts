@@ -61,6 +61,7 @@ const ALLOWED_OPTIONS = new Set([
     "checkForUpdates",
     "disableTray",
     "eraseUnusedAttachmentsAfterSeconds",
+    "eraseUnusedAttachmentsAfterTimeScale",
     "disableTray",
     "customSearchEngineName",
     "customSearchEngineUrl",

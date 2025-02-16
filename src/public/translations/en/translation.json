@@ -1656,5 +1656,8 @@
     "minutes": "Minutes",
     "hours": "Hours",
     "days": "Days"
+  },
+  "time_selector": {
+    "invalid_input": "The entered time value is not a valid number."
   }
 }
