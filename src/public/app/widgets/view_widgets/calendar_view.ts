@@ -169,8 +169,10 @@ export default class CalendarView extends ViewMode {
         if (!note) {
             return;
         }
-
-        CalendarView.#setAttribute(note, "label", "startDate", startDate);
+        if(note.getAttributeValue("label", "startDate"))
+            CalendarView.#setAttribute(note, "label", "startDate", startDate);
+        else
+            CalendarView.#setAttribute(note, "label", "dateNote", startDate);
         CalendarView.#setAttribute(note, "label", "endDate", endDate);
     }
 
