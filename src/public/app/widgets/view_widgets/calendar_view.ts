@@ -190,7 +190,7 @@ export default class CalendarView extends ViewMode {
         const events: EventSourceInput = [];
 
         for (const note of notes) {
-            const startDate = note.getAttributeValue("label", "startDate");
+            const startDate = note.getAttributeValue("label", "startDate") ?? note.getAttributeValue("label", "dateNote");
             const customTitle = note.getAttributeValue("label", "calendar:title");
             const color = note.getAttributeValue("label", "calendar:color") ??  note.getAttributeValue("label", "color") ?? undefined;
 
