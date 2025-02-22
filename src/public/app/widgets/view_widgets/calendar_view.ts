@@ -188,8 +188,10 @@ export default class CalendarView extends ViewMode {
         if (!note) {
             return;
         }
-
-        CalendarView.#setAttribute(note, "label", "startDate", startDate);
+        if(note.getAttributeValue("label", "startDate"))
+            CalendarView.#setAttribute(note, "label", "startDate", startDate);
+        else
+            CalendarView.#setAttribute(note, "label", "dateNote", startDate);
         CalendarView.#setAttribute(note, "label", "endDate", endDate);
     }
 
@@ -215,7 +217,7 @@ export default class CalendarView extends ViewMode {
         const events: EventSourceInput = [];
 
         for (const note of notes) {
-            const startDate = note.getAttributeValue("label", "startDate");
+            const startDate = note.getAttributeValue("label", "startDate") ?? note.getAttributeValue("label", "dateNote");
             const customTitle = note.getAttributeValue("label", "calendar:title");
             const color = note.getAttributeValue("label", "calendar:color") ??  note.getAttributeValue("label", "color") ?? undefined;
 
