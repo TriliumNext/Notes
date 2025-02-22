@@ -33,6 +33,36 @@ jobs:
     runs-on: ${{ matrix.os.image }}
     steps:
       - uses: actions/checkout@v4
+
+      # Set up certificates and keychain for macOS
+      - name: Install Apple Certificates
+        if: matrix.os.name == 'macos'
+        env:
+          APP_CERTIFICATE_BASE64: ${{ secrets.APPLE_APP_CERTIFICATE_BASE64 }}
+          APP_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_CERTIFICATE_PASSWORD }}
+          INSTALLER_CERTIFICATE_BASE64: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_BASE64 }}
+          INSTALLER_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ github.run_id }}
+        run: |
+          # Create keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+
+          # Import application certificate
+          echo "$APP_CERTIFICATE_BASE64" | base64 --decode > application.p12
+          security import application.p12 -k build.keychain -P "$APP_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          rm application.p12
+
+          # Import installer certificate
+          echo "$INSTALLER_CERTIFICATE_BASE64" | base64 --decode > installer.p12
+          security import installer.p12 -k build.keychain -P "$INSTALLER_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          rm installer.p12
+
+          # Update keychain settings
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
       - name: Set up node & dependencies
         uses: actions/setup-node@v4
         with:
@@ -43,6 +73,17 @@ jobs:
           os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
           extension: ${{ matrix.os.extension }}
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+
+      # Clean up keychain after build
+      - name: Clean up keychain
+        if: matrix.os.name == 'macos' && always()
+        run: |
+          security delete-keychain build.keychain
+
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
         with:
