@@ -213,6 +213,10 @@ export default class Entrypoints extends Component {
         this.hideAllPopups();
     }
 
+    createNewSplitCommand() {
+        appContext.triggerCommand("openNewNoteSplit");
+    }
+
     async forceSaveRevisionCommand() {
         const noteId = appContext.tabManager.getActiveContextNoteId();
 

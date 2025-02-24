@@ -46,6 +46,7 @@ const enum KeyboardActionNamesEnum {
     eigthTab,
     ninthTab,
     lastTab,
+    createNewSplit,
     showNoteSource,
     showOptions,
     showRevisions,

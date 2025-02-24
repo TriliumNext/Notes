@@ -304,7 +304,12 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.last-tab"),
             scope: "window"
         },
-
+        {
+            actionName: "createNewSplit",
+            defaultShortcuts: [],
+            description: t("keyboard_actions.create-new-split"),
+            scope: "window"
+        },
         {
             separator: t("keyboard_actions.dialogs")
         },
