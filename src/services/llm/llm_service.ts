@@ -1,4 +1,4 @@
-import { LLMProvider, LLMConfig, ChatMessage, ChatContext } from './llm_interface.js';
+import type { LLMProvider, LLMConfig, ChatMessage, ChatContext } from './llm_interface.js';
 import { OpenAIProvider } from './providers/openai_provider.js';
 import { OllamaProvider } from './providers/ollama_provider.js';
 import sql from '../sql.js';
@@ -41,14 +41,14 @@ class LLMService {
     async init() {
         const enabled = await sql.getValue<string>("SELECT value FROM options WHERE name = 'llmEnabled'");
         this.enabled = enabled !== 'false';
-        
+
         if (!this.enabled) {
             return;
         }
 
         const providerName = await sql.getValue<string>("SELECT value FROM options WHERE name = 'llmProvider'") || 'ollama';
         const apiKey = await sql.getValue<string>("SELECT value FROM options WHERE name = 'openaiApiKey'");
-        
+
         if (apiKey) {
             const openaiProvider = this.providers.get('openai') as OpenAIProvider;
             if (openaiProvider) {
@@ -69,7 +69,7 @@ class LLMService {
             throw new NotFoundError(`LLM provider ${name} not found`);
         }
         this.activeProvider = provider;
-        await sql.execute("INSERT OR REPLACE INTO options (name, value, utcDateModified) VALUES (?, ?, ?)", 
+        await sql.execute("INSERT OR REPLACE INTO options (name, value, utcDateModified) VALUES (?, ?, ?)",
             ['llmProvider', name, dateUtils.utcNowDateTime()]);
     }
 
@@ -88,7 +88,7 @@ class LLMService {
 
         await sql.transactional(async () => {
             await sql.execute(`
-                INSERT INTO note_embeddings 
+                INSERT INTO note_embeddings
                 (embeddingId, noteId, model, vector, dimension, utcDateCreated, utcDateModified, isDeleted)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                 [embeddingId, noteId, this.config.model, Buffer.from(vector.buffer), vector.length, now, now, 0]
@@ -110,14 +110,14 @@ class LLMService {
         let contextText = '';
         if (context?.noteIds) {
             const notes = await sql.getRows<Note>(`
-                SELECT noteId, title, content 
-                FROM notes 
+                SELECT noteId, title, content
+                FROM notes
                 WHERE noteId IN (${context.noteIds.map(() => '?').join(',')})
                 AND isDeleted = 0`,
                 context.noteIds
             );
 
-            contextText = notes.map(note => 
+            contextText = notes.map(note =>
                 `Title: ${note.title}\nContent: ${note.content}`
             ).join('\n\n');
         }
@@ -136,9 +136,9 @@ class LLMService {
     async updateConfig(newConfig: Partial<LLMConfig>) {
         if (newConfig.enabled !== undefined) {
             this.enabled = newConfig.enabled;
-            await sql.execute("INSERT OR REPLACE INTO options (name, value, utcDateModified) VALUES (?, ?, ?)", 
+            await sql.execute("INSERT OR REPLACE INTO options (name, value, utcDateModified) VALUES (?, ?, ?)",
                 ['llmEnabled', this.enabled.toString(), dateUtils.utcNowDateTime()]);
-            
+
             if (!this.enabled) {
                 this.activeProvider = null;
                 return;
@@ -146,7 +146,7 @@ class LLMService {
         }
 
         this.config = { ...this.config, ...newConfig };
-        
+
         if (newConfig.provider) {
             await this.setProvider(newConfig.provider);
         }
@@ -155,7 +155,7 @@ class LLMService {
             const openaiProvider = this.providers.get('openai') as OpenAIProvider;
             if (openaiProvider) {
                 openaiProvider.setApiKey(newConfig.apiKey);
-                await sql.execute("INSERT OR REPLACE INTO options (name, value, utcDateModified) VALUES (?, ?, ?)", 
+                await sql.execute("INSERT OR REPLACE INTO options (name, value, utcDateModified) VALUES (?, ?, ?)",
                     ['openaiApiKey', newConfig.apiKey, dateUtils.utcNowDateTime()]);
             }
         }

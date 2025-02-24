@@ -1,6 +1,26 @@
-export interface LLMProvider {
+export interface EmbeddingConfig {
+    model: string;
+    dimension: number;
+    type: 'float32' | 'float64';
+    normalize?: boolean;
+    batchSize?: number;
+}
+
+export interface VectorSimilarityResult {
+    noteId: string;
+    similarity: number;
+    title?: string;
+    snippet?: string;
+}
+
+export interface EmbeddingProvider {
     name: string;
+    getConfig(): EmbeddingConfig;
     generateEmbeddings(text: string): Promise<Float32Array>;
+    generateBatchEmbeddings(texts: string[]): Promise<Float32Array[]>;
+}
+
+export interface LLMProvider extends EmbeddingProvider {
     chat(messages: Array<{role: string, content: string}>, context?: string): Promise<string>;
 }
 

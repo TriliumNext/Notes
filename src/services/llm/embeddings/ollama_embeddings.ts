@@ -1,4 +1,4 @@
-import type { LLMProvider } from '../llm_interface.js';
+import type { LLMProvider, EmbeddingConfig } from '../llm_interface.js';
 import { Ollama } from '@langchain/community/llms/ollama';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 
@@ -6,6 +6,7 @@ export class OllamaProvider implements LLMProvider {
     name = 'ollama';
     private client: Ollama;
     private embeddings: OllamaEmbeddings;
+    private config: EmbeddingConfig;
 
     constructor(options: {
         model?: string,
@@ -15,7 +16,7 @@ export class OllamaProvider implements LLMProvider {
         const {
             model = 'llama2',
             baseUrl = 'http://localhost:11434',
-            embeddingModel = 'nomic-embed-text'
+            embeddingModel = 'nomic-embed-text'  // A good default for embeddings
         } = options;
 
         this.client = new Ollama({
@@ -27,16 +28,19 @@ export class OllamaProvider implements LLMProvider {
             model: embeddingModel,
             baseUrl
         });
-    }
 
-    getConfig() {
-        return {
-            model: 'nomic-embed-text',
+        // nomic-embed-text uses 768-dimensional embeddings
+        this.config = {
+            model: embeddingModel,
             dimension: 768,
-            type: 'float32' as const,
+            type: 'float32',
             normalize: true,
             batchSize: 10
         };
+    }
+
+    getConfig(): EmbeddingConfig {
+        return this.config;
     }
 
     async generateEmbeddings(text: string): Promise<Float32Array> {
@@ -57,4 +61,4 @@ export class OllamaProvider implements LLMProvider {
         const response = await this.client.invoke(prompt);
         return response;
     }
-}
+} 

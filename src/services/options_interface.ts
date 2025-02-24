@@ -97,10 +97,17 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     codeBlockWordWrap: boolean;
     textNoteEditorMultilineToolbar: boolean;
     backgroundEffects: boolean;
+    // LLM Integration
+    llmEnabled: boolean;
+    llmProvider: string;
+    llmModel: string;
+    llmBaseUrl: string;
+    llmMaxTokens: string;
+    llmTemperature: string;
+    llmApiKey: string;
     // Share settings
     redirectBareDomain: boolean;
     showLoginInShareTheme: boolean;
-
 }
 
 export type OptionNames = keyof OptionDefinitions;

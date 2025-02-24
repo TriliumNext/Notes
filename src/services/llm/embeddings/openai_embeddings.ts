@@ -1,4 +1,4 @@
-import type { LLMProvider } from '../llm_interface.js';
+import type { LLMProvider, EmbeddingConfig } from '../llm_interface.js';
 import { ChatOpenAI } from '@langchain/openai';
 import { OpenAIEmbeddings } from '@langchain/openai';
 
@@ -6,33 +6,47 @@ export class OpenAIProvider implements LLMProvider {
     name = 'openai';
     private client: ChatOpenAI | null = null;
     private embeddings: OpenAIEmbeddings | null = null;
-    private apiKey: string | null = null;
+    private config: EmbeddingConfig;
 
-    setApiKey(apiKey: string) {
-        this.apiKey = apiKey;
+    constructor(options: {
+        apiKey: string,
+        model?: string,
+        embeddingModel?: string
+    }) {
+        const {
+            apiKey,
+            model = 'gpt-3.5-turbo',
+            embeddingModel = 'text-embedding-3-small'
+        } = options;
+
         this.client = new ChatOpenAI({
-            modelName: 'gpt-3.5-turbo',
+            modelName: model,
             temperature: 0.7,
             openAIApiKey: apiKey
         });
+
         this.embeddings = new OpenAIEmbeddings({
+            modelName: embeddingModel,
             openAIApiKey: apiKey
         });
+
+        // text-embedding-3-small uses 1536-dimensional embeddings
+        this.config = {
+            model: embeddingModel,
+            dimension: 1536,
+            type: 'float32',
+            normalize: true,
+            batchSize: 100  // OpenAI allows larger batches
+        };
     }
 
-    getConfig() {
-        return {
-            model: 'text-embedding-3-small',
-            dimension: 1536,
-            type: 'float32' as const,
-            normalize: true,
-            batchSize: 100
-        };
+    getConfig(): EmbeddingConfig {
+        return this.config;
     }
 
     async generateEmbeddings(text: string): Promise<Float32Array> {
         if (!this.embeddings) {
-            throw new Error('OpenAI API key not configured');
+            throw new Error('OpenAI embeddings not configured');
         }
         const embeddings = await this.embeddings.embedQuery(text);
         return Float32Array.from(embeddings);
@@ -40,7 +54,7 @@ export class OpenAIProvider implements LLMProvider {
 
     async generateBatchEmbeddings(texts: string[]): Promise<Float32Array[]> {
         if (!this.embeddings) {
-            throw new Error('OpenAI API key not configured');
+            throw new Error('OpenAI embeddings not configured');
         }
         const embeddings = await this.embeddings.embedDocuments(texts);
         return embeddings.map((e: number[]) => Float32Array.from(e));
@@ -48,12 +62,12 @@ export class OpenAIProvider implements LLMProvider {
 
     async chat(messages: Array<{role: string, content: string}>, context?: string): Promise<string> {
         if (!this.client) {
-            throw new Error('OpenAI API key not configured');
+            throw new Error('OpenAI client not configured');
         }
 
         const systemMessage = {
             role: 'system',
-            content: context ?
+            content: context ? 
                 `You are a helpful assistant. Use the following context to answer questions:\n\n${context}` :
                 'You are a helpful assistant.'
         };
@@ -65,4 +79,4 @@ export class OpenAIProvider implements LLMProvider {
 
         return response.content.toString();
     }
-}
+} 
