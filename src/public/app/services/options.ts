@@ -1,4 +1,3 @@
-
 import server from "./server.js";
 
 type OptionValue = number | string;
@@ -8,7 +7,7 @@ class Options {
     private arr!: Record<string, OptionValue>;
 
     constructor() {
-        this.initializedPromise = server.get<Record<string, OptionValue>>('options').then(data => this.load(data));
+        this.initializedPromise = server.get<Record<string, OptionValue>>("options").then((data) => this.load(data));
     }
 
     load(arr: Record<string, OptionValue>) {
@@ -16,32 +15,35 @@ class Options {
     }
 
     get(key: string) {
-        return this.arr?.[key];
+        return this.arr?.[key] as string;
     }
 
     getNames() {
         return Object.keys(this.arr || []);
     }
 
-    getJson(key: string) {                
+    getJson(key: string) {
         const value = this.arr?.[key];
         if (typeof value !== "string") {
             return null;
         }
         try {
             return JSON.parse(value);
-        }
-        catch (e) {
+        } catch (e) {
             return null;
         }
     }
 
     getInt(key: string) {
         const value = this.arr?.[key];
-        if (typeof value !== "string") {
-            return null;
+        if (typeof value === "number") {
+            return value;
         }
-        return parseInt(value);
+        if (typeof value == "string") {
+            return parseInt(value);
+        }
+        console.warn("Attempting to read int for unsupported value: ", value);
+        return null;
     }
 
     getFloat(key: string) {
@@ -53,7 +55,7 @@ class Options {
     }
 
     is(key: string) {
-        return this.arr[key] === 'true';
+        return this.arr[key] === "true";
     }
 
     set(key: string, value: OptionValue) {

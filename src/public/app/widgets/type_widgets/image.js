@@ -39,13 +39,14 @@ const TPL = `
 </div>`;
 
 class ImageTypeWidget extends TypeWidget {
-    static getType() { return "image"; }
+    static getType() {
+        return "image";
+    }
 
     doRender() {
         this.$widget = $(TPL);
-        this.$imageWrapper = this.$widget.find('.note-detail-image-wrapper');
-        this.$imageView = this.$widget.find('.note-detail-image-view')
-            .attr("id", `image-view-${utils.randomString(10)}`);
+        this.$imageWrapper = this.$widget.find(".note-detail-image-wrapper");
+        this.$imageView = this.$widget.find(".note-detail-image-view").attr("id", `image-view-${utils.randomString(10)}`);
 
         libraryLoader.requireLibrary(libraryLoader.WHEEL_ZOOM).then(() => {
             WZoom.create(`#${this.$imageView.attr("id")}`, {
@@ -64,7 +65,7 @@ class ImageTypeWidget extends TypeWidget {
         this.$imageView.prop("src", utils.createImageSrcUrl(note));
     }
 
-    copyImageReferenceToClipboardEvent({ntxId}) {
+    copyImageReferenceToClipboardEvent({ ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -72,11 +73,11 @@ class ImageTypeWidget extends TypeWidget {
         imageService.copyImageReferenceToClipboard(this.$imageWrapper);
     }
 
-    async entitiesReloadedEvent({loadResults}) {
+    async entitiesReloadedEvent({ loadResults }) {
         if (loadResults.isNoteReloaded(this.noteId)) {
             this.refresh();
         }
     }
 }
 
-export default ImageTypeWidget
+export default ImageTypeWidget;

@@ -14,15 +14,11 @@
 
 import becca from "../becca/becca.js";
 import BOption from "../becca/entities/boption.js";
-import { OptionRow } from '../becca/entities/rows.js';
+import type { OptionRow } from "../becca/entities/rows.js";
+import type { FilterOptionsByType, OptionDefinitions, OptionMap, OptionNames } from "./options_interface.js";
 import sql from "./sql.js";
 
-/**
- * A dictionary where the keys are the option keys (e.g. `theme`) and their corresponding values.
- */
-export type OptionMap = Record<string | number, string>;
-
-function getOptionOrNull(name: string): string | null {
+function getOptionOrNull(name: OptionNames): string | null {
     let option;
 
     if (becca.loaded) {
@@ -35,7 +31,7 @@ function getOptionOrNull(name: string): string | null {
     return option ? option.value : null;
 }
 
-function getOption(name: string) {
+function getOption(name: OptionNames) {
     const val = getOptionOrNull(name);
 
     if (val === null) {
@@ -45,7 +41,7 @@ function getOption(name: string) {
     return val;
 }
 
-function getOptionInt(name: string, defaultValue?: number): number {
+function getOptionInt(name: FilterOptionsByType<number>, defaultValue?: number): number {
     const val = getOption(name);
 
     const intVal = parseInt(val);
@@ -61,29 +57,24 @@ function getOptionInt(name: string, defaultValue?: number): number {
     return intVal;
 }
 
-function getOptionBool(name: string): boolean {
+function getOptionBool(name: FilterOptionsByType<boolean>): boolean {
     const val = getOption(name);
 
-    if (typeof val !== "string" || !['true', 'false'].includes(val)) {
+    if (typeof val !== "string" || !["true", "false"].includes(val)) {
         throw new Error(`Could not parse '${val}' into boolean for option '${name}'`);
     }
 
-    return val === 'true';
+    return val === "true";
 }
 
-function setOption(name: string, value: string | number | boolean) {
-    if (value === true || value === false || typeof value === "number") {
-        value = value.toString();
-    }
-
+function setOption<T extends OptionNames>(name: T, value: string | OptionDefinitions[T]) {
     const option = becca.getOption(name);
 
     if (option) {
-        option.value = value;
+        option.value = value as string;
 
         option.save();
-    }
-    else {
+    } else {
         createOption(name, value, false);
     }
 }
@@ -95,10 +86,10 @@ function setOption(name: string, value: string | number | boolean) {
  * @param value the value of the option, as a string. It can then be interpreted as other types such as a number of boolean.
  * @param isSynced `true` if the value should be synced across multiple instances (e.g. locale) or `false` if it should be local-only (e.g. theme).
  */
-function createOption(name: string, value: string, isSynced: boolean) {
+function createOption<T extends OptionNames>(name: T, value: string | OptionDefinitions[T], isSynced: boolean) {
     new BOption({
         name: name,
-        value: value,
+        value: value as string,
         isSynced: isSynced
     }).save();
 }
@@ -108,13 +99,13 @@ function getOptions() {
 }
 
 function getOptionMap() {
-    const map: OptionMap = {};
+    const map: Record<string, string> = {};
 
     for (const option of Object.values(becca.options)) {
         map[option.name] = option.value;
     }
 
-    return map;
+    return map as OptionMap;
 }
 
 export default {

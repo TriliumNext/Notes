@@ -20,12 +20,14 @@ const TPL = `
 </div>`;
 
 export default class RenderTypeWidget extends TypeWidget {
-    static getType() { return "render"; }
+    static getType() {
+        return "render";
+    }
 
     doRender() {
         this.$widget = $(TPL);
-        this.$noteDetailRenderHelp = this.$widget.find('.note-detail-render-help');
-        this.$noteDetailRenderContent = this.$widget.find('.note-detail-render-content');
+        this.$noteDetailRenderHelp = this.$widget.find(".note-detail-render-help");
+        this.$noteDetailRenderContent = this.$widget.find(".note-detail-render-content");
 
         super.doRender();
     }
@@ -51,7 +53,7 @@ export default class RenderTypeWidget extends TypeWidget {
         }
     }
 
-    async executeWithContentElementEvent({resolve, ntxId}) {
+    async executeWithContentElementEvent({ resolve, ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }

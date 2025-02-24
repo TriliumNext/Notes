@@ -17,10 +17,9 @@
     --main-text-color: #ccc;
     --main-border-color: #aaa;
     --dropdown-border-color: #555;
-    --dropdown-shadow-opacity: .4;
+    --dropdown-shadow-opacity: 0.4;
     --dropdown-item-icon-destructive-color: #de6e5b;
     --disabled-tooltip-icon-color: #7fd2ef;
-
 
     --accented-background-color: #555;
     --more-accented-background-color: #777;
@@ -56,10 +55,10 @@
     --modal-backdrop-color: #444;
 
     --left-pane-background-color: #1f1f1f;
-    --left-pane-text-color: #AAAAAA;
+    --left-pane-text-color: #aaaaaa;
 
     --launcher-pane-background-color: #1f1f1f;
-    --launcher-pane-text-color: #AAAAAA;
+    --launcher-pane-text-color: #aaaaaa;
 
     --active-tab-background-color: #666;
     --active-tab-hover-background-color: #737373;

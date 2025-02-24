@@ -1,11 +1,11 @@
-import utils from './utils.js';
+import utils from "./utils.js";
 import toastService from "./toast.js";
 import server from "./server.js";
 import options from "./options.js";
 import frocaUpdater from "./froca_updater.js";
 import appContext from "../components/app_context.js";
-import { t } from './i18n.js';
-import { EntityChange } from '../server_types.js';
+import { t } from "./i18n.js";
+import type { EntityChange } from "../server_types.js";
 
 type MessageHandler = (message: any) => void;
 const messageHandlers: MessageHandler[] = [];
@@ -21,11 +21,13 @@ function logError(message: string) {
     console.error(utils.now(), message); // needs to be separate from .trace()
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({
-            type: 'log-error',
-            error: message,
-            stack: new Error().stack
-        }));
+        ws.send(
+            JSON.stringify({
+                type: "log-error",
+                error: message,
+                stack: new Error().stack
+            })
+        );
     }
 }
 
@@ -33,10 +35,12 @@ function logInfo(message: string) {
     console.log(utils.now(), message);
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({
-            type: 'log-info',
-            info: message
-        }));
+        ws.send(
+            JSON.stringify({
+                type: "log-info",
+                info: message
+            })
+        );
     }
 }
 
@@ -54,9 +58,7 @@ let consumeQueuePromise: Promise<void> | null = null;
 const processedEntityChangeIds = new Set();
 
 function logRows(entityChanges: EntityChange[]) {
-    const filteredRows = entityChanges.filter(row =>
-        !processedEntityChangeIds.has(row.id)
-        && (row.entityName !== 'options' || row.entityId !== 'openNoteContexts'));
+    const filteredRows = entityChanges.filter((row) => !processedEntityChangeIds.has(row.id) && (row.entityName !== "options" || row.entityId !== "openNoteContexts"));
 
     if (filteredRows.length > 0) {
         console.debug(utils.now(), "Frontend update data: ", filteredRows);
@@ -111,28 +113,21 @@ async function handleMessage(event: MessageEvent<any>) {
         messageHandler(message);
     }
 
-    if (message.type === 'ping') {
+    if (message.type === "ping") {
         lastPingTs = Date.now();
-    }
-    else if (message.type === 'reload-frontend') {
+    } else if (message.type === "reload-frontend") {
         utils.reloadFrontendApp("received request from backend to reload frontend");
-    }
-    else if (message.type === 'frontend-update') {
+    } else if (message.type === "frontend-update") {
         await executeFrontendUpdate(message.data.entityChanges);
-    }
-    else if (message.type === 'sync-hash-check-failed') {
+    } else if (message.type === "sync-hash-check-failed") {
         toastService.showError(t("ws.sync-check-failed"), 60000);
-    }
-    else if (message.type === 'consistency-checks-failed') {
+    } else if (message.type === "consistency-checks-failed") {
         toastService.showError(t("ws.consistency-checks-failed"), 50 * 60000);
-    }
-    else if (message.type === 'api-log-messages') {
-        appContext.triggerEvent("apiLogMessages", {noteId: message.noteId, messages: message.messages});
-    }
-    else if (message.type === 'toast') {
+    } else if (message.type === "api-log-messages") {
+        appContext.triggerEvent("apiLogMessages", { noteId: message.noteId, messages: message.messages });
+    } else if (message.type === "toast") {
         toastService.showMessage(message.message);
-    }
-    else if (message.type === 'execute-script') {
+    } else if (message.type === "execute-script") {
         // TODO: Remove after porting the file
         // @ts-ignore
         const bundleService = (await import("../services/bundle.js")).default as any;
@@ -163,7 +158,7 @@ function waitForEntityChangeId(desiredEntityChangeId: number) {
             desiredEntityChangeId: desiredEntityChangeId,
             resolvePromise: res,
             start: Date.now()
-        })
+        });
     });
 }
 
@@ -172,15 +167,17 @@ function waitForMaxKnownEntityChangeId() {
 }
 
 function checkEntityChangeIdListeners() {
+    entityChangeIdReachedListeners.filter((l) => l.desiredEntityChangeId <= lastProcessedEntityChangeId).forEach((l) => l.resolvePromise());
+
+    entityChangeIdReachedListeners = entityChangeIdReachedListeners.filter((l) => l.desiredEntityChangeId > lastProcessedEntityChangeId);
+
     entityChangeIdReachedListeners
-        .filter(l => l.desiredEntityChangeId <= lastProcessedEntityChangeId)
-        .forEach(l => l.resolvePromise());
-
-    entityChangeIdReachedListeners = entityChangeIdReachedListeners
-        .filter(l => l.desiredEntityChangeId > lastProcessedEntityChangeId);
-
-    entityChangeIdReachedListeners.filter(l => Date.now() > l.start - 60000)
-        .forEach(l => console.log(`Waiting for entityChangeId ${l.desiredEntityChangeId} while last processed is ${lastProcessedEntityChangeId} (last accepted ${lastAcceptedEntityChangeId}) for ${Math.floor((Date.now() - l.start) / 1000)}s`));
+        .filter((l) => Date.now() > l.start - 60000)
+        .forEach((l) =>
+            console.log(
+                `Waiting for entityChangeId ${l.desiredEntityChangeId} while last processed is ${lastProcessedEntityChangeId} (last accepted ${lastAcceptedEntityChangeId}) for ${Math.floor((Date.now() - l.start) / 1000)}s`
+            )
+        );
 }
 
 async function consumeFrontendUpdateData() {
@@ -188,20 +185,18 @@ async function consumeFrontendUpdateData() {
         const allEntityChanges = frontendUpdateDataQueue;
         frontendUpdateDataQueue = [];
 
-        const nonProcessedEntityChanges = allEntityChanges.filter(ec => !processedEntityChangeIds.has(ec.id));
+        const nonProcessedEntityChanges = allEntityChanges.filter((ec) => !processedEntityChangeIds.has(ec.id));
 
         try {
             await utils.timeLimit(frocaUpdater.processEntityChanges(nonProcessedEntityChanges), 30000);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             logError(`Encountered error ${e.message}: ${e.stack}, reloading frontend.`);
 
-            if (!glob.isDev && !options.is('debugModeEnabled')) {
+            if (!glob.isDev && !options.is("debugModeEnabled")) {
                 // if there's an error in updating the frontend, then the easy option to recover is to reload the frontend completely
 
                 utils.reloadFrontendApp();
-            }
-            else {
+            } else {
                 console.log("nonProcessedEntityChanges causing the timeout", nonProcessedEntityChanges);
 
                 toastService.showError(t("ws.encountered-error", { message: e.message }));
@@ -235,16 +230,20 @@ function connectWebSocket() {
 
 async function sendPing() {
     if (Date.now() - lastPingTs > 30000) {
-        console.log(utils.now(), "Lost websocket connection to the backend. If you keep having this issue repeatedly, you might want to check your reverse proxy (nginx, apache) configuration and allow/unblock WebSocket.");
+        console.log(
+            utils.now(),
+            "Lost websocket connection to the backend. If you keep having this issue repeatedly, you might want to check your reverse proxy (nginx, apache) configuration and allow/unblock WebSocket."
+        );
     }
 
     if (ws.readyState === ws.OPEN) {
-        ws.send(JSON.stringify({
-            type: 'ping',
-            lastEntityChangeId: lastAcceptedEntityChangeId
-        }));
-    }
-    else if (ws.readyState === ws.CLOSED || ws.readyState === ws.CLOSING) {
+        ws.send(
+            JSON.stringify({
+                type: "ping",
+                lastEntityChangeId: lastAcceptedEntityChangeId
+            })
+        );
+    } else if (ws.readyState === ws.CLOSED || ws.readyState === ws.CLOSING) {
         console.log(utils.now(), "WS closed or closing, trying to reconnect");
 
         ws = connectWebSocket();
@@ -265,4 +264,3 @@ export default {
     waitForMaxKnownEntityChangeId,
     getMaxKnownEntityChangeSyncId: () => lastAcceptedEntityChangeSyncId
 };
-

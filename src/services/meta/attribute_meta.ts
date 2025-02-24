@@ -1,6 +1,6 @@
-import { AttributeType } from "../../becca/entities/rows.js";
+import type { AttributeType } from "../../becca/entities/rows.js";
 
-interface AttributeMeta {
+export default interface AttributeMeta {
     noteId?: string;
     type: AttributeType;
     name: string;
@@ -8,5 +8,3 @@ interface AttributeMeta {
     isInheritable?: boolean;
     position?: number;
 }
-
-export default AttributeMeta;

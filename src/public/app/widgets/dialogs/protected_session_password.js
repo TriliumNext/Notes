@@ -2,6 +2,7 @@ import { t } from "../../services/i18n.js";
 import protectedSessionService from "../../services/protected_session.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="protected-session-password-dialog modal mx-auto" data-backdrop="false" tabindex="-1" role="dialog">
@@ -14,7 +15,7 @@ const TPL = `
             </div>
             <form class="protected-session-password-form">
                 <div class="modal-body">
-                    <label for="protected-session-password" class="col-form-label">${t("protected_session_password.form_label")}asbd</label>
+                    <label for="protected-session-password" class="col-form-label">${t("protected_session_password.form_label")}</label>
                     <input id="protected-session-password" class="form-control protected-session-password" type="password">
                 </div>
                 <div class="modal-footer">
@@ -28,11 +29,11 @@ const TPL = `
 export default class ProtectedSessionPasswordDialog extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget);
 
         this.$passwordForm = this.$widget.find(".protected-session-password-form");
         this.$passwordInput = this.$widget.find(".protected-session-password");
-        this.$passwordForm.on('submit', () => {
+        this.$passwordForm.on("submit", () => {
             const password = this.$passwordInput.val();
             this.$passwordInput.val("");
 
@@ -45,7 +46,7 @@ export default class ProtectedSessionPasswordDialog extends BasicWidget {
     showProtectedSessionPasswordDialogEvent() {
         utils.openDialog(this.$widget);
 
-        this.$passwordInput.trigger('focus');
+        this.$passwordInput.trigger("focus");
     }
 
     closeProtectedSessionPasswordDialogEvent() {

@@ -6,14 +6,14 @@ import AbstractBeccaEntity from "./abstract_becca_entity.js";
 import sql from "../../services/sql.js";
 import protectedSessionService from "../../services/protected_session.js";
 import log from "../../services/log.js";
-import { AttachmentRow } from './rows.js';
-import BNote from "./bnote.js";
-import BBranch from "./bbranch.js";
+import type { AttachmentRow } from "./rows.js";
+import type BNote from "./bnote.js";
+import type BBranch from "./bbranch.js";
 import noteService from "../../services/notes.js";
 
 const attachmentRoleToNoteTypeMapping = {
-    'image': 'image',
-    'file': 'file'
+    image: "image",
+    file: "file"
 };
 
 interface ContentOpts {
@@ -31,9 +31,15 @@ interface ContentOpts {
  * larger amounts of data and generally not accessible to the user.
  */
 class BAttachment extends AbstractBeccaEntity<BAttachment> {
-    static get entityName() { return "attachments"; }
-    static get primaryKeyName() { return "attachmentId"; }
-    static get hashedProperties() { return ["attachmentId", "ownerId", "role", "mime", "title", "blobId", "utcDateScheduledForErasureSince"]; }
+    static get entityName() {
+        return "attachments";
+    }
+    static get primaryKeyName() {
+        return "attachmentId";
+    }
+    static get hashedProperties() {
+        return ["attachmentId", "ownerId", "role", "mime", "title", "blobId", "utcDateScheduledForErasureSince"];
+    }
 
     noteId?: number;
     attachmentId?: string;
@@ -102,13 +108,15 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
     }
 
     isContentAvailable() {
-        return !this.attachmentId // new attachment which was not encrypted yet
-            || !this.isProtected
-            || protectedSessionService.isProtectedSessionAvailable()
+        return (
+            !this.attachmentId || // new attachment which was not encrypted yet
+            !this.isProtected ||
+            protectedSessionService.isProtectedSessionAvailable()
+        );
     }
 
     getTitleOrProtected() {
-        return this.isContentAvailable() ? this.title : '[protected]';
+        return this.isContentAvailable() ? this.title : "[protected]";
     }
 
     decrypt() {
@@ -121,8 +129,7 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
             try {
                 this.title = protectedSessionService.decryptString(this.title) || "";
                 this.isDecrypted = true;
-            }
-            catch (e: any) {
+            } catch (e: any) {
                 log.error(`Could not decrypt attachment ${this.attachmentId}: ${e.message} ${e.stack}`);
             }
         }
@@ -136,22 +143,22 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
         this._setContent(content, opts);
     }
 
-    convertToNote(): { note: BNote, branch: BBranch } {
+    convertToNote(): { note: BNote; branch: BBranch } {
         // TODO: can this ever be "search"?
-        if (this.type as string === 'search') {
+        if ((this.type as string) === "search") {
             throw new Error(`Note of type search cannot have child notes`);
         }
 
         if (!this.getNote()) {
-            throw new Error("Cannot find note of this attachment. It is possible that this is note revision's attachment. " +
-                "Converting note revision's attachments to note is not (yet) supported.");
+            throw new Error("Cannot find note of this attachment. It is possible that this is note revision's attachment. " + "Converting note revision's attachments to note is not (yet) supported.");
         }
 
         if (!(this.role in attachmentRoleToNoteTypeMapping)) {
             throw new Error(`Mapping from attachment role '${this.role}' to note's type is not defined`);
         }
 
-        if (!this.isContentAvailable()) { // isProtected is the same for attachment
+        if (!this.isContentAvailable()) {
+            // isProtected is the same for attachment
             throw new Error(`Cannot convert protected attachment outside of protected session`);
         }
 
@@ -168,7 +175,7 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
 
         const parentNote = this.getNote();
 
-        if (this.role === 'image' && parentNote.type === 'text') {
+        if (this.role === "image" && parentNote.type === "text") {
             const origContent = parentNote.getContent();
 
             if (typeof origContent !== "string") {
@@ -191,7 +198,7 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
     }
 
     getFileName() {
-        const type = this.role === 'image' ? 'image' : 'file';
+        const type = this.role === "image" ? "image" : "file";
 
         return utils.formatDownloadTitle(this.title, type, this.mime);
     }
@@ -200,9 +207,14 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
         super.beforeSaving();
 
         if (this.position === undefined || this.position === null) {
-            this.position = 10 + sql.getValue<number>(`SELECT COALESCE(MAX(position), 0)
+            this.position =
+                10 +
+                sql.getValue<number>(
+                    `SELECT COALESCE(MAX(position), 0)
                                                         FROM attachments
-                                                        WHERE ownerId = ?`, [this.noteId]);
+                                                        WHERE ownerId = ?`,
+                    [this.noteId]
+                );
         }
 
         this.dateModified = dateUtils.localNowDateTime();
@@ -234,8 +246,7 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
         if (pojo.isProtected) {
             if (this.isDecrypted) {
                 pojo.title = protectedSessionService.encrypt(pojo.title || "") || undefined;
-            }
-            else {
+            } else {
                 // updating protected note outside of protected session means we will keep original ciphertexts
                 delete pojo.title;
             }

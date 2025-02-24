@@ -1,4 +1,4 @@
-import { Request } from "express";
+import type { Request } from "express";
 
 import becca from "../../becca/becca.js";
 import markdownService from "../../services/import/markdown.js";
@@ -6,7 +6,7 @@ import markdownService from "../../services/import/markdown.js";
 function getIconUsage() {
     const iconClassToCountMap: Record<string, number> = {};
 
-    for (const {value: iconClass, noteId} of becca.findAttributes('label', 'iconClass')) {
+    for (const { value: iconClass, noteId } of becca.findAttributes("label", "iconClass")) {
         if (noteId.startsWith("_")) {
             continue; // ignore icons of "system" notes since they were not set by the user
         }
@@ -16,7 +16,7 @@ function getIconUsage() {
         }
 
         for (const clazz of iconClass.trim().split(/\s+/)) {
-            if (clazz === 'bx') {
+            if (clazz === "bx") {
                 continue;
             }
 
@@ -31,7 +31,7 @@ function renderMarkdown(req: Request) {
     const { markdownContent } = req.body;
 
     return {
-        htmlContent: markdownService.renderToHtml(markdownContent, '')
+        htmlContent: markdownService.renderToHtml(markdownContent, "")
     };
 }
 

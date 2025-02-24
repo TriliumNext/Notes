@@ -39,16 +39,20 @@ const TPL = `
 </tr>`;
 
 export default class AddLabelBulkAction extends AbstractBulkAction {
-    static get actionName() { return "addLabel"; }
-    static get actionTitle() { return t("add_label.add_label"); }
+    static get actionName() {
+        return "addLabel";
+    }
+    static get actionTitle() {
+        return t("add_label.add_label");
+    }
 
     doRender() {
         const $action = $(TPL);
 
-        const $labelName = $action.find('.label-name');
+        const $labelName = $action.find(".label-name");
         $labelName.val(this.actionDef.labelName || "");
 
-        const $labelValue = $action.find('.label-value');
+        const $labelValue = $action.find(".label-value");
         $labelValue.val(this.actionDef.labelValue || "");
 
         const spacedUpdate = new SpacedUpdate(async () => {
@@ -58,8 +62,8 @@ export default class AddLabelBulkAction extends AbstractBulkAction {
             });
         }, 1000);
 
-        $labelName.on('input', () => spacedUpdate.scheduleUpdate());
-        $labelValue.on('input', () => spacedUpdate.scheduleUpdate());
+        $labelName.on("input", () => spacedUpdate.scheduleUpdate());
+        $labelValue.on("input", () => spacedUpdate.scheduleUpdate());
 
         return $action;
     }

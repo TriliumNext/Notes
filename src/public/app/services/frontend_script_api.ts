@@ -1,13 +1,13 @@
-import server from './server.js';
-import utils from './utils.js';
-import toastService from './toast.js';
-import linkService from './link.js';
-import froca from './froca.js';
-import noteTooltipService from './note_tooltip.js';
-import protectedSessionService from './protected_session.js';
-import dateNotesService from './date_notes.js';
-import searchService from './search.js';
-import RightPanelWidget from '../widgets/right_panel_widget.js';
+import server from "./server.js";
+import utils from "./utils.js";
+import toastService from "./toast.js";
+import linkService from "./link.js";
+import froca from "./froca.js";
+import noteTooltipService from "./note_tooltip.js";
+import protectedSessionService from "./protected_session.js";
+import dateNotesService from "./date_notes.js";
+import searchService from "./search.js";
+import RightPanelWidget from "../widgets/right_panel_widget.js";
 import ws from "./ws.js";
 import appContext from "../components/app_context.js";
 import NoteContextAwareWidget from "../widgets/note_context_aware_widget.js";
@@ -15,12 +15,11 @@ import BasicWidget from "../widgets/basic_widget.js";
 import SpacedUpdate from "./spaced_update.js";
 import shortcutService from "./shortcuts.js";
 import dialogService from "./dialog.js";
-import FNote from '../entities/fnote.js';
-import { t } from './i18n.js';
-import NoteContext from '../components/note_context.js';
-import NoteDetailWidget from '../widgets/note_detail.js';
-import Component from '../components/component.js';
-
+import type FNote from "../entities/fnote.js";
+import { t } from "./i18n.js";
+import type NoteContext from "../components/note_context.js";
+import type NoteDetailWidget from "../widgets/note_detail.js";
+import type Component from "../components/component.js";
 
 /**
  * A whole number
@@ -39,7 +38,7 @@ interface AddToToolbarOpts {
     action: () => void;
     /** id of the button, used to identify the old instances of this button to be replaced
      * ID is optional because of BC, but not specifying it is deprecated. ID can be alphanumeric only. */
-    id: string;    
+    id: string;
     /** name of the boxicon to be used (e.g. "time" for "bx-time" icon) */
     icon: string;
     /** keyboard shortcut for the button, e.g. "alt+t" */
@@ -105,7 +104,7 @@ interface Api {
      */
     activateNewNote(notePath: string): Promise<void>;
 
-     /**
+    /**
      * Open a note in a new tab.
      *
      * @method
@@ -131,7 +130,7 @@ interface Api {
      */
     addButtonToToolbar(opts: AddToToolbarOpts): void;
 
-     /**
+    /**
      * @private
      */
     __runOnBackendInner(func: unknown, params: unknown[], transactional: boolean): unknown;
@@ -248,7 +247,7 @@ interface Api {
      */
     triggerEvent: typeof appContext.triggerEvent;
 
-     /**
+    /**
      * Create a note link (jQuery object) for given note.
      *
      * @param {string} notePath (or noteId)
@@ -388,7 +387,7 @@ interface Api {
      */
     setHoistedNoteId(noteId: string): void;
 
-     /**
+    /**
      * @param keyboardShortcut - e.g. "ctrl+shift+a"
      * @param [namespace] specify namespace of the handler for the cases where call for bind may be repeated.
      *                               If a handler with this ID exists, it's replaced by the new handler.
@@ -447,57 +446,55 @@ interface Api {
  * available in the JS frontend notes. You can use e.g. <code>api.showMessage(api.startNote.title);</code></p>
  */
 function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, originEntity: Entity | null = null, $container: JQuery<HTMLElement> | null = null) {
-    
     this.$container = $container;
     this.startNote = startNote;
-    this.currentNote = currentNote;    
+    this.currentNote = currentNote;
     this.originEntity = originEntity;
     this.dayjs = dayjs;
     this.RightPanelWidget = RightPanelWidget;
     this.NoteContextAwareWidget = NoteContextAwareWidget;
     this.BasicWidget = BasicWidget;
-    
-    this.activateNote = async notePath => {
+
+    this.activateNote = async (notePath) => {
         await appContext.tabManager.getActiveContext().setNote(notePath);
     };
 
-    this.activateNewNote = async notePath => {
+    this.activateNewNote = async (notePath) => {
         await ws.waitForMaxKnownEntityChangeId();
 
         await appContext.tabManager.getActiveContext().setNote(notePath);
-        await appContext.triggerEvent('focusAndSelectTitle');
+        await appContext.triggerEvent("focusAndSelectTitle", {});
     };
 
-   
     this.openTabWithNote = async (notePath, activate) => {
         await ws.waitForMaxKnownEntityChangeId();
 
         await appContext.tabManager.openTabWithNoteWithHoisting(notePath, { activate });
 
         if (activate) {
-            await appContext.triggerEvent('focusAndSelectTitle');
+            await appContext.triggerEvent("focusAndSelectTitle", {});
         }
     };
-    
+
     this.openSplitWithNote = async (notePath, activate) => {
         await ws.waitForMaxKnownEntityChangeId();
 
         const subContexts = appContext.tabManager.getActiveContext().getSubContexts();
-        const {ntxId} = subContexts[subContexts.length - 1];
+        const { ntxId } = subContexts[subContexts.length - 1];
 
-        await appContext.triggerCommand("openNewNoteSplit", {ntxId, notePath});
+        await appContext.triggerCommand("openNewNoteSplit", { ntxId, notePath });
 
         if (activate) {
-            await appContext.triggerEvent('focusAndSelectTitle');
+            await appContext.triggerEvent("focusAndSelectTitle", {});
         }
     };
-    
-    this.addButtonToToolbar = async opts => {
+
+    this.addButtonToToolbar = async (opts) => {
         console.warn("api.addButtonToToolbar() has been deprecated since v0.58 and may be removed in the future. Use  Menu -> Configure Launchbar to create/update launchers instead.");
 
-        const {action, ...reqBody} = opts;
-        
-        await server.put('special-notes/api-script-launcher', {
+        const { action, ...reqBody } = opts;
+
+        await server.put("special-notes/api-script-launcher", {
             action: action.toString(),
             ...reqBody
         });
@@ -508,31 +505,33 @@ function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, orig
             return params;
         }
 
-        return params.map(p => {
+        return params.map((p) => {
             if (typeof p === "function") {
                 return `!@#Function: ${p.toString()}`;
-            }
-            else {
+            } else {
                 return p;
             }
         });
     }
 
-   
     this.__runOnBackendInner = async (func, params, transactional) => {
         if (typeof func === "function") {
             func = func.toString();
         }
 
-        const ret = await server.post<ExecResult>('script/exec', {
-            script: func,
-            params: prepareParams(params),
-            startNoteId: startNote.noteId,
-            currentNoteId: currentNote.noteId,
-            originEntityName: "notes", // currently there's no other entity on the frontend which can trigger event
-            originEntityId: originEntity ? originEntity.noteId : null,
-            transactional
-        }, "script");
+        const ret = await server.post<ExecResult>(
+            "script/exec",
+            {
+                script: func,
+                params: prepareParams(params),
+                startNoteId: startNote.noteId,
+                currentNoteId: currentNote.noteId,
+                originEntityName: "notes", // currently there's no other entity on the frontend which can trigger event
+                originEntityId: originEntity ? originEntity.noteId : null,
+                transactional
+            },
+            "script"
+        );
 
         if (ret.success) {
             await ws.waitForMaxKnownEntityChangeId();
@@ -541,7 +540,7 @@ function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, orig
         } else {
             throw new Error(`server error: ${ret.error}`);
         }
-    }
+    };
 
     this.runOnBackend = async (func, params = []) => {
         if (func?.constructor.name === "AsyncFunction" || (typeof func === "string" && func?.startsWith?.("async "))) {
@@ -551,7 +550,6 @@ function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, orig
         return await this.__runOnBackendInner(func, params, true);
     };
 
-    
     this.runAsyncOnBackendWithManualTransactionHandling = async (func, params = []) => {
         if (func?.constructor.name === "Function" || (typeof func === "string" && func?.startsWith?.("function"))) {
             toastService.showError(t("frontend_script_api.sync_warning"));
@@ -559,72 +557,67 @@ function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, orig
 
         return await this.__runOnBackendInner(func, params, false);
     };
-    
-    this.searchForNotes = async searchString => {
+
+    this.searchForNotes = async (searchString) => {
         return await searchService.searchForNotes(searchString);
     };
 
-    
-    this.searchForNote = async searchString => {
+    this.searchForNote = async (searchString) => {
         const notes = await this.searchForNotes(searchString);
 
         return notes.length > 0 ? notes[0] : null;
     };
 
-    
-    this.getNote = async noteId => await froca.getNote(noteId);
-    this.getNotes = async (noteIds, silentNotFoundError = false) => await froca.getNotes(noteIds, silentNotFoundError);    
-    this.reloadNotes = async noteIds => await froca.reloadNotes(noteIds);    
-    this.getInstanceName = () => window.glob.instanceName;    
+    this.getNote = async (noteId) => await froca.getNote(noteId);
+    this.getNotes = async (noteIds, silentNotFoundError = false) => await froca.getNotes(noteIds, silentNotFoundError);
+    this.reloadNotes = async (noteIds) => await froca.reloadNotes(noteIds);
+    this.getInstanceName = () => window.glob.instanceName;
     this.formatDateISO = utils.formatDateISO;
     this.parseDate = utils.parseDate;
 
     this.showMessage = toastService.showMessage;
     this.showError = toastService.showError;
-    this.showInfoDialog = dialogService.info;    
+    this.showInfoDialog = dialogService.info;
     this.showConfirmDialog = dialogService.confirm;
 
-    
     this.showPromptDialog = dialogService.prompt;
-    
-    this.triggerCommand = (name, data) => appContext.triggerCommand(name, data);    
+
+    this.triggerCommand = (name, data) => appContext.triggerCommand(name, data);
     this.triggerEvent = (name, data) => appContext.triggerEvent(name, data);
 
-   
     this.createLink = linkService.createLink;
     this.createNoteLink = linkService.createLink;
-    
-    this.addTextToActiveContextEditor = text => appContext.triggerCommand('addTextToActiveEditor', {text});
+
+    this.addTextToActiveContextEditor = (text) => appContext.triggerCommand("addTextToActiveEditor", { text });
 
     this.getActiveContextNote = () => appContext.tabManager.getActiveContextNote();
     this.getActiveContext = () => appContext.tabManager.getActiveContext();
     this.getActiveMainContext = () => appContext.tabManager.getActiveMainContext();
-    
-    this.getNoteContexts = () => appContext.tabManager.getNoteContexts();    
+
+    this.getNoteContexts = () => appContext.tabManager.getNoteContexts();
     this.getMainNoteContexts = () => appContext.tabManager.getMainNoteContexts();
 
-    
-    this.getActiveContextTextEditor = () => appContext.tabManager.getActiveContext()?.getTextEditor();    
+    this.getActiveContextTextEditor = () => appContext.tabManager.getActiveContext()?.getTextEditor();
     this.getActiveContextCodeEditor = () => appContext.tabManager.getActiveContext()?.getCodeEditor();
-    
-    this.getActiveNoteDetailWidget = () => new Promise(resolve => appContext.triggerCommand('executeInActiveNoteDetailWidget', {callback: resolve}));    
+
+    this.getActiveNoteDetailWidget = () => new Promise((resolve) => appContext.triggerCommand("executeInActiveNoteDetailWidget", { callback: resolve }));
     this.getActiveContextNotePath = () => appContext.tabManager.getActiveContextNotePath();
-    
-    this.getComponentByEl = el => appContext.getComponentByEl(el);
-    
+
+    this.getComponentByEl = (el) => appContext.getComponentByEl(el);
+
     this.setupElementTooltip = noteTooltipService.setupElementTooltip;
-    
+
     this.protectNote = async (noteId, protect) => {
         await protectedSessionService.protectNote(noteId, protect, false);
     };
-    
+
     this.protectSubTree = async (noteId, protect) => {
         await protectedSessionService.protectNote(noteId, protect, true);
     };
-    
-    this.getTodayNote = dateNotesService.getTodayNote;    
+
+    this.getTodayNote = dateNotesService.getTodayNote;
     this.getDayNote = dateNotesService.getDayNote;
-    this.getWeekNote = dateNotesService.getWeekNote;    
+    this.getWeekNote = dateNotesService.getWeekNote;
     this.getMonthNote = dateNotesService.getMonthNote;
     this.getYearNote = dateNotesService.getYearNote;
 
@@ -637,32 +630,33 @@ function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, orig
     };
 
     this.bindGlobalShortcut = shortcutService.bindGlobalShortcut;
-    
-    this.waitUntilSynced = ws.waitForMaxKnownEntityChangeId;
-    
-    this.refreshIncludedNote = includedNoteId => appContext.triggerEvent('refreshIncludedNote', {noteId: includedNoteId});
 
-    
+    this.waitUntilSynced = ws.waitForMaxKnownEntityChangeId;
+
+    this.refreshIncludedNote = (includedNoteId) => appContext.triggerEvent("refreshIncludedNote", { noteId: includedNoteId });
+
     this.randomString = utils.randomString;
     this.formatSize = utils.formatSize;
     this.formatNoteSize = utils.formatSize;
 
     this.logMessages = {};
-    this.logSpacedUpdates = {};    
-    this.log = message => {
-        const {noteId} = this.startNote;
+    this.logSpacedUpdates = {};
+    this.log = (message) => {
+        const { noteId } = this.startNote;
 
         message = `${utils.now()}: ${message}`;
 
         console.log(`Script ${noteId}: ${message}`);
 
         this.logMessages[noteId] = this.logMessages[noteId] || [];
-        this.logSpacedUpdates[noteId] = this.logSpacedUpdates[noteId] || new SpacedUpdate(() => {
-            const messages = this.logMessages[noteId];
-            this.logMessages[noteId] = [];
+        this.logSpacedUpdates[noteId] =
+            this.logSpacedUpdates[noteId] ||
+            new SpacedUpdate(() => {
+                const messages = this.logMessages[noteId];
+                this.logMessages[noteId] = [];
 
-            appContext.triggerEvent("apiLogMessages", {noteId, messages});
-        }, 100);
+                appContext.triggerEvent("apiLogMessages", { noteId, messages });
+            }, 100);
 
         this.logMessages[noteId].push(message);
         this.logSpacedUpdates[noteId].scheduleUpdate();
@@ -670,5 +664,5 @@ function FrontendScriptApi(this: Api, startNote: FNote, currentNote: FNote, orig
 }
 
 export default FrontendScriptApi as any as {
-    new (startNote: FNote, currentNote: FNote, originEntity: Entity | null, $container: JQuery<HTMLElement> | null): Api
+    new (startNote: FNote, currentNote: FNote, originEntity: Entity | null, $container: JQuery<HTMLElement> | null): Api;
 };

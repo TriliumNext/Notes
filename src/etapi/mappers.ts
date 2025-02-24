@@ -1,7 +1,7 @@
-import BAttachment from "../becca/entities/battachment.js";
-import BAttribute from "../becca/entities/battribute.js";
-import BBranch from "../becca/entities/bbranch.js";
-import BNote from "../becca/entities/bnote.js";
+import type BAttachment from "../becca/entities/battachment.js";
+import type BAttribute from "../becca/entities/battribute.js";
+import type BBranch from "../becca/entities/bbranch.js";
+import type BNote from "../becca/entities/bnote.js";
 
 function mapNoteToPojo(note: BNote) {
     return {
@@ -15,11 +15,11 @@ function mapNoteToPojo(note: BNote) {
         dateModified: note.dateModified,
         utcDateCreated: note.utcDateCreated,
         utcDateModified: note.utcDateModified,
-        parentNoteIds: note.getParentNotes().map(p => p.noteId),
-        childNoteIds: note.getChildNotes().map(ch => ch.noteId),
-        parentBranchIds: note.getParentBranches().map(p => p.branchId),
-        childBranchIds: note.getChildBranches().map(ch => ch.branchId),
-        attributes: note.getAttributes().map(attr => mapAttributeToPojo(attr))
+        parentNoteIds: note.getParentNotes().map((p) => p.noteId),
+        childNoteIds: note.getChildNotes().map((ch) => ch.noteId),
+        parentBranchIds: note.getParentBranches().map((p) => p.branchId),
+        childBranchIds: note.getChildBranches().map((ch) => ch.branchId),
+        attributes: note.getAttributes().map((attr) => mapAttributeToPojo(attr))
     };
 }
 

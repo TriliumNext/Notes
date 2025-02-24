@@ -6,9 +6,9 @@ import becca from "../becca/becca.js";
 import BAttribute from "../becca/entities/battribute.js";
 import hiddenSubtreeService from "./hidden_subtree.js";
 import oneTimeTimer from "./one_time_timer.js";
-import BNote from "../becca/entities/bnote.js";
-import AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
-import { DefinitionObject } from './promoted_attribute_definition_interface.js';
+import type BNote from "../becca/entities/bnote.js";
+import type AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
+import type { DefinitionObject } from "./promoted_attribute_definition_interface.js";
 
 type Handler = (definition: DefinitionObject, note: BNote, targetNote: BNote) => void;
 
@@ -19,9 +19,10 @@ function runAttachedRelations(note: BNote, relationName: string, originEntity: A
 
     // the same script note can get here with multiple ways, but execute only once
     const notesToRun = new Set(
-        note.getRelations(relationName)
-            .map(relation => relation.getTargetNote())
-            .filter(note => !!note) as BNote[]
+        note
+            .getRelations(relationName)
+            .map((relation) => relation.getTargetNote())
+            .filter((note) => !!note) as BNote[]
     );
 
     for (const noteToRun of notesToRun) {
@@ -29,8 +30,8 @@ function runAttachedRelations(note: BNote, relationName: string, originEntity: A
     }
 }
 
-eventService.subscribe(eventService.NOTE_TITLE_CHANGED, note => {
-    runAttachedRelations(note, 'runOnNoteTitleChange', note);
+eventService.subscribe(eventService.NOTE_TITLE_CHANGED, (note) => {
+    runAttachedRelations(note, "runOnNoteTitleChange", note);
 
     if (!note.isRoot()) {
         const noteFromCache = becca.notes[note.noteId];
@@ -48,23 +49,22 @@ eventService.subscribe(eventService.NOTE_TITLE_CHANGED, note => {
 });
 
 eventService.subscribe([eventService.ENTITY_CHANGED, eventService.ENTITY_DELETED], ({ entityName, entity }) => {
-    if (entityName === 'attributes') {
-        runAttachedRelations(entity.getNote(), 'runOnAttributeChange', entity);
+    if (entityName === "attributes") {
+        runAttachedRelations(entity.getNote(), "runOnAttributeChange", entity);
 
-        if (entity.type === 'label' && ['sorted', 'sortDirection', 'sortFoldersFirst', 'sortNatural', 'sortLocale'].includes(entity.name)) {
+        if (entity.type === "label" && ["sorted", "sortDirection", "sortFoldersFirst", "sortNatural", "sortLocale"].includes(entity.name)) {
             handleSortedAttribute(entity);
-        } else if (entity.type === 'label') {
+        } else if (entity.type === "label") {
             handleMaybeSortingLabel(entity);
         }
-    }
-    else if (entityName === 'notes') {
+    } else if (entityName === "notes") {
         // ENTITY_DELETED won't trigger anything since all branches/attributes are already deleted at this point
-        runAttachedRelations(entity, 'runOnNoteChange', entity);
+        runAttachedRelations(entity, "runOnNoteChange", entity);
     }
 });
 
 eventService.subscribe(eventService.ENTITY_CHANGED, ({ entityName, entity }) => {
-    if (entityName === 'branches') {
+    if (entityName === "branches") {
         const parentNote = becca.getNote(entity.parentNoteId);
 
         if (parentNote?.hasLabel("sorted")) {
@@ -74,20 +74,20 @@ eventService.subscribe(eventService.ENTITY_CHANGED, ({ entityName, entity }) => 
         const childNote = becca.getNote(entity.noteId);
 
         if (childNote) {
-            runAttachedRelations(childNote, 'runOnBranchChange', entity);
+            runAttachedRelations(childNote, "runOnBranchChange", entity);
         }
     }
 });
 
 eventService.subscribe(eventService.NOTE_CONTENT_CHANGE, ({ entity }) => {
-    runAttachedRelations(entity, 'runOnNoteContentChange', entity);
+    runAttachedRelations(entity, "runOnNoteContentChange", entity);
 });
 
 eventService.subscribe(eventService.ENTITY_CREATED, ({ entityName, entity }) => {
-    if (entityName === 'attributes') {
-        runAttachedRelations(entity.getNote(), 'runOnAttributeCreation', entity);
+    if (entityName === "attributes") {
+        runAttachedRelations(entity.getNote(), "runOnAttributeCreation", entity);
 
-        if (entity.type === 'relation' && entity.name === 'template') {
+        if (entity.type === "relation" && entity.name === "template") {
             const note = becca.getNote(entity.noteId);
             if (!note) {
                 return;
@@ -101,12 +101,13 @@ eventService.subscribe(eventService.ENTITY_CREATED, ({ entityName, entity }) => 
 
             const content = note.getContent();
 
-            if (["text", "code"].includes(note.type)
-                && typeof content === "string"
+            if (
+                ["text", "code"].includes(note.type) &&
+                typeof content === "string" &&
                 // if the note has already content we're not going to overwrite it with template's one
-                && (!content || content.trim().length === 0)
-                && templateNote.hasStringContent()) {
-
+                (!content || content.trim().length === 0) &&
+                templateNote.hasStringContent()
+            ) {
                 const templateNoteContent = templateNote.getContent();
 
                 if (templateNoteContent) {
@@ -123,32 +124,28 @@ eventService.subscribe(eventService.ENTITY_CREATED, ({ entityName, entity }) => 
             if (note.getChildNotes().length === 0 && !note.isDescendantOfNote(templateNote.noteId)) {
                 noteService.duplicateSubtreeWithoutRoot(templateNote.noteId, note.noteId);
             }
-        }
-        else if (entity.type === 'label' && ['sorted', 'sortDirection', 'sortFoldersFirst', 'sortNatural', 'sortLocale'].includes(entity.name)) {
+        } else if (entity.type === "label" && ["sorted", "sortDirection", "sortFoldersFirst", "sortNatural", "sortLocale"].includes(entity.name)) {
             handleSortedAttribute(entity);
-        }
-        else if (entity.type === 'label') {
+        } else if (entity.type === "label") {
             handleMaybeSortingLabel(entity);
         }
-    }
-    else if (entityName === 'branches') {
-        runAttachedRelations(entity.getNote(), 'runOnBranchCreation', entity);
+    } else if (entityName === "branches") {
+        runAttachedRelations(entity.getNote(), "runOnBranchCreation", entity);
 
         if (entity.parentNote?.hasLabel("sorted")) {
             treeService.sortNotesIfNeeded(entity.parentNoteId);
         }
-    }
-    else if (entityName === 'notes') {
-        runAttachedRelations(entity, 'runOnNoteCreation', entity);
+    } else if (entityName === "notes") {
+        runAttachedRelations(entity, "runOnNoteCreation", entity);
     }
 });
 
 eventService.subscribe(eventService.CHILD_NOTE_CREATED, ({ parentNote, childNote }) => {
-    runAttachedRelations(parentNote, 'runOnChildNoteCreation', childNote);
+    runAttachedRelations(parentNote, "runOnChildNoteCreation", childNote);
 });
 
 function processInverseRelations(entityName: string, entity: BAttribute, handler: Handler) {
-    if (entityName === 'attributes' && entity.type === 'relation') {
+    if (entityName === "attributes" && entity.type === "relation") {
         const note = entity.getNote();
         const relDefinitions = note.getLabels(`relation:${entity.name}`);
 
@@ -194,9 +191,11 @@ function handleMaybeSortingLabel(entity: BAttribute) {
                 continue;
             }
 
-            if (sorted.includes(entity.name) // hacky check if this label is used in the sort
-                || entity.name === "top"
-                || entity.name === "bottom") {
+            if (
+                sorted.includes(entity.name) || // hacky check if this label is used in the sort
+                entity.name === "top" ||
+                entity.name === "bottom"
+            ) {
                 treeService.sortNotesIfNeeded(parentNote.noteId);
             }
         }
@@ -207,13 +206,12 @@ eventService.subscribe(eventService.ENTITY_CHANGED, ({ entityName, entity }) => 
     processInverseRelations(entityName, entity, (definition, note, targetNote) => {
         // we need to make sure that also target's inverse attribute exists and if not, then create it
         // inverse attribute has to target our note as well
-        const hasInverseAttribute = (targetNote.getRelations(definition.inverseRelation))
-            .some(attr => attr.value === note.noteId);
+        const hasInverseAttribute = targetNote.getRelations(definition.inverseRelation).some((attr) => attr.value === note.noteId);
 
         if (!hasInverseAttribute) {
             new BAttribute({
                 noteId: targetNote.noteId,
-                type: 'relation',
+                type: "relation",
                 name: definition.inverseRelation || "",
                 value: note.noteId,
                 isInheritable: entity.isInheritable
@@ -237,15 +235,14 @@ eventService.subscribe(eventService.ENTITY_DELETED, ({ entityName, entity }) => 
         }
     });
 
-    if (entityName === 'branches') {
-        runAttachedRelations(entity.getNote(), 'runOnBranchDeletion', entity);
+    if (entityName === "branches") {
+        runAttachedRelations(entity.getNote(), "runOnBranchDeletion", entity);
     }
 
-    if (entityName === 'notes' && entity.noteId.startsWith("_")) {
+    if (entityName === "notes" && entity.noteId.startsWith("_")) {
         // "named" note has been deleted, we will probably need to rebuild the hidden subtree
         // scheduling so that bulk deletes won't trigger so many checks
-        oneTimeTimer.scheduleExecution('hidden-subtree-check', 1000,
-            () => hiddenSubtreeService.checkHiddenSubtree());
+        oneTimeTimer.scheduleExecution("hidden-subtree-check", 1000, () => hiddenSubtreeService.checkHiddenSubtree());
     }
 });
 

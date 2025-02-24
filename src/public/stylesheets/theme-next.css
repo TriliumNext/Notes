@@ -5,3 +5,7 @@
 
 /* Import the dark color scheme when the system preference is set to dark mode */
 @import url(./theme-next-dark.css) (prefers-color-scheme: dark);
+
+:root {
+    --theme-style-auto: true;
+}

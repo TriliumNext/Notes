@@ -1,6 +1,7 @@
 import { t } from "../../services/i18n.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="info-dialog modal mx-auto" tabindex="-1" role="dialog" style="z-index: 2000;">
@@ -30,11 +31,11 @@ export default class InfoDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget);
         this.$infoContent = this.$widget.find(".info-dialog-content");
         this.$okButton = this.$widget.find(".info-dialog-ok-button");
 
-        this.$widget.on('shown.bs.modal', () => this.$okButton.trigger("focus"));
+        this.$widget.on("shown.bs.modal", () => this.$okButton.trigger("focus"));
 
         this.$widget.on("hidden.bs.modal", () => {
             if (this.resolve) {
@@ -42,16 +43,16 @@ export default class InfoDialog extends BasicWidget {
             }
 
             if (this.$originallyFocused) {
-                this.$originallyFocused.trigger('focus');
+                this.$originallyFocused.trigger("focus");
                 this.$originallyFocused = null;
             }
         });
 
-        this.$okButton.on('click', () => this.modal.hide());
+        this.$okButton.on("click", () => this.modal.hide());
     }
 
     showInfoDialogEvent({ message, callback }) {
-        this.$originallyFocused = $(':focus');
+        this.$originallyFocused = $(":focus");
 
         this.$infoContent.text(message);
 

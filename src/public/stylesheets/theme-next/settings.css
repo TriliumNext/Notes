@@ -1,13 +1,13 @@
 /*
  * Settings
  */
- :root {
+:root {
     --options-card-padding: 17px;
     --options-title-font-size: 1rem;
     --options-title-offset: 13px;
 }
 
-.options-section {    
+.options-section {
     border-radius: 12px;
     border: 1px solid var(--card-border-color) !important;
     box-shadow: var(--card-box-shadow);
@@ -70,4 +70,19 @@
     margin: 0;
     padding: 0;
     margin-bottom: 1em;
+}
+
+/* Appeareance */
+
+.main-font-size-input-group,
+.tree-font-size-input-group,
+.detail-font-size-input-group,
+.monospace-font-size-input-group {
+    width: fit-content;
+}
+
+/* Advanced */
+
+.options-section ul.existing-anonymized-databases {
+    margin: 1em;
 }

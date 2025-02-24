@@ -6,7 +6,7 @@ import path from "path";
 import mimeTypes from "mime-types";
 import mdService from "./md.js";
 import packageInfo from "../../../package.json" with { type: "json" };
-import utils from "../utils.js";
+import { getContentDisposition, escapeHtml } from "../utils.js";
 import protectedSessionService from "../protected_session.js";
 import sanitize from "sanitize-filename";
 import fs from "fs";
@@ -15,19 +15,20 @@ import archiver from "archiver";
 import log from "../log.js";
 import TaskContext from "../task_context.js";
 import ValidationError from "../../errors/validation_error.js";
-import NoteMeta from "../meta/note_meta.js";
-import AttachmentMeta from "../meta/attachment_meta.js";
-import AttributeMeta from "../meta/attribute_meta.js";
-import BBranch from "../../becca/entities/bbranch.js";
-import { Response } from 'express';
+import type NoteMeta from "../meta/note_meta.js";
+import type AttachmentMeta from "../meta/attachment_meta.js";
+import type AttributeMeta from "../meta/attribute_meta.js";
+import type BBranch from "../../becca/entities/bbranch.js";
+import type { Response } from "express";
 import { RESOURCE_DIR } from "../resource_dir.js";
+import type { NoteMetaFile } from "../meta/note_meta.js";
 
 async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "html" | "markdown", res: Response | fs.WriteStream, setHeaders = true) {
-    if (!['html', 'markdown'].includes(format)) {
+    if (!["html", "markdown"].includes(format)) {
         throw new ValidationError(`Only 'html' and 'markdown' allowed as export format, '${format}' given`);
     }
 
-    const archive = archiver('zip', {
+    const archive = archiver("zip", {
         zlib: { level: 9 } // Sets the compression level.
     });
 
@@ -44,12 +45,10 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
                 index = existingFileNames[lcFileName]++;
 
                 newName = `${index}_${lcFileName}`;
-            }
-            while (newName in existingFileNames);
+            } while (newName in existingFileNames);
 
             return `${index}_${fileName}`;
-        }
-        else {
+        } else {
             existingFileNames[lcFileName] = 1;
 
             return fileName;
@@ -63,7 +62,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
         if (fileName.length > 30) {
             // We use regex to match the extension to preserve multiple dots in extensions (e.g. .tar.gz).
             let match = fileName.match(/(\.[a-zA-Z0-9_.!#-]+)$/);
-            let ext = match ? match[0] : '';
+            let ext = match ? match[0] : "";
             // Crop the extension if extension length exceeds 30
             const croppedExt = ext.slice(-30);
             // Crop the file name section and append the cropped extension
@@ -75,26 +74,22 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
 
         // the following two are handled specifically since we always want to have these extensions no matter the automatic detection
         // and/or existing detected extensions in the note name
-        if (type === 'text' && format === 'markdown') {
-            newExtension = 'md';
-        }
-        else if (type === 'text' && format === 'html') {
-            newExtension = 'html';
-        }
-        else if (mime === 'application/x-javascript' || mime === 'text/javascript') {
-            newExtension = 'js';
-        }
-        else if (type === 'canvas' || mime === 'application/json') {
-            newExtension = 'json';
-        }
-        else if (existingExtension.length > 0) { // if the page already has an extension, then we'll just keep it
+        if (type === "text" && format === "markdown") {
+            newExtension = "md";
+        } else if (type === "text" && format === "html") {
+            newExtension = "html";
+        } else if (mime === "application/x-javascript" || mime === "text/javascript") {
+            newExtension = "js";
+        } else if (type === "canvas" || mime === "application/json") {
+            newExtension = "json";
+        } else if (existingExtension.length > 0) {
+            // if the page already has an extension, then we'll just keep it
             newExtension = null;
-        }
-        else {
+        } else {
             if (mime?.toLowerCase()?.trim() === "image/jpg") {
-                newExtension = 'jpg';
+                newExtension = "jpg";
             } else if (mime?.toLowerCase()?.trim() === "text/mermaid") {
-                newExtension = 'txt';
+                newExtension = "txt";
             } else {
                 newExtension = mimeTypes.extension(mime) || "dat";
             }
@@ -111,23 +106,26 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
     function createNoteMeta(branch: BBranch, parentMeta: Partial<NoteMeta>, existingFileNames: Record<string, number>): NoteMeta | null {
         const note = branch.getNote();
 
-        if (note.hasOwnedLabel('excludeFromExport')) {
+        if (note.hasOwnedLabel("excludeFromExport")) {
             return null;
         }
 
         const title = note.getTitleOrProtected();
-        const completeTitle = branch.prefix ? (`${branch.prefix} - ${title}`) : title;
+        const completeTitle = branch.prefix ? `${branch.prefix} - ${title}` : title;
         let baseFileName = sanitize(completeTitle);
 
-        if (baseFileName.length > 200) { // the actual limit is 256 bytes(!) but let's be conservative
+        if (baseFileName.length > 200) {
+            // the actual limit is 256 bytes(!) but let's be conservative
             baseFileName = baseFileName.substr(0, 200);
         }
 
-        if (!parentMeta.notePath) { throw new Error("Missing parent note path."); }
+        if (!parentMeta.notePath) {
+            throw new Error("Missing parent note path.");
+        }
         const notePath = parentMeta.notePath.concat([note.noteId]);
 
         if (note.noteId in noteIdToMeta) {
-            const fileName = getUniqueFilename(existingFileNames, `${baseFileName}.clone.${format === 'html' ? 'html' : 'md'}`);
+            const fileName = getUniqueFilename(existingFileNames, `${baseFileName}.clone.${format === "html" ? "html" : "md"}`);
 
             const meta: NoteMeta = {
                 isClone: true,
@@ -136,7 +134,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
                 title: note.getTitleOrProtected(),
                 prefix: branch.prefix,
                 dataFileName: fileName,
-                type: 'text', // export will have text description
+                type: "text", // export will have text description
                 format: format
             };
             return meta;
@@ -152,7 +150,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
         meta.isExpanded = branch.isExpanded;
         meta.type = note.type;
         meta.mime = note.mime;
-        meta.attributes = note.getOwnedAttributes().map(attribute => {
+        meta.attributes = note.getOwnedAttributes().map((attribute) => {
             const attrMeta: AttributeMeta = {
                 type: attribute.type,
                 name: attribute.name,
@@ -166,7 +164,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
 
         taskContext.increaseProgressCount();
 
-        if (note.type === 'text') {
+        if (note.type === "text") {
             meta.format = format;
         }
 
@@ -174,8 +172,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
 
         // sort children for having a stable / reproducible export format
         note.sortChildren();
-        const childBranches = note.getChildBranches()
-            .filter(branch => branch?.noteId !== '_hidden');
+        const childBranches = note.getChildBranches().filter((branch) => branch?.noteId !== "_hidden");
 
         const available = !note.isProtected || protectedSessionService.isProtectedSessionAvailable();
 
@@ -185,23 +182,17 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
         }
 
         const attachments = note.getAttachments();
-        meta.attachments = attachments
-            .map(attachment => {
-                const attMeta: AttachmentMeta = {
-                    attachmentId: attachment.attachmentId,
-                    title: attachment.title,
-                    role: attachment.role,
-                    mime: attachment.mime,
-                    position: attachment.position,
-                    dataFileName: getDataFileName(
-                        null,
-                        attachment.mime,
-                        baseFileName + "_" + attachment.title,
-                        existingFileNames
-                    )
-                };
-                return attMeta;
-            });
+        meta.attachments = attachments.map((attachment) => {
+            const attMeta: AttachmentMeta = {
+                attachmentId: attachment.attachmentId,
+                title: attachment.title,
+                role: attachment.role,
+                mime: attachment.mime,
+                position: attachment.position,
+                dataFileName: getDataFileName(null, attachment.mime, baseFileName + "_" + attachment.title, existingFileNames)
+            };
+            return attMeta;
+        });
 
         if (childBranches.length > 0) {
             meta.dirFileName = getUniqueFilename(existingFileNames, baseFileName);
@@ -211,7 +202,9 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
             const childExistingNames = {};
 
             for (const childBranch of childBranches) {
-                if (!childBranch) { continue; }
+                if (!childBranch) {
+                    continue;
+                }
 
                 const note = createNoteMeta(childBranch, meta as NoteMeta, childExistingNames);
 
@@ -288,7 +281,7 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
         function findAttachment(targetAttachmentId: string) {
             let url;
 
-            const attachmentMeta = (noteMeta.attachments || []).find(attMeta => attMeta.attachmentId === targetAttachmentId);
+            const attachmentMeta = (noteMeta.attachments || []).find((attMeta) => attMeta.attachmentId === targetAttachmentId);
             if (attachmentMeta) {
                 // easy job here, because attachment will be in the same directory as the note's data file.
                 url = attachmentMeta.dataFileName;
@@ -300,18 +293,20 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
     }
 
     function prepareContent(title: string, content: string | Buffer, noteMeta: NoteMeta): string | Buffer {
-        if (['html', 'markdown'].includes(noteMeta?.format || "")) {
+        if (["html", "markdown"].includes(noteMeta?.format || "")) {
             content = content.toString();
 
             content = rewriteLinks(content, noteMeta);
         }
 
-        if (noteMeta.format === 'html' && typeof content === "string") {
+        if (noteMeta.format === "html" && typeof content === "string") {
             if (!content.substr(0, 100).toLowerCase().includes("<html")) {
-                if (!noteMeta?.notePath?.length) { throw new Error("Missing note path."); }
+                if (!noteMeta?.notePath?.length) {
+                    throw new Error("Missing note path.");
+                }
 
                 const cssUrl = `${"../".repeat(noteMeta.notePath.length - 1)}style.css`;
-                const htmlTitle = utils.escapeHtml(title);
+                const htmlTitle = escapeHtml(title);
 
                 // <base> element will make sure external links are openable - https://github.com/zadam/trilium/issues/1289#issuecomment-704066809
                 content = `<html>
@@ -332,10 +327,8 @@ async function exportToZip(taskContext: TaskContext, branch: BBranch, format: "h
 </html>`;
             }
 
-            return content.length < 100_000
-                ? html.prettyPrint(content, {indent_size: 2})
-                : content;
-        } else if (noteMeta.format === 'markdown' && typeof content === "string") {
+            return content.length < 100_000 ? html.prettyPrint(content, { indent_size: 2 }) : content;
+        } else if (noteMeta.format === "markdown" && typeof content === "string") {
             let markdownContent = mdService.toMarkdown(content);
 
             if (markdownContent.trim().length > 0 && !markdownContent.startsWith("# ")) {
@@ -369,8 +362,12 @@ ${markdownContent}`;
         }
 
         const note = becca.getNote(noteMeta.noteId);
-        if (!note) { throw new Error("Unable to find note."); }
-        if (!note.utcDateModified) { throw new Error("Unable to find modification date."); }
+        if (!note) {
+            throw new Error("Unable to find note.");
+        }
+        if (!note.utcDateModified) {
+            throw new Error("Unable to find modification date.");
+        }
 
         if (noteMeta.dataFileName) {
             const content = prepareContent(noteMeta.title, note.getContent(), noteMeta);
@@ -384,7 +381,9 @@ ${markdownContent}`;
         taskContext.increaseProgressCount();
 
         for (const attachmentMeta of noteMeta.attachments || []) {
-            if (!attachmentMeta.attachmentId) { continue; }
+            if (!attachmentMeta.attachmentId) {
+                continue;
+            }
 
             const attachment = note.getAttachmentById(attachmentMeta.attachmentId);
             const content = attachment.getContent();
@@ -399,7 +398,7 @@ ${markdownContent}`;
             const directoryPath = filePathPrefix + noteMeta.dirFileName;
 
             // create directory
-            archive.append('', { name: `${directoryPath}/`, date: dateUtils.parseDateTime(note.utcDateModified) });
+            archive.append("", { name: `${directoryPath}/`, date: dateUtils.parseDateTime(note.utcDateModified) });
 
             for (const childMeta of noteMeta.children || []) {
                 saveNote(childMeta, `${directoryPath}/`);
@@ -408,28 +407,31 @@ ${markdownContent}`;
     }
 
     function saveNavigation(rootMeta: NoteMeta, navigationMeta: NoteMeta) {
-        function saveNavigationInner(meta: NoteMeta) {
-            let html = '<li>';
+        if (!navigationMeta.dataFileName) {
+            return;
+        }
 
-            const escapedTitle = utils.escapeHtml(`${meta.prefix ? `${meta.prefix} - ` : ''}${meta.title}`);
+        function saveNavigationInner(meta: NoteMeta) {
+            let html = "<li>";
+
+            const escapedTitle = escapeHtml(`${meta.prefix ? `${meta.prefix} - ` : ""}${meta.title}`);
 
             if (meta.dataFileName && meta.noteId) {
                 const targetUrl = getNoteTargetUrl(meta.noteId, rootMeta);
 
                 html += `<a href="${targetUrl}" target="detail">${escapedTitle}</a>`;
-            }
-            else {
+            } else {
                 html += escapedTitle;
             }
 
             if (meta.children && meta.children.length > 0) {
-                html += '<ul>';
+                html += "<ul>";
 
                 for (const child of meta.children) {
                     html += saveNavigationInner(child);
                 }
 
-                html += '</ul>'
+                html += "</ul>";
             }
 
             return `${html}</li>`;
@@ -444,9 +446,7 @@ ${markdownContent}`;
     <ul>${saveNavigationInner(rootMeta)}</ul>
 </body>
 </html>`;
-        const prettyHtml = fullHtml.length < 100_000
-            ? html.prettyPrint(fullHtml, {indent_size: 2})
-            : fullHtml;
+        const prettyHtml = fullHtml.length < 100_000 ? html.prettyPrint(fullHtml, { indent_size: 2 }) : fullHtml;
 
         archive.append(prettyHtml, { name: navigationMeta.dataFileName });
     }
@@ -455,6 +455,10 @@ ${markdownContent}`;
         let firstNonEmptyNote;
         let curMeta = rootMeta;
 
+        if (!indexMeta.dataFileName) {
+            return;
+        }
+
         while (!firstNonEmptyNote) {
             if (curMeta.dataFileName && curMeta.noteId) {
                 firstNonEmptyNote = getNoteTargetUrl(curMeta.noteId, rootMeta);
@@ -462,8 +466,7 @@ ${markdownContent}`;
 
             if (curMeta.children && curMeta.children.length > 0) {
                 curMeta = curMeta.children[0];
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -484,25 +487,32 @@ ${markdownContent}`;
     }
 
     function saveCss(rootMeta: NoteMeta, cssMeta: NoteMeta) {
+        if (!cssMeta.dataFileName) {
+            return;
+        }
+
         const cssContent = fs.readFileSync(`${RESOURCE_DIR}/libraries/ckeditor/ckeditor-content.css`);
 
         archive.append(cssContent, { name: cssMeta.dataFileName });
     }
 
-    const existingFileNames: Record<string, number> = format === 'html' ? {'navigation': 0, 'index': 1} : {};
+    const existingFileNames: Record<string, number> = format === "html" ? { navigation: 0, index: 1 } : {};
     const rootMeta = createNoteMeta(branch, { notePath: [] }, existingFileNames);
+    if (!rootMeta) {
+        throw new Error("Unable to create root meta.");
+    }
 
-    const metaFile = {
+    const metaFile: NoteMetaFile = {
         formatVersion: 2,
         appVersion: packageInfo.version,
-        files: [ rootMeta ]
+        files: [rootMeta]
     };
 
     let navigationMeta: NoteMeta | null = null;
     let indexMeta: NoteMeta | null = null;
     let cssMeta: NoteMeta | null = null;
 
-    if (format === 'html') {
+    if (format === "html") {
         navigationMeta = {
             noImport: true,
             dataFileName: "navigation.html"
@@ -527,12 +537,12 @@ ${markdownContent}`;
 
     for (const noteMeta of Object.values(noteIdToMeta)) {
         // filter out relations which are not inside this export
-        noteMeta.attributes = (noteMeta.attributes || []).filter(attr => {
-            if (attr.type !== 'relation') {
+        noteMeta.attributes = (noteMeta.attributes || []).filter((attr) => {
+            if (attr.type !== "relation") {
                 return true;
             } else if (attr.value in noteIdToMeta) {
                 return true;
-            } else if (attr.value === 'root' || attr.value?.startsWith("_")) {
+            } else if (attr.value === "root" || attr.value?.startsWith("_")) {
                 // relations to "named" noteIds can be preserved
                 return true;
             } else {
@@ -541,20 +551,21 @@ ${markdownContent}`;
         });
     }
 
-    if (!rootMeta) { // corner case of disabled export for exported note
+    if (!rootMeta) {
+        // corner case of disabled export for exported note
         if ("sendStatus" in res) {
             res.sendStatus(400);
         }
         return;
     }
 
-    const metaFileJson = JSON.stringify(metaFile, null, '\t');
+    const metaFileJson = JSON.stringify(metaFile, null, "\t");
 
     archive.append(metaFileJson, { name: "!!!meta.json" });
 
-    saveNote(rootMeta, '');
+    saveNote(rootMeta, "");
 
-    if (format === 'html') {
+    if (format === "html") {
         if (!navigationMeta || !indexMeta || !cssMeta) {
             throw new Error("Missing meta.");
         }
@@ -568,8 +579,8 @@ ${markdownContent}`;
     const zipFileName = `${branch.prefix ? `${branch.prefix} - ` : ""}${note.getTitleOrProtected()}.zip`;
 
     if (setHeaders && "setHeader" in res) {
-        res.setHeader('Content-Disposition', utils.getContentDisposition(zipFileName));
-        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader("Content-Disposition", getContentDisposition(zipFileName));
+        res.setHeader("Content-Type", "application/zip");
     }
 
     archive.pipe(res);
@@ -580,7 +591,7 @@ ${markdownContent}`;
 
 async function exportToZipFile(noteId: string, format: "markdown" | "html", zipFilePath: string) {
     const fileOutputStream = fs.createWriteStream(zipFilePath);
-    const taskContext = new TaskContext('no-progress-reporting');
+    const taskContext = new TaskContext("no-progress-reporting");
 
     const note = becca.getNote(noteId);
 

@@ -19,7 +19,7 @@ function isString(obj: unknown) {
         return;
     }
 
-    if (typeof obj !== 'string') {
+    if (typeof obj !== "string") {
         return `'${obj}' is not a string`;
     }
 }
@@ -45,7 +45,7 @@ function isBoolean(obj: unknown) {
         return;
     }
 
-    if (typeof obj !== 'boolean') {
+    if (typeof obj !== "boolean") {
         return `'${obj}' is not a boolean`;
     }
 }
@@ -65,7 +65,7 @@ function isNoteId(obj: unknown) {
         return;
     }
 
-    if (typeof obj !== 'string') {
+    if (typeof obj !== "string") {
         return `'${obj}' is not a valid noteId`;
     }
 
@@ -91,7 +91,7 @@ function isAttributeType(obj: unknown) {
         return;
     }
 
-    if (typeof obj !== "string" || !['label', 'relation'].includes(obj)) {
+    if (typeof obj !== "string" || !["label", "relation"].includes(obj)) {
         return `'${obj}' is not a valid attribute type, allowed types are: label, relation`;
     }
 }
@@ -101,7 +101,7 @@ function isValidEntityId(obj: unknown) {
         return;
     }
 
-    if (typeof obj !== 'string' || !/^[A-Za-z0-9_]{4,128}$/.test(obj)) {
+    if (typeof obj !== "string" || !/^[A-Za-z0-9_]{4,128}$/.test(obj)) {
         return `'${obj}' is not a valid entityId. Only alphanumeric characters are allowed of length 4 to 32.`;
     }
 }

@@ -26,42 +26,29 @@ const CODE_MIRROR: Library = {
             "node_modules/codemirror/addon/mode/simple.js",
             "node_modules/codemirror/addon/search/match-highlighter.js",
             "node_modules/codemirror/mode/meta.js",
-            "node_modules/codemirror/keymap/vim.js"
+            "node_modules/codemirror/keymap/vim.js",
+            "libraries/codemirror/eslint.js"
         ];
 
         const mimeTypes = mimeTypesService.getMimeTypes();
         for (const mimeType of mimeTypes) {
-            if (mimeType.codeMirrorSource) {
+            if (mimeType.enabled && mimeType.codeMirrorSource) {
                 scriptsToLoad.push(mimeType.codeMirrorSource);
             }
         }
 
         return scriptsToLoad;
     },
-    css: [
-        "node_modules/codemirror/lib/codemirror.css",
-        "node_modules/codemirror/addon/lint/lint.css"
-    ]
+    css: ["node_modules/codemirror/lib/codemirror.css", "node_modules/codemirror/addon/lint/lint.css"]
 };
 
 const ESLINT: Library = {
-    js: [
-        "node_modules/eslint/bin/eslint.js"
-    ]
+    js: ["libraries/eslint/eslint.js"]
 };
 
 const RELATION_MAP: Library = {
-    js: [
-        "node_modules/jsplumb/dist/js/jsplumb.min.js",
-        "node_modules/panzoom/dist/panzoom.min.js"
-    ],
-    css: [
-        "stylesheets/relation_map.css"
-    ]
-};
-
-const PRINT_THIS: Library = {
-    js: ["node_modules/print-this/printThis.js"]
+    js: ["node_modules/jsplumb/dist/js/jsplumb.min.js", "node_modules/panzoom/dist/panzoom.min.js"],
+    css: ["stylesheets/relation_map.css"]
 };
 
 const CALENDAR_WIDGET: Library = {
@@ -69,62 +56,24 @@ const CALENDAR_WIDGET: Library = {
 };
 
 const KATEX: Library = {
-    js: [ "node_modules/katex/dist/katex.min.js",
-        "node_modules/katex/dist/contrib/mhchem.min.js",
-        "node_modules/katex/dist/contrib/auto-render.min.js" ],
-    css: [ "node_modules/katex/dist/katex.min.css" ]
+    js: ["node_modules/katex/dist/katex.min.js", "node_modules/katex/dist/contrib/mhchem.min.js", "node_modules/katex/dist/contrib/auto-render.min.js"],
+    css: ["node_modules/katex/dist/katex.min.css"]
 };
 
 const WHEEL_ZOOM: Library = {
-    js: [ "node_modules/vanilla-js-wheel-zoom/dist/wheel-zoom.min.js"]
-};
-
-const FORCE_GRAPH: Library = {
-    js: [ "node_modules/force-graph/dist/force-graph.min.js"]
+    js: ["node_modules/vanilla-js-wheel-zoom/dist/wheel-zoom.min.js"]
 };
 
 const MERMAID: Library = {
-    js: [
-        "node_modules/mermaid/dist/mermaid.min.js"
-    ]
-}
-
-/**
- * The ELK extension of Mermaid.js, which supports more advanced layouts.
- * See https://www.npmjs.com/package/@mermaid-js/layout-elk for more information.
- */
-const MERMAID_ELK: Library = {
-    js: [
-        "libraries/mermaid-elk/elk.min.js"
-    ]
-}
-
-const EXCALIDRAW: Library = {
-    js: [
-        "node_modules/react/umd/react.production.min.js",
-        "node_modules/react-dom/umd/react-dom.production.min.js",
-        "node_modules/@excalidraw/excalidraw/dist/excalidraw.production.min.js",
-    ]
+    js: ["node_modules/mermaid/dist/mermaid.min.js"]
 };
 
 const MARKJS: Library = {
-    js: [
-        "node_modules/mark.js/dist/jquery.mark.es6.min.js"
-    ]
+    js: ["node_modules/mark.js/dist/jquery.mark.es6.min.js"]
 };
 
 const I18NEXT: Library = {
-    js: [
-        "node_modules/i18next/i18next.min.js",
-        "node_modules/i18next-http-backend/i18nextHttpBackend.min.js"
-    ]
-};
-
-const MIND_ELIXIR: Library = {
-    js: [
-        "node_modules/mind-elixir/dist/MindElixir.iife.js",
-        "node_modules/@mind-elixir/node-menu/dist/node-menu.umd.cjs"
-    ]
+    js: ["node_modules/i18next/i18next.min.js", "node_modules/i18next-http-backend/i18nextHttpBackend.min.js"]
 };
 
 const HIGHLIGHT_JS: Library = {
@@ -153,9 +102,13 @@ const HIGHLIGHT_JS: Library = {
     }
 };
 
+const LEAFLET: Library = {
+    css: [ "node_modules/leaflet/dist/leaflet.css" ],
+}
+
 async function requireLibrary(library: Library) {
     if (library.css) {
-        library.css.map(cssUrl => requireCss(cssUrl));
+        library.css.map((cssUrl) => requireCss(cssUrl));
     }
 
     if (library.js) {
@@ -191,16 +144,14 @@ async function requireScript(url: string) {
 }
 
 async function requireCss(url: string, prependAssetPath = true) {
-    const cssLinks = Array
-        .from(document.querySelectorAll('link'))
-        .map(el => el.href);
+    const cssLinks = Array.from(document.querySelectorAll("link")).map((el) => el.href);
 
-    if (!cssLinks.some(l => l.endsWith(url))) {
+    if (!cssLinks.some((l) => l.endsWith(url))) {
         if (prependAssetPath) {
             url = `${window.glob.assetPath}/${url}`;
         }
 
-        $('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', url));
+        $("head").append($('<link rel="stylesheet" type="text/css" />').attr("href", url));
     }
 }
 
@@ -238,16 +189,12 @@ export default {
     CODE_MIRROR,
     ESLINT,
     RELATION_MAP,
-    PRINT_THIS,
     CALENDAR_WIDGET,
     KATEX,
     WHEEL_ZOOM,
-    FORCE_GRAPH,
     MERMAID,
-    MERMAID_ELK,
-    EXCALIDRAW,
     MARKJS,
     I18NEXT,
-    MIND_ELIXIR,
-    HIGHLIGHT_JS
-}
+    HIGHLIGHT_JS,
+    LEAFLET
+};

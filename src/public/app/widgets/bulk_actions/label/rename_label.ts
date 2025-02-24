@@ -29,16 +29,20 @@ const TPL = `
 </tr>`;
 
 export default class RenameLabelBulkAction extends AbstractBulkAction {
-    static get actionName() { return "renameLabel"; }
-    static get actionTitle() { return t("rename_label.rename_label"); }
+    static get actionName() {
+        return "renameLabel";
+    }
+    static get actionTitle() {
+        return t("rename_label.rename_label");
+    }
 
     doRender() {
         const $action = $(TPL);
 
-        const $oldLabelName = $action.find('.old-label-name');
+        const $oldLabelName = $action.find(".old-label-name");
         $oldLabelName.val(this.actionDef.oldLabelName || "");
 
-        const $newLabelName = $action.find('.new-label-name');
+        const $newLabelName = $action.find(".new-label-name");
         $newLabelName.val(this.actionDef.newLabelName || "");
 
         const spacedUpdate = new SpacedUpdate(async () => {
@@ -48,8 +52,8 @@ export default class RenameLabelBulkAction extends AbstractBulkAction {
             });
         }, 1000);
 
-        $oldLabelName.on('input', () => spacedUpdate.scheduleUpdate());
-        $newLabelName.on('input', () => spacedUpdate.scheduleUpdate());
+        $oldLabelName.on("input", () => spacedUpdate.scheduleUpdate());
+        $newLabelName.on("input", () => spacedUpdate.scheduleUpdate());
 
         return $action;
     }

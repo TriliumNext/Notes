@@ -2,10 +2,11 @@ import backupService from "./backup.js";
 import sql from "./sql.js";
 import fs from "fs-extra";
 import log from "./log.js";
-import utils from "./utils.js";
+import { crash } from "./utils.js";
 import resourceDir from "./resource_dir.js";
 import appInfo from "./app_info.js";
 import cls from "./cls.js";
+import { t } from "i18next";
 
 interface MigrationInfo {
     dbVersion: number;
@@ -18,18 +19,14 @@ async function migrate() {
     const currentDbVersion = getDbVersion();
 
     if (currentDbVersion < 214) {
-        log.error("Direct migration from your current version is not supported. Please upgrade to the latest v0.60.4 first and only then to this version.");
-
-        await utils.crash();
+        await crash(t("migration.old_version"));
         return;
     }
 
     // backup before attempting migration
     await backupService.backupNow(
         // creating a special backup for version 0.60.4, the changes in 0.61 are major.
-        currentDbVersion === 214
-            ? `before-migration-v060`
-            : 'before-migration'
+        currentDbVersion === 214 ? `before-migration-v060` : "before-migration"
     );
 
     const migrationFiles = fs.readdirSync(resourceDir.MIGRATIONS_DIR);
@@ -37,27 +34,29 @@ async function migrate() {
         return;
     }
 
-    const migrations = migrationFiles.map(file => {
-        const match = file.match(/^([0-9]{4})__([a-zA-Z0-9_ ]+)\.(sql|js)$/);
-        if (!match) {
-            return null;
-        }
+    const migrations = migrationFiles
+        .map((file) => {
+            const match = file.match(/^([0-9]{4})__([a-zA-Z0-9_ ]+)\.(sql|js)$/);
+            if (!match) {
+                return null;
+            }
 
-        const dbVersion = parseInt(match[1]);
-        if (dbVersion > currentDbVersion) {
-            const name = match[2];
-            const type = match[3];
+            const dbVersion = parseInt(match[1]);
+            if (dbVersion > currentDbVersion) {
+                const name = match[2];
+                const type = match[3];
 
-            return {
-                dbVersion: dbVersion,
-                name: name,
-                file: file,
-                type: type
-            };
-        } else {
-            return null;
-        }
-    }).filter((el): el is MigrationInfo => !!el);
+                return {
+                    dbVersion: dbVersion,
+                    name: name,
+                    file: file,
+                    type: type
+                };
+            } else {
+                return null;
+            }
+        })
+        .filter((el): el is MigrationInfo => !!el);
 
     migrations.sort((a, b) => a.dbVersion - b.dbVersion);
 
@@ -74,16 +73,16 @@ async function migrate() {
 
                 await executeMigration(mig);
 
-                sql.execute(`UPDATE options
+                sql.execute(
+                    `UPDATE options
                             SET value = ?
-                            WHERE name = ?`, [mig.dbVersion.toString(), "dbVersion"]);
+                            WHERE name = ?`,
+                    [mig.dbVersion.toString(), "dbVersion"]
+                );
 
                 log.info(`Migration to version ${mig.dbVersion} has been successful.`);
             } catch (e: any) {
-                log.error(`error during migration to version ${mig.dbVersion}: ${e.stack}`);
-                log.error("migration failed, crashing hard"); // this is not very user-friendly :-/
-
-                utils.crash();
+                crash(t("migration.error_message", { version: mig.dbVersion, stack: e.stack }));
                 break; // crash() is sometimes async
             }
         }
@@ -97,13 +96,13 @@ async function migrate() {
 }
 
 async function executeMigration(mig: MigrationInfo) {
-    if (mig.type === 'sql') {
-        const migrationSql = fs.readFileSync(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`).toString('utf8');
+    if (mig.type === "sql") {
+        const migrationSql = fs.readFileSync(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`).toString("utf8");
 
         console.log(`Migration with SQL script: ${migrationSql}`);
 
         sql.executeScript(migrationSql);
-    } else if (mig.type === 'js') {
+    } else if (mig.type === "js") {
         console.log("Migration with JS module");
 
         const migrationModule = await import(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`);
@@ -132,10 +131,8 @@ function isDbUpToDate() {
 async function migrateIfNecessary() {
     const currentDbVersion = getDbVersion();
 
-    if (currentDbVersion > appInfo.dbVersion && process.env.TRILIUM_IGNORE_DB_VERSION !== 'true') {
-        log.error(`Current DB version ${currentDbVersion} is newer than the current DB version ${appInfo.dbVersion}, which means that it was created by a newer and incompatible version of Trilium. Upgrade to the latest version of Trilium to resolve this issue.`);
-
-        await utils.crash();
+    if (currentDbVersion > appInfo.dbVersion && process.env.TRILIUM_IGNORE_DB_VERSION !== "true") {
+        await crash(t("migration.wrong_db_version", { version: currentDbVersion, targetVersion: appInfo.dbVersion }));
     }
 
     if (!isDbUpToDate()) {

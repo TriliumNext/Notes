@@ -1,0 +1,44 @@
+inputs:
+  os:
+    description: "One of the supported platforms: macos, linux, windows"
+    required: true
+  arch:
+    description: "The architecture to build for: x64, arm64"
+    required: true
+  extension:
+    description: "Platform specific extensions to copy in the output: dmg, deb, rpm, exe, zip"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set up Python for appdmg to be installed
+      if: ${{ inputs.os == 'macos' }}
+      shell: bash
+      run: brew install python-setuptools
+    - name: Install dependencies for RPM and Flatpak package building
+      if: ${{ inputs.os == 'linux' }}
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install rpm flatpak-builder elfutils
+        flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        FLATPAK_ARCH=$(if [[ ${{ inputs.arch }} = 'arm64' ]]; then echo 'aarch64'; else echo 'x86_64'; fi)
+        FLATPAK_VERSION='24.08'
+        flatpak install --user --no-deps --arch $FLATPAK_ARCH --assumeyes runtime/org.freedesktop.Platform/$FLATPAK_ARCH/$FLATPAK_VERSION runtime/org.freedesktop.Sdk/$FLATPAK_ARCH/$FLATPAK_VERSION org.electronjs.Electron2.BaseApp/$FLATPAK_ARCH/$FLATPAK_VERSION
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+    - name: Update build info
+      shell: bash
+      run: npm run chore:update-build-info
+    - name: Run electron-forge
+      shell: bash
+      run: npm run electron-forge:make -- --arch=${{ inputs.arch }}
+    - name: Prepare artifacts
+      shell: bash
+      run: |
+        mkdir -p upload;
+        for ext in ${{ inputs.extension }};
+        do
+          file=$(find out/make -name "*.$ext" -print -quit);
+          cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.$ext";
+        done

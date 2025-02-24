@@ -6,9 +6,7 @@ import { t } from "../../services/i18n.js";
 
 export default class EditButton extends OnClickButtonWidget {
     isEnabled() {
-        return super.isEnabled()
-            && this.note
-            && this.noteContext.viewScope.viewMode === 'default';
+        return super.isEnabled() && this.note && this.noteContext.viewScope.viewMode === "default";
     }
 
     constructor() {
@@ -17,10 +15,10 @@ export default class EditButton extends OnClickButtonWidget {
         this.icon("bx-edit-alt")
             .title(t("edit_button.edit_this_note"))
             .titlePlacement("bottom")
-            .onClick(widget => {
+            .onClick((widget) => {
                 this.noteContext.viewScope.readOnlyTemporarilyDisabled = true;
 
-                appContext.triggerEvent('readOnlyTemporarilyDisabled', {noteContext: this.noteContext});
+                appContext.triggerEvent("readOnlyTemporarilyDisabled", { noteContext: this.noteContext });
 
                 this.refresh();
             });
@@ -29,8 +27,7 @@ export default class EditButton extends OnClickButtonWidget {
     async refreshWithNote(note) {
         if (note.isProtected && !protectedSessionHolder.isProtectedSessionAvailable()) {
             this.toggleInt(false);
-        }
-        else {
+        } else {
             // prevent flickering by assuming hidden before async operation
             this.toggleInt(false);
 
@@ -53,19 +50,15 @@ export default class EditButton extends OnClickButtonWidget {
         await super.refreshWithNote(note);
     }
 
-    entitiesReloadedEvent({loadResults}) {
-        if (loadResults.getAttributeRows().find(
-            attr => attr.type === 'label'
-                && attr.name.toLowerCase().includes("readonly")
-                && attributeService.isAffecting(attr, this.note)
-        )) {
+    entitiesReloadedEvent({ loadResults }) {
+        if (loadResults.getAttributeRows().find((attr) => attr.type === "label" && attr.name.toLowerCase().includes("readonly") && attributeService.isAffecting(attr, this.note))) {
             this.noteContext.viewScope.readOnlyTemporarilyDisabled = false;
 
             this.refresh();
         }
     }
 
-    async noteTypeMimeChangedEvent({noteId}) {
+    async noteTypeMimeChangedEvent({ noteId }) {
         if (this.isNote(noteId)) {
             await this.refresh();
         }

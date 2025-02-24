@@ -1,5 +1,5 @@
-import server from './server.js';
-import protectedSessionHolder from './protected_session_holder.js';
+import server from "./server.js";
+import protectedSessionHolder from "./protected_session_holder.js";
 import toastService from "./toast.js";
 import type { ToastOptions } from "./toast.js";
 import ws from "./ws.js";
@@ -7,7 +7,7 @@ import appContext from "../components/app_context.js";
 import froca from "./froca.js";
 import utils from "./utils.js";
 import options from "./options.js";
-import { t } from './i18n.js';
+import { t } from "./i18n.js";
 
 let protectedSessionDeferred: JQuery.Deferred<any, any, any> | null = null;
 
@@ -19,8 +19,8 @@ interface Response {
 interface Message {
     taskId: string;
     data: {
-        protect: boolean
-    }
+        protect: boolean;
+    };
 }
 
 async function leaveProtectedSession() {
@@ -40,8 +40,7 @@ function enterProtectedSession() {
 
     if (protectedSessionHolder.isProtectedSessionAvailable()) {
         dfd.resolve(false);
-    }
-    else {
+    } else {
         // using deferred instead of promise because it allows resolving from the outside
         protectedSessionDeferred = dfd;
 
@@ -61,7 +60,7 @@ async function reloadData() {
 }
 
 async function setupProtectedSession(password: string) {
-    const response = await server.post<Response>('login/protected', { password: password });
+    const response = await server.post<Response>("login/protected", { password: password });
 
     if (!response.success) {
         toastService.showError(t("protected_session.wrong_password"), 3000);
@@ -71,13 +70,13 @@ async function setupProtectedSession(password: string) {
     protectedSessionHolder.enableProtectedSession();
 }
 
-ws.subscribeToMessages(async message => {
-    if (message.type === 'protectedSessionLogin') {
+ws.subscribeToMessages(async (message) => {
+    if (message.type === "protectedSessionLogin") {
         await reloadData();
 
-        await appContext.triggerEvent('frocaReloaded');
+        await appContext.triggerEvent("frocaReloaded", {});
 
-        appContext.triggerEvent('protectedSessionStarted');
+        appContext.triggerEvent("protectedSessionStarted", {});
 
         appContext.triggerCommand("closeProtectedSessionPasswordDialog");
 
@@ -87,8 +86,7 @@ ws.subscribeToMessages(async message => {
         }
 
         toastService.showMessage(t("protected_session.started"));
-    }
-    else if (message.type === 'protectedSessionLogout') {
+    } else if (message.type === "protectedSessionLogout") {
         utils.reloadFrontendApp(`Protected session logout`);
     }
 });
@@ -108,23 +106,23 @@ function makeToast(message: Message, title: string, text: string): ToastOptions 
     };
 }
 
-ws.subscribeToMessages(async message => {
-    if (message.taskType !== 'protectNotes') {
+ws.subscribeToMessages(async (message) => {
+    if (message.taskType !== "protectNotes") {
         return;
     }
 
     const isProtecting = message.data.protect;
     const title = isProtecting ? t("protected_session.protecting-title") : t("protected_session.unprotecting-title");
-    
-    if (message.type === 'taskError') {
+
+    if (message.type === "taskError") {
         toastService.closePersistent(message.taskId);
         toastService.showError(message.message);
-    } else if (message.type === 'taskProgressCount') {
+    } else if (message.type === "taskProgressCount") {
         const count = message.progressCount;
-        const text = ( isProtecting ? t("protected_session.protecting-in-progress", { count }) : t("protected_session.unprotecting-in-progress-count", { count }));
+        const text = isProtecting ? t("protected_session.protecting-in-progress", { count }) : t("protected_session.unprotecting-in-progress-count", { count });
         toastService.showPersistent(makeToast(message, title, text));
-    } else if (message.type === 'taskSucceeded') {
-        const text = (isProtecting ? t("protected_session.protecting-finished-successfully") : t("protected_session.unprotecting-finished-successfully"))
+    } else if (message.type === "taskSucceeded") {
+        const text = isProtecting ? t("protected_session.protecting-finished-successfully") : t("protected_session.unprotecting-finished-successfully");
         const toast = makeToast(message, title, text);
         toast.closeAfter = 3000;
 

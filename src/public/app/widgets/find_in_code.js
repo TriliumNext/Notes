@@ -46,8 +46,7 @@ export default class FindInCode {
             //     complicated regexp, see
             //     https://github.com/ckeditor/ckeditor5/blob/b95e2faf817262ac0e1e21993d9c0bde3f1be594/packages/ckeditor5-find-and-replace/src/utils.js#L145
             const wholeWordChar = wholeWord ? "\\b" : "";
-            const re = new RegExp(wholeWordChar + searchTerm + wholeWordChar,
-                'g' + (matchCase ? '' : 'i'));
+            const re = new RegExp(wholeWordChar + searchTerm + wholeWordChar, "g" + (matchCase ? "" : "i"));
             let curLine = 0;
             let curChar = 0;
             let curMatch = null;
@@ -59,7 +58,7 @@ export default class FindInCode {
             codeEditor.operation(() => {
                 for (let i = 0; i < text.length; ++i) {
                     // Fetch the next match if it's the first time or if past the current match start
-                    if ((curMatch == null) || (curMatch.index < i)) {
+                    if (curMatch == null || curMatch.index < i) {
                         curMatch = re.exec(text);
                         if (curMatch == null) {
                             // No more matches
@@ -69,19 +68,17 @@ export default class FindInCode {
                     // Create a non-selected highlight marker for the match, the
                     // selected marker highlight will be done later
                     if (i === curMatch.index) {
-                        let fromPos = { "line" : curLine, "ch" : curChar };
+                        let fromPos = { line: curLine, ch: curChar };
                         // If multiline is supported, this needs to recalculate curLine since the match may span lines
-                        let toPos = { "line" : curLine, "ch" : curChar + curMatch[0].length};
+                        let toPos = { line: curLine, ch: curChar + curMatch[0].length };
                         // or css = "color: #f3"
-                        let marker = doc.markText( fromPos, toPos, { "className" : FIND_RESULT_CSS_CLASSNAME });
+                        let marker = doc.markText(fromPos, toPos, { className: FIND_RESULT_CSS_CLASSNAME });
                         findResult.push(marker);
 
                         // Set the first match beyond the cursor as the current match
                         if (currentFound === -1) {
                             const cursorPos = codeEditor.getCursor();
-                            if ((fromPos.line > cursorPos.line) ||
-                                ((fromPos.line === cursorPos.line) &&
-                                    (fromPos.ch >= cursorPos.ch))){
+                            if (fromPos.line > cursorPos.line || (fromPos.line === cursorPos.line && fromPos.ch >= cursorPos.ch)) {
                                 currentFound = totalFound;
                             }
                         }
@@ -103,14 +100,12 @@ export default class FindInCode {
 
         // Calculate curfound if not already, highlight it as selected
         if (totalFound > 0) {
-            currentFound = Math.max(0, currentFound)
+            currentFound = Math.max(0, currentFound);
             let marker = findResult[currentFound];
             let pos = marker.find();
             codeEditor.scrollIntoView(pos.to);
             marker.clear();
-            findResult[currentFound] = doc.markText( pos.from, pos.to,
-                { "className" : FIND_RESULT_SELECTED_CSS_CLASSNAME }
-            );
+            findResult[currentFound] = doc.markText(pos.from, pos.to, { className: FIND_RESULT_SELECTED_CSS_CLASSNAME });
         }
 
         return {
@@ -130,19 +125,13 @@ export default class FindInCode {
         let marker = this.findResult[currentFound];
         let pos = marker.find();
         marker.clear();
-        marker = doc.markText(
-            pos.from, pos.to,
-            { "className" : FIND_RESULT_CSS_CLASSNAME }
-        );
+        marker = doc.markText(pos.from, pos.to, { className: FIND_RESULT_CSS_CLASSNAME });
         this.findResult[currentFound] = marker;
 
         marker = this.findResult[nextFound];
         pos = marker.find();
         marker.clear();
-        marker = doc.markText(
-            pos.from, pos.to,
-            { "className" : FIND_RESULT_SELECTED_CSS_CLASSNAME }
-        );
+        marker = doc.markText(pos.from, pos.to, { className: FIND_RESULT_SELECTED_CSS_CLASSNAME });
         this.findResult[nextFound] = marker;
 
         codeEditor.scrollIntoView(pos.from);
@@ -172,7 +161,7 @@ export default class FindInCode {
     }
     async replace(replaceText) {
         // this.findResult may be undefined and null
-        if (!this.findResult || this.findResult.length===0){
+        if (!this.findResult || this.findResult.length === 0) {
             return;
         }
         let currentFound = -1;
@@ -206,7 +195,7 @@ export default class FindInCode {
         }
     }
     async replaceAll(replaceText) {
-        if (!this.findResult || this.findResult.length===0){
+        if (!this.findResult || this.findResult.length === 0) {
             return;
         }
         const codeEditor = await this.getCodeEditor();

@@ -33,7 +33,8 @@
     "search_note": "search for note by its name",
     "link_title_mirrors": "link title mirrors the note's current title",
     "link_title_arbitrary": "link title can be changed arbitrarily",
-    "link_title": "Link title"
+    "link_title": "Link title",
+    "button_add_link": "Add link <kbd>enter</kbd>"
   },
   "branch_prefix": {
     "edit_branch_prefix": "Edit branch prefix",
@@ -108,23 +109,24 @@
     "choose_export_type": "Choose export type first please",
     "export_status": "Export status",
     "export_in_progress": "Export in progress: {{progressCount}}",
-    "export_finished_successfully": "Export finished successfully."
+    "export_finished_successfully": "Export finished successfully.",
+    "format_pdf": "PDF - for printing or sharing purposes."
   },
   "help": {
     "fullDocumentation": "Help (full documentation is available <a class=\"external\" href=\"https://triliumnext.github.io/Docs/\">online</a>)",
     "close": "Close",
     "noteNavigation": "Note navigation",
-    "goUpDown": "go up/down in the list of notes",
-    "collapseExpand": "collapse/expand node",
+    "goUpDown": "<kbd>UP</kbd>, <kbd>DOWN</kbd> - go up/down in the list of notes",
+    "collapseExpand": "<kbd>LEFT</kbd>, <kbd>RIGHT</kbd> - collapse/expand node",
     "notSet": "not set",
     "goBackForwards": "go back / forwards in the history",
     "showJumpToNoteDialog": "show <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">\"Jump to\" dialog</a>",
     "scrollToActiveNote": "scroll to active note",
-    "jumpToParentNote": "jump to parent note",
+    "jumpToParentNote": "<kbd>Backspace</kbd> - jump to parent note",
     "collapseWholeTree": "collapse whole note tree",
     "collapseSubTree": "collapse sub-tree",
     "tabShortcuts": "Tab shortcuts",
-    "newTabNoteLink": "(or middle mouse click) on note link opens note in a new tab",
+    "newTabNoteLink": "<kbd>CTRL+click</kbd> - (or middle mouse click) on note link opens note in a new tab",
     "onlyInDesktop": "Only in desktop (Electron build)",
     "openEmptyTab": "open empty tab",
     "closeActiveTab": "close active tab",
@@ -139,23 +141,23 @@
     "moveNoteUpHierarchy": "move note up in the hierarchy",
     "multiSelectNote": "multi-select note above/below",
     "selectAllNotes": "select all notes in the current level",
-    "selectNote": "select note",
+    "selectNote": "<kbd>Shift+click</kbd> - select note",
     "copyNotes": "copy active note (or current selection) into clipboard (used for <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/cloning-notes.html#cloning-notes\">cloning</a>)",
     "cutNotes": "cut current note (or current selection) into clipboard (used for moving notes)",
     "pasteNotes": "paste note(s) as sub-note into active note (which is either move or clone depending on whether it was copied or cut into clipboard)",
     "deleteNotes": "delete note / sub-tree",
     "editingNotes": "Editing notes",
     "editNoteTitle": "in tree pane will switch from tree pane into note title. Enter from note title will switch focus to text editor. <kbd>Ctrl+.</kbd> will switch back from editor to tree pane.",
-    "createEditLink": "create / edit external link",
+    "createEditLink": "<kbd>Ctrl+K</kbd> - create / edit external link",
     "createInternalLink": "create internal link",
     "followLink": "follow link under cursor",
     "insertDateTime": "insert current date and time at caret position",
     "jumpToTreePane": "jump away to the tree pane and scroll to active note",
     "markdownAutoformat": "Markdown-like autoformatting",
-    "headings": " etc. followed by space for headings",
-    "bulletList": "<kbd>*</kbd> or <kbd>-</kbd> followed by space for bullet list",
-    "numberedList": "<kbd>1.</kbd> or <kbd>1)</kbd> followed by space for numbered list",
-    "blockQuote": "start a line with <kbd>></kbd> followed by space for block quote",
+    "headings": "<code>##</code>, <code>###</code>, <code>####</code>  etc. followed by space for headings",
+    "bulletList": "<code>*</code> or <code>-</code> followed by space for bullet list",
+    "numberedList": "<code>1.</code> or <code>1)</code> followed by space for numbered list",
+    "blockQuote": "start a line with <code>></code> followed by space for block quote",
     "troubleshooting": "Troubleshooting",
     "reloadFrontend": "reload Trilium frontend",
     "showDevTools": "show developer tools",
@@ -200,7 +202,7 @@
     "box_size_small": "small (~ 10 lines)",
     "box_size_medium": "medium (~ 30 lines)",
     "box_size_full": "full (box shows complete text)",
-    "button_include": "Include note"
+    "button_include": "Include note <kbd>enter</kbd>"
   },
   "info": {
     "modalTitle": "Info message",
@@ -304,7 +306,7 @@
     "sort_with_respect_to_different_character_sorting": "sort with respect to different character sorting and collation rules in different languages or regions.",
     "natural_sort_language": "Natural sort language",
     "the_language_code_for_natural_sort": "The language code for natural sort, e.g. \"zh-CN\" for Chinese.",
-    "sort": "Sort"
+    "sort": "Sort <kbd>enter</kbd>"
   },
   "upload_attachments": {
     "upload_attachments_to_note": "Upload attachments to note",
@@ -436,7 +438,9 @@
     "share_favicon": "Favicon note to be set in the shared page. Typically you want to set it to share root and make it inheritable. Favicon note must be in the shared sub-tree as well. Consider using 'share_hidden_from_tree'.",
     "is_owned_by_note": "is owned by note",
     "other_notes_with_name": "Other notes with {{attributeType}} name \"{{attributeName}}\"",
-    "and_more": "... and {{count}} more."
+    "and_more": "... and {{count}} more.",
+    "print_landscape": "When exporting to PDF, changes the orientation of the page to landscape instead of portrait.",
+    "print_page_size": "When exporting to PDF, changes the size of the page. Supported values: <code>A0</code>, <code>A1</code>, <code>A2</code>, <code>A3</code>, <code>A4</code>, <code>A5</code>, <code>A6</code>, <code>Legal</code>, <code>Letter</code>, <code>Tabloid</code>, <code>Ledger</code>."
   },
   "attribute_editor": {
     "help_text_body1": "To add label, just type e.g. <code>#rock</code> or if you want to add also value then e.g. <code>#year = 2020</code>",
@@ -637,7 +641,12 @@
     "show_hidden_subtree": "Show Hidden Subtree",
     "show_help": "Show Help",
     "about": "About TriliumNext Notes",
-    "logout": "Logout"
+    "logout": "Logout",
+    "show-cheatsheet": "Show Cheatsheet",
+    "toggle-zen-mode": "Zen Mode"
+  },
+  "zen_mode": {
+    "button_exit": "Exit Zen Mode"
   },
   "sync_status": {
     "unknown": "<p>Sync status will be known once the next sync attempt starts.</p><p>Click to trigger sync now.</p>",
@@ -671,7 +680,8 @@
     "save_revision": "Save revision",
     "convert_into_attachment_failed": "Converting note '{{title}}' failed.",
     "convert_into_attachment_successful": "Note '{{title}}' has been converted to attachment.",
-    "convert_into_attachment_prompt": "Are you sure you want to convert note '{{title}}' into an attachment of the parent note?"
+    "convert_into_attachment_prompt": "Are you sure you want to convert note '{{title}}' into an attachment of the parent note?",
+    "print_pdf": "Export as PDF..."
   },
   "onclick_button": {
     "no_click_handler": "Button widget '{{componentId}}' has no defined click handler"
@@ -745,7 +755,8 @@
     "collapse": "Collapse",
     "expand": "Expand",
     "book_properties": "Book Properties",
-    "invalid_view_type": "Invalid view type '{{type}}'"
+    "invalid_view_type": "Invalid view type '{{type}}'",
+    "calendar": "Calendar"
   },
   "edited_notes": {
     "no_edited_notes_found": "No edited notes on this day yet...",
@@ -794,7 +805,9 @@
   "note_map": {
     "open_full": "Expand to full",
     "collapse": "Collapse to normal size",
-    "title": "Note Map"
+    "title": "Note Map",
+    "fix-nodes": "Fix nodes",
+    "link-distance": "Link distance"
   },
   "note_paths": {
     "title": "Note Paths",
@@ -814,6 +827,7 @@
   },
   "promoted_attributes": {
     "promoted_attributes": "Promoted Attributes",
+    "unset-field-placeholder": "not set",
     "url_placeholder": "http://website...",
     "open_external_link": "Open external link",
     "unknown_label_type": "Unknown label type '{{type}}'",
@@ -842,8 +856,7 @@
     "debug": "debug",
     "debug_description": "Debug will print extra debugging information into the console to aid in debugging complex queries",
     "action": "action",
-    "search": "Search",
-    "enter": "enter",
+    "search_button": "Search <kbd>enter</kbd>",
     "search_execute": "Search & Execute actions",
     "save_to_note": "Save to note",
     "search_parameters": "Search Parameters",
@@ -957,11 +970,12 @@
     "enter_workspace": "Enter workspace {{title}}"
   },
   "file": {
-    "file_preview_not_available": "File preview is not available for this file format."
+    "file_preview_not_available": "File preview is not available for this file format.",
+    "too_big": "The preview only shows the first {{maxNumChars}} characters of the file for performance reasons. Download the file and open it externally to be able to see the entire content."
   },
   "protected_session": {
     "enter_password_instruction": "Showing protected note requires entering your password:",
-    "start_session_button": "Start protected session",
+    "start_session_button": "Start protected session <kbd>enter</kbd>",
     "started": "Protected session has been started.",
     "wrong_password": "Wrong password.",
     "protecting-finished-successfully": "Protecting finished successfully.",
@@ -996,9 +1010,7 @@
   "web_view": {
     "web_view": "Web View",
     "embed_websites": "Note of type Web View allows you to embed websites into Trilium.",
-    "create_label": "To start, please create a label with a URL address you want to embed, e.g. #webViewSrc=\"https://www.google.com\"",
-    "disclaimer": "Disclaimer on the experimental status",
-    "experimental_note": "Web View is an experimental note type, and it might be removed or substantially changed in the future. Web View works also only in the desktop build."
+    "create_label": "To start, please create a label with a URL address you want to embed, e.g. #webViewSrc=\"https://www.google.com\""
   },
   "backend_log": {
     "refresh": "Refresh"
@@ -1063,7 +1075,16 @@
     "note_tree_and_detail_font_sizing": "Note that tree and detail font sizing is relative to the main font size setting.",
     "not_all_fonts_available": "Not all listed fonts may be available on your system.",
     "apply_font_changes": "To apply font changes, click on",
-    "reload_frontend": "reload frontend"
+    "reload_frontend": "reload frontend",
+    "generic-fonts": "Generic fonts",
+    "sans-serif-system-fonts": "Sans-serif system fonts",
+    "serif-system-fonts": "Serif system fonts",
+    "monospace-system-fonts": "Monospace system fonts",
+    "handwriting-system-fonts": "Handwriting system fonts",
+    "serif": "Serif",
+    "sans-serif": "Sans Serif",
+    "monospace": "Monospace",
+    "system-default": "System default"
   },
   "max_content_width": {
     "title": "Content Width",
@@ -1130,7 +1151,7 @@
   "attachment_erasure_timeout": {
     "attachment_erasure_timeout": "Attachment Erasure Timeout",
     "attachment_auto_deletion_description": "Attachments get automatically deleted (and erased) if they are not referenced by their note anymore after a defined time out.",
-    "erase_attachments_after_x_seconds": "Erase attachments after X seconds of not being used in its note",
+    "erase_attachments_after": "Erase unused attachments after:",
     "manual_erasing_description": "You can also trigger erasing manually (without considering the timeout defined above):",
     "erase_unused_attachments_now": "Erase unused attachment notes now",
     "unused_attachments_erased": "Unused attachments have been erased."
@@ -1142,15 +1163,15 @@
   "note_erasure_timeout": {
     "note_erasure_timeout_title": "Note Erasure Timeout",
     "note_erasure_description": "Deleted notes (and attributes, revisions...) are at first only marked as deleted and it is possible to recover them from Recent Notes dialog. After a period of time, deleted notes are \"erased\" which means their content is not recoverable anymore. This setting allows you to configure the length of the period between deleting and erasing the note.",
-    "erase_notes_after_x_seconds": "Erase notes after X seconds",
+    "erase_notes_after": "Erase notes after:",
     "manual_erasing_description": "You can also trigger erasing manually (without considering the timeout defined above):",
     "erase_deleted_notes_now": "Erase deleted notes now",
     "deleted_notes_erased": "Deleted notes have been erased."
   },
   "revisions_snapshot_interval": {
     "note_revisions_snapshot_interval_title": "Note Revision Snapshot Interval",
-    "note_revisions_snapshot_description": "The Note revision snapshot interval is the time in seconds after which a new note revision will be created for the note. See <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a> for more info.",
-    "snapshot_time_interval_label": "Note revision snapshot time interval (in seconds):"
+    "note_revisions_snapshot_description": "The Note revision snapshot interval is the time after which a new note revision will be created for the note. See <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a> for more info.",
+    "snapshot_time_interval_label": "Note revision snapshot time interval:"
   },
   "revisions_snapshot_limit": {
     "note_revisions_snapshot_limit_title": "Note Revision Snapshot Limit",
@@ -1225,7 +1246,7 @@
     "existing_backups": "Existing backups",
     "date-and-time": "Date & time",
     "path": "Path",
-    "database_backed_up_to": "Database has been backed up to",
+    "database_backed_up_to": "Database has been backed up to {{backupFilePath}}",
     "no_backup_yet": "no backup yet"
   },
   "etapi": {
@@ -1269,7 +1290,7 @@
     "protected_session_timeout_description": "Protected session timeout is a time period after which the protected session is wiped from the browser's memory. This is measured from the last interaction with protected notes. See",
     "wiki": "wiki",
     "for_more_info": "for more info.",
-    "protected_session_timeout_label": "Protected session timeout (in seconds)",
+    "protected_session_timeout_label": "Protected session timeout:",
     "reset_confirmation": "By resetting the password you will forever lose access to all your existing protected notes. Do you really want to reset the password?",
     "reset_success_message": "Password has been reset. Please set new password",
     "change_password_heading": "Change Password",
@@ -1345,7 +1366,7 @@
     "button-tree-map": "Tree map"
   },
   "tree-context-menu": {
-    "open-in-a-new-tab": "Open in a new tab",
+    "open-in-a-new-tab": "Open in a new tab <kbd>Ctrl+Click</kbd>",
     "open-in-a-new-split": "Open in a new split",
     "insert-note-after": "Insert note after",
     "insert-child-note": "Insert child note",
@@ -1392,13 +1413,16 @@
     "mermaid-diagram": "Mermaid Diagram",
     "canvas": "Canvas",
     "web-view": "Web View",
-    "mind-map": "Mind Map (Beta)",
+    "mind-map": "Mind Map",
     "file": "File",
     "image": "Image",
     "launcher": "Launcher",
     "doc": "Doc",
     "widget": "Widget",
-    "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?"
+    "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?",
+    "geo-map": "Geo Map",
+    "beta-feature": "Beta",
+    "task-list": "To-Do List"
   },
   "protect_note": {
     "toggle-on": "Protect the note",
@@ -1450,7 +1474,11 @@
     "automatically-collapse-notes-title": "Notes will be collapsed after period of inactivity to declutter the tree.",
     "save-changes": "Save & apply changes",
     "auto-collapsing-notes-after-inactivity": "Auto collapsing notes after inactivity...",
-    "saved-search-note-refreshed": "Saved search note refreshed."
+    "saved-search-note-refreshed": "Saved search note refreshed.",
+    "hoist-this-note-workspace": "Hoist this note (workspace)",
+    "refresh-saved-search-results": "Refresh saved search results",
+    "create-child-note": "Create child note",
+    "unhoist": "Unhoist"
   },
   "title_bar_buttons": {
     "window-on-top": "Keep Window on Top"
@@ -1540,11 +1568,11 @@
     "add-script-launcher": "Add a script launcher",
     "add-custom-widget": "Add a custom widget",
     "add-spacer": "Add spacer",
-    "delete": "Delete",
+    "delete": "Delete <kbd data-command=\"deleteNotes\"></kbd>",
     "reset": "Reset",
     "move-to-visible-launchers": "Move to visible launchers",
     "move-to-available-launchers": "Move to available launchers",
-    "duplicate-launcher": "Duplicate launcher"
+    "duplicate-launcher": "Duplicate launcher <kbd data-command=\"duplicateSubtree\">"
   },
   "editable-text": {
     "auto-detect-language": "Auto-detected"
@@ -1626,5 +1654,41 @@
     "clear-text-field": "Clear text field",
     "show-recent-notes": "Show recent notes",
     "full-text-search": "Full text search"
+  },
+  "note_tooltip": {
+    "note-has-been-deleted": "Note has been deleted."
+  },
+  "geo-map": {
+    "create-child-note-title": "Create a new child note and add it to the map",
+    "create-child-note-instruction": "Click on the map to create a new note at that location or press Escape to dismiss.",
+    "unable-to-load-map": "Unable to load map."
+  },
+  "geo-map-context": {
+    "open-location": "Open location",
+    "remove-from-map": "Remove from map"
+  },
+  "help-button": {
+    "title": "Open the relevant help page"
+  },
+  "duration": {
+    "seconds": "Seconds",
+    "minutes": "Minutes",
+    "hours": "Hours",
+    "days": "Days"
+  },
+  "share": {
+    "title": "Share Settings",
+    "redirect_bare_domain": "Redirect bare domain to Share page",
+    "redirect_bare_domain_description": "Redirect anonymous users to the Share page instead of showing Login",
+    "show_login_link": "Show Login link in Share theme",
+    "show_login_link_description": "Add a login link to the Share page footer",
+    "check_share_root": "Check Share Root Status",
+    "share_root_found": "Share root note '{{noteTitle}}' is ready",
+    "share_root_not_found": "No note with #shareRoot label found",
+    "share_root_not_shared": "Note '{{noteTitle}}' has #shareRoot label but is not Shared"
+  },
+  "time_selector": {
+    "invalid_input": "The entered time value is not a valid number.",
+    "minimum_input": "The entered time value needs to be at least {{minimumSeconds}} seconds."
   }
 }

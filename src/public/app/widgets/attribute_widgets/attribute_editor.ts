@@ -3,17 +3,19 @@ import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import noteAutocompleteService from "../../services/note_autocomplete.js";
 import server from "../../services/server.js";
 import contextMenuService from "../../menus/context_menu.js";
-import attributeParser, { Attribute } from "../../services/attribute_parser.js";
+import attributeParser, { type Attribute } from "../../services/attribute_parser.js";
 import libraryLoader from "../../services/library_loader.js";
 import froca from "../../services/froca.js";
 import attributeRenderer from "../../services/attribute_renderer.js";
 import noteCreateService from "../../services/note_create.js";
 import attributeService from "../../services/attributes.js";
 import linkService from "../../services/link.js";
-import AttributeDetailWidget from "./attribute_detail.js";
-import { CommandData, EventData, EventListener, FilteredCommandNames } from "../../components/app_context.js";
-import FAttribute, { AttributeType } from "../../entities/fattribute.js";
-import FNote from "../../entities/fnote.js";
+import type AttributeDetailWidget from "./attribute_detail.js";
+import type { CommandData, EventData, EventListener, FilteredCommandNames } from "../../components/app_context.js";
+import type { default as FAttribute, AttributeType } from "../../entities/fattribute.js";
+import type FNote from "../../entities/fnote.js";
+import { escapeQuotes } from "../../services/utils.js";
+import { buildConfig } from "../type_widgets/ckeditor/toolbars.js";
 
 const HELP_TEXT = `
 <p>${t("attribute_editor.help_text_body1")}</p>
@@ -76,8 +78,8 @@ const TPL = `
 
     <div class="attribute-list-editor" tabindex="200"></div>
 
-    <div class="bx bx-save save-attributes-button" title="${t("attribute_editor.save_attributes")}"></div>
-    <div class="bx bx-plus add-new-attribute-button" title="${t("attribute_editor.add_a_new_attribute")}"></div>
+    <div class="bx bx-save save-attributes-button tn-tool-button" title="${escapeQuotes(t("attribute_editor.save_attributes"))}"></div>
+    <div class="bx bx-plus add-new-attribute-button tn-tool-button" title="${escapeQuotes(t("attribute_editor.add_a_new_attribute"))}"></div>
 
     <div class="attribute-errors" style="display: none;"></div>
 </div>
@@ -86,10 +88,10 @@ const TPL = `
 const mentionSetup: MentionConfig = {
     feeds: [
         {
-            marker: '@',
-            feed: queryText => noteAutocompleteService.autocompleteSourceForCKEditor(queryText),
-            itemRenderer: item => {
-                const itemElement = document.createElement('button');
+            marker: "@",
+            feed: (queryText) => noteAutocompleteService.autocompleteSourceForCKEditor(queryText),
+            itemRenderer: (item) => {
+                const itemElement = document.createElement("button");
 
                 itemElement.innerHTML = `${item.highlightedNotePathTitle} `;
 
@@ -98,29 +100,29 @@ const mentionSetup: MentionConfig = {
             minimumCharacters: 0
         },
         {
-            marker: '#',
-            feed: async queryText => {
+            marker: "#",
+            feed: async (queryText) => {
                 const names = await server.get<string[]>(`attribute-names/?type=label&query=${encodeURIComponent(queryText)}`);
 
-                return names.map(name => {
+                return names.map((name) => {
                     return {
                         id: `#${name}`,
                         name: name
-                    }
+                    };
                 });
             },
             minimumCharacters: 0
         },
         {
-            marker: '~',
-            feed: async queryText => {
+            marker: "~",
+            feed: async (queryText) => {
                 const names = await server.get<string[]>(`attribute-names/?type=relation&query=${encodeURIComponent(queryText)}`);
 
-                return names.map(name => {
+                return names.map((name) => {
                     return {
                         id: `~${name}`,
                         name: name
-                    }
+                    };
                 });
             },
             minimumCharacters: 0
@@ -129,52 +131,55 @@ const mentionSetup: MentionConfig = {
 };
 
 const editorConfig = {
+    ...buildConfig(),
     removePlugins: [
-        'Heading',
-        'Link',
-        'Autoformat',
-        'Bold',
-        'Italic',
-        'Underline',
-        'Strikethrough',
-        'Code',
-        'Superscript',
-        'Subscript',
-        'BlockQuote',
-        'Image',
-        'ImageCaption',
-        'ImageStyle',
-        'ImageToolbar',
-        'ImageUpload',
-        'ImageResize',
-        'List',
-        'TodoList',
-        'PasteFromOffice',
-        'Table',
-        'TableToolbar',
-        'TableProperties',
-        'TableCellProperties',
-        'Indent',
-        'IndentBlock',
-        'BlockToolbar',
-        'ParagraphButtonUI',
-        'HeadingButtonsUI',
-        'UploadimagePlugin',
-        'InternalLinkPlugin',
-        'MarkdownImportPlugin',
-        'CuttonotePlugin',
-        'TextTransformation',
-        'Font',
-        'FontColor',
-        'FontBackgroundColor',
-        'CodeBlock',
-        'SelectAll',
-        'IncludeNote',
-        'CutToNote',
-        'Mathematics',
-        'AutoformatMath',
-        'indentBlockShortcutPlugin',
-        'removeFormatLinksPlugin'
+        "Heading",
+        "Link",
+        "Autoformat",
+        "Bold",
+        "Italic",
+        "Underline",
+        "Strikethrough",
+        "Code",
+        "Superscript",
+        "Subscript",
+        "BlockQuote",
+        "Image",
+        "ImageCaption",
+        "ImageStyle",
+        "ImageToolbar",
+        "ImageUpload",
+        "ImageResize",
+        "List",
+        "TodoList",
+        "PasteFromOffice",
+        "Table",
+        "TableToolbar",
+        "TableProperties",
+        "TableCellProperties",
+        "Indent",
+        "IndentBlock",
+        "BlockToolbar",
+        "ParagraphButtonUI",
+        "HeadingButtonsUI",
+        "UploadimagePlugin",
+        "InternalLinkPlugin",
+        "MarkdownImportPlugin",
+        "CuttonotePlugin",
+        "TextTransformation",
+        "Font",
+        "FontColor",
+        "FontBackgroundColor",
+        "CodeBlock",
+        "SelectAll",
+        "IncludeNote",
+        "CutToNote",
+        "Mathematics",
+        "AutoformatMath",
+        "indentBlockShortcutPlugin",
+        "removeFormatLinksPlugin",
+        "Footnotes",
+        "Mermaid"
     ],
     toolbar: {
         items: []
@@ -185,11 +190,7 @@ const editorConfig = {
 
 type AttributeCommandNames = FilteredCommandNames<CommandData>;
 
-export default class AttributeEditorWidget extends NoteContextAwareWidget implements
-    EventListener<"entitiesReloaded">,
-    EventListener<"addNewLabel">,
-    EventListener<"addNewRelation"> {
-
+export default class AttributeEditorWidget extends NoteContextAwareWidget implements EventListener<"entitiesReloaded">, EventListener<"addNewLabel">, EventListener<"addNewRelation"> {
     private attributeDetailWidget: AttributeDetailWidget;
     private $editor!: JQuery<HTMLElement>;
     private $addNewAttributeButton!: JQuery<HTMLElement>;
@@ -208,11 +209,11 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
 
     doRender() {
         this.$widget = $(TPL);
-        this.$editor = this.$widget.find('.attribute-list-editor');
+        this.$editor = this.$widget.find(".attribute-list-editor");
 
         this.initialized = this.initEditor();
 
-        this.$editor.on('keydown', async e => {
+        this.$editor.on("keydown", async (e) => {
             if (e.which === 13) {
                 // allow autocomplete to fill the result textarea
                 setTimeout(() => this.save(), 100);
@@ -221,48 +222,48 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
             this.attributeDetailWidget.hide();
         });
 
-        this.$editor.on('blur', () => setTimeout(() => this.save(), 100)); // Timeout to fix https://github.com/zadam/trilium/issues/4160
+        this.$editor.on("blur", () => setTimeout(() => this.save(), 100)); // Timeout to fix https://github.com/zadam/trilium/issues/4160
 
-        this.$addNewAttributeButton = this.$widget.find('.add-new-attribute-button');
-        this.$addNewAttributeButton.on('click', e => this.addNewAttribute(e));
+        this.$addNewAttributeButton = this.$widget.find(".add-new-attribute-button");
+        this.$addNewAttributeButton.on("click", (e) => this.addNewAttribute(e));
 
-        this.$saveAttributesButton = this.$widget.find('.save-attributes-button');
-        this.$saveAttributesButton.on('click', () => this.save());
+        this.$saveAttributesButton = this.$widget.find(".save-attributes-button");
+        this.$saveAttributesButton.on("click", () => this.save());
 
-        this.$errors = this.$widget.find('.attribute-errors');
+        this.$errors = this.$widget.find(".attribute-errors");
     }
 
     addNewAttribute(e: JQuery.ClickEvent) {
         contextMenuService.show<AttributeCommandNames>({
             x: e.pageX,
             y: e.pageY,
-            orientation: 'left',
+            orientation: "left",
             items: [
                 { title: t("attribute_editor.add_new_label"), command: "addNewLabel", uiIcon: "bx bx-hash" },
                 { title: t("attribute_editor.add_new_relation"), command: "addNewRelation", uiIcon: "bx bx-transfer" },
                 { title: "----" },
                 { title: t("attribute_editor.add_new_label_definition"), command: "addNewLabelDefinition", uiIcon: "bx bx-empty" },
-                { title: t("attribute_editor.add_new_relation_definition"), command: "addNewRelationDefinition", uiIcon: "bx bx-empty" },
+                { title: t("attribute_editor.add_new_relation_definition"), command: "addNewRelationDefinition", uiIcon: "bx bx-empty" }
             ],
             selectMenuItemHandler: ({ command }) => this.handleAddNewAttributeCommand(command)
         });
     }
 
     // triggered from keyboard shortcut
-    async addNewLabelEvent({ntxId}: EventData<"addNewLabel">) {
+    async addNewLabelEvent({ ntxId }: EventData<"addNewLabel">) {
         if (this.isNoteContext(ntxId)) {
             await this.refresh();
 
-            this.handleAddNewAttributeCommand('addNewLabel');
+            this.handleAddNewAttributeCommand("addNewLabel");
         }
     }
 
     // triggered from keyboard shortcut
-    async addNewRelationEvent({ntxId}: EventData<"addNewRelation">) {
+    async addNewRelationEvent({ ntxId }: EventData<"addNewRelation">) {
         if (this.isNoteContext(ntxId)) {
             await this.refresh();
 
-            this.handleAddNewAttributeCommand('addNewRelation');
+            this.handleAddNewAttributeCommand("addNewRelation");
         }
     }
 
@@ -278,22 +279,22 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
         let name;
         let value;
 
-        if (command === 'addNewLabel') {
-            type = 'label';
-            name = 'myLabel';
-            value = '';
-        } else if (command === 'addNewRelation') {
-            type = 'relation';
-            name = 'myRelation';
-            value = '';
-        } else if (command === 'addNewLabelDefinition') {
-            type = 'label';
-            name = 'label:myLabel';
-            value = 'promoted,single,text';
-        } else if (command === 'addNewRelationDefinition') {
-            type = 'label';
-            name = 'relation:myRelation';
-            value = 'promoted,single';
+        if (command === "addNewLabel") {
+            type = "label";
+            name = "myLabel";
+            value = "";
+        } else if (command === "addNewRelation") {
+            type = "relation";
+            name = "myRelation";
+            value = "";
+        } else if (command === "addNewLabelDefinition") {
+            type = "label";
+            name = "label:myLabel";
+            value = "promoted,single,text";
+        } else if (command === "addNewRelationDefinition") {
+            type = "label";
+            name = "relation:myRelation";
+            value = "promoted,single";
         } else {
             return;
         }
@@ -321,7 +322,7 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
                 isOwned: true,
                 x: (rect.left + rect.right) / 2,
                 y: rect.bottom,
-                focus: 'name'
+                focus: "name"
             });
         }, 100);
     }
@@ -341,10 +342,10 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
             this.$saveAttributesButton.fadeOut();
 
             // blink the attribute text to give a visual hint that save has been executed
-            this.$editor.css('opacity', 0);
+            this.$editor.css("opacity", 0);
 
             // revert back
-            setTimeout(() => this.$editor.css('opacity', 1), 100);
+            setTimeout(() => this.$editor.css("opacity", 1), 100);
         }
     }
 
@@ -357,7 +358,8 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
     }
 
     getPreprocessedData() {
-        const str = this.textEditor.getData()
+        const str = this.textEditor
+            .getData()
             .replace(/<a[^>]+href="(#[A-Za-z0-9_/]*)"[^>]*>[^<]*<\/a>/g, "$1")
             .replace(/&nbsp;/g, " "); // otherwise .text() below outputs non-breaking space in unicode
 
@@ -369,18 +371,22 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
 
         this.$widget.show();
 
-        this.$editor.on("click", e => this.handleEditorClick(e));
+        this.$editor.on("click", (e) => this.handleEditorClick(e));
 
         this.textEditor = await CKEditor.BalloonEditor.create(this.$editor[0], editorConfig);
-        this.textEditor.model.document.on('change:data', () => this.dataChanged());
-        this.textEditor.editing.view.document.on('enter', (event, data) => {
-            // disable entering new line - see https://github.com/ckeditor/ckeditor5/issues/9422
-            data.preventDefault();
-            event.stop();
-        }, {priority: 'high'});
+        this.textEditor.model.document.on("change:data", () => this.dataChanged());
+        this.textEditor.editing.view.document.on(
+            "enter",
+            (event, data) => {
+                // disable entering new line - see https://github.com/ckeditor/ckeditor5/issues/9422
+                data.preventDefault();
+                event.stop();
+            },
+            { priority: "high" }
+        );
 
         // disable spellcheck for attribute editor
-        this.textEditor.editing.view.change(writer => writer.setAttribute('spellcheck', 'false', this.textEditor.editing.view.document.getRoot()));
+        this.textEditor.editing.view.change((writer) => writer.setAttribute("spellcheck", "false", this.textEditor.editing.view.document.getRoot()));
     }
 
     dataChanged() {
@@ -388,8 +394,7 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
 
         if (this.lastSavedContent === this.textEditor.getData()) {
             this.$saveAttributesButton.fadeOut();
-        }
-        else {
+        } else {
             this.$saveAttributesButton.fadeIn();
         }
 
@@ -410,17 +415,15 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
 
             try {
                 parsedAttrs = attributeParser.lexAndParse(this.getPreprocessedData(), true);
-            }
-            catch (e) {
+            } catch (e) {
                 // the input is incorrect because the user messed up with it and now needs to fix it manually
                 return null;
             }
 
-            let matchedAttr = null;
+            let matchedAttr: Attribute | null = null;
 
             for (const attr of parsedAttrs) {
-                if (attr.startIndex && clickIndex > attr.startIndex &&
-                    attr.endIndex && clickIndex <= attr.endIndex) {
+                if (attr.startIndex && clickIndex > attr.startIndex && attr.endIndex && clickIndex <= attr.endIndex) {
                     matchedAttr = attr;
                     break;
                 }
@@ -428,7 +431,7 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
 
             setTimeout(() => {
                 if (matchedAttr) {
-                    this.$editor.tooltip('hide');
+                    this.$editor.tooltip("hide");
 
                     this.attributeDetailWidget.showAttributeDetail({
                         allAttributes: parsedAttrs,
@@ -437,13 +440,11 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
                         x: e.pageX,
                         y: e.pageY
                     });
-                }
-                else {
+                } else {
                     this.showHelpTooltip();
                 }
             }, 100);
-        }
-        else {
+        } else {
             this.showHelpTooltip();
         }
     }
@@ -452,14 +453,14 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
         this.attributeDetailWidget.hide();
 
         this.$editor.tooltip({
-            trigger: 'focus',
+            trigger: "focus",
             html: true,
             title: HELP_TEXT,
-            placement: 'bottom',
+            placement: "bottom",
             offset: "0,30"
         });
 
-        this.$editor.tooltip('show');
+        this.$editor.tooltip("show");
     }
 
     getClickIndex(pos: TextPosition) {
@@ -470,8 +471,8 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
         while (curNode.previousSibling) {
             curNode = curNode.previousSibling;
 
-            if (curNode.name === 'reference') {
-                clickIndex += curNode._attrs.get('notePath').length + 1;
+            if (curNode.name === "reference") {
+                clickIndex += curNode._attrs.get("notePath").length + 1;
             } else {
                 clickIndex += curNode.data.length;
             }
@@ -481,9 +482,9 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
     }
 
     async loadReferenceLinkTitle($el: JQuery<HTMLElement>, href: string) {
-        const {noteId} = linkService.parseNavigationStateFromUrl(href);
+        const { noteId } = linkService.parseNavigationStateFromUrl(href);
         const note = noteId ? await froca.getNote(noteId, true) : null;
-        const title = note ? note.title : '[missing]';
+        const title = note ? note.title : "[missing]";
 
         $el.text(title);
     }
@@ -528,19 +529,18 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget implem
     }
 
     focus() {
-        this.$editor.trigger('focus');
+        this.$editor.trigger("focus");
 
-        this.textEditor.model.change( writer => {
-            const positionAt = writer.createPositionAt(this.textEditor.model.document.getRoot(), 'end');
+        this.textEditor.model.change((writer) => {
+            const positionAt = writer.createPositionAt(this.textEditor.model.document.getRoot(), "end");
 
             writer.setSelection(positionAt);
-        } );
+        });
     }
 
-    entitiesReloadedEvent({loadResults}: EventData<"entitiesReloaded">) {
-        if (loadResults.getAttributeRows(this.componentId).find(attr => attributeService.isAffecting(attr, this.note))) {
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
+        if (loadResults.getAttributeRows(this.componentId).find((attr) => attributeService.isAffecting(attr, this.note))) {
             this.refresh();
         }
     }
-
 }

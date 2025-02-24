@@ -12,21 +12,21 @@ const TPL = `
         .bulk-actions-dialog .modal-body h4:not(:first-child) {
             margin-top: 20px;
         }
-    
+
         .bulk-actions-dialog .bulk-available-action-list button {
             padding: 2px 7px;
             margin-right: 10px;
             margin-bottom: 5px;
         }
-    
+
         .bulk-actions-dialog .bulk-existing-action-list {
             width: 100%;
         }
-    
+
         .bulk-actions-dialog .bulk-existing-action-list td {
             padding: 7px;
         }
-    
+
         .bulk-actions-dialog .bulk-existing-action-list .button-column {
             /* minimal width so that table remains static sized and most space remains for middle column with settings */
             width: 50px;
@@ -38,27 +38,29 @@ const TPL = `
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">${t('bulk_actions.bulk_actions')}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('bulk_actions.close')}"></button>
+                <h5 class="modal-title">${t("bulk_actions.bulk_actions")}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("bulk_actions.close")}"></button>
             </div>
             <div class="modal-body">
-                <h4>${t('bulk_actions.affected_notes')}: <span class="affected-note-count">0</span></h4>
+                <h4>${t("bulk_actions.affected_notes")}: <span class="affected-note-count">0</span></h4>
 
                 <div class="form-check">
-                    <input id="include-descendants" class="include-descendants form-check-input" type="checkbox" value="">
-                    <label for="include-descendants" class="form-check-label">${t('bulk_actions.include_descendants')}</label>
+                    <label for="include-descendants" class="form-check-label tn-checkbox">
+                        <input id="include-descendants" class="include-descendants form-check-input" type="checkbox" value="">
+                        ${t("bulk_actions.include_descendants")}
+                    </label>
                 </div>
 
-                <h4>${t('bulk_actions.available_actions')}</h4>
+                <h4>${t("bulk_actions.available_actions")}</h4>
 
                 <table class="bulk-available-action-list"></table>
 
-                <h4>${t('bulk_actions.chosen_actions')}</h4>
+                <h4>${t("bulk_actions.chosen_actions")}</h4>
 
                 <table class="bulk-existing-action-list"></table>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="execute-bulk-actions btn btn-primary">${t('bulk_actions.execute_bulk_actions')}</button>
+                <button type="submit" class="execute-bulk-actions btn btn-primary">${t("bulk_actions.execute_bulk_actions")}</button>
             </div>
         </div>
     </div>
@@ -75,10 +77,10 @@ export default class BulkActionsDialog extends BasicWidget {
         this.$availableActionList = this.$widget.find(".bulk-available-action-list");
         this.$existingActionList = this.$widget.find(".bulk-existing-action-list");
 
-        this.$widget.on('click', '[data-action-add]', async event => {
-            const actionName = $(event.target).attr('data-action-add');
+        this.$widget.on("click", "[data-action-add]", async (event) => {
+            const actionName = $(event.target).attr("data-action-add");
 
-            await bulkActionService.addAction('_bulkAction', actionName);
+            await bulkActionService.addAction("_bulkAction", actionName);
 
             await this.refresh();
         });
@@ -90,7 +92,7 @@ export default class BulkActionsDialog extends BasicWidget {
                 includeDescendants: this.$includeDescendants.is(":checked")
             });
 
-            toastService.showMessage(t('bulk_actions.bulk_actions_executed'), 3000);
+            toastService.showMessage(t("bulk_actions.bulk_actions_executed"), 3000);
 
             utils.closeActiveDialog();
         });
@@ -99,23 +101,23 @@ export default class BulkActionsDialog extends BasicWidget {
     async refresh() {
         this.renderAvailableActions();
 
-        const {affectedNoteCount} = await server.post('bulk-action/affected-notes', {
+        const { affectedNoteCount } = await server.post("bulk-action/affected-notes", {
             noteIds: this.selectedOrActiveNoteIds,
             includeDescendants: this.$includeDescendants.is(":checked")
         });
 
         this.$affectedNoteCount.text(affectedNoteCount);
 
-        const bulkActionNote = await froca.getNote('_bulkAction');
+        const bulkActionNote = await froca.getNote("_bulkAction");
 
         const actions = bulkActionService.parseActions(bulkActionNote);
 
         this.$existingActionList.empty();
 
         if (actions.length > 0) {
-            this.$existingActionList.append(...actions.map(action => action.render()));
+            this.$existingActionList.append(...actions.map((action) => action.render()));
         } else {
-            this.$existingActionList.append($("<p>").text(t('bulk_actions.none_yet')))
+            this.$existingActionList.append($("<p>").text(t("bulk_actions.none_yet")));
         }
     }
 
@@ -129,25 +131,16 @@ export default class BulkActionsDialog extends BasicWidget {
                 .append($actionGroupList);
 
             for (const action of actionGroup.actions) {
-                $actionGroupList.append(
-                    $('<button class="btn btn-sm">')
-                        .attr('data-action-add', action.actionName)
-                        .text(action.actionTitle)
-                );
+                $actionGroupList.append($('<button class="btn btn-sm">').attr("data-action-add", action.actionName).text(action.actionTitle));
             }
 
             this.$availableActionList.append($actionGroup);
         }
     }
 
-    entitiesReloadedEvent({loadResults}) {
+    entitiesReloadedEvent({ loadResults }) {
         // only refreshing deleted attrs, otherwise components update themselves
-        if (loadResults.getAttributeRows().find(row =>
-            row.type === 'label'
-            && row.name === 'action'
-            && row.noteId === '_bulkAction'
-            && row.isDeleted)) {
-
+        if (loadResults.getAttributeRows().find((row) => row.type === "label" && row.name === "action" && row.noteId === "_bulkAction" && row.isDeleted)) {
             // this may be triggered from e.g., sync without open widget, then no need to refresh the widget
             if (this.selectedOrActiveNoteIds && this.$widget.is(":visible")) {
                 this.refresh();
@@ -155,7 +148,7 @@ export default class BulkActionsDialog extends BasicWidget {
         }
     }
 
-    async openBulkActionsDialogEvent({selectedOrActiveNoteIds}) {
+    async openBulkActionsDialogEvent({ selectedOrActiveNoteIds }) {
         this.selectedOrActiveNoteIds = selectedOrActiveNoteIds;
         this.$includeDescendants.prop("checked", false);
 

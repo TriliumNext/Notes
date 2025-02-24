@@ -4,7 +4,7 @@ import scriptService from "../services/script.js";
 import cls from "../services/cls.js";
 import sql from "../services/sql.js";
 import becca from "../becca/becca.js";
-import { Request, Response, Router } from 'express';
+import type { Request, Response, Router } from "express";
 
 function handleRequest(req: Request, res: Response) {
     // express puts content after first slash into 0 index element
@@ -13,7 +13,7 @@ function handleRequest(req: Request, res: Response) {
 
     const attributeIds = sql.getColumn<string>("SELECT attributeId FROM attributes WHERE isDeleted = 0 AND type = 'label' AND name IN ('customRequestHandler', 'customResourceProvider')");
 
-    const attrs = attributeIds.map(attrId => becca.getAttribute(attrId));
+    const attrs = attributeIds.map((attrId) => becca.getAttribute(attrId));
 
     for (const attr of attrs) {
         if (!attr?.value.trim()) {
@@ -25,8 +25,7 @@ function handleRequest(req: Request, res: Response) {
 
         try {
             match = path.match(regex);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             log.error(`Testing path for label '${attr.attributeId}', regex '${attr.value}' failed with error: ${e.message}, stack: ${e.stack}`);
             continue;
         }
@@ -35,7 +34,7 @@ function handleRequest(req: Request, res: Response) {
             continue;
         }
 
-        if (attr.name === 'customRequestHandler') {
+        if (attr.name === "customRequestHandler") {
             const note = attr.getNote();
 
             log.info(`Handling custom request '${path}' with note '${note.noteId}'`);
@@ -46,19 +45,14 @@ function handleRequest(req: Request, res: Response) {
                     req,
                     res
                 });
-            }
-            catch (e: any) {
+            } catch (e: any) {
                 log.error(`Custom handler '${note.noteId}' failed with: ${e.message}, ${e.stack}`);
 
-                res.setHeader("Content-Type", "text/plain")
-                    .status(500)
-                    .send(e.message);
+                res.setHeader("Content-Type", "text/plain").status(500).send(e.message);
             }
-        }
-        else if (attr.name === 'customResourceProvider') {
+        } else if (attr.name === "customResourceProvider") {
             fileService.downloadNoteInt(attr.noteId, res);
-        }
-        else {
+        } else {
             throw new Error(`Unrecognized attribute name '${attr.name}'`);
         }
 
@@ -68,15 +62,13 @@ function handleRequest(req: Request, res: Response) {
     const message = `No handler matched for custom '${path}' request.`;
 
     log.info(message);
-    res.setHeader("Content-Type", "text/plain")
-        .status(404)
-        .send(message);
+    res.setHeader("Content-Type", "text/plain").status(404).send(message);
 }
 
 function register(router: Router) {
     // explicitly no CSRF middleware since it's meant to allow integration from external services
 
-    router.all('/custom/:path*', (req: Request, res: Response, next) => {
+    router.all("/custom/:path*", (req: Request, res: Response, next) => {
         cls.namespace.bindEmitter(req);
         cls.namespace.bindEmitter(res);
 

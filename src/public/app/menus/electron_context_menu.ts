@@ -1,23 +1,23 @@
 import utils from "../services/utils.js";
 import options from "../services/options.js";
 import zoomService from "../components/zoom.js";
-import contextMenu, { MenuItem } from "./context_menu.js";
+import contextMenu, { type MenuItem } from "./context_menu.js";
 import { t } from "../services/i18n.js";
 import type { BrowserWindow } from "electron";
-import { CommandNames } from "../components/app_context.js";
+import type { CommandNames } from "../components/app_context.js";
 
 function setupContextMenu() {
-    const electron = utils.dynamicRequire('electron');
+    const electron = utils.dynamicRequire("electron");
 
-    const remote = utils.dynamicRequire('@electron/remote');
+    const remote = utils.dynamicRequire("@electron/remote");
     // FIXME: Remove typecast once Electron is properly integrated.
-    const {webContents} = remote.getCurrentWindow() as BrowserWindow;
+    const { webContents } = remote.getCurrentWindow() as BrowserWindow;
 
-    webContents.on('context-menu', (event, params) => {
-        const {editFlags} = params;
+    webContents.on("context-menu", (event, params) => {
+        const { editFlags } = params;
         const hasText = params.selectionText.trim().length > 0;
         const isMac = process.platform === "darwin";
-        const platformModifier = isMac ? 'Meta' : 'Ctrl';
+        const platformModifier = isMac ? "Meta" : "Ctrl";
 
         const items: MenuItem<CommandNames>[] = [];
 
@@ -60,7 +60,7 @@ function setupContextMenu() {
             });
         }
 
-        if (!["", "javascript:", "about:blank#blocked"].includes(params.linkURL) && params.mediaType === 'none') {
+        if (!["", "javascript:", "about:blank#blocked"].includes(params.linkURL) && params.mediaType === "none") {
             items.push({
                 title: t("electron_context_menu.copy-link"),
                 uiIcon: "bx bx-copy",
@@ -94,9 +94,7 @@ function setupContextMenu() {
         }
 
         if (hasText) {
-            const shortenedSelection = params.selectionText.length > 15
-                ? (`${params.selectionText.substr(0, 13)}…`)
-                : params.selectionText;
+            const shortenedSelection = params.selectionText.length > 15 ? `${params.selectionText.substr(0, 13)}…` : params.selectionText;
 
             // Read the search engine from the options and fallback to DuckDuckGo if the option is not set.
             const customSearchEngineName = options.get("customSearchEngineName");
@@ -114,7 +112,7 @@ function setupContextMenu() {
             // Replace the placeholder with the real search keyword.
             let searchUrl = searchEngineUrl.replace("{keyword}", encodeURIComponent(params.selectionText));
 
-            items.push({title: "----"});
+            items.push({ title: "----" });
 
             items.push({
                 enabled: editFlags.canPaste,
@@ -134,8 +132,8 @@ function setupContextMenu() {
             x: params.x / zoomLevel,
             y: params.y / zoomLevel,
             items,
-            selectMenuItemHandler: ({command, spellingSuggestion}) => {
-                if (command === 'replaceMisspelling' && spellingSuggestion) {
+            selectMenuItemHandler: ({ command, spellingSuggestion }) => {
+                if (command === "replaceMisspelling" && spellingSuggestion) {
                     webContents.insertText(spellingSuggestion);
                 }
             }

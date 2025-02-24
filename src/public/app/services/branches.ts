@@ -1,13 +1,12 @@
-import utils from './utils.js';
-import server from './server.js';
-import toastService, { ToastOptions } from "./toast.js";
+import utils from "./utils.js";
+import server from "./server.js";
+import toastService, { type ToastOptions } from "./toast.js";
 import froca from "./froca.js";
 import hoistedNoteService from "./hoisted_note.js";
 import ws from "./ws.js";
 import appContext from "../components/app_context.js";
-import { t } from './i18n.js';
-import { Node } from './tree.js';
-import { ResolveOptions } from '../widgets/dialogs/delete_notes.js';
+import { t } from "./i18n.js";
+import type { ResolveOptions } from "../widgets/dialogs/delete_notes.js";
 
 // TODO: Deduplicate type with server
 interface Response {
@@ -24,7 +23,7 @@ async function moveBeforeBranch(branchIdsToMove: string[], beforeBranchId: strin
         return;
     }
 
-    if (['root', '_lbRoot', '_lbAvailableLaunchers', '_lbVisibleLaunchers'].includes(beforeBranch.noteId)) {
+    if (beforeBranch.noteId === "root" || utils.isLaunchBarConfig(beforeBranch.noteId)) {
         toastService.showError(t("branches.cannot-move-notes-here"));
         return;
     }
@@ -48,13 +47,7 @@ async function moveAfterBranch(branchIdsToMove: string[], afterBranchId: string)
         return;
     }
 
-    const forbiddenNoteIds = [
-        'root',
-        hoistedNoteService.getHoistedNoteId(),
-        '_lbRoot',
-        '_lbAvailableLaunchers',
-        '_lbVisibleLaunchers'
-    ];
+    const forbiddenNoteIds = ["root", hoistedNoteService.getHoistedNoteId(), "_lbRoot", "_lbAvailableLaunchers", "_lbVisibleLaunchers"];
 
     if (forbiddenNoteIds.includes(afterNote.noteId)) {
         toastService.showError(t("branches.cannot-move-notes-here"));
@@ -79,7 +72,7 @@ async function moveToParentNote(branchIdsToMove: string[], newParentBranchId: st
         return;
     }
 
-    if (newParentBranch.noteId === '_lbRoot') {
+    if (newParentBranch.noteId === "_lbRoot") {
         toastService.showError(t("branches.cannot-move-notes-here"));
         return;
     }
@@ -89,9 +82,7 @@ async function moveToParentNote(branchIdsToMove: string[], newParentBranchId: st
     for (const branchIdToMove of branchIdsToMove) {
         const branchToMove = froca.getBranch(branchIdToMove);
 
-        if (!branchToMove
-            || branchToMove.noteId === hoistedNoteService.getHoistedNoteId()
-            || (await branchToMove.getParentNote())?.type === 'search') {
+        if (!branchToMove || branchToMove.noteId === hoistedNoteService.getHoistedNoteId() || (await branchToMove.getParentNote())?.type === "search") {
             continue;
         }
 
@@ -116,10 +107,10 @@ async function deleteNotes(branchIdsToDelete: string[], forceDeleteAllClones = f
     if (utils.isMobile()) {
         proceed = true;
         deleteAllClones = false;
-    }
-    else {
-        ({proceed, deleteAllClones, eraseNotes} = await new Promise<ResolveOptions>(res =>
-            appContext.triggerCommand('showDeleteNotesDialog', {branchIdsToDelete, callback: res, forceDeleteAllClones})));
+    } else {
+        ({ proceed, deleteAllClones, eraseNotes } = await new Promise<ResolveOptions>((res) =>
+            appContext.triggerCommand("showDeleteNotesDialog", { branchIdsToDelete, callback: res, forceDeleteAllClones })
+        ));
     }
 
     if (!proceed) {
@@ -128,8 +119,7 @@ async function deleteNotes(branchIdsToDelete: string[], forceDeleteAllClones = f
 
     try {
         await activateParentNotePath();
-    }
-    catch (e) {
+    } catch (e) {
         console.error(e);
     }
 
@@ -141,7 +131,7 @@ async function deleteNotes(branchIdsToDelete: string[], forceDeleteAllClones = f
         counter++;
 
         const last = counter === branchIdsToDelete.length;
-        const query = `?taskId=${taskId}&eraseNotes=${eraseNotes ? 'true' : 'false'}&last=${last ? 'true' : 'false'}`;
+        const query = `?taskId=${taskId}&eraseNotes=${eraseNotes ? "true" : "false"}&last=${last ? "true" : "false"}`;
 
         const branch = froca.getBranch(branchIdToDelete);
 
@@ -169,10 +159,8 @@ async function activateParentNotePath() {
     }
 }
 
-async function moveNodeUpInHierarchy(node: Node) {
-    if (hoistedNoteService.isHoistedNode(node)
-        || hoistedNoteService.isTopLevelNode(node)
-        || node.getParent().data.noteType === 'search') {
+async function moveNodeUpInHierarchy(node: Fancytree.FancytreeNode) {
+    if (hoistedNoteService.isHoistedNode(node) || hoistedNoteService.isTopLevelNode(node) || node.getParent().data.noteType === "search") {
         return;
     }
 
@@ -193,20 +181,19 @@ async function moveNodeUpInHierarchy(node: Node) {
 }
 
 function filterSearchBranches(branchIds: string[]) {
-    return branchIds.filter(branchId => !branchId.startsWith('virt-'));
+    return branchIds.filter((branchId) => !branchId.startsWith("virt-"));
 }
 
 function filterRootNote(branchIds: string[]) {
     const hoistedNoteId = hoistedNoteService.getHoistedNoteId();
 
-    return branchIds.filter(branchId => {
+    return branchIds.filter((branchId) => {
         const branch = froca.getBranch(branchId);
         if (!branch) {
             return false;
         }
 
-        return branch.noteId !== 'root'
-            && branch.noteId !== hoistedNoteId;
+        return branch.noteId !== "root" && branch.noteId !== hoistedNoteId;
     });
 }
 
@@ -219,17 +206,17 @@ function makeToast(id: string, message: string): ToastOptions {
     };
 }
 
-ws.subscribeToMessages(async message => {
-    if (message.taskType !== 'deleteNotes') {
+ws.subscribeToMessages(async (message) => {
+    if (message.taskType !== "deleteNotes") {
         return;
     }
 
-    if (message.type === 'taskError') {
+    if (message.type === "taskError") {
         toastService.closePersistent(message.taskId);
         toastService.showError(message.message);
-    } else if (message.type === 'taskProgressCount') {
+    } else if (message.type === "taskProgressCount") {
         toastService.showPersistent(makeToast(message.taskId, t("branches.delete-notes-in-progress", { count: message.progressCount })));
-    } else if (message.type === 'taskSucceeded') {
+    } else if (message.type === "taskSucceeded") {
         const toast = makeToast(message.taskId, t("branches.delete-finished-successfully"));
         toast.closeAfter = 5000;
 
@@ -237,17 +224,17 @@ ws.subscribeToMessages(async message => {
     }
 });
 
-ws.subscribeToMessages(async message => {
-    if (message.taskType !== 'undeleteNotes') {
+ws.subscribeToMessages(async (message) => {
+    if (message.taskType !== "undeleteNotes") {
         return;
     }
 
-    if (message.type === 'taskError') {
+    if (message.type === "taskError") {
         toastService.closePersistent(message.taskId);
         toastService.showError(message.message);
-    } else if (message.type === 'taskProgressCount') {
+    } else if (message.type === "taskProgressCount") {
         toastService.showPersistent(makeToast(message.taskId, t("branches.undeleting-notes-in-progress", { count: message.progressCount })));
-    } else if (message.type === 'taskSucceeded') {
+    } else if (message.type === "taskSucceeded") {
         const toast = makeToast(message.taskId, t("branches.undeleting-notes-finished-successfully"));
         toast.closeAfter = 5000;
 
@@ -292,5 +279,5 @@ export default {
     moveNodeUpInHierarchy,
     cloneNoteAfter,
     cloneNoteToBranch,
-    cloneNoteToParentNote,
+    cloneNoteToParentNote
 };

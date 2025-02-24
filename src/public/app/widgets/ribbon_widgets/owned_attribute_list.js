@@ -35,13 +35,9 @@ export default class OwnedAttributeListWidget extends NoteContextAwareWidget {
     constructor() {
         super();
 
-        this.attributeDetailWidget = new AttributeDetailWidget()
-            .contentSized()
-            .setParent(this);
+        this.attributeDetailWidget = new AttributeDetailWidget().contentSized().setParent(this);
 
-        this.attributeEditorWidget = new AttributeEditorWidget(this.attributeDetailWidget)
-            .contentSized()
-            .setParent(this);
+        this.attributeEditorWidget = new AttributeEditorWidget(this.attributeDetailWidget).contentSized().setParent(this);
 
         this.child(this.attributeEditorWidget, this.attributeDetailWidget);
     }
@@ -49,7 +45,7 @@ export default class OwnedAttributeListWidget extends NoteContextAwareWidget {
     getTitle() {
         return {
             show: !this.note.isLaunchBarConfig(),
-            title: t('owned_attribute_list.owned_attributes'),
+            title: t("owned_attribute_list.owned_attributes"),
             icon: "bx bx-list-check"
         };
     }
@@ -58,10 +54,10 @@ export default class OwnedAttributeListWidget extends NoteContextAwareWidget {
         this.$widget = $(TPL);
         this.contentSized();
 
-        this.$widget.find('.attr-editor-placeholder').replaceWith(this.attributeEditorWidget.render());
+        this.$widget.find(".attr-editor-placeholder").replaceWith(this.attributeEditorWidget.render());
         this.$widget.append(this.attributeDetailWidget.render());
 
-        this.$title = $('<div>');
+        this.$title = $("<div>");
     }
 
     async saveAttributesCommand() {
@@ -72,7 +68,7 @@ export default class OwnedAttributeListWidget extends NoteContextAwareWidget {
         await this.attributeEditorWidget.refresh();
     }
 
-    async updateAttributeListCommand({attributes}) {
+    async updateAttributeListCommand({ attributes }) {
         await this.attributeEditorWidget.updateAttributeList(attributes);
     }
 

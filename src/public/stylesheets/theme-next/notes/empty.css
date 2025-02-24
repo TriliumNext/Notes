@@ -1,0 +1,11 @@
+/* The container */
+div.note-detail-empty {
+    max-width: 70%;
+    margin: 50px auto;
+}
+
+/* The search results list */
+.note-detail-empty span.aa-dropdown-menu {
+    margin-top: 1em;
+    border: unset;
+}

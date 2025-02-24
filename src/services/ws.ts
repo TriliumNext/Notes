@@ -1,5 +1,5 @@
-import WebSocket from "ws";
-import utils from "./utils.js";
+import { WebSocketServer as WebSocketServer, WebSocket } from "ws";
+import { isDev, isElectron, randomString } from "./utils.js";
 import log from "./log.js";
 import sql from "./sql.js";
 import cls from "./cls.js";
@@ -9,32 +9,31 @@ import protectedSessionService from "./protected_session.js";
 import becca from "../becca/becca.js";
 import AbstractBeccaEntity from "../becca/entities/abstract_becca_entity.js";
 
-import env from "./env.js";
-import { IncomingMessage, Server } from 'http';
-import { EntityChange } from './entity_changes_interface.js';
+import type { IncomingMessage, Server as HttpServer } from "http";
+import type { EntityChange } from "./entity_changes_interface.js";
 
-if (env.isDev()) {
+if (isDev) {
     const chokidar = (await import("chokidar")).default;
     const debounce = (await import("debounce")).default;
     const debouncedReloadFrontend = debounce(() => reloadFrontend("source code change"), 200);
     chokidar
-        .watch(utils.isElectron() ? 'dist/src/public' : 'src/public')
-        .on('add', debouncedReloadFrontend)
-        .on('change', debouncedReloadFrontend)
-        .on('unlink', debouncedReloadFrontend);
+        .watch("src/public")
+        .on("add", debouncedReloadFrontend)
+        .on("change", debouncedReloadFrontend)
+        .on("unlink", debouncedReloadFrontend);
 }
 
-let webSocketServer!: WebSocket.Server;
+let webSocketServer!: WebSocketServer;
 let lastSyncedPush: number | null = null;
 
 interface Message {
     type: string;
     data?: {
-        lastSyncedPush?: number | null,
-        entityChanges?: any[],
-        shrinkImages?: boolean
-    } | null,
-    lastSyncedPush?: number | null,
+        lastSyncedPush?: number | null;
+        entityChanges?: any[];
+        shrinkImages?: boolean;
+    } | null;
+    lastSyncedPush?: number | null;
 
     progressCount?: number;
     taskId?: string;
@@ -58,50 +57,45 @@ interface Message {
 }
 
 type SessionParser = (req: IncomingMessage, params: {}, cb: () => void) => void;
-function init(httpServer: Server, sessionParser: SessionParser) {
-    webSocketServer = new WebSocket.Server({
+function init(httpServer: HttpServer, sessionParser: SessionParser) {
+    webSocketServer = new WebSocketServer({
         verifyClient: (info, done) => {
             sessionParser(info.req, {}, () => {
-                const allowed = utils.isElectron()
-                    || (info.req as any).session.loggedIn
-                    || (config.General && config.General.noAuthentication);
+                const allowed = isElectron || (info.req as any).session.loggedIn || (config.General && config.General.noAuthentication);
 
                 if (!allowed) {
                     log.error("WebSocket connection not allowed because session is neither electron nor logged in.");
                 }
 
-                done(allowed)
+                done(allowed);
             });
         },
         server: httpServer
     });
 
-    webSocketServer.on('connection', (ws, req) => {
-        (ws as any).id = utils.randomString(10);
+    webSocketServer.on("connection", (ws, req) => {
+        (ws as any).id = randomString(10);
 
         console.log(`websocket client connected`);
 
-        ws.on('message', async messageJson => {
+        ws.on("message", async (messageJson) => {
             const message = JSON.parse(messageJson as any);
 
-            if (message.type === 'log-error') {
+            if (message.type === "log-error") {
                 log.info(`JS Error: ${message.error}\r
 Stack: ${message.stack}`);
-            }
-            else if (message.type === 'log-info') {
+            } else if (message.type === "log-info") {
                 log.info(`JS Info: ${message.info}`);
-            }
-            else if (message.type === 'ping') {
+            } else if (message.type === "ping") {
                 await syncMutexService.doExclusively(() => sendPing(ws));
-            }
-            else {
-                log.error('Unrecognized message: ');
+            } else {
+                log.error("Unrecognized message: ");
                 log.error(message);
             }
         });
     });
 
-    webSocketServer.on('error', error => {
+    webSocketServer.on("error", (error) => {
         // https://github.com/zadam/trilium/issues/3374#issuecomment-1341053765
         console.log(error);
     });
@@ -119,7 +113,7 @@ function sendMessageToAllClients(message: Message) {
     const jsonStr = JSON.stringify(message);
 
     if (webSocketServer) {
-        if (message.type !== 'sync-failed' && message.type !== 'api-log-messages') {
+        if (message.type !== "sync-failed" && message.type !== "api-log-messages") {
             log.info(`Sending message to all clients: ${jsonStr}`);
         }
 
@@ -139,19 +133,19 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
     // fill in some extra data needed by the frontend
     // first try to use becca, which works for non-deleted entities
     // only when that fails, try to load from the database
-    if (entityChange.entityName === 'attributes') {
+    if (entityChange.entityName === "attributes") {
         entityChange.entity = becca.getAttribute(entityChange.entityId);
 
         if (!entityChange.entity) {
             entityChange.entity = sql.getRow(`SELECT * FROM attributes WHERE attributeId = ?`, [entityChange.entityId]);
         }
-    } else if (entityChange.entityName === 'branches') {
+    } else if (entityChange.entityName === "branches") {
         entityChange.entity = becca.getBranch(entityChange.entityId);
 
         if (!entityChange.entity) {
             entityChange.entity = sql.getRow(`SELECT * FROM branches WHERE branchId = ?`, [entityChange.entityId]);
         }
-    } else if (entityChange.entityName === 'notes') {
+    } else if (entityChange.entityName === "notes") {
         entityChange.entity = becca.getNote(entityChange.entityId);
 
         if (!entityChange.entity) {
@@ -161,11 +155,14 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
                 entityChange.entity.title = protectedSessionService.decryptString(entityChange.entity.title || "");
             }
         }
-    } else if (entityChange.entityName === 'revisions') {
-        entityChange.noteId = sql.getValue<string>(`SELECT noteId
+    } else if (entityChange.entityName === "revisions") {
+        entityChange.noteId = sql.getValue<string>(
+            `SELECT noteId
                                                     FROM revisions
-                                                    WHERE revisionId = ?`, [entityChange.entityId]);
-    } else if (entityChange.entityName === 'note_reordering') {
+                                                    WHERE revisionId = ?`,
+            [entityChange.entityId]
+        );
+    } else if (entityChange.entityName === "note_reordering") {
         entityChange.positions = {};
 
         const parentNote = becca.getNote(entityChange.entityId);
@@ -177,17 +174,26 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
                 }
             }
         }
-    } else if (entityChange.entityName === 'options') {
+    } else if (entityChange.entityName === "options") {
         entityChange.entity = becca.getOption(entityChange.entityId);
 
         if (!entityChange.entity) {
             entityChange.entity = sql.getRow(`SELECT * FROM options WHERE name = ?`, [entityChange.entityId]);
         }
-    } else if (entityChange.entityName === 'attachments') {
-        entityChange.entity = sql.getRow(`SELECT attachments.*, LENGTH(blobs.content) AS contentLength
+    } else if (entityChange.entityName === "attachments") {
+        entityChange.entity = sql.getRow(
+            `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
                                                 FROM attachments
                                                 JOIN blobs USING (blobId)
-                                                WHERE attachmentId = ?`, [entityChange.entityId]);
+                                                WHERE attachmentId = ?`,
+            [entityChange.entityId]
+        );
+    } else if (entityChange.entityName === "tasks") {
+        entityChange.entity = becca.getTask(entityChange.entity);
+
+        if (!entityChange.entity) {
+            entityChange.entity = sql.getRow(`SELECT * FROM tasks WHERE taskId = ?`, [entityChange.entityId]);
+        }
     }
 
     if (entityChange.entity instanceof AbstractBeccaEntity) {
@@ -197,20 +203,20 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
 
 // entities with higher number can reference the entities with lower number
 const ORDERING: Record<string, number> = {
-    "etapi_tokens": 0,
-    "attributes": 2,
-    "branches": 2,
-    "blobs": 0,
-    "note_reordering": 2,
-    "revisions": 2,
-    "attachments": 3,
-    "notes": 1,
-    "options": 0
+    etapi_tokens: 0,
+    attributes: 2,
+    branches: 2,
+    blobs: 0,
+    note_reordering: 2,
+    revisions: 2,
+    attachments: 3,
+    notes: 1,
+    options: 0
 };
 
 function sendPing(client: WebSocket, entityChangeIds = []) {
     if (entityChangeIds.length === 0) {
-        sendMessage(client, { type: 'ping' });
+        sendMessage(client, { type: "ping" });
 
         return;
     }
@@ -228,14 +234,13 @@ function sendPing(client: WebSocket, entityChangeIds = []) {
     for (const entityChange of entityChanges) {
         try {
             fillInAdditionalProperties(entityChange);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             log.error(`Could not fill additional properties for entity change ${JSON.stringify(entityChange)} because of error: ${e.message}: ${e.stack}`);
         }
     }
 
     sendMessage(client, {
-        type: 'frontend-update',
+        type: "frontend-update",
         data: {
             lastSyncedPush,
             entityChanges
@@ -247,28 +252,28 @@ function sendTransactionEntityChangesToAllClients() {
     if (webSocketServer) {
         const entityChangeIds = cls.getAndClearEntityChangeIds();
 
-        webSocketServer.clients.forEach(client => sendPing(client, entityChangeIds));
+        webSocketServer.clients.forEach((client) => sendPing(client, entityChangeIds));
     }
 }
 
 function syncPullInProgress() {
-    sendMessageToAllClients({ type: 'sync-pull-in-progress', lastSyncedPush });
+    sendMessageToAllClients({ type: "sync-pull-in-progress", lastSyncedPush });
 }
 
 function syncPushInProgress() {
-    sendMessageToAllClients({ type: 'sync-push-in-progress', lastSyncedPush });
+    sendMessageToAllClients({ type: "sync-push-in-progress", lastSyncedPush });
 }
 
 function syncFinished() {
-    sendMessageToAllClients({ type: 'sync-finished', lastSyncedPush });
+    sendMessageToAllClients({ type: "sync-finished", lastSyncedPush });
 }
 
 function syncFailed() {
-    sendMessageToAllClients({ type: 'sync-failed', lastSyncedPush });
+    sendMessageToAllClients({ type: "sync-failed", lastSyncedPush });
 }
 
 function reloadFrontend(reason: string) {
-    sendMessageToAllClients({ type: 'reload-frontend', reason });
+    sendMessageToAllClients({ type: "reload-frontend", reason });
 }
 
 function setLastSyncedPush(entityChangeId: number) {

@@ -23,11 +23,11 @@ const TPL = `
     </style>
     
     <div class="search-no-results alert alert-info">
-        ${t('search_result.no_notes_found')}
+        ${t("search_result.no_notes_found")}
     </div>
     
     <div class="search-not-executed-yet alert alert-info">
-        ${t('search_result.search_not_executed')}
+        ${t("search_result.search_not_executed")}
     </div>
     
     <div class="search-result-widget-content">
@@ -36,16 +36,15 @@ const TPL = `
 
 export default class SearchResultWidget extends NoteContextAwareWidget {
     isEnabled() {
-        return super.isEnabled()
-            && this.note.type === 'search';
+        return super.isEnabled() && this.note.type === "search";
     }
 
     doRender() {
         this.$widget = $(TPL);
         this.contentSized();
-        this.$content = this.$widget.find('.search-result-widget-content');
-        this.$noResults = this.$widget.find('.search-no-results');
-        this.$notExecutedYet = this.$widget.find('.search-not-executed-yet');
+        this.$content = this.$widget.find(".search-result-widget-content");
+        this.$noResults = this.$widget.find(".search-no-results");
+        this.$notExecutedYet = this.$widget.find(".search-not-executed-yet");
     }
 
     async refreshWithNote(note) {
@@ -57,7 +56,7 @@ export default class SearchResultWidget extends NoteContextAwareWidget {
         await noteListRenderer.renderList();
     }
 
-    searchRefreshedEvent({ntxId}) {
+    searchRefreshedEvent({ ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -65,7 +64,7 @@ export default class SearchResultWidget extends NoteContextAwareWidget {
         this.refresh();
     }
 
-    notesReloadedEvent({noteIds}) {
+    notesReloadedEvent({ noteIds }) {
         if (noteIds.includes(this.noteId)) {
             this.refresh();
         }

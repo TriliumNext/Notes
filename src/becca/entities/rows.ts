@@ -1,4 +1,5 @@
 // TODO: Booleans should probably be numbers instead (as SQLite does not have booleans.);
+// TODO: check against schema.sql which properties really are "optional"
 
 export interface AttachmentRow {
     attachmentId?: string;
@@ -12,6 +13,8 @@ export interface AttachmentRow {
     dateModified?: string;
     utcDateModified?: string;
     utcDateScheduledForErasureSince?: string;
+    isDeleted?: boolean;
+    deleteId?: string;
     contentLength?: number;
     content?: Buffer | string;
 }
@@ -100,8 +103,26 @@ export interface BranchRow {
  * end user. Those types should be used only for checking against, they are
  * not for direct use.
  */
-export const ALLOWED_NOTE_TYPES = [ "file", "image", "search", "noteMap", "launcher", "doc", "contentWidget", "text", "relationMap", "render", "canvas", "mermaid", "book", "webView", "code", "mindMap" ] as const;
-export type NoteType = typeof ALLOWED_NOTE_TYPES[number];
+export const ALLOWED_NOTE_TYPES = [
+    "file",
+    "image",
+    "search",
+    "noteMap",
+    "launcher",
+    "doc",
+    "contentWidget",
+    "text",
+    "relationMap",
+    "render",
+    "canvas",
+    "mermaid",
+    "book",
+    "webView",
+    "code",
+    "mindMap",
+    "geoMap"
+] as const;
+export type NoteType = (typeof ALLOWED_NOTE_TYPES)[number];
 
 export interface NoteRow {
     noteId: string;
@@ -117,4 +138,14 @@ export interface NoteRow {
     utcDateCreated: string;
     utcDateModified: string;
     content?: string | Buffer;
+}
+
+export interface TaskRow {
+    taskId?: string;
+    parentNoteId: string;
+    title: string;
+    dueDate?: string;
+    isDone?: boolean;
+    isDeleted?: boolean;
+    utcDateModified?: string;
 }

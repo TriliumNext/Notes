@@ -4,7 +4,7 @@ import toastService from "./toast.js";
 import froca from "./froca.js";
 import utils from "./utils.js";
 import { t } from "./i18n.js";
-import { Entity } from "./frontend_script_api.js";
+import type { Entity } from "./frontend_script_api.js";
 
 // TODO: Deduplicate with server.
 export interface Bundle {
@@ -31,9 +31,9 @@ async function executeBundle(bundle: Bundle, originEntity?: Entity | null, $cont
     const apiContext = await ScriptContext(bundle.noteId, bundle.allNoteIds, originEntity, $container);
 
     try {
-        return await (function () {
+        return await function () {
             return eval(`const apiContext = this; (async function() { ${bundle.script}\r\n})()`);
-        }.call(apiContext));
+        }.call(apiContext);
     } catch (e: any) {
         const note = await froca.getNote(bundle.noteId);
 
@@ -51,7 +51,6 @@ async function executeStartupBundles() {
 }
 
 class WidgetsByParent {
-
     private byParent: Record<string, Widget[]>;
 
     constructor() {
@@ -73,11 +72,13 @@ class WidgetsByParent {
             return [];
         }
 
-        return this.byParent[parentName]
-            // previously, custom widgets were provided as a single instance, but that has the disadvantage
-            // for splits where we actually need multiple instaces and thus having a class to instantiate is better
-            // https://github.com/zadam/trilium/issues/4274
-            .map((w: any) => w.prototype ? new w() : w);
+        return (
+            this.byParent[parentName]
+                // previously, custom widgets were provided as a single instance, but that has the disadvantage
+                // for splits where we actually need multiple instaces and thus having a class to instantiate is better
+                // https://github.com/zadam/trilium/issues/4274
+                .map((w: any) => (w.prototype ? new w() : w))
+        );
     }
 }
 
@@ -121,4 +122,4 @@ export default {
     getAndExecuteBundle,
     executeStartupBundles,
     getWidgetBundlesByParent
-}
+};

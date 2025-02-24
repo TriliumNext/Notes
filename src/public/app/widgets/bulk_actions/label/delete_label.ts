@@ -20,19 +20,23 @@ const TPL = `
 </tr>`;
 
 export default class DeleteLabelBulkAction extends AbstractBulkAction {
-    static get actionName() { return "deleteLabel"; }
-    static get actionTitle() { return t("delete_label.delete_label"); }
+    static get actionName() {
+        return "deleteLabel";
+    }
+    static get actionTitle() {
+        return t("delete_label.delete_label");
+    }
 
     doRender() {
         const $action = $(TPL);
-        const $labelName = $action.find('.label-name');
+        const $labelName = $action.find(".label-name");
         $labelName.val(this.actionDef.labelName || "");
 
         const spacedUpdate = new SpacedUpdate(async () => {
             await this.saveAction({ labelName: $labelName.val() });
-        }, 1000)
+        }, 1000);
 
-        $labelName.on('input', () => spacedUpdate.scheduleUpdate());
+        $labelName.on("input", () => spacedUpdate.scheduleUpdate());
 
         return $action;
     }

@@ -85,6 +85,9 @@ import ScrollPaddingWidget from "../widgets/scroll_padding.js";
 import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolbar.js";
 import options from "../services/options.js";
 import utils from "../services/utils.js";
+import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
+import ContextualHelpButton from "../widgets/floating_buttons/help_button.js";
+import CloseZenButton from "../widgets/close_zen_button.js";
 
 export default class DesktopLayout {
     constructor(customWidgets) {
@@ -94,139 +97,149 @@ export default class DesktopLayout {
     getRootWidget(appContext) {
         appContext.noteTreeWidget = new NoteTreeWidget();
 
-        const launcherPaneIsHorizontal = (options.get("layoutOrientation") === "horizontal");
+        const launcherPaneIsHorizontal = options.get("layoutOrientation") === "horizontal";
         const launcherPane = this.#buildLauncherPane(launcherPaneIsHorizontal);
-        const isElectron = (utils.isElectron());
-        const isMac = (window.glob.platform === "darwin");
-        const isWindows = (window.glob.platform === "win32");
-        const hasNativeTitleBar = (window.glob.hasNativeTitleBar);
+        const isElectron = utils.isElectron();
+        const isMac = window.glob.platform === "darwin";
+        const isWindows = window.glob.platform === "win32";
+        const hasNativeTitleBar = window.glob.hasNativeTitleBar;
 
         /**
          * If true, the tab bar is displayed above the launcher pane with full width; if false (default), the tab bar is displayed in the rest pane.
          * On macOS we need to force the full-width tab bar on Electron in order to allow the semaphore (window controls) enough space.
          */
-        const fullWidthTabBar = (launcherPaneIsHorizontal || (isElectron && !hasNativeTitleBar && isMac));
-        const customTitleBarButtons = (!hasNativeTitleBar && !isMac && !isWindows);
+        const fullWidthTabBar = launcherPaneIsHorizontal || (isElectron && !hasNativeTitleBar && isMac);
+        const customTitleBarButtons = !hasNativeTitleBar && !isMac && !isWindows;
 
         return new RootContainer(true)
             .setParent(appContext)
             .class((launcherPaneIsHorizontal ? "horizontal" : "vertical") + "-layout")
-            .optChild(fullWidthTabBar, new FlexContainer('row')
-                .class("tab-row-container")
-                .child(new FlexContainer( "row").id("tab-row-left-spacer"))
-                .optChild(launcherPaneIsHorizontal, new LeftPaneToggleWidget(true))
-                .child(new TabRowWidget().class("full-width"))
-                .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
-                .css('height', '40px')
-                .css('background-color', 'var(--launcher-pane-background-color)')
-                .setParent(appContext)
+            .optChild(
+                fullWidthTabBar,
+                new FlexContainer("row")
+                    .class("tab-row-container")
+                    .child(new FlexContainer("row").id("tab-row-left-spacer"))
+                    .optChild(launcherPaneIsHorizontal, new LeftPaneToggleWidget(true))
+                    .child(new TabRowWidget().class("full-width"))
+                    .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
+                    .css("height", "40px")
+                    .css("background-color", "var(--launcher-pane-background-color)")
+                    .setParent(appContext)
             )
             .optChild(launcherPaneIsHorizontal, launcherPane)
-            .child(new FlexContainer('row')
-                .css("flex-grow", "1")
-                .id("horizontal-main-container")
-                .optChild(!launcherPaneIsHorizontal, launcherPane)
-                .child(new LeftPaneContainer()
-                    .optChild(!launcherPaneIsHorizontal, new QuickSearchWidget())
-                    .child(appContext.noteTreeWidget)
-                    .child(...this.customWidgets.get('left-pane'))
-                )
-                .child(new FlexContainer('column')
-                    .id('rest-pane')
+            .child(
+                new FlexContainer("row")
                     .css("flex-grow", "1")
-                    .optChild(!fullWidthTabBar, new FlexContainer('row')
-                        .child(new TabRowWidget())
-                        .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
-                        .css('height', '40px')
+                    .id("horizontal-main-container")
+                    .optChild(!launcherPaneIsHorizontal, launcherPane)
+                    .child(
+                        new LeftPaneContainer()
+                            .optChild(!launcherPaneIsHorizontal, new QuickSearchWidget())
+                            .child(appContext.noteTreeWidget)
+                            .child(...this.customWidgets.get("left-pane"))
                     )
-                    .child(new FlexContainer('row')
-                        .filling()
-                        .collapsible()
-                        .id("vertical-main-container")
-                        .child(new FlexContainer('column')
-                            .filling()
-                            .collapsible()
-                            .id('center-pane')
-                            .child(new SplitNoteContainer(() =>
-                                    new NoteWrapperWidget()
-                                        .child(new FlexContainer('row').class('title-row')
-                                            .css("height", "50px")
-                                            .css("min-height", "50px")
-                                            .css('align-items', "center")
-                                            .cssBlock('.title-row > * { margin: 5px; }')
-                                            .child(new NoteIconWidget())
-                                            .child(new NoteTitleWidget())
-                                            .child(new SpacerWidget(0, 1))
-                                            .child(new MovePaneButton(true))
-                                            .child(new MovePaneButton(false))
-                                            .child(new ClosePaneButton())
-                                            .child(new CreatePaneButton())
-                                        )
-                                        .child(
-                                            new RibbonContainer()
-                                                // the order of the widgets matter. Some of these want to "activate" themselves
-                                                // when visible. When this happens to multiple of them, the first one "wins".
-                                                // promoted attributes should always win.
-                                                .ribbon(new ClassicEditorToolbar())                                                
-                                                .ribbon(new ScriptExecutorWidget())
-                                                .ribbon(new SearchDefinitionWidget())
-                                                .ribbon(new EditedNotesWidget())
-                                                .ribbon(new BookPropertiesWidget())
-                                                .ribbon(new NotePropertiesWidget())
-                                                .ribbon(new FilePropertiesWidget())
-                                                .ribbon(new ImagePropertiesWidget())
-                                                .ribbon(new BasicPropertiesWidget())
-                                                .ribbon(new OwnedAttributeListWidget())
-                                                .ribbon(new InheritedAttributesWidget())
-                                                .ribbon(new NotePathsWidget())
-                                                .ribbon(new NoteMapRibbonWidget())
-                                                .ribbon(new SimilarNotesWidget())
-                                                .ribbon(new NoteInfoWidget())
-                                                .button(new RevisionsButton())
-                                                .button(new NoteActionsWidget())
-                                        )
-                                        .child(new SharedInfoWidget())
-                                        .child(new WatchedFileUpdateStatusWidget())
-                                        .child(new FloatingButtons()
-                                            .child(new EditButton())
-                                            .child(new ShowTocWidgetButton())
-                                            .child(new ShowHighlightsListWidgetButton())
-                                            .child(new CodeButtonsWidget())
-                                            .child(new RelationMapButtons())
-                                            .child(new CopyImageReferenceButton())
-                                            .child(new SvgExportButton())
-                                            .child(new BacklinksWidget())
-                                            .child(new HideFloatingButtonsButton())
-                                        )
-                                        .child(new MermaidWidget())
-                                        .child(
-                                            new ScrollingContainer()
-                                                .filling()
-                                                .child(new PromotedAttributesWidget())
-                                                .child(new SqlTableSchemasWidget())
-                                                .child(new NoteDetailWidget())
-                                                .child(new NoteListWidget())
-                                                .child(new SearchResultWidget())
-                                                .child(new SqlResultWidget())
-                                                .child(new ScrollPaddingWidget())
-                                        )
-                                        .child(new ApiLogWidget())
-                                        .child(new FindWidget())
-                                        .child(
-                                            ...this.customWidgets.get('node-detail-pane'), // typo, let's keep it for a while as BC
-                                            ...this.customWidgets.get('note-detail-pane')
-                                        )
-                                )
+                    .child(
+                        new FlexContainer("column")
+                            .id("rest-pane")
+                            .css("flex-grow", "1")
+                            .optChild(!fullWidthTabBar, new FlexContainer("row").child(new TabRowWidget()).optChild(customTitleBarButtons, new TitleBarButtonsWidget()).css("height", "40px"))
+                            .child(
+                                new FlexContainer("row")
+                                    .filling()
+                                    .collapsible()
+                                    .id("vertical-main-container")
+                                    .child(
+                                        new FlexContainer("column")
+                                            .filling()
+                                            .collapsible()
+                                            .id("center-pane")
+                                            .child(
+                                                new SplitNoteContainer(() =>
+                                                    new NoteWrapperWidget()
+                                                        .child(
+                                                            new FlexContainer("row")
+                                                                .class("title-row")
+                                                                .css("height", "50px")
+                                                                .css("min-height", "50px")
+                                                                .css("align-items", "center")
+                                                                .cssBlock(".title-row > * { margin: 5px; }")
+                                                                .child(new NoteIconWidget())
+                                                                .child(new NoteTitleWidget())
+                                                                .child(new SpacerWidget(0, 1))
+                                                                .child(new MovePaneButton(true))
+                                                                .child(new MovePaneButton(false))
+                                                                .child(new ClosePaneButton())
+                                                                .child(new CreatePaneButton())
+                                                        )
+                                                        .child(
+                                                            new RibbonContainer()
+                                                                // the order of the widgets matter. Some of these want to "activate" themselves
+                                                                // when visible. When this happens to multiple of them, the first one "wins".
+                                                                // promoted attributes should always win.
+                                                                .ribbon(new ClassicEditorToolbar())
+                                                                .ribbon(new ScriptExecutorWidget())
+                                                                .ribbon(new SearchDefinitionWidget())
+                                                                .ribbon(new EditedNotesWidget())
+                                                                .ribbon(new BookPropertiesWidget())
+                                                                .ribbon(new NotePropertiesWidget())
+                                                                .ribbon(new FilePropertiesWidget())
+                                                                .ribbon(new ImagePropertiesWidget())
+                                                                .ribbon(new BasicPropertiesWidget())
+                                                                .ribbon(new OwnedAttributeListWidget())
+                                                                .ribbon(new InheritedAttributesWidget())
+                                                                .ribbon(new NotePathsWidget())
+                                                                .ribbon(new NoteMapRibbonWidget())
+                                                                .ribbon(new SimilarNotesWidget())
+                                                                .ribbon(new NoteInfoWidget())
+                                                                .button(new RevisionsButton())
+                                                                .button(new NoteActionsWidget())
+                                                        )
+                                                        .child(new SharedInfoWidget())
+                                                        .child(new WatchedFileUpdateStatusWidget())
+                                                        .child(
+                                                            new FloatingButtons()
+                                                                .child(new EditButton())
+                                                                .child(new ShowTocWidgetButton())
+                                                                .child(new ShowHighlightsListWidgetButton())
+                                                                .child(new CodeButtonsWidget())
+                                                                .child(new RelationMapButtons())
+                                                                .child(new GeoMapButtons())
+                                                                .child(new CopyImageReferenceButton())
+                                                                .child(new SvgExportButton())
+                                                                .child(new BacklinksWidget())
+                                                                .child(new ContextualHelpButton())
+                                                                .child(new HideFloatingButtonsButton())
+                                                        )
+                                                        .child(new MermaidWidget())
+                                                        .child(
+                                                            new ScrollingContainer()
+                                                                .filling()
+                                                                .child(new PromotedAttributesWidget())
+                                                                .child(new SqlTableSchemasWidget())
+                                                                .child(new NoteDetailWidget())
+                                                                .child(new NoteListWidget())
+                                                                .child(new SearchResultWidget())
+                                                                .child(new SqlResultWidget())
+                                                                .child(new ScrollPaddingWidget())
+                                                        )
+                                                        .child(new ApiLogWidget())
+                                                        .child(new FindWidget())
+                                                        .child(
+                                                            ...this.customWidgets.get("node-detail-pane"), // typo, let's keep it for a while as BC
+                                                            ...this.customWidgets.get("note-detail-pane")
+                                                        )
+                                                )
+                                            )
+                                            .child(...this.customWidgets.get("center-pane"))
+                                    )
+                                    .child(
+                                        new RightPaneContainer()
+                                            .child(new TocWidget())
+                                            .child(new HighlightsListWidget())
+                                            .child(...this.customWidgets.get("right-pane"))
+                                    )
                             )
-                            .child(...this.customWidgets.get('center-pane'))
-                        )
-                        .child(new RightPaneContainer()
-                            .child(new TocWidget())
-                            .child(new HighlightsListWidget())
-                            .child(...this.customWidgets.get('right-pane'))
-                        )
                     )
-                )
             )
             .child(new BulkActionsDialog())
             .child(new AboutDialog())
@@ -250,18 +263,15 @@ export default class DesktopLayout {
             .child(new DeleteNotesDialog())
             .child(new InfoDialog())
             .child(new ConfirmDialog())
-            .child(new PromptDialog());
+            .child(new PromptDialog())
+            .child(new CloseZenButton())
     }
 
     #buildLauncherPane(isHorizontal) {
-        let launcherPane;        
+        let launcherPane;
 
         if (isHorizontal) {
-            launcherPane = new FlexContainer("row")
-                .css("height", "53px")
-                .class("horizontal")
-                .child(new LauncherContainer(true))
-                .child(new GlobalMenuWidget(true))
+            launcherPane = new FlexContainer("row").css("height", "53px").class("horizontal").child(new LauncherContainer(true)).child(new GlobalMenuWidget(true));
         } else {
             launcherPane = new FlexContainer("column")
                 .css("width", "53px")

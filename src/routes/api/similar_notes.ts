@@ -1,6 +1,6 @@
 "use strict";
 
-import { Request } from "express";
+import type { Request } from "express";
 
 import similarityService from "../../becca/similarity.js";
 import becca from "../../becca/becca.js";

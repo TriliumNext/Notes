@@ -1,8 +1,8 @@
 import utils from "../services/utils.js";
 import dateNoteService from "../services/date_notes.js";
-import protectedSessionHolder from '../services/protected_session_holder.js';
+import protectedSessionHolder from "../services/protected_session_holder.js";
 import server from "../services/server.js";
-import appContext, { NoteCommandData } from "./app_context.js";
+import appContext, { type NoteCommandData } from "./app_context.js";
 import Component from "./component.js";
 import toastService from "../services/toast.js";
 import ws from "../services/ws.js";
@@ -10,7 +10,7 @@ import bundleService from "../services/bundle.js";
 import froca from "../services/froca.js";
 import linkService from "../services/link.js";
 import { t } from "../services/i18n.js";
-import FNote from "../entities/fnote.js";
+import type FNote from "../entities/fnote.js";
 
 // TODO: Move somewhere else nicer.
 export type SqlExecuteResults = unknown[];
@@ -41,7 +41,7 @@ export default class Entrypoints extends Component {
 
     openDevToolsCommand() {
         if (utils.isElectron()) {
-            utils.dynamicRequire('@electron/remote').getCurrentWindow().toggleDevTools();
+            utils.dynamicRequire("@electron/remote").getCurrentWindow().toggleDevTools();
         }
     }
 
@@ -52,20 +52,20 @@ export default class Entrypoints extends Component {
             return;
         }
 
-        const {note} = await server.post<CreateChildrenResponse>(`notes/${inboxNote.noteId}/children?target=into`, {
-            content: '',
-            type: 'text',
+        const { note } = await server.post<CreateChildrenResponse>(`notes/${inboxNote.noteId}/children?target=into`, {
+            content: "",
+            type: "text",
             isProtected: inboxNote.isProtected && protectedSessionHolder.isProtectedSessionAvailable()
         });
 
         await ws.waitForMaxKnownEntityChangeId();
 
-        await appContext.tabManager.openTabWithNoteWithHoisting(note.noteId, {activate: true});
+        await appContext.tabManager.openTabWithNoteWithHoisting(note.noteId, { activate: true });
 
-        appContext.triggerEvent('focusAndSelectTitle', {isNewNote: true});
+        appContext.triggerEvent("focusAndSelectTitle", { isNewNote: true });
     }
 
-    async toggleNoteHoistingCommand({noteId = appContext.tabManager.getActiveContextNoteId()}) {
+    async toggleNoteHoistingCommand({ noteId = appContext.tabManager.getActiveContextNoteId() }) {
         if (!noteId) {
             return;
         }
@@ -75,12 +75,12 @@ export default class Entrypoints extends Component {
 
         if (noteToHoist?.noteId === activeNoteContext.hoistedNoteId) {
             await activeNoteContext.unhoist();
-        } else if (noteToHoist?.type !== 'search') {
+        } else if (noteToHoist?.type !== "search") {
             await activeNoteContext.setHoistedNoteId(noteId);
         }
     }
 
-    async hoistNoteCommand({noteId}: { noteId: string }) {
+    async hoistNoteCommand({ noteId }: { noteId: string }) {
         const noteContext = appContext.tabManager.getActiveContext();
 
         if (noteContext.hoistedNoteId !== noteId) {
@@ -102,7 +102,7 @@ export default class Entrypoints extends Component {
 
     toggleFullscreenCommand() {
         if (utils.isElectron()) {
-            const win = utils.dynamicRequire('@electron/remote').getCurrentWindow();
+            const win = utils.dynamicRequire("@electron/remote").getCurrentWindow();
 
             if (win.isFullScreenable()) {
                 win.setFullScreen(!win.isFullScreen());
@@ -114,23 +114,19 @@ export default class Entrypoints extends Component {
         utils.reloadFrontendApp();
     }
 
-    logoutCommand() {
-        const $logoutForm = $('<form action="logout" method="POST">')
-            .append($(`<input type='_hidden' name="_csrf" value="${glob.csrfToken}"/>`));
-
-        $("body").append($logoutForm);
-        $logoutForm.trigger('submit');
+    async logoutCommand() {
+        await server.post("../logout");
+        window.location.replace(`/login`);
     }
 
     backInNoteHistoryCommand() {
         if (utils.isElectron()) {
             // standard JS version does not work completely correctly in electron
-            const webContents = utils.dynamicRequire('@electron/remote').getCurrentWebContents();
+            const webContents = utils.dynamicRequire("@electron/remote").getCurrentWebContents();
             const activeIndex = parseInt(webContents.navigationHistory.getActiveIndex());
 
             webContents.goToIndex(activeIndex - 1);
-        }
-        else {
+        } else {
             window.history.back();
         }
     }
@@ -138,52 +134,50 @@ export default class Entrypoints extends Component {
     forwardInNoteHistoryCommand() {
         if (utils.isElectron()) {
             // standard JS version does not work completely correctly in electron
-            const webContents = utils.dynamicRequire('@electron/remote').getCurrentWebContents();
+            const webContents = utils.dynamicRequire("@electron/remote").getCurrentWebContents();
             const activeIndex = parseInt(webContents.navigationHistory.getActiveIndex());
 
             webContents.goToIndex(activeIndex + 1);
-        }
-        else {
+        } else {
             window.history.forward();
         }
     }
 
     async switchToDesktopVersionCommand() {
-        utils.setCookie('trilium-device', 'desktop');
+        utils.setCookie("trilium-device", "desktop");
 
         utils.reloadFrontendApp("Switching to desktop version");
     }
 
     async switchToMobileVersionCommand() {
-        utils.setCookie('trilium-device', 'mobile');
+        utils.setCookie("trilium-device", "mobile");
 
         utils.reloadFrontendApp("Switching to mobile version");
     }
 
-    async openInWindowCommand({notePath, hoistedNoteId, viewScope}: NoteCommandData) {
-        const extraWindowHash = linkService.calculateHash({notePath, hoistedNoteId, viewScope});
+    async openInWindowCommand({ notePath, hoistedNoteId, viewScope }: NoteCommandData) {
+        const extraWindowHash = linkService.calculateHash({ notePath, hoistedNoteId, viewScope });
 
         if (utils.isElectron()) {
-            const {ipcRenderer} = utils.dynamicRequire('electron');
+            const { ipcRenderer } = utils.dynamicRequire("electron");
 
-            ipcRenderer.send('create-extra-window', { extraWindowHash });
-        }
-        else {
+            ipcRenderer.send("create-extra-window", { extraWindowHash });
+        } else {
             const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}?extraWindow=1${extraWindowHash}`;
 
-            window.open(url, '', 'width=1000,height=800');
+            window.open(url, "", "width=1000,height=800");
         }
     }
 
     async openNewWindowCommand() {
-        this.openInWindowCommand({notePath: '', hoistedNoteId: 'root'});
+        this.openInWindowCommand({ notePath: "", hoistedNoteId: "root" });
     }
 
     async runActiveNoteCommand() {
-        const {ntxId, note} = appContext.tabManager.getActiveContext();
+        const { ntxId, note } = appContext.tabManager.getActiveContext();
 
         // ctrl+enter is also used elsewhere, so make sure we're running only when appropriate
-        if (!note || note.type !== 'code') {
+        if (!note || note.type !== "code") {
             return;
         }
 
@@ -192,14 +186,14 @@ export default class Entrypoints extends Component {
             await bundleService.getAndExecuteBundle(note.noteId);
         } else if (note.mime.endsWith("env=backend")) {
             await server.post(`script/run/${note.noteId}`);
-        } else if (note.mime === 'text/x-sqlite;schema=trilium') {
+        } else if (note.mime === "text/x-sqlite;schema=trilium") {
             const resp = await server.post<SqlExecuteResponse>(`sql/execute/${note.noteId}`);
 
             if (!resp.success) {
                 toastService.showError(t("entrypoints.sql-error", { message: resp.error }));
             }
 
-            await appContext.triggerEvent('sqlQueryResults', {ntxId: ntxId, results: resp.results});
+            await appContext.triggerEvent("sqlQueryResults", { ntxId: ntxId, results: resp.results });
         }
 
         toastService.showMessage(t("entrypoints.note-executed"));

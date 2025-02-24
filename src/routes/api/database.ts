@@ -5,7 +5,7 @@ import log from "../../services/log.js";
 import backupService from "../../services/backup.js";
 import anonymizationService from "../../services/anonymization.js";
 import consistencyChecksService from "../../services/consistency_checks.js";
-import { Request } from 'express';
+import type { Request } from "express";
 import ValidationError from "../../errors/validation_error.js";
 import sql_init from "../../services/sql_init.js";
 import becca_loader from "../../becca/becca_loader.js";

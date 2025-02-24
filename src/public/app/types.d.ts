@@ -39,8 +39,12 @@ interface CustomGlobals {
     maxEntityChangeIdAtLoad: number;
     maxEntityChangeSyncIdAtLoad: number;
     assetPath: string;
+    appPath: string;
     instanceName: string;
     appCssNoteIds: string[];
+    triliumVersion: string;
+    TRILIUM_SAFE_MODE: boolean;
+    platform?: typeof process.platform;
 }
 
 type RequireMethod = (moduleName: string) => any;
@@ -103,7 +107,7 @@ declare global {
         }
     }
 
-    var logError: (message: string, e?: Error) => void;
+    var logError: (message: string, e?: Error | string) => void;
     var logInfo: (message: string) => void;
     var glob: CustomGlobals;
     var require: RequireMethod;
@@ -153,13 +157,12 @@ declare global {
         registerLayoutLoaders(loader: MermaidLoader);
         parse(content: string, opts: {
             suppressErrors: true
-        }): {
+        }): Promise<{
             config: {
                 layout: string;
             }
-        }
+        }>
     };
-    var MERMAID_ELK: MermaidLoader;
 
     var CKEditor: {
         BalloonEditor: {
@@ -173,6 +176,12 @@ declare global {
             })
         }
     };
+
+    var katex: {
+        renderToString(text: string, opts: {
+            throwOnError: boolean
+        });
+    }
 
     type TextEditorElement = {};
     interface Writer {
@@ -218,11 +227,21 @@ declare global {
                     });
                     getRoot(): TextEditorElement
                 },
+                domRoots: {
+                    values: () => {
+                        next: () => {
+                            value: string;
+                        }
+                    };
+                }
                 change(cb: (writer: Writer) => void)
             }
         },
         getData(): string;
         setData(data: string): void;
+        getSelectedHtml(): string;
+        removeSelection(): void;
+        sourceElement: HTMLElement;
     }
 
     interface MentionItem {

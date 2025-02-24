@@ -53,8 +53,8 @@ export default class BookmarkFolderWidget extends RightDropdownButtonWidget {
     doRender() {
         super.doRender();
 
-        this.$parentNote = this.$dropdownContent.find('.parent-note');
-        this.$childrenNotes = this.$dropdownContent.find('.children-notes');
+        this.$parentNote = this.$dropdownContent.find(".parent-note");
+        this.$childrenNotes = this.$dropdownContent.find(".children-notes");
     }
 
     async dropdownShown() {
@@ -66,19 +66,10 @@ export default class BookmarkFolderWidget extends RightDropdownButtonWidget {
             showNoteIcon: true
         };
 
-        this.$parentNote.append(
-            (await linkService.createLink(this.note.noteId, linkOptions))
-                .addClass("note-link")
-        );
+        this.$parentNote.append((await linkService.createLink(this.note.noteId, linkOptions)).addClass("note-link"));
 
         for (const childNote of await this.note.getChildNotes()) {
-            this.$childrenNotes.append(
-                $("<li>")
-                    .append(
-                        (await linkService.createLink(childNote.noteId, linkOptions))
-                            .addClass("note-link")
-                    )
-            );
+            this.$childrenNotes.append($("<li>").append((await linkService.createLink(childNote.noteId, linkOptions)).addClass("note-link")));
         }
     }
 

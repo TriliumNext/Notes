@@ -5,7 +5,7 @@ import optionService from "./options.js";
 import dateUtils from "./date_utils.js";
 import sqlInit from "./sql_init.js";
 import cls from "./cls.js";
-import { EntityChange } from "./entity_changes_interface.js";
+import type { EntityChange } from "./entity_changes_interface.js";
 
 function eraseNotes(noteIdsToErase: string[]) {
     if (noteIdsToErase.length === 0) {
@@ -16,18 +16,15 @@ function eraseNotes(noteIdsToErase: string[]) {
     setEntityChangesAsErased(sql.getManyRows(`SELECT * FROM entity_changes WHERE entityName = 'notes' AND entityId IN (???)`, noteIdsToErase));
 
     // we also need to erase all "dependent" entities of the erased notes
-    const branchIdsToErase = sql.getManyRows<{ branchId: string }>(`SELECT branchId FROM branches WHERE noteId IN (???)`, noteIdsToErase)
-        .map(row => row.branchId);
+    const branchIdsToErase = sql.getManyRows<{ branchId: string }>(`SELECT branchId FROM branches WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.branchId);
 
     eraseBranches(branchIdsToErase);
 
-    const attributeIdsToErase = sql.getManyRows<{ attributeId: string }>(`SELECT attributeId FROM attributes WHERE noteId IN (???)`, noteIdsToErase)
-        .map(row => row.attributeId);
+    const attributeIdsToErase = sql.getManyRows<{ attributeId: string }>(`SELECT attributeId FROM attributes WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.attributeId);
 
     eraseAttributes(attributeIdsToErase);
 
-    const revisionIdsToErase = sql.getManyRows<{ revisionId: string }>(`SELECT revisionId FROM revisions WHERE noteId IN (???)`, noteIdsToErase)
-        .map(row => row.revisionId);
+    const revisionIdsToErase = sql.getManyRows<{ revisionId: string }>(`SELECT revisionId FROM revisions WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.revisionId);
 
     eraseRevisions(revisionIdsToErase);
 
@@ -120,7 +117,7 @@ function eraseDeletedEntities(eraseEntitiesAfterTimeInSeconds: number | null = n
     // this is important also so that the erased entity changes are sent to the connected clients
     sql.transactional(() => {
         if (eraseEntitiesAfterTimeInSeconds === null) {
-            eraseEntitiesAfterTimeInSeconds = optionService.getOptionInt('eraseEntitiesAfterTimeInSeconds');
+            eraseEntitiesAfterTimeInSeconds = optionService.getOptionInt("eraseEntitiesAfterTimeInSeconds");
         }
 
         const cutoffDate = new Date(Date.now() - eraseEntitiesAfterTimeInSeconds * 1000);
@@ -167,11 +164,11 @@ function eraseUnusedAttachmentsNow() {
 
 function eraseScheduledAttachments(eraseUnusedAttachmentsAfterSeconds: number | null = null) {
     if (eraseUnusedAttachmentsAfterSeconds === null) {
-        eraseUnusedAttachmentsAfterSeconds = optionService.getOptionInt('eraseUnusedAttachmentsAfterSeconds');
+        eraseUnusedAttachmentsAfterSeconds = optionService.getOptionInt("eraseUnusedAttachmentsAfterSeconds");
     }
 
-    const cutOffDate = dateUtils.utcDateTimeStr(new Date(Date.now() - (eraseUnusedAttachmentsAfterSeconds * 1000)));
-    const attachmentIdsToErase = sql.getColumn<string>('SELECT attachmentId FROM attachments WHERE utcDateScheduledForErasureSince < ?', [cutOffDate]);
+    const cutOffDate = dateUtils.utcDateTimeStr(new Date(Date.now() - eraseUnusedAttachmentsAfterSeconds * 1000));
+    const attachmentIdsToErase = sql.getColumn<string>("SELECT attachmentId FROM attachments WHERE utcDateScheduledForErasureSince < ?", [cutOffDate]);
 
     eraseAttachments(attachmentIdsToErase);
 }
@@ -179,11 +176,23 @@ function eraseScheduledAttachments(eraseUnusedAttachmentsAfterSeconds: number | 
 export function startScheduledCleanup() {
     sqlInit.dbReady.then(() => {
         // first cleanup kickoff 5 minutes after startup
-        setTimeout(cls.wrap(() => eraseDeletedEntities()), 5 * 60 * 1000);
-        setTimeout(cls.wrap(() => eraseScheduledAttachments()), 6 * 60 * 1000);
+        setTimeout(
+            cls.wrap(() => eraseDeletedEntities()),
+            5 * 60 * 1000
+        );
+        setTimeout(
+            cls.wrap(() => eraseScheduledAttachments()),
+            6 * 60 * 1000
+        );
 
-        setInterval(cls.wrap(() => eraseDeletedEntities()), 4 * 3600 * 1000);
-        setInterval(cls.wrap(() => eraseScheduledAttachments()), 3600 * 1000);
+        setInterval(
+            cls.wrap(() => eraseDeletedEntities()),
+            4 * 3600 * 1000
+        );
+        setInterval(
+            cls.wrap(() => eraseScheduledAttachments()),
+            3600 * 1000
+        );
     });
 }
 
@@ -193,5 +202,5 @@ export default {
     eraseNotesWithDeleteId,
     eraseUnusedBlobs,
     eraseAttachments,
-    eraseRevisions,
+    eraseRevisions
 };

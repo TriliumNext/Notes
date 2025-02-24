@@ -48,14 +48,14 @@ function debounce<T>(func: (...args: unknown[]) => T, waitMs: number, immediate:
         return result;
     };
 
-    debounced.clear = function() {
+    debounced.clear = function () {
         if (timeout) {
             clearTimeout(timeout);
             timeout = null;
         }
     };
 
-    debounced.flush = function() {
+    debounced.flush = function () {
         if (timeout) {
             result = func.apply(context, args || []);
             context = args = null;

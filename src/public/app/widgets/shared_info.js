@@ -4,7 +4,7 @@ import attributeService from "../services/attributes.js";
 import { t } from "../services/i18n.js";
 
 const TPL = `
-<div class="shared-info-widget alert alert-warning">
+<div class="shared-info-widget alert alert-warning use-tn-links">
     <style>
         .shared-info-widget {
             margin: 10px;
@@ -13,13 +13,13 @@ const TPL = `
             font-weight: bold;
         }
     </style>
-    
+
     <span class="shared-text"></span> <a class="shared-link external"></a>. ${t("shared_info.help_link")}
 </div>`;
 
 export default class SharedInfoWidget extends NoteContextAwareWidget {
     isEnabled() {
-        return super.isEnabled() && this.noteId !== '_share' && this.note.hasAncestor('_share');
+        return super.isEnabled() && this.noteId !== "_share" && this.note.hasAncestor("_share");
     }
 
     doRender() {
@@ -38,10 +38,9 @@ export default class SharedInfoWidget extends NoteContextAwareWidget {
         if (syncServerHost) {
             link = `${syncServerHost}/share/${shareId}`;
             this.$sharedText.text(t("shared_info.shared_publicly"));
-        }
-        else {
+        } else {
             let host = location.host;
-            if (host.endsWith('/')) {
+            if (host.endsWith("/")) {
                 // seems like IE has trailing slash
                 // https://github.com/zadam/trilium/issues/3782
                 host = host.substr(0, host.length - 1);
@@ -55,18 +54,17 @@ export default class SharedInfoWidget extends NoteContextAwareWidget {
     }
 
     getShareId(note) {
-        if (note.hasOwnedLabel('shareRoot')) {
-            return '';
+        if (note.hasOwnedLabel("shareRoot")) {
+            return "";
         }
 
-        return note.getOwnedLabelValue('shareAlias') || note.noteId;
+        return note.getOwnedLabelValue("shareAlias") || note.noteId;
     }
 
-    entitiesReloadedEvent({loadResults}) {
-        if (loadResults.getAttributeRows().find(attr => attr.name.startsWith('_share') && attributeService.isAffecting(attr, this.note))) {
+    entitiesReloadedEvent({ loadResults }) {
+        if (loadResults.getAttributeRows().find((attr) => attr.name.startsWith("_share") && attributeService.isAffecting(attr, this.note))) {
             this.refresh();
-        }
-        else if (loadResults.getBranchRows().find(branch => branch.noteId === this.noteId)) {
+        } else if (loadResults.getBranchRows().find((branch) => branch.noteId === this.noteId)) {
             this.refresh();
         }
     }

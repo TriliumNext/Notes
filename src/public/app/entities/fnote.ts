@@ -1,32 +1,35 @@
-import server from '../services/server.js';
+import server from "../services/server.js";
 import noteAttributeCache from "../services/note_attribute_cache.js";
 import ws from "../services/ws.js";
 import froca from "../services/froca.js";
 import protectedSessionHolder from "../services/protected_session_holder.js";
 import cssClassManager from "../services/css_class_manager.js";
-import { Froca } from '../services/froca-interface.js';
-import FAttachment from './fattachment.js';
-import FAttribute, { AttributeType } from './fattribute.js';
+import type { Froca } from "../services/froca-interface.js";
+import type FAttachment from "./fattachment.js";
+import type { default as FAttribute, AttributeType } from "./fattribute.js";
+import utils from "../services/utils.js";
 
-const LABEL = 'label';
-const RELATION = 'relation';
+const LABEL = "label";
+const RELATION = "relation";
 
 const NOTE_TYPE_ICONS = {
-    "file": "bx bx-file",
-    "image": "bx bx-image",
-    "code": "bx bx-code",
-    "render": "bx bx-extension",
-    "search": "bx bx-file-find",
-    "relationMap": "bx bxs-network-chart",
-    "book": "bx bx-book",
-    "noteMap": "bx bxs-network-chart",
-    "mermaid": "bx bx-selection",
-    "canvas": "bx bx-pen",
-    "webView": "bx bx-globe-alt",
-    "launcher": "bx bx-link",
-    "doc": "bx bxs-file-doc",
-    "contentWidget": "bx bxs-widget",
-    "mindMap": "bx bx-sitemap"
+    file: "bx bx-file",
+    image: "bx bx-image",
+    code: "bx bx-code",
+    render: "bx bx-extension",
+    search: "bx bx-file-find",
+    relationMap: "bx bxs-network-chart",
+    book: "bx bx-book",
+    noteMap: "bx bxs-network-chart",
+    mermaid: "bx bx-selection",
+    canvas: "bx bx-pen",
+    webView: "bx bx-globe-alt",
+    launcher: "bx bx-link",
+    doc: "bx bxs-file-doc",
+    contentWidget: "bx bxs-widget",
+    mindMap: "bx bx-sitemap",
+    geoMap: "bx bx-map-alt",
+    taskList: "bx bx-list-check"
 };
 
 /**
@@ -34,12 +37,12 @@ const NOTE_TYPE_ICONS = {
  * end user. Those types should be used only for checking against, they are
  * not for direct use.
  */
-type NoteType = "file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code";
+export type NoteType = "file" | "image" | "search" | "noteMap" | "launcher" | "doc" | "contentWidget" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "book" | "webView" | "code" | "mindMap" | "geoMap" | "taskList";
 
-interface NotePathRecord {
+export interface NotePathRecord {
     isArchived: boolean;
     isInHoistedSubTree: boolean;
-    isSearch: boolean;
+    isSearch?: boolean;
     notePath: string[];
     isHidden: boolean;
 }
@@ -64,7 +67,6 @@ export interface NoteMetaData {
  * Note is the main node and concept in Trilium.
  */
 class FNote {
-
     private froca: Froca;
 
     noteId!: string;
@@ -118,7 +120,7 @@ class FNote {
     }
 
     addParent(parentNoteId: string, branchId: string, sort = true) {
-        if (parentNoteId === 'none') {
+        if (parentNoteId === "none") {
             return;
         }
 
@@ -178,8 +180,7 @@ class FNote {
 
         try {
             return JSON.parse(content);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             console.log(`Cannot parse content of note '${this.noteId}': `, e.message);
 
             return null;
@@ -216,7 +217,7 @@ class FNote {
 
     getChildBranches() {
         // don't use Object.values() to guarantee order
-        const branchIds = this.children.map(childNoteId => this.childToBranch[childNoteId]);
+        const branchIds = this.children.map((childNoteId) => this.childToBranch[childNoteId]);
 
         return this.froca.getBranches(branchIds);
     }
@@ -235,7 +236,7 @@ class FNote {
         this.parents.sort((aNoteId, bNoteId) => {
             const aBranchId = this.parentToBranch[aNoteId];
 
-            if (aBranchId && aBranchId.startsWith('virt-')) {
+            if (aBranchId && aBranchId.startsWith("virt-")) {
                 return 1;
             }
 
@@ -250,7 +251,7 @@ class FNote {
     }
 
     get isArchived() {
-        return this.hasAttribute('label', 'archived');
+        return this.hasAttribute("label", "archived");
     }
 
     getChildNoteIds() {
@@ -270,22 +271,21 @@ class FNote {
     }
 
     async getAttachmentsByRole(role: string) {
-        return (await this.getAttachments())
-            .filter(attachment => attachment.role === role);
+        return (await this.getAttachments()).filter((attachment) => attachment.role === role);
     }
 
     async getAttachmentById(attachmentId: string) {
         const attachments = await this.getAttachments();
 
-        return attachments.find(att => att.attachmentId === attachmentId);
+        return attachments.find((att) => att.attachmentId === attachmentId);
     }
 
     isEligibleForConversionToAttachment() {
-        if (this.type !== 'image' || !this.isContentAvailable() || this.hasChildren() || this.getParentBranches().length !== 1) {
+        if (this.type !== "image" || !this.isContentAvailable() || this.hasChildren() || this.getParentBranches().length !== 1) {
             return false;
         }
 
-        const targetRelations = this.getTargetRelations().filter(relation => relation.name === 'imageLink');
+        const targetRelations = this.getTargetRelations().filter((relation) => relation.name === "imageLink");
 
         if (targetRelations.length > 1) {
             return false;
@@ -296,7 +296,7 @@ class FNote {
 
         if (referencingNote && referencingNote !== parentNote) {
             return false;
-        } else if (parentNote.type !== 'text' || !parentNote.isContentAvailable()) {
+        } else if (parentNote.type !== "text" || !parentNote.isContentAvailable()) {
             return false;
         }
 
@@ -309,9 +309,7 @@ class FNote {
      * @returns all note's attributes, including inherited ones
      */
     getOwnedAttributes(type?: AttributeType, name?: string) {
-        const attrs = this.attributes
-            .map(attributeId => this.froca.attributes[attributeId])
-            .filter(Boolean); // filter out nulls;
+        const attrs = this.attributes.map((attributeId) => this.froca.attributes[attributeId]).filter(Boolean); // filter out nulls;
 
         return this.__filterAttrs(attrs, type, name);
     }
@@ -337,26 +335,27 @@ class FNote {
 
         if (!(this.noteId in noteAttributeCache.attributes)) {
             const newPath = [...path, this.noteId];
-            const attrArrs = [ this.getOwnedAttributes() ];
+            const attrArrs = [this.getOwnedAttributes()];
 
             // inheritable attrs on root are typically not intended to be applied to hidden subtree #3537
-            if (this.noteId !== 'root' && this.noteId !== '_hidden') {
+            if (this.noteId !== "root" && this.noteId !== "_hidden") {
                 for (const parentNote of this.getParentNotes()) {
                     // these virtual parent-child relationships are also loaded into froca
-                    if (parentNote.type !== 'search') {
+                    if (parentNote.type !== "search") {
                         attrArrs.push(parentNote.__getInheritableAttributes(newPath));
                     }
                 }
             }
 
-            for (const templateAttr of attrArrs.flat().filter(attr => attr.type === 'relation' && ['template', 'inherit'].includes(attr.name))) {
+            for (const templateAttr of attrArrs.flat().filter((attr) => attr.type === "relation" && ["template", "inherit"].includes(attr.name))) {
                 const templateNote = this.froca.notes[templateAttr.value];
 
                 if (templateNote && templateNote.noteId !== this.noteId) {
                     attrArrs.push(
-                        templateNote.__getCachedAttributes(newPath)
+                        templateNote
+                            .__getCachedAttributes(newPath)
                             // template attr is used as a marker for templates, but it's not meant to be inherited
-                            .filter(attr => !(attr.type === 'label' && (attr.name === 'template' || attr.name === 'workspacetemplate')))
+                            .filter((attr) => !(attr.type === "label" && (attr.name === "template" || attr.name === "workspacetemplate")))
                     );
                 }
             }
@@ -377,7 +376,7 @@ class FNote {
     }
 
     isRoot() {
-        return this.noteId === 'root';
+        return this.noteId === "root";
     }
 
     /**
@@ -386,15 +385,16 @@ class FNote {
      * @returns array of notePaths (each represented by array of noteIds constituting the particular note path)
      */
     getAllNotePaths(): string[][] {
-        if (this.noteId === 'root') {
-            return [['root']];
+        if (this.noteId === "root") {
+            return [["root"]];
         }
 
-        const parentNotes = this.getParentNotes().filter(note => note.type !== 'search');
+        const parentNotes = this.getParentNotes().filter((note) => note.type !== "search");
 
-        const notePaths = parentNotes.length === 1
-            ? parentNotes[0].getAllNotePaths() // optimization for the most common case
-            : parentNotes.flatMap(parentNote => parentNote.getAllNotePaths());
+        const notePaths =
+            parentNotes.length === 1
+                ? parentNotes[0].getAllNotePaths() // optimization for the most common case
+                : parentNotes.flatMap((parentNote) => parentNote.getAllNotePaths());
 
         for (const notePath of notePaths) {
             notePath.push(this.noteId);
@@ -403,15 +403,15 @@ class FNote {
         return notePaths;
     }
 
-    getSortedNotePathRecords(hoistedNoteId = 'root') {
-        const isHoistedRoot = hoistedNoteId === 'root';
+    getSortedNotePathRecords(hoistedNoteId = "root"): NotePathRecord[] {
+        const isHoistedRoot = hoistedNoteId === "root";
 
-        const notePaths = this.getAllNotePaths().map(path => ({
+        const notePaths: NotePathRecord[] = this.getAllNotePaths().map((path) => ({
             notePath: path,
             isInHoistedSubTree: isHoistedRoot || path.includes(hoistedNoteId),
-            isArchived: path.some(noteId => froca.notes[noteId].isArchived),
-            isSearch: path.find(noteId => froca.notes[noteId].type === 'search'),
-            isHidden: path.includes('_hidden')
+            isArchived: path.some((noteId) => froca.notes[noteId].isArchived),
+            isSearch: path.some((noteId) => froca.notes[noteId].type === "search"),
+            isHidden: path.includes("_hidden")
         }));
 
         notePaths.sort((a, b) => {
@@ -437,7 +437,7 @@ class FNote {
      * @param {string} [hoistedNoteId='root']
      * @return {string[]} array of noteIds constituting the particular note path
      */
-    getBestNotePath(hoistedNoteId = 'root') {
+    getBestNotePath(hoistedNoteId = "root") {
         return this.getSortedNotePathRecords(hoistedNoteId)[0]?.notePath;
     }
 
@@ -447,7 +447,7 @@ class FNote {
      * @param {string} [hoistedNoteId='root']
      * @return {string} serialized note path (e.g. 'root/a1h315/js725h')
      */
-    getBestNotePathString(hoistedNoteId = 'root') {
+    getBestNotePathString(hoistedNoteId = "root") {
         const notePath = this.getBestNotePath(hoistedNoteId);
 
         return notePath?.join("/");
@@ -457,16 +457,16 @@ class FNote {
      * @return boolean - true if there's no non-hidden path, note is not cloned to the visible tree
      */
     isHiddenCompletely() {
-        if (this.noteId === '_hidden') {
+        if (this.noteId === "_hidden") {
             return true;
-        } else if (this.noteId === 'root') {
+        } else if (this.noteId === "root") {
             return false;
         }
 
         for (const parentNote of this.getParentNotes()) {
-            if (parentNote.noteId === 'root') {
+            if (parentNote.noteId === "root") {
                 return false;
-            } else if (parentNote.noteId === '_hidden' || parentNote.type === 'search') {
+            } else if (parentNote.noteId === "_hidden" || parentNote.type === "search") {
                 continue;
             }
 
@@ -487,11 +487,11 @@ class FNote {
         if (!type && !name) {
             return attributes;
         } else if (type && name) {
-            return attributes.filter(attr => attr.name === name && attr.type === type);
+            return attributes.filter((attr) => attr.name === name && attr.type === type);
         } else if (type) {
-            return attributes.filter(attr => attr.type === type);
+            return attributes.filter((attr) => attr.type === type);
         } else if (name) {
-            return attributes.filter(attr => attr.name === name);
+            return attributes.filter((attr) => attr.name === name);
         }
 
         return [];
@@ -500,27 +500,27 @@ class FNote {
     __getInheritableAttributes(path: string[]) {
         const attrs = this.__getCachedAttributes(path);
 
-        return attrs.filter(attr => attr.isInheritable);
+        return attrs.filter((attr) => attr.isInheritable);
     }
 
     __validateTypeName(type?: string, name?: string) {
-        if (type && type !== 'label' && type !== 'relation') {
+        if (type && type !== "label" && type !== "relation") {
             throw new Error(`Unrecognized attribute type '${type}'. Only 'label' and 'relation' are possible values.`);
         }
 
         if (name) {
             const firstLetter = name.charAt(0);
-            if (firstLetter === '#' || firstLetter === '~') {
+            if (firstLetter === "#" || firstLetter === "~") {
                 throw new Error(`Detect '#' or '~' in the attribute's name. In the API, attribute names should be set without these characters.`);
             }
         }
     }
 
     /**
-     * @param [name] - label name to filter
+     * @param name - label name to filter
      * @returns all note's labels (attributes with type label), including inherited ones
      */
-    getOwnedLabels(name: string) {
+    getOwnedLabels(name?: string) {
         return this.getOwnedAttributes(LABEL, name);
     }
 
@@ -533,33 +533,27 @@ class FNote {
     }
 
     getIcon() {
-        const iconClassLabels = this.getLabels('iconClass');
+        const iconClassLabels = this.getLabels("iconClass");
         const workspaceIconClass = this.getWorkspaceIconClass();
 
         if (iconClassLabels && iconClassLabels.length > 0) {
             return iconClassLabels[0].value;
-        }
-        else if (workspaceIconClass) {
+        } else if (workspaceIconClass) {
             return workspaceIconClass;
-        }
-        else if (this.noteId === 'root') {
+        } else if (this.noteId === "root") {
             return "bx bx-home-alt-2";
         }
-        if (this.noteId === '_share') {
+        if (this.noteId === "_share") {
             return "bx bx-share-alt";
-        }
-        else if (this.type === 'text') {
+        } else if (this.type === "text") {
             if (this.isFolder()) {
                 return "bx bx-folder";
-            }
-            else {
+            } else {
                 return "bx bx-note";
             }
-        }
-        else if (this.type === 'code' && this.mime.startsWith('text/x-sql')) {
+        } else if (this.type === "code" && this.mime.startsWith("text/x-sql")) {
             return "bx bx-data";
-        }
-        else {
+        } else {
             return NOTE_TYPE_ICONS[this.type];
         }
     }
@@ -570,8 +564,7 @@ class FNote {
     }
 
     isFolder() {
-        return this.type === 'search'
-            || this.getFilteredChildBranches().length > 0;
+        return this.type === "search" || this.getFilteredChildBranches().length > 0;
     }
 
     getFilteredChildBranches() {
@@ -614,7 +607,7 @@ class FNote {
     hasAttribute(type: AttributeType, name: string) {
         const attributes = this.getAttributes();
 
-        return attributes.some(attr => attr.name === name && attr.type === type);
+        return attributes.some((attr) => attr.name === name && attr.type === type);
     }
 
     /**
@@ -634,7 +627,7 @@ class FNote {
     getOwnedAttribute(type: AttributeType, name: string) {
         const attributes = this.getOwnedAttributes();
 
-        return attributes.find(attr => attr.name === name && attr.type === type);
+        return attributes.find((attr) => attr.name === name && attr.type === type);
     }
 
     /**
@@ -645,7 +638,7 @@ class FNote {
     getAttribute(type: AttributeType, name: string) {
         const attributes = this.getAttributes();
 
-        return attributes.find(attr => attr.name === name && attr.type === type);
+        return attributes.find((attr) => attr.name === name && attr.type === type);
     }
 
     /**
@@ -682,7 +675,9 @@ class FNote {
      * @param name - label name
      * @returns true if label exists (including inherited)
      */
-    hasLabel(name: string) { return this.hasAttribute(LABEL, name); }
+    hasLabel(name: string) {
+        return this.hasAttribute(LABEL, name);
+    }
 
     /**
      * @param name - label name
@@ -695,68 +690,88 @@ class FNote {
             return false;
         }
 
-        return label && label.value !== 'false';
+        return label && label.value !== "false";
     }
 
     /**
      * @param name - relation name
      * @returns true if relation exists (excluding inherited)
      */
-    hasOwnedRelation(name: string) { return this.hasOwnedAttribute(RELATION, name); }
+    hasOwnedRelation(name: string) {
+        return this.hasOwnedAttribute(RELATION, name);
+    }
 
     /**
      * @param name - relation name
      * @returns true if relation exists (including inherited)
      */
-    hasRelation(name: string) { return this.hasAttribute(RELATION, name); }
+    hasRelation(name: string) {
+        return this.hasAttribute(RELATION, name);
+    }
 
     /**
      * @param name - label name
      * @returns label if it exists, null otherwise
      */
-    getOwnedLabel(name: string) { return this.getOwnedAttribute(LABEL, name); }
+    getOwnedLabel(name: string) {
+        return this.getOwnedAttribute(LABEL, name);
+    }
 
     /**
      * @param name - label name
      * @returns label if it exists, null otherwise
      */
-    getLabel(name: string) { return this.getAttribute(LABEL, name); }
+    getLabel(name: string) {
+        return this.getAttribute(LABEL, name);
+    }
 
     /**
      * @param name - relation name
      * @returns relation if it exists, null otherwise
      */
-    getOwnedRelation(name: string) { return this.getOwnedAttribute(RELATION, name); }
+    getOwnedRelation(name: string) {
+        return this.getOwnedAttribute(RELATION, name);
+    }
 
     /**
      * @param name - relation name
      * @returns relation if it exists, null otherwise
      */
-    getRelation(name: string) { return this.getAttribute(RELATION, name); }
+    getRelation(name: string) {
+        return this.getAttribute(RELATION, name);
+    }
 
     /**
      * @param name - label name
      * @returns label value if label exists, null otherwise
      */
-    getOwnedLabelValue(name: string) { return this.getOwnedAttributeValue(LABEL, name); }
+    getOwnedLabelValue(name: string) {
+        return this.getOwnedAttributeValue(LABEL, name);
+    }
 
     /**
      * @param name - label name
      * @returns label value if label exists, null otherwise
      */
-    getLabelValue(name: string) { return this.getAttributeValue(LABEL, name); }
+    getLabelValue(name: string) {
+        return this.getAttributeValue(LABEL, name);
+    }
 
     /**
      * @param name - relation name
      * @returns relation value if relation exists, null otherwise
      */
-    getOwnedRelationValue(name: string) { return this.getOwnedAttributeValue(RELATION, name); }
+    getOwnedRelationValue(name: string) {
+        return this.getOwnedAttributeValue(RELATION, name);
+    }
 
     /**
      * @param name - relation name
      * @returns relation value if relation exists, null otherwise
      */
-    getRelationValue(name: string) { return this.getAttributeValue(RELATION, name); }
+    getRelationValue(name: string) {
+        return this.getAttributeValue(RELATION, name);
+    }
 
     /**
      * @param name
@@ -783,22 +798,19 @@ class FNote {
     }
 
     getNotesToInheritAttributesFrom() {
-        const relations = [
-            ...this.getRelations('template'),
-            ...this.getRelations('inherit')
-        ];
+        const relations = [...this.getRelations("template"), ...this.getRelations("inherit")];
 
-        return relations.map(rel => this.froca.notes[rel.value]);
+        return relations.map((rel) => this.froca.notes[rel.value]);
     }
 
     getPromotedDefinitionAttributes() {
-        if (this.isLabelTruthy('hidePromotedAttributes')) {
+        if (this.isLabelTruthy("hidePromotedAttributes")) {
             return [];
         }
 
         const promotedAttrs = this.getAttributes()
-            .filter(attr => attr.isDefinition())
-            .filter(attr => {
+            .filter((attr) => attr.isDefinition())
+            .filter((attr) => {
                 const def = attr.getDefinition();
 
                 return def && def.isPromoted;
@@ -849,7 +861,7 @@ class FNote {
     }
 
     isInHiddenSubtree() {
-        return this.noteId === '_hidden' || this.hasAncestor('_hidden');
+        return this.noteId === "_hidden" || this.hasAncestor("_hidden");
     }
 
     /**
@@ -861,8 +873,7 @@ class FNote {
      * Get relations which target this note
      */
     getTargetRelations() {
-        return this.targetRelations
-            .map(attributeId => this.froca.attributes[attributeId]);
+        return this.targetRelations.map((attributeId) => this.froca.attributes[attributeId]);
     }
 
     /**
@@ -871,7 +882,7 @@ class FNote {
     async getTargetRelationSourceNotes() {
         const targetRelations = this.getTargetRelations();
 
-        return await this.froca.getNotes(targetRelations.map(tr => tr.noteId));
+        return await this.froca.getNotes(targetRelations.map((tr) => tr.noteId));
     }
 
     /**
@@ -882,7 +893,7 @@ class FNote {
     }
 
     async getBlob() {
-        return await this.froca.getBlob('notes', this.noteId);
+        return await this.froca.getBlob("notes", this.noteId);
     }
 
     toString() {
@@ -897,26 +908,26 @@ class FNote {
     }
 
     getCssClass() {
-        const labels = this.getLabels('cssClass');
-        return labels.map(l => l.value).join(' ');
+        const labels = this.getLabels("cssClass");
+        return labels.map((l) => l.value).join(" ");
     }
 
     getWorkspaceIconClass() {
-        const labels = this.getLabels('workspaceIconClass');
+        const labels = this.getLabels("workspaceIconClass");
         return labels.length > 0 ? labels[0].value : "";
     }
 
     getWorkspaceTabBackgroundColor() {
-        const labels = this.getLabels('workspaceTabBackgroundColor');
+        const labels = this.getLabels("workspaceTabBackgroundColor");
         return labels.length > 0 ? labels[0].value : "";
     }
 
     /** @returns true if this note is JavaScript (code or file) */
     isJavaScript() {
-        return (this.type === "code" || this.type === "file" || this.type === 'launcher')
-            && (this.mime.startsWith("application/javascript")
-                || this.mime === "application/x-javascript"
-                || this.mime === "text/javascript");
+        return (
+            (this.type === "code" || this.type === "file" || this.type === "launcher") &&
+            (this.mime.startsWith("application/javascript") || this.mime === "application/x-javascript" || this.mime === "text/javascript")
+        );
     }
 
     /** @returns true if this note is HTML */
@@ -926,15 +937,15 @@ class FNote {
 
     /** @returns JS script environment - either "frontend" or "backend" */
     getScriptEnv() {
-        if (this.isHtml() || (this.isJavaScript() && this.mime.endsWith('env=frontend'))) {
+        if (this.isHtml() || (this.isJavaScript() && this.mime.endsWith("env=frontend"))) {
             return "frontend";
         }
 
-        if (this.type === 'render') {
+        if (this.type === "render") {
             return "frontend";
         }
 
-        if (this.isJavaScript() && this.mime.endsWith('env=backend')) {
+        if (this.isJavaScript() && this.mime.endsWith("env=backend")) {
             return "backend";
         }
 
@@ -960,17 +971,17 @@ class FNote {
 
     isShared() {
         for (const parentNoteId of this.parents) {
-            if (parentNoteId === 'root' || parentNoteId === 'none') {
+            if (parentNoteId === "root" || parentNoteId === "none") {
                 continue;
             }
 
             const parentNote = froca.notes[parentNoteId];
 
-            if (!parentNote || parentNote.type === 'search') {
+            if (!parentNote || parentNote.type === "search") {
                 continue;
             }
 
-            if (parentNote.noteId === '_share' || parentNote.isShared()) {
+            if (parentNote.noteId === "_share" || parentNote.isShared()) {
                 return true;
             }
         }
@@ -979,11 +990,11 @@ class FNote {
     }
 
     isContentAvailable() {
-        return !this.isProtected || protectedSessionHolder.isProtectedSessionAvailable()
+        return !this.isProtected || protectedSessionHolder.isProtectedSessionAvailable();
     }
 
     isLaunchBarConfig() {
-        return this.type === 'launcher' || ['_lbRoot', '_lbAvailableLaunchers', '_lbVisibleLaunchers'].includes(this.noteId);
+        return this.type === "launcher" || utils.isLaunchBarConfig(this.noteId);
     }
 
     isOptions() {

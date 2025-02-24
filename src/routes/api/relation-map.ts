@@ -1,20 +1,20 @@
-import { Request } from 'express';
+import type { Request } from "express";
 import becca from "../../becca/becca.js";
 import sql from "../../services/sql.js";
 
 interface ResponseData {
     noteTitles: Record<string, string>;
     relations: {
-        attributeId: string,
-        sourceNoteId: string,
-        targetNoteId: string,
-        name: string
+        attributeId: string;
+        sourceNoteId: string;
+        targetNoteId: string;
+        name: string;
     }[];
     inverseRelations: Record<string, string>;
 }
 
 function getRelationMap(req: Request) {
-    const {relationMapNoteId, noteIds} = req.body;
+    const { relationMapNoteId, noteIds } = req.body;
 
     const resp: ResponseData = {
         // noteId => title
@@ -22,7 +22,7 @@ function getRelationMap(req: Request) {
         relations: [],
         // relation name => inverse relation name
         inverseRelations: {
-            'internalLink': 'internalLink'
+            internalLink: "internalLink"
         }
     };
 
@@ -30,19 +30,15 @@ function getRelationMap(req: Request) {
         return resp;
     }
 
-    const questionMarks = noteIds.map(noteId => '?').join(',');
+    const questionMarks = noteIds.map((noteId) => "?").join(",");
 
     const relationMapNote = becca.getNoteOrThrow(relationMapNoteId);
 
-    const displayRelationsVal = relationMapNote.getLabelValue('displayRelations');
-    const displayRelations = !displayRelationsVal ? [] : displayRelationsVal
-        .split(",")
-        .map(token => token.trim());
+    const displayRelationsVal = relationMapNote.getLabelValue("displayRelations");
+    const displayRelations = !displayRelationsVal ? [] : displayRelationsVal.split(",").map((token) => token.trim());
 
-    const hideRelationsVal = relationMapNote.getLabelValue('hideRelations');
-    const hideRelations = !hideRelationsVal ? [] : hideRelationsVal
-        .split(",")
-        .map(token => token.trim());
+    const hideRelationsVal = relationMapNote.getLabelValue("hideRelations");
+    const hideRelations = !hideRelationsVal ? [] : hideRelationsVal.split(",").map((token) => token.trim());
 
     const foundNoteIds = sql.getColumn<string>(`SELECT noteId FROM notes WHERE isDeleted = 0 AND noteId IN (${questionMarks})`, noteIds);
     const notes = becca.getNotes(foundNoteIds);
@@ -50,18 +46,19 @@ function getRelationMap(req: Request) {
     for (const note of notes) {
         resp.noteTitles[note.noteId] = note.title;
 
-        resp.relations = resp.relations.concat(note.getRelations()
-            .filter(relation => !relation.isAutoLink() || displayRelations.includes(relation.name))
-            .filter(relation => displayRelations.length > 0
-                ? displayRelations.includes(relation.name)
-                : !hideRelations.includes(relation.name))
-            .filter(relation => noteIds.includes(relation.value))
-            .map(relation => ({
-                attributeId: relation.attributeId,
-                sourceNoteId: relation.noteId,
-                targetNoteId: relation.value,
-                name: relation.name
-            })));
+        resp.relations = resp.relations.concat(
+            note
+                .getRelations()
+                .filter((relation) => !relation.isAutoLink() || displayRelations.includes(relation.name))
+                .filter((relation) => (displayRelations.length > 0 ? displayRelations.includes(relation.name) : !hideRelations.includes(relation.name)))
+                .filter((relation) => noteIds.includes(relation.value))
+                .map((relation) => ({
+                    attributeId: relation.attributeId,
+                    sourceNoteId: relation.noteId,
+                    targetNoteId: relation.value,
+                    name: relation.name
+                }))
+        );
 
         for (const relationDefinition of note.getRelationDefinitions()) {
             const def = relationDefinition.getDefinition();

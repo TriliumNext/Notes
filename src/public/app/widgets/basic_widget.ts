@@ -1,15 +1,10 @@
-import Component from "../components/component.js";
+import Component, { TypedComponent } from "../components/component.js";
 import froca from "../services/froca.js";
 import { t } from "../services/i18n.js";
 import toastService from "../services/toast.js";
 
-/**
- * This is the base widget for all other widgets.
- *
- * For information on using widgets, see the tutorial {@tutorial widget_basics}.
- */
-class BasicWidget extends Component {
-    private attrs: Record<string, string>;
+export class TypedBasicWidget<T extends TypedComponent<any>> extends TypedComponent<T> {
+    protected attrs: Record<string, string>;
     private classes: string[];
     private childPositionCounter: number;
     private cssEl?: string;
@@ -19,7 +14,7 @@ class BasicWidget extends Component {
         super();
 
         this.attrs = {
-            style: ''
+            style: ""
         };
         this.classes = [];
 
@@ -27,7 +22,7 @@ class BasicWidget extends Component {
         this.childPositionCounter = 10;
     }
 
-    child(...components: Component[]) {
+    child(...components: T[]) {
         if (!components) {
             return this;
         }
@@ -53,7 +48,7 @@ class BasicWidget extends Component {
      * @param components the components to be added as children to this component provided the condition is truthy.
      * @returns self for chaining.
      */
-    optChild(condition: boolean, ...components: Component[]) {
+    optChild(condition: boolean, ...components: T[]) {
         if (condition) {
             return this.child(...components);
         } else {
@@ -106,13 +101,13 @@ class BasicWidget extends Component {
     }
 
     collapsible() {
-        this.css('min-height', '0');
-        this.css('min-width', '0');
+        this.css("min-height", "0");
+        this.css("min-width", "0");
         return this;
     }
 
     filling() {
-        this.css('flex-grow', '1');
+        this.css("flex-grow", "1");
         return this;
     }
 
@@ -132,31 +127,28 @@ class BasicWidget extends Component {
             this.logRenderingError(e);
         }
 
-        this.$widget.attr('data-component-id', this.componentId);
-        this.$widget
-            .addClass('component')
-            .prop('component', this);
+        this.$widget.attr("data-component-id", this.componentId);
+        this.$widget.addClass("component").prop("component", this);
 
         if (!this.isEnabled()) {
             this.toggleInt(false);
         }
 
         if (this.cssEl) {
-            const css = this.cssEl.trim().startsWith('<style>') ? this.cssEl : `<style>${this.cssEl}</style>`;
+            const css = this.cssEl.trim().startsWith("<style>") ? this.cssEl : `<style>${this.cssEl}</style>`;
 
             this.$widget.append(css);
         }
 
         for (const key in this.attrs) {
-            if (key === 'style') {
+            if (key === "style") {
                 if (this.attrs[key]) {
-                    let style = this.$widget.attr('style');
+                    let style = this.$widget.attr("style");
                     style = style ? `${style}; ${this.attrs[key]}` : this.attrs[key];
 
                     this.$widget.attr(key, style);
                 }
-            }
-            else {
+            } else {
                 this.$widget.attr(key, this.attrs[key]);
             }
         }
@@ -201,7 +193,7 @@ class BasicWidget extends Component {
      * Indicates if the widget is enabled. Widgets are enabled by default. Generally setting this to `false` will cause the widget not to be displayed, however it will still be available on the DOM but hidden.
      * @returns whether the widget is enabled.
      */
-    isEnabled() {
+    isEnabled(): boolean | null | undefined {
         return true;
     }
 
@@ -213,20 +205,20 @@ class BasicWidget extends Component {
      */
     doRender() {}
 
-    toggleInt(show: boolean) {
-        this.$widget.toggleClass('hidden-int', !show);
+    toggleInt(show: boolean | null | undefined) {
+        this.$widget.toggleClass("hidden-int", !show);
     }
 
     isHiddenInt() {
-        return this.$widget.hasClass('hidden-int');
+        return this.$widget.hasClass("hidden-int");
     }
 
     toggleExt(show: boolean) {
-        this.$widget.toggleClass('hidden-ext', !show);
+        this.$widget.toggleClass("hidden-ext", !show);
     }
 
     isHiddenExt() {
-        return this.$widget.hasClass('hidden-ext');
+        return this.$widget.hasClass("hidden-ext");
     }
 
     canBeShown() {
@@ -250,8 +242,7 @@ class BasicWidget extends Component {
     getClosestNtxId() {
         if (this.$widget) {
             return this.$widget.closest("[data-ntx-id]").attr("data-ntx-id");
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -259,4 +250,9 @@ class BasicWidget extends Component {
     cleanup() {}
 }
 
-export default BasicWidget;
+/**
+ * This is the base widget for all other widgets.
+ *
+ * For information on using widgets, see the tutorial {@tutorial widget_basics}.
+ */
+export default class BasicWidget extends TypedBasicWidget<Component> {}

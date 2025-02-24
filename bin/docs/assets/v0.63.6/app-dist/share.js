@@ -13,11 +13,15 @@ async function fetchNote(noteId = null) {
     return await resp.json();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleMenuButton = document.getElementById('toggleMenuButton');
-    const layout = document.getElementById('layout');
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        const toggleMenuButton = document.getElementById("toggleMenuButton");
+        const layout = document.getElementById("layout");
 
-    if (toggleMenuButton && layout) {
-        toggleMenuButton.addEventListener('click', () => layout.classList.toggle('showMenu'));
-    }
-}, false);
+        if (toggleMenuButton && layout) {
+            toggleMenuButton.addEventListener("click", () => layout.classList.toggle("showMenu"));
+        }
+    },
+    false
+);

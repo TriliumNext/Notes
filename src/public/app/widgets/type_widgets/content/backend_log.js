@@ -26,7 +26,7 @@ export default class BackendLogWidget extends AbstractCodeTypeWidget {
         this.$editor = this.$widget.find(".backend-log-editor");
 
         this.$refreshBackendLog = this.$widget.find(".refresh-backend-log-button");
-        this.$refreshBackendLog.on('click', () => this.load());
+        this.$refreshBackendLog.on("click", () => this.load());
     }
 
     async refresh() {
@@ -41,12 +41,15 @@ export default class BackendLogWidget extends AbstractCodeTypeWidget {
     }
 
     async load() {
-        const content = await server.get('backend-log');
+        const content = await server.get("backend-log");
         await this.initialized;
 
-        this._update({
-            mime: "text/plain"            
-        }, content);
+        this._update(
+            {
+                mime: "text/plain"
+            },
+            content
+        );
         this.show();
         this.scrollToEnd();
     }

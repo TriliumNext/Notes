@@ -1,5 +1,6 @@
 import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
+import { Modal } from "bootstrap";
 
 const DELETE_NOTE_BUTTON_CLASS = "confirm-dialog-delete-note";
 
@@ -8,8 +9,8 @@ const TPL = `
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">${t('confirm.confirmation')}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('confirm.close')}"></button>
+                <h5 class="modal-title">${t("confirm.confirmation")}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("confirm.close")}"></button>
             </div>
             <div class="modal-body">
                 <div class="confirm-dialog-content"></div>
@@ -17,11 +18,11 @@ const TPL = `
                 <div class="confirm-dialog-custom"></div>
             </div>
             <div class="modal-footer">
-                <button class="confirm-dialog-cancel-button btn btn-sm">${t('confirm.cancel')}</button>
+                <button class="confirm-dialog-cancel-button btn btn-sm">${t("confirm.cancel")}</button>
 
                 &nbsp;
 
-                <button class="confirm-dialog-ok-button btn btn-primary btn-sm">${t('confirm.ok')}</button>
+                <button class="confirm-dialog-ok-button btn btn-primary btn-sm">${t("confirm.ok")}</button>
             </div>
         </div>
     </div>
@@ -31,7 +32,7 @@ type ConfirmDialogCallback = (val: false | ConfirmDialogOptions) => void;
 
 export interface ConfirmDialogOptions {
     confirmed: boolean;
-    isDeleteNoteChecked: boolean
+    isDeleteNoteChecked: boolean;
 }
 
 // For "showConfirmDialog"
@@ -43,14 +44,13 @@ export interface ConfirmWithMessageOptions {
 
 export interface ConfirmWithTitleOptions {
     title: string;
-    callback: ConfirmDialogCallback;       
+    callback: ConfirmDialogCallback;
 }
 
 export default class ConfirmDialog extends BasicWidget {
-
     private resolve: ConfirmDialogCallback | null;
 
-    private modal!: bootstrap.Modal;
+    private modal!: Modal;
     private $originallyFocused!: JQuery<HTMLElement> | null;
     private $confirmContent!: JQuery<HTMLElement>;
     private $okButton!: JQuery<HTMLElement>;
@@ -66,15 +66,13 @@ export default class ConfirmDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        // TODO: Fix once we use proper ES imports.
-        //@ts-ignore
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
         this.$confirmContent = this.$widget.find(".confirm-dialog-content");
         this.$okButton = this.$widget.find(".confirm-dialog-ok-button");
         this.$cancelButton = this.$widget.find(".confirm-dialog-cancel-button");
         this.$custom = this.$widget.find(".confirm-dialog-custom");
 
-        this.$widget.on('shown.bs.modal', () => this.$okButton.trigger("focus"));
+        this.$widget.on("shown.bs.modal", () => this.$okButton.trigger("focus"));
 
         this.$widget.on("hidden.bs.modal", () => {
             if (this.resolve) {
@@ -82,23 +80,23 @@ export default class ConfirmDialog extends BasicWidget {
             }
 
             if (this.$originallyFocused) {
-                this.$originallyFocused.trigger('focus');
+                this.$originallyFocused.trigger("focus");
                 this.$originallyFocused = null;
             }
         });
 
-        this.$cancelButton.on('click', () => this.doResolve(false));
-        this.$okButton.on('click', () => this.doResolve(true));
+        this.$cancelButton.on("click", () => this.doResolve(false));
+        this.$okButton.on("click", () => this.doResolve(true));
     }
 
     showConfirmDialogEvent({ message, callback }: ConfirmWithMessageOptions) {
-        this.$originallyFocused = $(':focus');
+        this.$originallyFocused = $(":focus");
 
         this.$custom.hide();
 
         glob.activeDialog = this.$widget;
 
-        if (typeof message === 'string') {
+        if (typeof message === "string") {
             message = $("<div>").text(message);
         }
 
@@ -108,28 +106,27 @@ export default class ConfirmDialog extends BasicWidget {
 
         this.resolve = callback;
     }
-    
+
     showConfirmDeleteNoteBoxWithNoteDialogEvent({ title, callback }: ConfirmWithTitleOptions) {
         glob.activeDialog = this.$widget;
 
-        this.$confirmContent.text(`${t('confirm.are_you_sure_remove_note', { title: title })}`);
+        this.$confirmContent.text(`${t("confirm.are_you_sure_remove_note", { title: title })}`);
 
-        this.$custom.empty()
+        this.$custom
+            .empty()
             .append("<br/>")
-            .append($("<div>")
-                .addClass("form-check")
-                .append(
-                    $("<label>")
-                        .addClass("form-check-label")
-                        .attr("style", "text-decoration: underline dotted var(--main-text-color)")
-                        .attr("title", `${t('confirm.if_you_dont_check')}`)
-                        .append(
-                            $("<input>")
-                                .attr("type", "checkbox")
-                                .addClass(`form-check-input ${DELETE_NOTE_BUTTON_CLASS}`)
-                        )
-                        .append(`${t('confirm.also_delete_note')}`)
-                ));
+            .append(
+                $("<div>")
+                    .addClass("form-check")
+                    .append(
+                        $("<label>")
+                            .addClass("form-check-label")
+                            .attr("style", "text-decoration: underline dotted var(--main-text-color)")
+                            .attr("title", `${t("confirm.if_you_dont_check")}`)
+                            .append($("<input>").attr("type", "checkbox").addClass(`form-check-input ${DELETE_NOTE_BUTTON_CLASS}`))
+                            .append(`${t("confirm.also_delete_note")}`)
+                    )
+            );
 
         this.$custom.show();
 

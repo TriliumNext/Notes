@@ -1,15 +1,15 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from "express";
 import log from "../services/log.js";
 
 function register(app: Application) {
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-        if (err.code !== 'EBADCSRFTOKEN') {
+        if (err.code !== "EBADCSRFTOKEN") {
             return next(err);
         }
 
-        log.error(`Invalid CSRF token: ${req.headers['x-csrf-token']}, secret: ${req.cookies['_csrf']}`);
+        log.error(`Invalid CSRF token: ${req.headers["x-csrf-token"]}, secret: ${req.cookies["_csrf"]}`);
 
-        err = new Error('Invalid CSRF token');
+        err = new Error("Invalid CSRF token");
         err.status = 403;
         next(err);
     });

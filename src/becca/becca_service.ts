@@ -37,7 +37,7 @@ function getNoteTitle(childNoteId: string, parentNoteId?: string) {
 
     const branch = parentNote ? becca.getBranchFromChildAndParent(childNote.noteId, parentNote.noteId) : null;
 
-    return `${(branch && branch.prefix) ? `${branch.prefix} - ` : ''}${title}`;
+    return `${branch && branch.prefix ? `${branch.prefix} - ` : ""}${title}`;
 }
 
 function getNoteTitleArrayForPath(notePathArray: string[]) {
@@ -51,7 +51,7 @@ function getNoteTitleArrayForPath(notePathArray: string[]) {
 
     const titles = [];
 
-    let parentNoteId = 'root';
+    let parentNoteId = "root";
     let hoistedNotePassed = false;
 
     // this is a notePath from outside of hoisted subtree, so the full title path needs to be returned
@@ -79,7 +79,7 @@ function getNoteTitleArrayForPath(notePathArray: string[]) {
 function getNoteTitleForPath(notePathArray: string[]) {
     const titles = getNoteTitleArrayForPath(notePathArray);
 
-    return titles.join(' / ');
+    return titles.join(" / ");
 }
 
 export default {

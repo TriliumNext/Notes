@@ -1,8 +1,18 @@
-import treeService from './tree.js';
+import treeService from "./tree.js";
 import linkContextMenuService from "../menus/link_context_menu.js";
-import appContext, { NoteCommandData } from "../components/app_context.js";
+import appContext, { type NoteCommandData } from "../components/app_context.js";
 import froca from "./froca.js";
 import utils from "./utils.js";
+
+// Be consistent with `allowedSchemes` in `src\services\html_sanitizer.ts`
+// TODO: Deduplicate with server once we can.
+export const ALLOWED_PROTOCOLS = [
+    'http', 'https', 'ftp', 'ftps', 'mailto', 'data', 'evernote', 'file', 'facetime', 'gemini', 'git',
+    'gopher', 'imap', 'irc', 'irc6', 'jabber', 'jar', 'lastfm', 'ldap', 'ldaps', 'magnet', 'message',
+    'mumble', 'nfs', 'onenote', 'pop', 'rmi', 's3', 'sftp', 'skype', 'sms', 'spotify', 'steam', 'svn', 'udp',
+    'view-source', 'vlc', 'vnc', 'ws', 'wss', 'xmpp', 'jdbc', 'slack', 'tel', 'smb', 'zotero', 'geo',
+    'mid'
+];
 
 function getNotePathFromUrl(url: string) {
     const notePathMatch = /#(root[A-Za-z0-9_/]*)$/.exec(url);
@@ -13,24 +23,41 @@ function getNotePathFromUrl(url: string) {
 async function getLinkIcon(noteId: string, viewMode: ViewMode | undefined) {
     let icon;
 
-    if (!viewMode || viewMode === 'default') {
+    if (!viewMode || viewMode === "default") {
         const note = await froca.getNote(noteId);
 
         icon = note?.getIcon();
-    } else if (viewMode === 'source') {
-        icon = 'bx bx-code-curly';
-    } else if (viewMode === 'attachments') {
-        icon = 'bx bx-file';
+    } else if (viewMode === "source") {
+        icon = "bx bx-code-curly";
+    } else if (viewMode === "attachments") {
+        icon = "bx bx-file";
     }
     return icon;
 }
 
-type ViewMode = "default" | "source" | "attachments" | string;
+// TODO: Remove `string` once all the view modes have been mapped.
+type ViewMode = "default" | "source" | "attachments" | "contextual-help" | string;
 
 export interface ViewScope {
+    /**
+     * - "source", when viewing the source code of a note.
+     * - "attachments", when viewing the attachments of a note.
+     * - "contextual-help", if the current view represents a help window that was opened to the side of the main content.
+     * - "default", otherwise.
+     */
     viewMode?: ViewMode;
     attachmentId?: string;
     readOnlyTemporarilyDisabled?: boolean;
+    highlightsListPreviousVisible?: boolean;
+    highlightsListTemporarilyHidden?: boolean;
+    tocTemporarilyHidden?: boolean;
+    /*
+     * The reason for adding tocPreviousVisible is to record whether the previous state of the toc is hidden or displayed,
+     * and then let it be displayed/hidden at the initial time. If there is no such value,
+     * when the right panel needs to display highlighttext but not toc, every time the note content is changed,
+     * toc will appear and then close immediately, because getToc(html) function will consume time
+     */
+    tocPreviousVisible?: boolean;
 }
 
 interface CreateLinkOptions {
@@ -43,7 +70,7 @@ interface CreateLinkOptions {
     viewScope?: ViewScope;
 }
 
-async function createLink(notePath: string, options: CreateLinkOptions = {}) {
+async function createLink(notePath: string | undefined, options: CreateLinkOptions = {}) {
     if (!notePath || !notePath.trim()) {
         logError("Missing note path");
 
@@ -70,14 +97,14 @@ async function createLink(notePath: string, options: CreateLinkOptions = {}) {
     }
 
     const viewScope = options.viewScope || {};
-    const viewMode = viewScope.viewMode || 'default';
+    const viewMode = viewScope.viewMode || "default";
     let linkTitle = options.title;
 
     if (!linkTitle) {
-        if (viewMode === 'attachments' && viewScope.attachmentId) {
+        if (viewMode === "attachments" && viewScope.attachmentId) {
             const attachment = await froca.getAttachment(viewScope.attachmentId);
 
-            linkTitle = attachment ? attachment.title : '[missing attachment]';
+            linkTitle = attachment ? attachment.title : "[missing attachment]";
         } else if (noteId) {
             linkTitle = await treeService.getNoteTitle(noteId, parentNoteId);
         }
@@ -85,7 +112,7 @@ async function createLink(notePath: string, options: CreateLinkOptions = {}) {
 
     const note = await froca.getNote(noteId);
 
-    if (autoConvertToImage && (note?.type && ['image', 'canvas', 'mermaid'].includes(note.type)) && viewMode === 'default') {
+    if (autoConvertToImage && note?.type && ["image", "canvas", "mermaid"].includes(note.type) && viewMode === "default") {
         const encodedTitle = encodeURIComponent(linkTitle || "");
 
         return $("<img>")
@@ -99,9 +126,7 @@ async function createLink(notePath: string, options: CreateLinkOptions = {}) {
         let icon = await getLinkIcon(noteId, viewMode);
 
         if (icon) {
-            $container
-                .append($("<span>").addClass(`bx ${icon}`))
-                .append(" ");
+            $container.append($("<span>").addClass(`bx ${icon}`)).append(" ");
         }
     }
 
@@ -126,7 +151,7 @@ async function createLink(notePath: string, options: CreateLinkOptions = {}) {
     $container.append($noteLink);
 
     if (showNotePath) {
-        const resolvedPathSegments = await treeService.resolveNotePathToSegments(notePath) || [];
+        const resolvedPathSegments = (await treeService.resolveNotePathToSegments(notePath)) || [];
         resolvedPathSegments.pop(); // Remove last element
 
         const resolvedPath = resolvedPathSegments.join("/");
@@ -142,21 +167,23 @@ async function createLink(notePath: string, options: CreateLinkOptions = {}) {
     return $container;
 }
 
-function calculateHash({notePath, ntxId, hoistedNoteId, viewScope = {}}: NoteCommandData) {
+function calculateHash({ notePath, ntxId, hoistedNoteId, viewScope = {} }: NoteCommandData) {
     notePath = notePath || "";
     const params = [
         ntxId ? { ntxId: ntxId } : null,
-        (hoistedNoteId && hoistedNoteId !== 'root') ? { hoistedNoteId: hoistedNoteId } : null,
-        viewScope.viewMode && viewScope.viewMode !== 'default' ? { viewMode: viewScope.viewMode } : null,
+        hoistedNoteId && hoistedNoteId !== "root" ? { hoistedNoteId: hoistedNoteId } : null,
+        viewScope.viewMode && viewScope.viewMode !== "default" ? { viewMode: viewScope.viewMode } : null,
         viewScope.attachmentId ? { attachmentId: viewScope.attachmentId } : null
-    ].filter(p => !!p);
+    ].filter((p) => !!p);
 
-    const paramStr = params.map(pair => {
-        const name = Object.keys(pair)[0];
-        const value = (pair as Record<string, string | undefined>)[name];
+    const paramStr = params
+        .map((pair) => {
+            const name = Object.keys(pair)[0];
+            const value = (pair as Record<string, string | undefined>)[name];
 
-        return `${encodeURIComponent(name)}=${encodeURIComponent(value || "")}`;
-    }).join("&");
+            return `${encodeURIComponent(name)}=${encodeURIComponent(value || "")}`;
+        })
+        .join("&");
 
     if (!notePath && !paramStr) {
         return "";
@@ -176,7 +203,7 @@ function parseNavigationStateFromUrl(url: string | undefined) {
         return {};
     }
 
-    const hashIdx = url.indexOf('#');
+    const hashIdx = url.indexOf("#");
     if (hashIdx === -1) {
         return {};
     }
@@ -189,7 +216,7 @@ function parseNavigationStateFromUrl(url: string | undefined) {
     }
 
     const viewScope: ViewScope = {
-        viewMode: 'default'
+        viewMode: "default"
     };
     let ntxId = null;
     let hoistedNoteId = null;
@@ -201,13 +228,13 @@ function parseNavigationStateFromUrl(url: string | undefined) {
             name = decodeURIComponent(name);
             value = decodeURIComponent(value);
 
-            if (name === 'ntxId') {
+            if (name === "ntxId") {
                 ntxId = value;
-            } else if (name === 'hoistedNoteId') {
+            } else if (name === "hoistedNoteId") {
                 hoistedNoteId = value;
-            } else if (name === 'searchString') {
+            } else if (name === "searchString") {
                 searchString = value; // supports triggering search from URL, e.g. #?searchString=blabla
-            } else if (['viewMode', 'attachmentId'].includes(name)) {
+            } else if (["viewMode", "attachmentId"].includes(name)) {
                 (viewScope as any)[name] = value;
             } else {
                 console.warn(`Unrecognized hash parameter '${name}'.`);
@@ -227,12 +254,12 @@ function parseNavigationStateFromUrl(url: string | undefined) {
 
 function goToLink(evt: MouseEvent | JQuery.ClickEvent) {
     const $link = $(evt.target as any).closest("a,.block-link");
-    const hrefLink = $link.attr('href') || $link.attr('data-href');
+    const hrefLink = $link.attr("href") || $link.attr("data-href");
 
     return goToLinkExt(evt, hrefLink, $link);
 }
 
-function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent, hrefLink: string | undefined, $link: JQuery<HTMLElement>) {
+function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent | JQuery.MouseDownEvent | React.PointerEvent<HTMLCanvasElement>, hrefLink: string | undefined, $link?: JQuery<HTMLElement> | null) {
     if (hrefLink?.startsWith("data:")) {
         return true;
     }
@@ -240,27 +267,28 @@ function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent, hrefLink: string | und
     evt.preventDefault();
     evt.stopPropagation();
 
-    const {notePath, viewScope} = parseNavigationStateFromUrl(hrefLink);
+    if (hrefLink?.startsWith("#fn") && $link) {
+        return handleFootnote(hrefLink, $link);
+    }
+
+    const { notePath, viewScope } = parseNavigationStateFromUrl(hrefLink);
 
     const ctrlKey = utils.isCtrlKey(evt);
-    const isLeftClick = evt.which === 1;
-    const isMiddleClick = evt.which === 2;
+    const isLeftClick = ("which" in evt && evt.which === 1);
+    const isMiddleClick = ("which" in evt && evt.which === 2);
     const openInNewTab = (isLeftClick && ctrlKey) || isMiddleClick;
-
-    const leftClick = evt.which === 1;
-    const middleClick = evt.which === 2;
 
     if (notePath) {
         if (openInNewTab) {
-            appContext.tabManager.openTabWithNoteWithHoisting(notePath, {viewScope});
+            appContext.tabManager.openTabWithNoteWithHoisting(notePath, { viewScope });
         } else if (isLeftClick) {
-            const ntxId = $(evt.target as any).closest("[data-ntx-id]").attr("data-ntx-id");
+            const ntxId = $(evt.target as any)
+                .closest("[data-ntx-id]")
+                .attr("data-ntx-id");
 
-            const noteContext = ntxId
-                ? appContext.tabManager.getNoteContextById(ntxId)
-                : appContext.tabManager.getActiveContext();
+            const noteContext = ntxId ? appContext.tabManager.getNoteContextById(ntxId) : appContext.tabManager.getActiveContext();
 
-            noteContext.setNote(notePath, {viewScope}).then(() => {
+            noteContext.setNote(notePath, { viewScope }).then(() => {
                 if (noteContext !== appContext.tabManager.getActiveContext()) {
                     appContext.tabManager.activateNoteContext(noteContext.ntxId);
                 }
@@ -270,27 +298,16 @@ function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent, hrefLink: string | und
         const withinEditLink = $link?.hasClass("ck-link-actions__preview");
         const outsideOfCKEditor = !$link || $link.closest("[contenteditable]").length === 0;
 
-        if (openInNewTab
-            || (withinEditLink && (leftClick || middleClick))
-            || (outsideOfCKEditor && (leftClick || middleClick))
-        ) {
-            if (hrefLink.toLowerCase().startsWith('http') || hrefLink.startsWith("api/")) {
-                window.open(hrefLink, '_blank');
-            } else if (hrefLink.toLowerCase().startsWith('file:') && utils.isElectron()) {
-                const electron = utils.dynamicRequire('electron');
+        if (openInNewTab || (withinEditLink && (isLeftClick || isMiddleClick)) || (outsideOfCKEditor && (isLeftClick || isMiddleClick))) {
+            if (hrefLink.toLowerCase().startsWith("http") || hrefLink.startsWith("api/")) {
+                window.open(hrefLink, "_blank");
+            } else if ((hrefLink.toLowerCase().startsWith("file:") || hrefLink.toLowerCase().startsWith("geo:")) && utils.isElectron()) {
+                const electron = utils.dynamicRequire("electron");
                 electron.shell.openPath(hrefLink);
             } else {
                 // Enable protocols supported by CKEditor 5 to be clickable.
-                // Refer to `allowedProtocols` in https://github.com/TriliumNext/trilium-ckeditor5/blob/main/packages/ckeditor5-build-balloon-block/src/ckeditor.ts.
-                // And be consistent with `allowedSchemes` in `src\services\html_sanitizer.ts`
-                const allowedSchemes = [
-                    'http', 'https', 'ftp', 'ftps', 'mailto', 'data', 'evernote', 'file', 'facetime', 'gemini', 'git',
-                    'gopher', 'imap', 'irc', 'irc6', 'jabber', 'jar', 'lastfm', 'ldap', 'ldaps', 'magnet', 'message',
-                    'mumble', 'nfs', 'onenote', 'pop', 'rmi', 's3', 'sftp', 'skype', 'sms', 'spotify', 'steam', 'svn', 'udp',
-                    'view-source', 'vlc', 'vnc', 'ws', 'wss', 'xmpp', 'jdbc', 'slack', 'tel', 'smb', 'zotero'
-                ];
-                if (allowedSchemes.some(protocol => hrefLink.toLowerCase().startsWith(protocol+':'))){
-                    window.open(hrefLink, '_blank');
+                if (ALLOWED_PROTOCOLS.some((protocol) => hrefLink.toLowerCase().startsWith(protocol + ":"))) {
+                    window.open(hrefLink, "_blank");
                 }
             }
         }
@@ -299,9 +316,28 @@ function goToLinkExt(evt: MouseEvent | JQuery.ClickEvent, hrefLink: string | und
     return true;
 }
 
+/**
+ * Scrolls to either the footnote (if clicking on a reference such as `[1]`), or to the reference of a footnote (if clicking on the footnote `^` arrow).
+ *
+ * @param hrefLink the URL of the link that was clicked (it should be in the form of `#fn` or `#fnref`).
+ * @param $link the element of the link that was clicked.
+ * @returns whether the event should be consumed or not.
+ */
+function handleFootnote(hrefLink: string, $link: JQuery<HTMLElement>) {
+    const el = $link.closest(".ck-content").find(hrefLink)[0];
+    if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return true;
+}
+
 function linkContextMenu(e: PointerEvent) {
     const $link = $(e.target as any).closest("a");
     const url = $link.attr("href") || $link.attr("data-href");
+
+    if ($link.attr("data-no-context-menu")) {
+        return;
+    }
 
     const { notePath, viewScope } = parseNavigationStateFromUrl(url);
 
@@ -315,7 +351,7 @@ function linkContextMenu(e: PointerEvent) {
 }
 
 async function loadReferenceLinkTitle($el: JQuery<HTMLElement>, href: string | null | undefined = null) {
-    const $link = $el[0].tagName === 'A' ? $el : $el.find("a");
+    const $link = $el[0].tagName === "A" ? $el : $el.find("a");
 
     href = href || $link.attr("href");
     if (!href) {
@@ -323,7 +359,7 @@ async function loadReferenceLinkTitle($el: JQuery<HTMLElement>, href: string | n
         return;
     }
 
-    const {noteId, viewScope} = parseNavigationStateFromUrl(href);
+    const { noteId, viewScope } = parseNavigationStateFromUrl(href);
     if (!noteId) {
         console.warn("Missing note ID.");
         return;
@@ -348,7 +384,7 @@ async function loadReferenceLinkTitle($el: JQuery<HTMLElement>, href: string | n
 }
 
 async function getReferenceLinkTitle(href: string) {
-    const {noteId, viewScope} = parseNavigationStateFromUrl(href);
+    const { noteId, viewScope } = parseNavigationStateFromUrl(href);
     if (!noteId) {
         return "[missing note]";
     }
@@ -358,7 +394,7 @@ async function getReferenceLinkTitle(href: string) {
         return "[missing note]";
     }
 
-    if (viewScope?.viewMode === 'attachments' && viewScope?.attachmentId) {
+    if (viewScope?.viewMode === "attachments" && viewScope?.attachmentId) {
         const attachment = await note.getAttachmentById(viewScope.attachmentId);
 
         return attachment ? attachment.title : "[missing attachment]";
@@ -368,7 +404,7 @@ async function getReferenceLinkTitle(href: string) {
 }
 
 function getReferenceLinkTitleSync(href: string) {
-    const {noteId, viewScope} = parseNavigationStateFromUrl(href);
+    const { noteId, viewScope } = parseNavigationStateFromUrl(href);
     if (!noteId) {
         return "[missing note]";
     }
@@ -378,12 +414,12 @@ function getReferenceLinkTitleSync(href: string) {
         return "[missing note]";
     }
 
-    if (viewScope?.viewMode === 'attachments' && viewScope?.attachmentId) {
+    if (viewScope?.viewMode === "attachments" && viewScope?.attachmentId) {
         if (!note.attachments) {
             return "[loading title...]";
         }
 
-        const attachment = note.attachments.find(att => att.attachmentId === viewScope.attachmentId);
+        const attachment = note.attachments.find((att) => att.attachmentId === viewScope.attachmentId);
 
         return attachment ? attachment.title : "[missing attachment]";
     } else {
@@ -393,27 +429,27 @@ function getReferenceLinkTitleSync(href: string) {
 
 // TODO: Check why the event is not supported.
 //@ts-ignore
-$(document).on('click', "a", goToLink);
+$(document).on("click", "a", goToLink);
 // TODO: Check why the event is not supported.
 //@ts-ignore
-$(document).on('auxclick', "a", goToLink); // to handle the middle button
+$(document).on("auxclick", "a", goToLink); // to handle the middle button
 // TODO: Check why the event is not supported.
 //@ts-ignore
-$(document).on('contextmenu', 'a', linkContextMenu);
-$(document).on('dblclick', "a", e => {
+$(document).on("contextmenu", "a", linkContextMenu);
+$(document).on("dblclick", "a", (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     const $link = $(e.target).closest("a");
 
-    const address = $link.attr('href');
+    const address = $link.attr("href");
 
-    if (address && address.startsWith('http')) {
-        window.open(address, '_blank');
+    if (address && address.startsWith("http")) {
+        window.open(address, "_blank");
     }
 });
 
-$(document).on('mousedown', 'a', e => {
+$(document).on("mousedown", "a", (e) => {
     if (e.which === 2) {
         // prevent paste on middle click
         // https://github.com/zadam/trilium/issues/2995

@@ -1,8 +1,9 @@
-import { CommandNames } from "../../components/app_context.js";
-import { MenuCommandItem } from "../../menus/context_menu.js";
+import type { CommandNames } from "../../components/app_context.js";
+import type { MenuCommandItem } from "../../menus/context_menu.js";
 import { t } from "../../services/i18n.js";
 import noteTypesService from "../../services/note_types.js";
 import BasicWidget from "../basic_widget.js";
+import { Dropdown, Modal } from "bootstrap";
 
 const TPL = `
 <div class="note-type-chooser-dialog modal mx-auto" tabindex="-1" role="dialog">
@@ -52,15 +53,14 @@ export interface ChooseNoteTypeResponse {
 type Callback = (data: ChooseNoteTypeResponse) => void;
 
 export default class NoteTypeChooserDialog extends BasicWidget {
-
     private resolve: Callback | null;
-    private dropdown!: bootstrap.Dropdown;
-    private modal!: JQuery<HTMLElement>;
+    private dropdown!: Dropdown;
+    private modal!: Modal;
     private $noteTypeDropdown!: JQuery<HTMLElement>;
     private $originalFocused: JQuery<HTMLElement> | null;
     private $originalDialog: JQuery<HTMLElement> | null;
 
-    constructor(props: {}) {
+    constructor() {
         super();
 
         this.resolve = null;
@@ -70,14 +70,10 @@ export default class NoteTypeChooserDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        // TODO: Remove once we import bootstrap the right way
-        //@ts-ignore
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget[0]);
 
         this.$noteTypeDropdown = this.$widget.find(".note-type-dropdown");
-        // TODO: Remove once we import bootstrap the right way
-        //@ts-ignore
-        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find(".note-type-dropdown-trigger"));
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find(".note-type-dropdown-trigger")[0]);
 
         this.$widget.on("hidden.bs.modal", () => {
             if (this.resolve) {
@@ -85,30 +81,30 @@ export default class NoteTypeChooserDialog extends BasicWidget {
             }
 
             if (this.$originalFocused) {
-                this.$originalFocused.trigger('focus');
+                this.$originalFocused.trigger("focus");
                 this.$originalFocused = null;
             }
 
             glob.activeDialog = this.$originalDialog;
         });
 
-        this.$noteTypeDropdown.on('click', '.dropdown-item', e => this.doResolve(e));
+        this.$noteTypeDropdown.on("click", ".dropdown-item", (e) => this.doResolve(e));
 
-        this.$noteTypeDropdown.on('focus', '.dropdown-item', e => {
-            this.$noteTypeDropdown.find('.dropdown-item').each((i, el) => {
-                $(el).toggleClass('active', el === e.target);
+        this.$noteTypeDropdown.on("focus", ".dropdown-item", (e) => {
+            this.$noteTypeDropdown.find(".dropdown-item").each((i, el) => {
+                $(el).toggleClass("active", el === e.target);
             });
         });
 
-        this.$noteTypeDropdown.on('keydown', '.dropdown-item', e => {
-            if (e.key === 'Enter') {
+        this.$noteTypeDropdown.on("keydown", ".dropdown-item", (e) => {
+            if (e.key === "Enter") {
                 this.doResolve(e);
                 e.preventDefault();
                 return false;
             }
         });
 
-        this.$noteTypeDropdown.parent().on('hide.bs.dropdown', e => {
+        this.$noteTypeDropdown.parent().on("hide.bs.dropdown", (e) => {
             // prevent closing dropdown by clicking outside
             // TODO: Check if this actually works.
             //@ts-ignore
@@ -119,17 +115,17 @@ export default class NoteTypeChooserDialog extends BasicWidget {
     }
 
     async chooseNoteTypeEvent({ callback }: { callback: Callback }) {
-        this.$originalFocused = $(':focus');
+        this.$originalFocused = $(":focus");
 
         const noteTypes = await noteTypesService.getNoteTypeItems();
 
         this.$noteTypeDropdown.empty();
 
         for (const noteType of noteTypes) {
-            if (noteType.title === '----') {
+            if (noteType.title === "----") {
                 this.$noteTypeDropdown.append($('<h6 class="dropdown-header">').append(t("note_type_chooser.templates")));
             } else {
-                const commandItem = (noteType as MenuCommandItem<CommandNames>)
+                const commandItem = noteType as MenuCommandItem<CommandNames>;
                 this.$noteTypeDropdown.append(
                     $('<a class="dropdown-item" tabindex="0">')
                         .attr("data-note-type", commandItem.type || "")
@@ -143,7 +139,7 @@ export default class NoteTypeChooserDialog extends BasicWidget {
         this.dropdown.show();
 
         this.$originalDialog = glob.activeDialog;
-        glob.activeDialog = this.modal;
+        glob.activeDialog = this.$widget;
         this.modal.show();
 
         this.$noteTypeDropdown.find(".dropdown-item:first").focus();

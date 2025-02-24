@@ -21,7 +21,7 @@ html {
     --main-text-color: black;
     --main-border-color: #ccc;
     --dropdown-border-color: #ccc;
-    --dropdown-shadow-opacity: .2;
+    --dropdown-shadow-opacity: 0.2;
     --dropdown-item-icon-destructive-color: #ec5138;
     --disabled-tooltip-icon-color: #004382;
 
@@ -58,10 +58,10 @@ html {
     --modal-background-color: white;
     --modal-backdrop-color: black;
 
-    --left-pane-background-color: #F3F3F3;
+    --left-pane-background-color: #f3f3f3;
     --left-pane-text-color: #333;
 
-    --launcher-pane-background-color: #F3F3F3;
+    --launcher-pane-background-color: #f3f3f3;
     --launcher-pane-text-color: #333;
 
     --active-tab-background-color: #ddd;

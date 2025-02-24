@@ -1,19 +1,19 @@
-import { Request } from 'express';
+import type { Request } from "express";
 import becca from "../../becca/becca.js";
 import bulkActionService from "../../services/bulk_actions.js";
 
 function execute(req: Request) {
-    const {noteIds, includeDescendants} = req.body;
+    const { noteIds, includeDescendants } = req.body;
 
     const affectedNoteIds = getAffectedNoteIds(noteIds, includeDescendants);
 
-    const bulkActionNote = becca.getNoteOrThrow('_bulkAction');
+    const bulkActionNote = becca.getNoteOrThrow("_bulkAction");
 
     bulkActionService.executeActions(bulkActionNote, affectedNoteIds);
 }
 
 function getAffectedNoteCount(req: Request) {
-    const {noteIds, includeDescendants} = req.body;
+    const { noteIds, includeDescendants } = req.body;
 
     const affectedNoteIds = getAffectedNoteIds(noteIds, includeDescendants);
 

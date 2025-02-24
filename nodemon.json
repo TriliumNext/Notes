@@ -1,15 +1,12 @@
 {
-    "restartable": "rs",
-    "ignore": [".git", "node_modules/**/node_modules", "src/public/"],
-    "verbose": false,
-    "exec": "tsx",
-    "watch": [
-        "src/",
-        "translations/"
-    ],
-    "signal": "SIGTERM",
-    "env": {
-        "NODE_ENV": "development"
-    },
-    "ext": "ts,js,json"
+  "restartable": "rs",
+  "ignore": [".git", "node_modules/**/node_modules", "src/public/"],
+  "verbose": false,
+  "exec": "tsx",
+  "watch": ["src/", "translations/"],
+  "signal": "SIGTERM",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "ext": "ts,js,json"
 }

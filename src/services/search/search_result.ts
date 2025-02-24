@@ -16,7 +16,7 @@ class SearchResult {
     }
 
     get notePath() {
-        return this.notePathArray.join('/');
+        return this.notePathArray.join("/");
     }
 
     get noteId() {
@@ -38,18 +38,14 @@ class SearchResult {
         // Title matching scores, make sure to always win
         if (normalizedTitle === normalizedQuery) {
             this.score += 2000; // Increased from 1000 to ensure exact matches always win
-        }
-        else if (normalizedTitle.startsWith(normalizedQuery)) {
-            this.score += 500;  // Increased to give more weight to prefix matches
-        }
-        else if (normalizedTitle.includes(` ${normalizedQuery} `) ||
-                normalizedTitle.startsWith(`${normalizedQuery} `) ||
-                normalizedTitle.endsWith(` ${normalizedQuery}`)) {
-            this.score += 300;  // Increased to better distinguish word matches
+        } else if (normalizedTitle.startsWith(normalizedQuery)) {
+            this.score += 500; // Increased to give more weight to prefix matches
+        } else if (normalizedTitle.includes(` ${normalizedQuery} `) || normalizedTitle.startsWith(`${normalizedQuery} `) || normalizedTitle.endsWith(` ${normalizedQuery}`)) {
+            this.score += 300; // Increased to better distinguish word matches
         }
 
         // Add scores for partial matches with adjusted weights
-        this.addScoreForStrings(tokens, note.title, 2.0);  // Increased to give more weight to title matches
+        this.addScoreForStrings(tokens, note.title, 2.0); // Increased to give more weight to title matches
         this.addScoreForStrings(tokens, this.notePathTitle, 0.3); // Reduced to further de-emphasize path matches
 
         if (note.isInHiddenSubtree()) {

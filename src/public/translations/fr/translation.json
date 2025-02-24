@@ -32,7 +32,8 @@
     "search_note": "rechercher une note par son nom",
     "link_title_mirrors": "le titre du lien reflète le titre actuel de la note",
     "link_title_arbitrary": "le titre du lien peut être modifié arbitrairement",
-    "link_title": "Titre du lien"
+    "link_title": "Titre du lien",
+    "button_add_link": "Ajouter un lien <kbd>Entrée</kbd>"
   },
   "branch_prefix": {
     "edit_branch_prefix": "Modifier le préfixe de branche",
@@ -105,17 +106,17 @@
     "fullDocumentation": "Aide (la documentation complète est disponible <a class=\"external\" href=\"https://triliumnext.github.io/Docs/\">en ligne</a>)",
     "close": "Fermer",
     "noteNavigation": "Navigation dans les notes",
-    "goUpDown": "aller vers le haut/bas dans la liste des notes",
-    "collapseExpand": "réduire/développer le nœud",
+    "goUpDown": "<kbd>UP</kbd>, <kbd>DOWN</kbd> - aller vers le haut/bas dans la liste des notes",
+    "collapseExpand": "<kbd>LEFT</kbd>, <kbd>RIGHT</kbd> - réduire/développer le nœud",
     "notSet": "non défini",
     "goBackForwards": "reculer/avancer dans l'historique",
     "showJumpToNoteDialog": "afficher la <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">boîte de dialogue \"Aller à la note\"</a>",
     "scrollToActiveNote": "faire défiler jusqu'à la note active",
-    "jumpToParentNote": "aller à la note parent",
+    "jumpToParentNote": "<kbd>Backspace</kbd> - aller à la note parent",
     "collapseWholeTree": "réduire tout l'arbre des notes",
     "collapseSubTree": "réduire le sous-arbre",
     "tabShortcuts": "Raccourcis des onglets",
-    "newTabNoteLink": "(ou clic central de la souris) sur le lien de la note ouvre la note dans un nouvel onglet",
+    "newTabNoteLink": "<kbd>CTRL+clic</kbd> - (ou clic central de la souris) sur le lien de la note ouvre la note dans un nouvel onglet",
     "onlyInDesktop": "Uniquement sur ordinateur (version Electron)",
     "openEmptyTab": "ouvrir un onglet vide",
     "closeActiveTab": "fermer l'onglet actif",
@@ -130,23 +131,23 @@
     "moveNoteUpHierarchy": "déplacer la note vers le haut dans la hiérarchie",
     "multiSelectNote": "sélectionner plusieurs notes au-dessus/au-dessous",
     "selectAllNotes": "sélectionner toutes les notes du niveau actuel",
-    "selectNote": "sélectionner une note",
+    "selectNote": "<kbd>Shift+click</kbd> - sélectionner une note",
     "copyNotes": "copier la note active (ou la sélection actuelle) dans le presse-papiers (utilisé pour le <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/cloning-notes.html#cloning-notes\">clonage</a>)",
     "cutNotes": "couper la note actuelle (ou la sélection actuelle) dans le presse-papiers (utilisé pour déplacer les notes)",
     "pasteNotes": "coller la ou les notes en tant que sous-note dans la note active (qui est soit déplacée, soit clonée selon qu'elle a été copiée ou coupée dans le presse-papiers)",
     "deleteNotes": "supprimer une note / un sous-arbre",
     "editingNotes": "Édition des notes",
     "editNoteTitle": "dans le volet de l'arborescence, basculera du volet au titre de la note. Presser Entrer à partir du titre de la note basculera vers l’éditeur de texte. <kbd>Ctrl+.</kbd> bascule de l'éditeur au volet arborescent.",
-    "createEditLink": "créer/éditer un lien externe",
+    "createEditLink": "<kbd>Ctrl+K</kbd> - créer/éditer un lien externe",
     "createInternalLink": "créer un lien interne",
     "followLink": "suivre le lien sous le curseur",
     "insertDateTime": "insérer la date et l'heure courante à la position du curseur",
     "jumpToTreePane": "passer au volet de l'arborescence et aller jusqu'à la note active",
     "markdownAutoformat": "Formatage automatique (comme Markdown)",
-    "headings": " etc. suivi d'un espace pour les titres",
-    "bulletList": "<kbd>*</kbd> ou <kbd>-</kbd> suivi d'un espace pour la liste à puces",
-    "numberedList": "<kbd>1.</kbd> ou <kbd>1)</kbd> suivi d'un espace pour la liste numérotée",
-    "blockQuote": "commencez une ligne avec <kbd>></kbd> suivi d'un espace pour les guillemets",
+    "headings": "<code>##</code>, <code>###</code>, <code>####</code>  etc. suivi d'un espace pour les titres",
+    "bulletList": "<code>*</code> ou <code>-</code> suivi d'un espace pour la liste à puces",
+    "numberedList": "<code>1.</code> ou <code>1)</code> suivi d'un espace pour la liste numérotée",
+    "blockQuote": "commencez une ligne avec <code>></code> suivi d'un espace pour les guillemets",
     "troubleshooting": "Dépannage",
     "reloadFrontend": "recharger l'interface Trilium",
     "showDevTools": "afficher les outils de développement",
@@ -181,7 +182,7 @@
     "box_size_small": "petit (~ 10 lignes)",
     "box_size_medium": "moyen (~ 30 lignes)",
     "box_size_full": "complet (la boîte affiche le texte complet)",
-    "button_include": "Inclure une note"
+    "button_include": "Inclure une note <kbd>Entrée</kbd>"
   },
   "info": {
     "modalTitle": "Message d'information",
@@ -276,7 +277,7 @@
     "sort_with_respect_to_different_character_sorting": "trier en fonction de différentes règles de tri et de classement des caractères dans différentes langues ou régions.",
     "natural_sort_language": "Langage de tri naturel",
     "the_language_code_for_natural_sort": "Le code de langue pour le tri naturel, par ex. \"zh-CN\" pour le chinois.",
-    "sort": "Trier"
+    "sort": "Trier <kbd>Entrée</kbd>"
   },
   "upload_attachments": {
     "upload_attachments_to_note": "Téléverser des pièces jointes à la note",
@@ -812,8 +813,7 @@
     "debug": "debug",
     "debug_description": "Debug imprimera des informations supplémentaires dans la console pour faciliter le débogage des requêtes complexes",
     "action": "action",
-    "search": "Recherche",
-    "enter": "entrer",
+    "search_button": "Recherche <kbd>Entrée</kbd>",
     "search_execute": "Rechercher et exécuter des actions",
     "save_to_note": "Enregistrer dans la note",
     "search_parameters": "Paramètres de recherche",
@@ -931,7 +931,7 @@
   },
   "protected_session": {
     "enter_password_instruction": "L'affichage de la note protégée nécessite la saisie de votre mot de passe :",
-    "start_session_button": "Démarrer une session protégée",
+    "start_session_button": "Démarrer une session protégée <kbd>Entrée</kbd>",
     "started": "La session protégée a démarré.",
     "wrong_password": "Mot de passe incorrect.",
     "protecting-finished-successfully": "La protection de la note s'est terminée avec succès.",
@@ -966,9 +966,7 @@
   "web_view": {
     "web_view": "Affichage Web",
     "embed_websites": "Les notes de type Affichage Web vous permet d'intégrer des sites Web dans Trilium.",
-    "create_label": "Pour commencer, veuillez créer un label avec l'adresse URL que vous souhaitez intégrer, par ex. #webViewSrc=\"https://www.google.com\"",
-    "disclaimer": "Avertissement sur le statut expérimental",
-    "experimental_note": "Affichage Web est un type de note expérimental et il pourrait être supprimé ou considérablement modifié à l'avenir. Affichage Web ne fonctionne que dans la version de bureau."
+    "create_label": "Pour commencer, veuillez créer un label avec l'adresse URL que vous souhaitez intégrer, par ex. #webViewSrc=\"https://www.google.com\""
   },
   "backend_log": {
     "refresh": "Rafraîchir"
@@ -1091,7 +1089,7 @@
   "attachment_erasure_timeout": {
     "attachment_erasure_timeout": "Délai d'effacement des pièces jointes",
     "attachment_auto_deletion_description": "Les pièces jointes sont automatiquement supprimées (et effacées) si elles ne sont plus référencées par leur note après un certain délai.",
-    "erase_attachments_after_x_seconds": "Effacer les pièces jointes après X secondes sans utilisation dans sa note",
+    "erase_attachments_after": "Erase unused attachments after:",
     "manual_erasing_description": "Vous pouvez également déclencher l'effacement manuellement (sans tenir compte du délai défini ci-dessus) :",
     "erase_unused_attachments_now": "Effacez maintenant les pièces jointes inutilisées",
     "unused_attachments_erased": "Les pièces jointes inutilisées ont été effacées."
@@ -1103,15 +1101,15 @@
   "note_erasure_timeout": {
     "note_erasure_timeout_title": "Délai d'effacement des notes",
     "note_erasure_description": "Les notes supprimées (et les attributs, versions...) sont seulement marquées comme supprimées et il est possible de les récupérer à partir de la boîte de dialogue Notes récentes. Après un certain temps, les notes supprimées sont « effacées », ce qui signifie que leur contenu n'est plus récupérable. Ce paramètre vous permet de configurer la durée entre la suppression et l'effacement de la note.",
-    "erase_notes_after_x_seconds": "Effacer les notes après X secondes",
+    "erase_notes_after": "Effacer les notes après:",
     "manual_erasing_description": "Vous pouvez également déclencher l'effacement manuellement (sans tenir compte de la durée définie ci-dessus) :",
     "erase_deleted_notes_now": "Effacer les notes supprimées maintenant",
     "deleted_notes_erased": "Les notes supprimées ont été effacées."
   },
   "revisions_snapshot_interval": {
     "note_revisions_snapshot_interval_title": "Intervalle d'enregistrement automatique des versions des notes",
-    "note_revisions_snapshot_description": "L'intervalle d'enregistrement automatique des versions de note est le temps en secondes après lequel une nouvelle version de note est créée pour une note. Consultez le <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a> pour plus d'informations.",
-    "snapshot_time_interval_label": "Intervalle de temps entre deux enregistrements de version de note (en secondes) :"
+    "note_revisions_snapshot_description": "L'intervalle d'enregistrement automatique des versions de note est le temps après lequel une nouvelle version de note est créée pour une note. Consultez le <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a> pour plus d'informations.",
+    "snapshot_time_interval_label": "Intervalle de temps entre deux enregistrements de version de note :"
   },
   "revisions_snapshot_limit": {
     "note_revisions_snapshot_limit_title": "Limite des enregistrements de version de note",
@@ -1184,7 +1182,7 @@
     "backup_now": "Sauvegarder maintenant",
     "backup_database_now": "Sauvegarder la base de données maintenant",
     "existing_backups": "Sauvegardes existantes",
-    "database_backed_up_to": "La base de données a été sauvegardée sur",
+    "database_backed_up_to": "La base de données a été sauvegardée sur {{backupFilePath}}",
     "no_backup_yet": "pas encore de sauvegarde"
   },
   "etapi": {
@@ -1228,7 +1226,7 @@
     "protected_session_timeout_description": "Le délai d'expiration de la session protégée est une période de temps après laquelle la session protégée est effacée de la mémoire du navigateur. Il est mesuré à partir de la dernière interaction avec des notes protégées. Voir",
     "wiki": "wiki",
     "for_more_info": "pour plus d'informations.",
-    "protected_session_timeout_label": "Délai d'expiration de la session protégée (en secondes)",
+    "protected_session_timeout_label": "Délai d'expiration de la session protégée :",
     "reset_confirmation": "En réinitialisant le mot de passe, vous perdrez à jamais l'accès à toutes vos notes protégées existantes. Voulez-vous vraiment réinitialiser le mot de passe ?",
     "reset_success_message": "Le mot de passe a été réinitialisé. Veuillez définir un nouveau mot de passe",
     "change_password_heading": "Changer le mot de passe",
@@ -1304,7 +1302,7 @@
     "button-tree-map": "Carte arborescente"
   },
   "tree-context-menu": {
-    "open-in-a-new-tab": "Ouvrir dans un nouvel onglet",
+    "open-in-a-new-tab": "Ouvrir dans un nouvel onglet <kbd>Ctrl+Clic</kbd>",
     "open-in-a-new-split": "Ouvrir dans une nouvelle division",
     "insert-note-after": "Insérer une note après",
     "insert-child-note": "Insérer une note enfant",
@@ -1351,7 +1349,7 @@
     "mermaid-diagram": "Diagramme Mermaid",
     "canvas": "Canevas",
     "web-view": "Affichage Web",
-    "mind-map": "Carte mentale (Beta)",
+    "mind-map": "Carte mentale",
     "file": "Fichier",
     "image": "Image",
     "launcher": "Raccourci",
@@ -1492,10 +1490,10 @@
     "add-script-launcher": "Ajouter un raccourci de script",
     "add-custom-widget": "Ajouter un widget personnalisé",
     "add-spacer": "Ajouter un séparateur",
-    "delete": "Supprimer",
+    "delete": "Supprimer <kbd data-command=\"deleteNotes\"></kbd>",
     "reset": "Réinitialiser",
     "move-to-visible-launchers": "Déplacer vers les raccourcis visibles",
     "move-to-available-launchers": "Déplacer vers les raccourcis disponibles",
-    "duplicate-launcher": "Dupliquer le raccourci"
+    "duplicate-launcher": "Dupliquer le raccourci <kbd data-command=\"duplicateSubtree\">"
   }
 }

@@ -1,10 +1,9 @@
 "use strict";
 
 import hoistedNoteService from "../hoisted_note.js";
-import { SearchParams } from './services/types.js';
+import type { SearchParams } from "./services/types.js";
 
 class SearchContext {
-
     fastSearch: boolean;
     includeArchivedNotes: boolean;
     includeHiddenNotes: boolean;
@@ -23,7 +22,7 @@ class SearchContext {
     originalQuery: string;
     fulltextQuery: string;
     dbLoadNeeded: boolean;
-    private error: string | null;
+    error: string | null;
 
     constructor(params: SearchParams = {}) {
         this.fastSearch = !!params.fastSearch;

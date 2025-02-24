@@ -19,9 +19,9 @@ export default class MainTreeExecutors extends Component {
             return;
         }
 
-        const selectedOrActiveNoteIds = this.tree.getSelectedOrActiveNodes().map(node => node.data.noteId);
+        const selectedOrActiveNoteIds = this.tree.getSelectedOrActiveNodes().map((node) => node.data.noteId);
 
-        this.triggerCommand('cloneNoteIdsTo', {noteIds: selectedOrActiveNoteIds});
+        this.triggerCommand("cloneNoteIdsTo", { noteIds: selectedOrActiveNoteIds });
     }
 
     async moveNotesToCommand() {
@@ -29,9 +29,9 @@ export default class MainTreeExecutors extends Component {
             return;
         }
 
-        const selectedOrActiveBranchIds = this.tree.getSelectedOrActiveNodes().map(node => node.data.branchId);
+        const selectedOrActiveBranchIds = this.tree.getSelectedOrActiveNodes().map((node) => node.data.branchId);
 
-        this.triggerCommand('moveBranchIdsTo', {branchIds: selectedOrActiveBranchIds});
+        this.triggerCommand("moveBranchIdsTo", { branchIds: selectedOrActiveBranchIds });
     }
 
     async createNoteIntoCommand() {
@@ -61,12 +61,12 @@ export default class MainTreeExecutors extends Component {
         const parentNotePath = treeService.getNotePath(node.getParent());
         const isProtected = treeService.getParentProtectedStatus(node);
 
-        if (node.data.noteId === 'root' || node.data.noteId === hoistedNoteService.getHoistedNoteId()) {
+        if (node.data.noteId === "root" || node.data.noteId === hoistedNoteService.getHoistedNoteId()) {
             return;
         }
 
         await noteCreateService.createNote(parentNotePath, {
-            target: 'after',
+            target: "after",
             targetBranchId: node.data.branchId,
             isProtected: isProtected,
             saveSelection: false

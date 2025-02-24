@@ -3,7 +3,7 @@
 import sql from "../sql.js";
 import optionService from "../options.js";
 import myScryptService from "./my_scrypt.js";
-import utils from "../utils.js";
+import { randomSecureToken, toBase64 } from "../utils.js";
 import passwordEncryptionService from "./password_encryption.js";
 
 function isPasswordSet() {
@@ -25,17 +25,17 @@ function changePassword(currentPassword: string, newPassword: string) {
     sql.transactional(() => {
         const decryptedDataKey = passwordEncryptionService.getDataKey(currentPassword);
 
-        optionService.setOption('passwordVerificationSalt', utils.randomSecureToken(32));
-        optionService.setOption('passwordDerivedKeySalt', utils.randomSecureToken(32));
+        optionService.setOption("passwordVerificationSalt", randomSecureToken(32));
+        optionService.setOption("passwordDerivedKeySalt", randomSecureToken(32));
 
-        const newPasswordVerificationKey = utils.toBase64(myScryptService.getVerificationHash(newPassword));
+        const newPasswordVerificationKey = toBase64(myScryptService.getVerificationHash(newPassword));
 
         if (decryptedDataKey) {
             // TODO: what should happen if the decrypted data key is null?
             passwordEncryptionService.setDataKey(newPassword, decryptedDataKey);
         }
 
-        optionService.setOption('passwordVerificationHash', newPasswordVerificationKey);
+        optionService.setOption("passwordVerificationHash", newPasswordVerificationKey);
     });
 
     return {
@@ -48,16 +48,16 @@ function setPassword(password: string) {
         throw new Error("Password is set already. Either change it or perform 'reset password' first.");
     }
 
-    optionService.createOption('passwordVerificationSalt', utils.randomSecureToken(32), true);
-    optionService.createOption('passwordDerivedKeySalt', utils.randomSecureToken(32), true);
+    optionService.createOption("passwordVerificationSalt", randomSecureToken(32), true);
+    optionService.createOption("passwordDerivedKeySalt", randomSecureToken(32), true);
 
-    const passwordVerificationKey = utils.toBase64(myScryptService.getVerificationHash(password));
-    optionService.createOption('passwordVerificationHash', passwordVerificationKey, true);
+    const passwordVerificationKey = toBase64(myScryptService.getVerificationHash(password));
+    optionService.createOption("passwordVerificationHash", passwordVerificationKey, true);
 
     // passwordEncryptionService expects these options to already exist
-    optionService.createOption('encryptedDataKey', '', true);
+    optionService.createOption("encryptedDataKey", "", true);
 
-    passwordEncryptionService.setDataKey(password, utils.randomSecureToken(16));
+    passwordEncryptionService.setDataKey(password, randomSecureToken(16));
 
     return {
         success: true
@@ -67,10 +67,10 @@ function setPassword(password: string) {
 function resetPassword() {
     // user forgot the password,
     sql.transactional(() => {
-        optionService.setOption('passwordVerificationSalt', '');
-        optionService.setOption('passwordDerivedKeySalt', '');
-        optionService.setOption('encryptedDataKey', '');
-        optionService.setOption('passwordVerificationHash', '');
+        optionService.setOption("passwordVerificationSalt", "");
+        optionService.setOption("passwordDerivedKeySalt", "");
+        optionService.setOption("encryptedDataKey", "");
+        optionService.setOption("passwordVerificationHash", "");
     });
 
     return {

@@ -1,10 +1,10 @@
 /*
  * This code is an adaptation of https://github.com/antoniotejada/Trilium-SyntaxHighlightWidget with additional improvements, such as:
- * 
+ *
  *  - support for selecting the language manually;
  *  - support for determining the language automatically, if a special language is selected ("Auto-detected");
  *  - limit for highlighting.
- * 
+ *
  * TODO: Generally this class can be done directly in the CKEditor repository.
  */
 
@@ -27,22 +27,22 @@ const tag = "SyntaxHighlightWidget";
 const debugLevels = ["error", "warn", "info", "log", "debug"];
 const debugLevel = "debug";
 
-let warn = function() {};
+let warn = function () {};
 if (debugLevel >= debugLevels.indexOf("warn")) {
     warn = console.warn.bind(console, tag + ": ");
 }
 
-let info = function() {};
+let info = function () {};
 if (debugLevel >= debugLevels.indexOf("info")) {
     info = console.info.bind(console, tag + ": ");
 }
 
-let log = function() {};
+let log = function () {};
 if (debugLevel >= debugLevels.indexOf("log")) {
     log = console.log.bind(console, tag + ": ");
 }
 
-let dbg = function() {};
+let dbg = function () {};
 if (debugLevel >= debugLevels.indexOf("debug")) {
     dbg = console.debug.bind(console, tag + ": ");
 }
@@ -60,42 +60,41 @@ function initTextEditor(textEditor) {
     let widget = this;
     const document = textEditor.model.document;
 
-    // Create a conversion from model to view that converts 
+    // Create a conversion from model to view that converts
     // hljs:hljsClassName:uniqueId into a span with hljsClassName
     // See the list of hljs class names at
     // https://github.com/highlightjs/highlight.js/blob/6b8c831f00c4e87ecd2189ebbd0bb3bbdde66c02/docs/css-classes-reference.rst
 
-    textEditor.conversion.for('editingDowncast').markerToHighlight( {
+    textEditor.conversion.for("editingDowncast").markerToHighlight({
         model: "hljs",
-        view: ( { markerName } ) => {
+        view: ({ markerName }) => {
             dbg("markerName " + markerName);
             // markerName has the pattern addMarker:cssClassName:uniqueId
-            const [ , cssClassName, id ] = markerName.split( ':' );
+            const [, cssClassName, id] = markerName.split(":");
 
-            // The original code at 
+            // The original code at
             // https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-find-and-replace/src/findandreplaceediting.js
             // has this comment
-            //      Marker removal from the view has a bug: 
+            //      Marker removal from the view has a bug:
             //      https://github.com/ckeditor/ckeditor5/issues/7499
             //      A minimal option is to return a new object for each converted marker...
             return {
-                name: 'span',
-                classes: [ cssClassName ],
+                name: "span",
+                classes: [cssClassName],
                 attributes: {
                     // ...however, adding a unique attribute should be future-proof..
-                    'data-syntax-result': id
-                },
+                    "data-syntax-result": id
+                }
             };
         }
     });
-    
 
     // XXX This is done at BalloonEditor.create time, so it assumes this
     //     document is always attached to this textEditor, empirically that
     //     seems to be the case even with two splits showing the same note,
     //     it's not clear if CKEditor5 has apis to attach and detach
     //     documents around
-    document.registerPostFixer(function(writer) {
+    document.registerPostFixer(function (writer) {
         log("postFixer");
         // Postfixers are a simpler way of tracking changes than onchange
         // See
@@ -106,7 +105,7 @@ function initTextEditor(textEditor) {
         for (const change of changes) {
             dbg("change " + JSON.stringify(change));
 
-            if ((change.type == "insert") && (change.name == "codeBlock")) {
+            if (change.type == "insert" && change.name == "codeBlock") {
                 // A new code block was inserted
                 const codeBlock = change.position.nodeAfter;
                 // Even if it's a new codeblock, it needs dirtying in case
@@ -115,16 +114,13 @@ function initTextEditor(textEditor) {
                 // etc (the postfixer won't get later changes for those).
                 log("dirtying inserted codeBlock " + JSON.stringify(codeBlock.toJSON()));
                 dirtyCodeBlocks.add(codeBlock);
-                
-            } else if (change.type == "remove" && (change.name == "codeBlock")) {
+            } else if (change.type == "remove" && change.name == "codeBlock") {
                 // An existing codeblock was removed, do nothing. Note the
                 // node is no longer in the editor so the codeblock cannot
                 // be inspected here. No need to dirty the codeblock since
                 // it has been removed
                 log("removing codeBlock at path " + JSON.stringify(change.position.toJSON()));
-                
-            } else if (((change.type == "remove") || (change.type == "insert")) && 
-                        change.position.parent.is('element', 'codeBlock')) {
+            } else if ((change.type == "remove" || change.type == "insert") && change.position.parent.is("element", "codeBlock")) {
                 // Text was added or removed from the codeblock, force a
                 // highlight
                 const codeBlock = change.position.parent;
@@ -143,19 +139,16 @@ function initTextEditor(textEditor) {
     // This assumes the document is empty and a explicit call to highlight
     // is not necessary here. Empty documents have a single children of type
     // paragraph with no text
-    assert((document.getRoot().childCount == 1) && 
-        (document.getRoot().getChild(0).name == "paragraph") &&
-         document.getRoot().getChild(0).isEmpty);
-    
+    assert(document.getRoot().childCount == 1 && document.getRoot().getChild(0).name == "paragraph" && document.getRoot().getChild(0).isEmpty);
 }
 
 /**
  * This implements highlighting via ephemeral markers (not stored in the
- * document). 
+ * document).
  *
  * XXX Another option would be to use formatting markers, which would have
  *     the benefit of making it work for readonly notes. On the flip side,
- *     the formatting would be stored with the note and it would need a 
+ *     the formatting would be stored with the note and it would need a
  *     way to remove that formatting when editing back the note.
  */
 function highlightCodeBlock(codeBlock, writer) {
@@ -196,7 +189,7 @@ function highlightCodeBlock(codeBlock, writer) {
     if (codeBlock.childCount >= HIGHLIGHT_MAX_BLOCK_COUNT) {
         return;
     }
-        
+
     // highlight.js needs the full text without HTML tags, eg for the
     // text
     // #include <stdio.h>
@@ -226,12 +219,9 @@ function highlightCodeBlock(codeBlock, writer) {
         if (child.is("$text")) {
             dbg("child text " + child.data);
             text += child.data;
-
-        } else if (child.is("element") && 
-                    (child.name == "softBreak")) {
+        } else if (child.is("element") && child.name == "softBreak") {
             dbg("softBreak");
             text += "\n";
-
         } else {
             warn("Unkown child " + JSON.stringify(child.toJSON()));
         }
@@ -278,21 +268,21 @@ function highlightCodeBlock(codeBlock, writer) {
                 // needs to be dealt with below
                 childText = "";
             }
-        } 
+        }
 
         // This parsing is made slightly simpler and faster by only
         // expecting <span> and </span> tags in the highlighted html
-        if ((html[iHtml] == "<") && (html[iHtml+1] != "/")) {
+        if (html[iHtml] == "<" && html[iHtml + 1] != "/") {
             // new span, note they can be nested eg C preprocessor lines
             // are inside a hljs-meta span, hljs-title function names
             // inside a hljs-function span, etc
-            let iStartQuot = html.indexOf("\"", iHtml+1);
-            let iEndQuot = html.indexOf("\"", iStartQuot+1);
-            let className = html.slice(iStartQuot+1, iEndQuot);
+            let iStartQuot = html.indexOf('"', iHtml + 1);
+            let iEndQuot = html.indexOf('"', iStartQuot + 1);
+            let className = html.slice(iStartQuot + 1, iEndQuot);
             // XXX highlight js uses scope for Python "title function_",
-            //     etc for now just use the first style only 
+            //     etc for now just use the first style only
             // See https://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#a-note-on-scopes-with-sub-scopes
-            let iBlank = className.indexOf(" "); 
+            let iBlank = className.indexOf(" ");
             if (iBlank > 0) {
                 className = className.slice(0, iBlank);
             }
@@ -300,13 +290,12 @@ function highlightCodeBlock(codeBlock, writer) {
 
             iHtml = html.indexOf(">", iHtml) + 1;
 
-            // push the span 
+            // push the span
             let posStart = writer.createPositionAt(codeBlock, child.startOffset + iChildText);
-            spanStack.push({ "className" : className, "posStart": posStart});
-
-        } else if ((html[iHtml] == "<") && (html[iHtml+1] == "/")) {
+            spanStack.push({ className: className, posStart: posStart });
+        } else if (html[iHtml] == "<" && html[iHtml + 1] == "/") {
             // Done with this span, pop the span and mark the range
-            iHtml = html.indexOf(">", iHtml+1) + 1;
+            iHtml = html.indexOf(">", iHtml + 1) + 1;
 
             let stackTop = spanStack.pop();
             let posStart = stackTop.posStart;
@@ -321,17 +310,13 @@ function highlightCodeBlock(codeBlock, writer) {
             // Wrap-around for good measure so all numbers are positive
             // XXX Another option is to catch the exception and retry or
             //     go through the markers and get the largest + 1
-            markerCounter = (markerCounter + 1) & 0xFFFFFF;
+            markerCounter = (markerCounter + 1) & 0xffffff;
             dbg("Found span end " + className);
             dbg("Adding marker " + markerName + ": " + JSON.stringify(range.toJSON()));
-            writer.addMarker(markerName, {"range": range, "usingOperation": false});
-
+            writer.addMarker(markerName, { range: range, usingOperation: false });
         } else {
             // Text, we should also have text in the children
-            assert(
-                ((iChild < codeBlock.childCount) && (iChildText < childText.length)), 
-                "Found text in html with no corresponding child text!!!!"
-            );
+            assert(iChild < codeBlock.childCount && iChildText < childText.length, "Found text in html with no corresponding child text!!!!");
             if (html[iHtml] == "&") {
                 // highlight.js only encodes
                 // .replace(/&/g, '&amp;')

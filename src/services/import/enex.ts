@@ -1,18 +1,18 @@
 import sax from "sax";
 import stream from "stream";
-import { Throttle } from 'stream-throttle';
+import { Throttle } from "stream-throttle";
 import log from "../log.js";
-import utils from "../utils.js";
+import { md5, escapeHtml, fromBase64 } from "../utils.js";
 import sql from "../sql.js";
 import noteService from "../notes.js";
 import imageService from "../image.js";
 import protectedSessionService from "../protected_session.js";
 import htmlSanitizer from "../html_sanitizer.js";
 import sanitizeAttributeName from "../sanitize_attribute_name.js";
-import TaskContext from "../task_context.js";
-import BNote from "../../becca/entities/bnote.js";
-import { File } from "./common.js";
-import { AttributeType } from "../../becca/entities/rows.js";
+import type TaskContext from "../task_context.js";
+import type BNote from "../../becca/entities/bnote.js";
+import type { File } from "./common.js";
+import type { AttributeType } from "../../becca/entities/rows.js";
 
 /**
  * date format is e.g. 20181121T193703Z or 2013-04-14T16:19:00.000Z (Mac evernote, see #3496)
@@ -23,8 +23,7 @@ function parseDate(text: string) {
     text = text.replace(/[-:]/g, "");
 
     // insert - and : to convert it to trilium format
-    text = text.substr(0, 4) + "-" + text.substr(4, 2) + "-" + text.substr(6, 2)
-        + " " + text.substr(9, 2) + ":" + text.substr(11, 2) + ":" + text.substr(13, 2) + ".000Z";
+    text = text.substr(0, 4) + "-" + text.substr(4, 2) + "-" + text.substr(6, 2) + " " + text.substr(9, 2) + ":" + text.substr(11, 2) + ":" + text.substr(13, 2) + ".000Z";
 
     return text;
 }
@@ -50,7 +49,7 @@ interface Note {
     noteId: string;
     blobId: string;
     content: string;
-    resources: Resource[]
+    resources: Resource[];
 }
 
 let note: Partial<Note> = {};
@@ -59,28 +58,26 @@ let resource: Resource;
 function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Promise<BNote> {
     const saxStream = sax.createStream(true);
 
-    const rootNoteTitle = file.originalname.toLowerCase().endsWith(".enex")
-        ? file.originalname.substr(0, file.originalname.length - 5)
-        : file.originalname;
+    const rootNoteTitle = file.originalname.toLowerCase().endsWith(".enex") ? file.originalname.substr(0, file.originalname.length - 5) : file.originalname;
 
     // root note is new note into all ENEX/notebook's notes will be imported
     const rootNote = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title: rootNoteTitle,
         content: "",
-        type: 'text',
-        mime: 'text/html',
-        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+        type: "text",
+        mime: "text/html",
+        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
     }).note;
 
     function extractContent(content: string) {
-        const openingNoteIndex = content.indexOf('<en-note>');
+        const openingNoteIndex = content.indexOf("<en-note>");
 
         if (openingNoteIndex !== -1) {
             content = content.substr(openingNoteIndex + 9);
         }
 
-        const closingNoteIndex = content.lastIndexOf('</en-note>');
+        const closingNoteIndex = content.lastIndexOf("</en-note>");
 
         if (closingNoteIndex !== -1) {
             content = content.substr(0, closingNoteIndex);
@@ -109,14 +106,19 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
 
         // Replace OneNote converted checkboxes with unicode ballot box based
         // on known hash of checkboxes for regular, p1, and p2 checkboxes
-        content = content.replace(/<en-media alt="To Do( priority [12])?" hash="(74de5d3d1286f01bac98d32a09f601d9|4a19d3041585e11643e808d68dd3e72f|8e17580123099ac6515c3634b1f6f9a1)"( type="[a-z\/]*"| width="\d+"| height="\d+")*\/>/g, "\u2610 ");
-        content = content.replace(/<en-media alt="To Do( priority [12])?" hash="(5069b775461e471a47ce04ace6e1c6ae|7912ee9cec35fc3dba49edb63a9ed158|3a05f4f006a6eaf2627dae5ed8b8013b)"( type="[a-z\/]*"| width="\d+"| height="\d+")*\/>/g, "\u2611 ");
+        content = content.replace(
+            /<en-media alt="To Do( priority [12])?" hash="(74de5d3d1286f01bac98d32a09f601d9|4a19d3041585e11643e808d68dd3e72f|8e17580123099ac6515c3634b1f6f9a1)"( type="[a-z\/]*"| width="\d+"| height="\d+")*\/>/g,
+            "\u2610 "
+        );
+        content = content.replace(
+            /<en-media alt="To Do( priority [12])?" hash="(5069b775461e471a47ce04ace6e1c6ae|7912ee9cec35fc3dba49edb63a9ed158|3a05f4f006a6eaf2627dae5ed8b8013b)"( type="[a-z\/]*"| width="\d+"| height="\d+")*\/>/g,
+            "\u2611 "
+        );
 
         content = htmlSanitizer.sanitize(content);
 
         return content;
     }
-
 
     const path: string[] = [];
 
@@ -132,7 +134,7 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
         }
     }
 
-    saxStream.on("error", e => {
+    saxStream.on("error", (e) => {
         // unhandled errors will throw, since this is a proper node event emitter.
         log.error(`error when parsing ENEX file: ${e}`);
         // clear the error
@@ -140,92 +142,86 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
         saxStream._parser.resume();
     });
 
-    saxStream.on("text", text => {
+    saxStream.on("text", (text) => {
         const currentTag = getCurrentTag();
         const previousTag = getPreviousTag();
 
-        if (previousTag === 'note-attributes') {
+        if (previousTag === "note-attributes") {
             let labelName = currentTag;
 
-            if (labelName === 'source-url') {
-                labelName = 'pageUrl';
+            if (labelName === "source-url") {
+                labelName = "pageUrl";
             }
 
-            labelName = sanitizeAttributeName.sanitizeAttributeName(labelName || "");
+            labelName = sanitizeAttributeName(labelName || "");
 
             if (note.attributes) {
                 note.attributes.push({
-                    type: 'label',
+                    type: "label",
                     name: labelName,
                     value: text
                 });
             }
-        }
-        else if (previousTag === 'resource-attributes') {
-            if (currentTag === 'file-name') {
+        } else if (previousTag === "resource-attributes") {
+            if (currentTag === "file-name") {
                 resource.attributes.push({
-                    type: 'label',
-                    name: 'originalFileName',
+                    type: "label",
+                    name: "originalFileName",
                     value: text
                 });
 
                 resource.title = text;
-            }
-            else if (currentTag === 'source-url') {
+            } else if (currentTag === "source-url") {
                 resource.attributes.push({
-                    type: 'label',
-                    name: 'pageUrl',
+                    type: "label",
+                    name: "pageUrl",
                     value: text
                 });
             }
-        }
-        else if (previousTag === 'resource') {
-            if (currentTag === 'data') {
-                text = text.replace(/\s/g, '');
+        } else if (previousTag === "resource") {
+            if (currentTag === "data") {
+                text = text.replace(/\s/g, "");
 
                 // resource can be chunked into multiple events: https://github.com/zadam/trilium/issues/3424
                 // it would probably make sense to do this in a more global way since it can in theory affect any field,
                 // not just data
                 resource.content = (resource.content || "") + text;
-            }
-            else if (currentTag === 'mime') {
+            } else if (currentTag === "mime") {
                 resource.mime = text.toLowerCase();
             }
-        }
-        else if (previousTag === 'note') {
-            if (currentTag === 'title') {
+        } else if (previousTag === "note") {
+            if (currentTag === "title") {
                 note.title = text;
-            } else if (currentTag === 'created') {
+            } else if (currentTag === "created") {
                 note.utcDateCreated = parseDate(text);
-            } else if (currentTag === 'updated') {
+            } else if (currentTag === "updated") {
                 note.utcDateModified = parseDate(text);
-            } else if (currentTag === 'tag' && note.attributes) {
+            } else if (currentTag === "tag" && note.attributes) {
                 note.attributes.push({
-                    type: 'label',
-                    name: sanitizeAttributeName.sanitizeAttributeName(text),
-                    value: ''
-                })
+                    type: "label",
+                    name: sanitizeAttributeName(text),
+                    value: ""
+                });
             }
             // unknown tags are just ignored
         }
     });
 
-    saxStream.on("attribute", attr => {
+    saxStream.on("attribute", (attr) => {
         // an attribute.  attr has "name" and "value"
     });
 
-    saxStream.on("opentag", tag => {
+    saxStream.on("opentag", (tag) => {
         path.push(tag.name);
 
-        if (tag.name === 'note') {
+        if (tag.name === "note") {
             note = {
                 content: "",
                 // it's an array, not a key-value object because we don't know if attributes can be duplicated
                 attributes: [],
                 resources: []
             };
-        }
-        else if (tag.name === 'resource') {
+        } else if (tag.name === "resource") {
             resource = {
                 title: "resource",
                 attributes: []
@@ -239,25 +235,29 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
 
     function updateDates(note: BNote, utcDateCreated?: string, utcDateModified?: string) {
         // it's difficult to force custom dateCreated and dateModified to Note entity, so we do it post-creation with SQL
-        sql.execute(`
+        sql.execute(
+            `
                 UPDATE notes
                 SET dateCreated = ?,
                     utcDateCreated = ?,
                     dateModified = ?,
                     utcDateModified = ?
                 WHERE noteId = ?`,
-            [utcDateCreated, utcDateCreated, utcDateModified, utcDateModified, note.noteId]);
+            [utcDateCreated, utcDateCreated, utcDateModified, utcDateModified, note.noteId]
+        );
 
-        sql.execute(`
+        sql.execute(
+            `
                 UPDATE blobs
                 SET utcDateModified = ?
                 WHERE blobId = ?`,
-            [utcDateModified, note.blobId]);
+            [utcDateModified, note.blobId]
+        );
     }
 
     function saveNote() {
         // make a copy because stream continues with the next call and note gets overwritten
-        let {title, content, attributes, resources, utcDateCreated, utcDateModified} = note;
+        let { title, content, attributes, resources, utcDateCreated, utcDateModified } = note;
 
         if (!title || !content) {
             throw new Error("Missing title or content for note.");
@@ -270,9 +270,9 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
             title,
             content,
             utcDateCreated,
-            type: 'text',
-            mime: 'text/html',
-            isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+            type: "text",
+            mime: "text/html",
+            isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
         }).note;
 
         for (const attr of attributes || []) {
@@ -291,37 +291,37 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
             }
 
             if (typeof resource.content === "string") {
-                resource.content = utils.fromBase64(resource.content);
+                resource.content = fromBase64(resource.content);
             }
 
-            const hash = utils.md5(resource.content);
+            const hash = md5(resource.content);
 
             // skip all checked/unchecked checkboxes from OneNote
-            if (['74de5d3d1286f01bac98d32a09f601d9',
-                '4a19d3041585e11643e808d68dd3e72f',
-                '8e17580123099ac6515c3634b1f6f9a1',
-                '5069b775461e471a47ce04ace6e1c6ae',
-                '7912ee9cec35fc3dba49edb63a9ed158',
-                '3a05f4f006a6eaf2627dae5ed8b8013b'].includes(hash)) {
+            if (
+                [
+                    "74de5d3d1286f01bac98d32a09f601d9",
+                    "4a19d3041585e11643e808d68dd3e72f",
+                    "8e17580123099ac6515c3634b1f6f9a1",
+                    "5069b775461e471a47ce04ace6e1c6ae",
+                    "7912ee9cec35fc3dba49edb63a9ed158",
+                    "3a05f4f006a6eaf2627dae5ed8b8013b"
+                ].includes(hash)
+            ) {
                 continue;
             }
 
-            const mediaRegex = new RegExp(`<en-media [^>]*hash="${hash}"[^>]*>`, 'g');
+            const mediaRegex = new RegExp(`<en-media [^>]*hash="${hash}"[^>]*>`, "g");
 
             resource.mime = resource.mime || "application/octet-stream";
 
             const createFileNote = () => {
-                if (typeof resource.content !== "string") {
-                    throw new Error("Missing or wrong content type for resource.");
-                }
-
                 const resourceNote = noteService.createNewNote({
                     parentNoteId: noteEntity.noteId,
                     title: resource.title,
-                    content: resource.content,
-                    type: 'file',
+                    content: resource.content ?? "",
+                    type: "file",
                     mime: resource.mime,
-                    isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+                    isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
                 }).note;
 
                 for (const attr of resource.attributes) {
@@ -332,16 +332,14 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
 
                 taskContext.increaseProgressCount();
 
-                const resourceLink = `<a href="#root/${resourceNote.noteId}">${utils.escapeHtml(resource.title)}</a>`;
+                const resourceLink = `<a href="#root/${resourceNote.noteId}">${escapeHtml(resource.title)}</a>`;
 
                 content = (content || "").replace(mediaRegex, resourceLink);
             };
 
-            if (resource.mime && resource.mime.startsWith('image/')) {
+            if (resource.mime && resource.mime.startsWith("image/")) {
                 try {
-                    const originalName = (resource.title && resource.title !== 'resource')
-                        ? resource.title
-                        : `image.${resource.mime.substr(6)}`; // default if real name is not present
+                    const originalName = resource.title && resource.title !== "resource" ? resource.title : `image.${resource.mime.substr(6)}`; // default if real name is not present
 
                     const attachment = imageService.saveImageToAttachment(noteEntity.noteId, resource.content, originalName, !!taskContext.data?.shrinkImages);
 
@@ -375,10 +373,10 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
         updateDates(noteEntity, utcDateCreated, utcDateModified);
     }
 
-    saxStream.on("closetag", tag => {
+    saxStream.on("closetag", (tag) => {
         path.pop();
 
-        if (tag === 'note') {
+        if (tag === "note") {
             saveNote();
         }
     });
@@ -387,7 +385,7 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
         //console.log("opencdata");
     });
 
-    saxStream.on("cdata", text => {
+    saxStream.on("cdata", (text) => {
         note.content += text;
     });
 
@@ -395,8 +393,7 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
         //console.log("closecdata");
     });
 
-    return new Promise((resolve, reject) =>
-    {
+    return new Promise((resolve, reject) => {
         // resolve only when we parse the whole document AND saving of all notes have been finished
         saxStream.on("end", () => resolve(rootNote));
 
@@ -405,7 +402,7 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
 
         bufferStream
             // rate limiting to improve responsiveness during / after import
-            .pipe(new Throttle({rate: 500000}))
+            .pipe(new Throttle({ rate: 500000 }))
             .pipe(saxStream);
     });
 }

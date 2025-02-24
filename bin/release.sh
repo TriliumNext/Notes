@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-export GITHUB_REPO=trilium
-
 if [[ $# -eq 0 ]] ; then
     echo "Missing argument of new version"
     exit 1
@@ -32,7 +30,7 @@ mv package.json.tmp package.json
 
 git add package.json
 
-npm run update-build-info
+npm run chore:update-build-info
 
 git add src/services/build.ts
 
@@ -40,10 +38,18 @@ TAG=v$VERSION
 
 echo "Committing package.json version change"
 
-git commit -m "release $VERSION"
+git commit -m "chore(release): $VERSION"
 git push
 
 echo "Tagging commit with $TAG"
 
 git tag $TAG
 git push origin $TAG
+
+echo "Updating master"
+
+git fetch
+git checkout master
+git reset --hard origin/master
+git merge origin/develop
+git push

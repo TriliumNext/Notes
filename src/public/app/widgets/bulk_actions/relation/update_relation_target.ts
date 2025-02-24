@@ -7,19 +7,19 @@ const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;" class="text-nowrap">${t('update_relation_target.update_relation')}</div> 
+            <div style="margin-right: 10px;" class="text-nowrap">${t("update_relation_target.update_relation")}</div> 
             
             <input type="text" 
                 class="form-control relation-name" 
-                placeholder="${t('update_relation_target.relation_name')}"
+                placeholder="${t("update_relation_target.relation_name")}"
                 pattern="[\\p{L}\\p{N}_:]+"
                 style="flex-shrink: 3"
-                title="${t('update_relation_target.allowed_characters')}"/>
+                title="${t("update_relation_target.allowed_characters")}"/>
                 
-            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t('update_relation_target.to')}</div>
+            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("update_relation_target.to")}</div>
             
             <div class="input-group" style="flex-shrink: 2">
-                <input type="text" class="form-control target-note" placeholder="${t('update_relation_target.target_note')}"/>
+                <input type="text" class="form-control target-note" placeholder="${t("update_relation_target.target_note")}"/>
             </div>
         </div>
     </td>
@@ -27,11 +27,11 @@ const TPL = `
         <div class="dropdown help-dropdown">
             <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
-                <p>${t('update_relation_target.on_all_matched_notes')}:</p>
+                <p>${t("update_relation_target.on_all_matched_notes")}:</p>
                 
                 <ul style="margin-bottom: 0;">
-                    <li>${t('update_relation_target.create_given_relation')}</li>
-                    <li>${t('update_relation_target.change_target_note')}</li>
+                    <li>${t("update_relation_target.create_given_relation")}</li>
+                    <li>${t("update_relation_target.change_target_note")}</li>
                 </ul>
             </div> 
         </div>
@@ -41,20 +41,24 @@ const TPL = `
 </tr>`;
 
 export default class UpdateRelationTargetBulkAction extends AbstractBulkAction {
-    static get actionName() { return "updateRelationTarget"; }
-    static get actionTitle() { return t('update_relation_target.update_relation_target'); }
+    static get actionName() {
+        return "updateRelationTarget";
+    }
+    static get actionTitle() {
+        return t("update_relation_target.update_relation_target");
+    }
 
     doRender() {
         const $action = $(TPL);
 
-        const $relationName = $action.find('.relation-name');
+        const $relationName = $action.find(".relation-name");
         $relationName.val(this.actionDef.relationName || "");
 
-        const $targetNote = $action.find('.target-note');
+        const $targetNote = $action.find(".target-note");
         noteAutocompleteService.initNoteAutocomplete($targetNote);
         $targetNote.setNote(this.actionDef.targetNoteId);
 
-        $targetNote.on('autocomplete:closed', () => spacedUpdate.scheduleUpdate());
+        $targetNote.on("autocomplete:closed", () => spacedUpdate.scheduleUpdate());
 
         const spacedUpdate = new SpacedUpdate(async () => {
             await this.saveAction({
@@ -63,8 +67,8 @@ export default class UpdateRelationTargetBulkAction extends AbstractBulkAction {
             });
         }, 1000);
 
-        $relationName.on('input', () => spacedUpdate.scheduleUpdate());
-        $targetNote.on('input', () => spacedUpdate.scheduleUpdate());
+        $relationName.on("input", () => spacedUpdate.scheduleUpdate());
+        $targetNote.on("input", () => spacedUpdate.scheduleUpdate());
 
         return $action;
     }

@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import cls from "./cls.js";
 
-const LOCAL_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss.SSSZZ';
-const UTC_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ssZ';
+const LOCAL_DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss.SSSZZ";
+const UTC_DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ssZ";
 
 function utcNowDateTime() {
     return utcDateTimeStr(new Date());
@@ -12,8 +12,7 @@ function utcNowDateTime() {
 // so we'd prefer client timezone to be used to record local dates. For this reason, requests from clients contain
 // "trilium-local-now-datetime" header which is then stored in CLS
 function localNowDateTime() {
-    return cls.getLocalNowDateTime()
-        || dayjs().format(LOCAL_DATETIME_FORMAT)
+    return cls.getLocalNowDateTime() || dayjs().format(LOCAL_DATETIME_FORMAT);
 }
 
 function localNowDate() {
@@ -21,8 +20,7 @@ function localNowDate() {
 
     if (clsDateTime) {
         return clsDateTime.substr(0, 10);
-    }
-    else {
+    } else {
         const date = new Date();
 
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
@@ -34,11 +32,11 @@ function pad(num: number) {
 }
 
 function utcDateStr(date: Date) {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
 }
 
 function utcDateTimeStr(date: Date) {
-    return date.toISOString().replace('T', ' ');
+    return date.toISOString().replace("T", " ");
 }
 
 /**
@@ -48,8 +46,7 @@ function utcDateTimeStr(date: Date) {
 function parseDateTime(str: string) {
     try {
         return new Date(Date.parse(str));
-    }
-    catch (e: any) {
+    } catch (e: any) {
         throw new Error(`Can't parse date from '${str}': ${e.stack}`);
     }
 }
@@ -62,7 +59,7 @@ function parseLocalDate(str: string) {
 }
 
 function getDateTimeForFile() {
-    return new Date().toISOString().substr(0, 19).replace(/:/g, '');
+    return new Date().toISOString().substr(0, 19).replace(/:/g, "");
 }
 
 function validateLocalDateTime(str: string | null | undefined) {
@@ -73,7 +70,6 @@ function validateLocalDateTime(str: string | null | undefined) {
     if (!/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}/.test(str)) {
         return `Invalid local date time format in '${str}'. Correct format shoud follow example: '2023-08-21 23:38:51.110+0200'`;
     }
-
 
     if (!dayjs(str, LOCAL_DATETIME_FORMAT)) {
         return `Date '${str}' appears to be in the correct format, but cannot be parsed. It likely represents an invalid date.`;
@@ -88,7 +84,6 @@ function validateUtcDateTime(str: string | undefined) {
     if (!/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z/.test(str)) {
         return `Invalid UTC date time format in '${str}'. Correct format shoud follow example: '2023-08-21 23:38:51.110Z'`;
     }
-
 
     if (!dayjs(str, UTC_DATETIME_FORMAT)) {
         return `Date '${str}' appears to be in the correct format, but cannot be parsed. It likely represents an invalid date.`;

@@ -8,7 +8,7 @@ export function getStylesheetUrl(theme: string) {
     }
 
     const defaultPrefix = "default:";
-    if (theme.startsWith(defaultPrefix)) {        
+    if (theme.startsWith(defaultPrefix)) {
         return `${window.glob.assetPath}/node_modules/@highlightjs/cdn-assets/styles/${theme.substr(defaultPrefix.length)}.min.css`;
     }
 
@@ -17,13 +17,13 @@ export function getStylesheetUrl(theme: string) {
 
 /**
  * Identifies all the code blocks (as `pre code`) under the specified hierarchy and uses the highlight.js library to obtain the highlighted text which is then applied on to the code blocks.
- * 
+ *
  * @param $container the container under which to look for code blocks and to apply syntax highlighting to them.
  */
 export async function applySyntaxHighlight($container: JQuery<HTMLElement>) {
     if (!isSyntaxHighlightEnabled()) {
         return;
-    }    
+    }
 
     const codeBlocks = $container.find("pre code");
     for (const codeBlock of codeBlocks) {
@@ -31,7 +31,7 @@ export async function applySyntaxHighlight($container: JQuery<HTMLElement>) {
         if (!normalizedMimeType) {
             continue;
         }
-        
+
         applySingleBlockSyntaxHighlight($(codeBlock), normalizedMimeType);
     }
 }
@@ -58,8 +58,8 @@ export async function applySingleBlockSyntaxHighlight($codeBlock: JQuery<HTMLEle
             console.warn(`Unknown mime type: ${normalizedMimeType}.`);
         }
     }
-    
-    if (highlightedText) {            
+
+    if (highlightedText) {
         $codeBlock.html(highlightedText.value);
     }
 }
@@ -75,7 +75,7 @@ export function isSyntaxHighlightEnabled() {
 
 /**
  * Given a HTML element, tries to extract the `language-` class name out of it.
- * 
+ *
  * @param el the HTML element from which to extract the language tag.
  * @returns the normalized MIME type (e.g. `text-css` instead of `language-text-css`).
  */

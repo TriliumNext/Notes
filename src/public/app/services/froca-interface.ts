@@ -1,8 +1,8 @@
-import FAttachment from "../entities/fattachment.js";
-import FAttribute from "../entities/fattribute.js";
-import FBlob from "../entities/fblob.js";
-import FBranch from "../entities/fbranch.js";
-import FNote from "../entities/fnote.js";
+import type FAttachment from "../entities/fattachment.js";
+import type FAttribute from "../entities/fattribute.js";
+import type FBlob from "../entities/fblob.js";
+import type FBranch from "../entities/fbranch.js";
+import type FNote from "../entities/fnote.js";
 
 export interface Froca {
     notes: Record<string, FNote>;

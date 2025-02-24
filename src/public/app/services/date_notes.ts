@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { FNoteRow } from "../entities/fnote.js";
+import type { FNoteRow } from "../entities/fnote.js";
 import froca from "./froca.js";
 import server from "./server.js";
 import ws from "./ws.js";
@@ -47,7 +47,7 @@ async function getYearNote(year: string) {
 }
 
 async function createSqlConsole() {
-    const note = await server.post<FNoteRow>('special-notes/sql-console');
+    const note = await server.post<FNoteRow>("special-notes/sql-console");
 
     await ws.waitForMaxKnownEntityChangeId();
 
@@ -55,7 +55,7 @@ async function createSqlConsole() {
 }
 
 async function createSearchNote(opts = {}) {
-    const note = await server.post<FNoteRow>('special-notes/search-note', opts);
+    const note = await server.post<FNoteRow>("special-notes/search-note", opts);
 
     await ws.waitForMaxKnownEntityChangeId();
 
@@ -71,4 +71,4 @@ export default {
     getYearNote,
     createSqlConsole,
     createSearchNote
-}
+};

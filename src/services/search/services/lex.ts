@@ -1,4 +1,4 @@
-import { TokenData } from "./types.js";
+import type { TokenData } from "./types.js";
 
 function lex(str: string) {
     str = str.toLowerCase();
@@ -9,23 +9,22 @@ function lex(str: string) {
 
     let quotes: boolean | string = false; // otherwise contains used quote - ', " or `
     let fulltextEnded = false;
-    let currentWord = '';
+    let currentWord = "";
 
     function isSymbolAnOperator(chr: string) {
-        return ['=', '*', '>', '<', '!', "-", "+", '%', ','].includes(chr);
+        return ["=", "*", ">", "<", "!", "-", "+", "%", ","].includes(chr);
     }
 
     function isPreviousSymbolAnOperator() {
         if (currentWord.length === 0) {
             return false;
-        }
-        else {
+        } else {
             return isSymbolAnOperator(currentWord[currentWord.length - 1]);
         }
     }
 
     function finishWord(endIndex: number, createAlsoForEmptyWords = false) {
-        if (currentWord === '' && !createAlsoForEmptyWords) {
+        if (currentWord === "" && !createAlsoForEmptyWords) {
             return;
         }
 
@@ -44,84 +43,70 @@ function lex(str: string) {
             fulltextQuery = str.substr(0, endIndex + 1);
         }
 
-        currentWord = '';
+        currentWord = "";
     }
 
     for (let i = 0; i < str.length; i++) {
         const chr = str[i];
 
-        if (chr === '\\') {
+        if (chr === "\\") {
             if (i + 1 < str.length) {
                 i++;
 
                 currentWord += str[i];
-            }
-            else {
+            } else {
                 currentWord += chr;
             }
 
             continue;
-        }
-        else if (['"', "'", '`'].includes(chr)) {
+        } else if (['"', "'", "`"].includes(chr)) {
             if (!quotes) {
                 if (currentWord.length === 0 || isPreviousSymbolAnOperator()) {
                     finishWord(i - 1);
 
                     quotes = chr;
-                }
-                else {
+                } else {
                     // quote inside a word does not have special meening and does not break word
                     // e.g. d'Artagnan is kept as a single token
                     currentWord += chr;
                 }
-            }
-            else if (quotes === chr) {
+            } else if (quotes === chr) {
                 finishWord(i - 1, true);
 
                 quotes = false;
-            }
-            else {
+            } else {
                 // it's a quote, but within other kind of quotes, so it's valid as a literal character
                 currentWord += chr;
             }
 
             continue;
-        }
-        else if (!quotes) {
-            if (!fulltextEnded && currentWord === 'note' && chr === '.' && i + 1 < str.length) {
+        } else if (!quotes) {
+            if (!fulltextEnded && currentWord === "note" && chr === "." && i + 1 < str.length) {
                 fulltextEnded = true;
             }
 
-            if (chr === '#' || chr === '~') {
+            if (chr === "#" || chr === "~") {
                 if (!fulltextEnded) {
                     fulltextEnded = true;
-                }
-                else {
+                } else {
                     finishWord(i - 1);
                 }
 
                 currentWord = chr;
 
                 continue;
-            }
-            else if (['#', '~'].includes(currentWord) && chr === '!') {
+            } else if (["#", "~"].includes(currentWord) && chr === "!") {
                 currentWord += chr;
                 continue;
-            }
-            else if (chr === ' ') {
+            } else if (chr === " ") {
                 finishWord(i - 1);
                 continue;
-            }
-            else if (fulltextEnded && ['(', ')', '.'].includes(chr)) {
+            } else if (fulltextEnded && ["(", ")", "."].includes(chr)) {
                 finishWord(i - 1);
                 currentWord += chr;
                 finishWord(i);
                 continue;
-            }
-            else if (fulltextEnded
-                && !['#!', '~!'].includes(currentWord)
-                && isPreviousSymbolAnOperator() !== isSymbolAnOperator(chr)) {
-
+            } else if (fulltextEnded && !["#!", "~!"].includes(currentWord) && isPreviousSymbolAnOperator() !== isSymbolAnOperator(chr)) {
                 finishWord(i - 1);
 
                 currentWord += chr;
@@ -129,7 +114,7 @@ function lex(str: string) {
             }
         }
 
-        if (chr === ',') {
+        if (chr === ",") {
             continue;
         }
 
@@ -144,7 +129,7 @@ function lex(str: string) {
         fulltextQuery,
         fulltextTokens,
         expressionTokens
-    }
+    };
 }
 
 export default lex;

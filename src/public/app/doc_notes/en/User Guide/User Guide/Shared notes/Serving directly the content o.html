@@ -1,0 +1,60 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Serving directly the content of a note</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Serving directly the content of a note</h1>
+
+      <div class="ck-content">
+        <p>When accessing a shared note, Trilium will render it as a web page. Sometimes
+          it's desirable to serve the content directly so that it can be used in
+          a script or downloaded by the user.</p>
+        <figure class="table" style="width:100%;">
+          <table class="ck-table-resized">
+            <colgroup>
+              <col style="width:48.52%;">
+                <col style="width:51.48%;">
+            </colgroup>
+            <tbody>
+              <tr>
+                <td>
+                  <figure class="image">
+                    <img style="aspect-ratio:378/231;" src="Serving directly the conte.png"
+                    width="378" height="231">
+                    <figcaption>A note displayed as a web page (HTML)</figcaption>
+                  </figure>
+                </td>
+                <td style="vertical-align:top;">
+                  <figure class="image">
+                    <img style="aspect-ratio:402/129;" src="1_Serving directly the conte.png"
+                    width="402" height="129">
+                    <figcaption>A note displayed as a raw format</figcaption>
+                  </figure>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </figure>
+        <h2>By adding an attribute to the note</h2>
+        <p>Simply add the <code>#shareRaw</code> attribute and the note will always
+          be rendered <i>raw</i> when accessed from the share URL.</p>
+        <h2>By altering the URL</h2>
+        <p>Append <code>?raw</code> to the URL to display a note in its raw format
+          regardless of whether the <code>#shareRaw</code> attribute is added on the
+          note.</p>
+        <p>
+          <img src="1_Serving directly the conte.png" width="402" height="129">
+        </p>
+        <p>&nbsp;</p>
+      </div>
+    </div>
+  </body>
+
+</html>

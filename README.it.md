@@ -73,7 +73,7 @@ Clona localmente ed esegui
 
 ```shell
 npm install
-npm run start-server
+npm run server:start
 ```
 
 ## 👏 Riconoscimenti

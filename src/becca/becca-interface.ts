@@ -1,17 +1,18 @@
 import sql from "../services/sql.js";
 import NoteSet from "../services/search/note_set.js";
 import NotFoundError from "../errors/not_found_error.js";
-import BOption from "./entities/boption.js";
-import BNote from "./entities/bnote.js";
-import BEtapiToken from "./entities/betapi_token.js";
-import BAttribute from "./entities/battribute.js";
-import BBranch from "./entities/bbranch.js";
+import type BOption from "./entities/boption.js";
+import type BNote from "./entities/bnote.js";
+import type BEtapiToken from "./entities/betapi_token.js";
+import type BAttribute from "./entities/battribute.js";
+import type BBranch from "./entities/bbranch.js";
 import BRevision from "./entities/brevision.js";
 import BAttachment from "./entities/battachment.js";
-import { AttachmentRow, BlobRow, RevisionRow } from './entities/rows.js';
+import type { AttachmentRow, BlobRow, RevisionRow } from "./entities/rows.js";
 import BBlob from "./entities/bblob.js";
 import BRecentNote from "./entities/brecent_note.js";
-import AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
+import type AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
+import type BTask from "./entities/btask.js";
 
 interface AttachmentOpts {
     includeContentLength?: boolean;
@@ -32,6 +33,7 @@ export default class Becca {
     attributeIndex!: Record<string, BAttribute[]>;
     options!: Record<string, BOption>;
     etapiTokens!: Record<string, BEtapiToken>;
+    tasks!: Record<string, BTask>;
 
     allNoteSetCache: NoteSet | null;
 
@@ -48,6 +50,7 @@ export default class Becca {
         this.attributeIndex = {};
         this.options = {};
         this.etapiTokens = {};
+        this.tasks = {};
 
         this.dirtyNoteSetCache();
 
@@ -55,13 +58,13 @@ export default class Becca {
     }
 
     getRoot() {
-        return this.getNote('root');
+        return this.getNote("root");
     }
 
     findAttributes(type: string, name: string): BAttribute[] {
         name = name.trim().toLowerCase();
 
-        if (name.startsWith('#') || name.startsWith('~')) {
+        if (name.startsWith("#") || name.startsWith("~")) {
             name = name.substr(1);
         }
 
@@ -177,8 +180,7 @@ export default class Becca {
                 WHERE attachmentId = ? AND isDeleted = 0`
             : `SELECT * FROM attachments WHERE attachmentId = ? AND isDeleted = 0`;
 
-        return sql.getRows<AttachmentRow>(query, [attachmentId])
-            .map(row => new BAttachment(row))[0];
+        return sql.getRows<AttachmentRow>(query, [attachmentId]).map((row) => new BAttachment(row))[0];
     }
 
     getAttachmentOrThrow(attachmentId: string, opts: AttachmentOpts = {}): BAttachment {
@@ -190,8 +192,7 @@ export default class Becca {
     }
 
     getAttachments(attachmentIds: string[]): BAttachment[] {
-        return sql.getManyRows<AttachmentRow>("SELECT * FROM attachments WHERE attachmentId IN (???) AND isDeleted = 0", attachmentIds)
-            .map(row => new BAttachment(row));
+        return sql.getManyRows<AttachmentRow>("SELECT * FROM attachments WHERE attachmentId IN (???) AND isDeleted = 0", attachmentIds).map((row) => new BAttachment(row));
     }
 
     getBlob(entity: { blobId?: string }): BBlob | null {
@@ -215,23 +216,26 @@ export default class Becca {
         return this.etapiTokens[etapiTokenId];
     }
 
+    getTasks(): BTask[] {
+        return Object.values(this.tasks);
+    }
+
+    getTask(taskId: string): BTask | null {
+        return this.tasks[taskId];
+    }
+
     getEntity<T extends AbstractBeccaEntity<T>>(entityName: string, entityId: string): AbstractBeccaEntity<T> | null {
         if (!entityName || !entityId) {
             return null;
         }
 
-        if (entityName === 'revisions') {
+        if (entityName === "revisions") {
             return this.getRevision(entityId);
-        } else if (entityName === 'attachments') {
+        } else if (entityName === "attachments") {
             return this.getAttachment(entityId);
         }
 
-        const camelCaseEntityName = entityName.toLowerCase().replace(/(_[a-z])/g,
-            group =>
-                group
-                    .toUpperCase()
-                    .replace('_', '')
-        );
+        const camelCaseEntityName = entityName.toLowerCase().replace(/(_[a-z])/g, (group) => group.toUpperCase().replace("_", ""));
 
         if (!(camelCaseEntityName in this)) {
             throw new Error(`Unknown entity name '${camelCaseEntityName}' (original argument '${entityName}')`);
@@ -242,12 +246,12 @@ export default class Becca {
 
     getRecentNotesFromQuery(query: string, params: string[] = []): BRecentNote[] {
         const rows = sql.getRows<BRecentNote>(query, params);
-        return rows.map(row => new BRecentNote(row));
+        return rows.map((row) => new BRecentNote(row));
     }
 
     getRevisionsFromQuery(query: string, params: string[] = []): BRevision[] {
         const rows = sql.getRows<RevisionRow>(query, params);
-        return rows.map(row => new BRevision(row));
+        return rows.map((row) => new BRevision(row));
     }
 
     /** Should be called when the set of all non-skeleton notes changes (added/removed) */

@@ -7,24 +7,22 @@ import utils from "../../services/utils.js";
 import options from "../../services/options.js";
 
 export default class AbstractTextTypeWidget extends TypeWidget {
-
     doRender() {
         super.doRender();
         this.refreshCodeBlockOptions();
     }
 
     setupImageOpening(singleClickOpens) {
-        this.$widget.on("dblclick", "img", e => this.openImageInCurrentTab($(e.target)));
+        this.$widget.on("dblclick", "img", (e) => this.openImageInCurrentTab($(e.target)));
 
-        this.$widget.on("click", "img", e => {
+        this.$widget.on("click", "img", (e) => {
             const isLeftClick = e.which === 1;
             const isMiddleClick = e.which === 2;
             const ctrlKey = utils.isCtrlKey(e);
 
             if ((isLeftClick && ctrlKey) || isMiddleClick) {
                 this.openImageInNewTab($(e.target));
-            }
-            else if (isLeftClick && singleClickOpens) {
+            } else if (isLeftClick && singleClickOpens) {
                 this.openImageInCurrentTab($(e.target));
             }
         });
@@ -32,11 +30,11 @@ export default class AbstractTextTypeWidget extends TypeWidget {
 
     async openImageInCurrentTab($img) {
         const { noteId, viewScope } = await this.parseFromImage($img);
-        
+
         if (noteId) {
             appContext.tabManager.getActiveContext().setNote(noteId, { viewScope });
         } else {
-            window.open($img.prop("src"), '_blank');
+            window.open($img.prop("src"), "_blank");
         }
     }
 
@@ -46,7 +44,7 @@ export default class AbstractTextTypeWidget extends TypeWidget {
         if (noteId) {
             appContext.tabManager.openTabWithNoteWithHoisting(noteId, { viewScope });
         } else {
-            window.open($img.prop("src"), '_blank');
+            window.open($img.prop("src"), "_blank");
         }
     }
 
@@ -58,7 +56,7 @@ export default class AbstractTextTypeWidget extends TypeWidget {
             return {
                 noteId: imageNoteMatch[1],
                 viewScope: {}
-            }
+            };
         }
 
         const attachmentMatch = imgSrc.match(/\/api\/attachments\/([A-Za-z0-9_]+)\/image\//);
@@ -69,10 +67,10 @@ export default class AbstractTextTypeWidget extends TypeWidget {
             return {
                 noteId: attachment.ownerId,
                 viewScope: {
-                    viewMode: 'attachments',
+                    viewMode: "attachments",
                     attachmentId: attachmentId
                 }
-            }
+            };
         }
 
         return null;
@@ -88,17 +86,11 @@ export default class AbstractTextTypeWidget extends TypeWidget {
                 showTooltip: false
             });
 
-            $wrapper.empty().append(
-                $('<h4 class="include-note-title">')
-                    .append($link)
-            );
+            $wrapper.empty().append($('<h4 class="include-note-title">').append($link));
 
-            const {$renderedContent, type} = await contentRenderer.getRenderedContent(note);
+            const { $renderedContent, type } = await contentRenderer.getRenderedContent(note);
 
-            $wrapper.append(
-                $(`<div class="include-note-content type-${type}">`)
-                    .append($renderedContent)
-            );
+            $wrapper.append($(`<div class="include-note-content type-${type}">`).append($renderedContent));
 
             $el.empty().append($wrapper);
         }
@@ -121,10 +113,9 @@ export default class AbstractTextTypeWidget extends TypeWidget {
         this.$widget.toggleClass("word-wrap", wordWrap);
     }
 
-    async entitiesReloadedEvent({loadResults}) {
+    async entitiesReloadedEvent({ loadResults }) {
         if (loadResults.isOptionReloaded("codeBlockWordWrap")) {
-            this.refreshCodeBlockOptions();            
+            this.refreshCodeBlockOptions();
         }
     }
-
 }

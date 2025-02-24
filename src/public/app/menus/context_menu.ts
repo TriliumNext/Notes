@@ -1,6 +1,7 @@
-import { CommandNames } from '../components/app_context.js';
-import keyboardActionService from '../services/keyboard_actions.js';
-import utils from '../services/utils.js';
+import type { CommandNames } from "../components/app_context.js";
+import keyboardActionService from "../services/keyboard_actions.js";
+import note_tooltip from "../services/note_tooltip.js";
+import utils from "../services/utils.js";
 
 interface ContextMenuOptions<T extends CommandNames> {
     x: number;
@@ -8,10 +9,12 @@ interface ContextMenuOptions<T extends CommandNames> {
     orientation?: "left";
     selectMenuItemHandler: MenuHandler<T>;
     items: MenuItem<T>[];
+    /** On mobile, if set to `true` then the context menu is shown near the element. If `false` (default), then the context menu is shown at the bottom of the screen. */
+    forcePositionOnMobile?: boolean;
 }
 
 interface MenuSeparatorItem {
-    title: "----"
+    title: "----";
 }
 
 export interface MenuCommandItem<T extends CommandNames> {
@@ -29,9 +32,9 @@ export interface MenuCommandItem<T extends CommandNames> {
 
 export type MenuItem<T extends CommandNames> = MenuCommandItem<T> | MenuSeparatorItem;
 export type MenuHandler<T extends CommandNames> = (item: MenuCommandItem<T>, e: JQuery.MouseDownEvent<HTMLElement, undefined, HTMLElement, HTMLElement>) => void;
+export type ContextMenuEvent = PointerEvent | MouseEvent | JQuery.ContextMenuEvent;
 
 class ContextMenu {
-
     private $widget: JQuery<HTMLElement>;
     private $cover: JQuery<HTMLElement>;
     private dateContextMenuOpenedMs: number;
@@ -48,12 +51,14 @@ class ContextMenu {
         if (this.isMobile) {
             this.$cover.on("click", () => this.hide());
         } else {
-            $(document).on('click', (e) => this.hide());
+            $(document).on("click", (e) => this.hide());
         }
     }
 
     async show<T extends CommandNames>(options: ContextMenuOptions<T>) {
         this.options = options;
+
+        note_tooltip.dismissAllTooltips();
 
         if (this.$widget.hasClass("show")) {
             // The menu is already visible. Hide the menu then open it again
@@ -61,6 +66,7 @@ class ContextMenu {
             await this.hide();
         }
 
+        this.$widget.toggleClass("mobile-bottom-menu", !this.options.forcePositionOnMobile);
         this.$cover.addClass("show");
         $("body").addClass("context-menu-shown");
 
@@ -102,7 +108,7 @@ class ContextMenu {
             top = this.options.y - CONTEXT_MENU_OFFSET;
         }
 
-        if (this.options.orientation === 'left' && contextMenuWidth) {
+        if (this.options.orientation === "left" && contextMenuWidth) {
             if (this.options.x + CONTEXT_MENU_OFFSET > clientWidth - CONTEXT_MENU_PADDING) {
                 // Overflow: right
                 left = clientWidth - contextMenuWidth - CONTEXT_MENU_OFFSET;
@@ -124,11 +130,13 @@ class ContextMenu {
             }
         }
 
-        this.$widget.css({
-            display: "block",
-            top: top,
-            left: left
-        }).addClass("show");
+        this.$widget
+            .css({
+                display: "block",
+                top: top,
+                left: left
+            })
+            .addClass("show");
     }
 
     addItems($parent: JQuery<HTMLElement>, items: MenuItem<any>[]) {
@@ -137,7 +145,7 @@ class ContextMenu {
                 continue;
             }
 
-            if (item.title === '----') {
+            if (item.title === "----") {
                 $parent.append($("<div>").addClass("dropdown-divider"));
             } else {
                 const $icon = $("<span>");
@@ -160,23 +168,22 @@ class ContextMenu {
                 const $item = $("<li>")
                     .addClass("dropdown-item")
                     .append($link)
-                    .on('contextmenu', e => false)
+                    .on("contextmenu", (e) => false)
                     // important to use mousedown instead of click since the former does not change focus
                     // (especially important for focused text for spell check)
-                    .on('mousedown', e => {
+                    .on("mousedown", (e) => {
                         e.stopPropagation();
 
-                        if (e.which !== 1) { // only left click triggers menu items
+                        if (e.which !== 1) {
+                            // only left click triggers menu items
                             return false;
                         }
 
                         if (this.isMobile && "items" in item && item.items) {
-                            const $item = $(e.target)
-                                .closest(".dropdown-item");
+                            const $item = $(e.target).closest(".dropdown-item");
 
                             $item.toggleClass("submenu-open");
-                            $item.find("ul.dropdown-menu")
-                                .toggleClass("show");
+                            $item.find("ul.dropdown-menu").toggleClass("show");
                             return false;
                         }
 

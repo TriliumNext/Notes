@@ -132,3 +132,14 @@ CREATE INDEX IDX_attachments_ownerId_role
 CREATE INDEX IDX_notes_blobId on notes (blobId);
 CREATE INDEX IDX_revisions_blobId on revisions (blobId);
 CREATE INDEX IDX_attachments_blobId on attachments (blobId);
+
+CREATE TABLE IF NOT EXISTS "tasks"
+(
+	"taskId"	TEXT NOT NULL PRIMARY KEY,
+	"parentNoteId"	TEXT NOT NULL,
+	"title"	TEXT NOT NULL DEFAULT "",
+	"dueDate"	INTEGER,
+	"isDone"	INTEGER NOT NULL DEFAULT 0,
+	"isDeleted"	INTEGER NOT NULL DEFAULT 0,
+	"utcDateModified"	TEXT NOT NULL
+);

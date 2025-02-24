@@ -25,8 +25,8 @@ function toast(options: ToastOptions) {
         </div>`
     );
 
-    $toast.find('.toast-title').text(options.title);
-    $toast.find('.toast-body').html(options.message);
+    $toast.find(".toast-title").text(options.title);
+    $toast.find(".toast-body").html(options.message);
 
     if (options.id) {
         $toast.attr("id", `toast-${options.id}`);
@@ -39,7 +39,7 @@ function toast(options: ToastOptions) {
         autohide: !!options.autohide
     });
 
-    $toast.on('hidden.bs.toast', e => e.target.remove());
+    $toast.on("hidden.bs.toast", (e) => e.target.remove());
 
     $toast.toast("show");
 
@@ -50,9 +50,8 @@ function showPersistent(options: ToastOptions) {
     let $toast = $(`#toast-${options.id}`);
 
     if ($toast.length > 0) {
-        $toast.find('.toast-body').html(options.message);
-    }
-    else {
+        $toast.find(".toast-body").html(options.message);
+    } else {
         options.autohide = false;
 
         $toast = toast(options);
@@ -90,7 +89,7 @@ function showError(message: string, delay = 10000) {
 
     toast({
         title: "Error",
-        icon: 'alert',
+        icon: "alert",
         message: message,
         autohide: true,
         delay
@@ -102,7 +101,7 @@ function showErrorTitleAndMessage(title: string, message: string, delay = 10000)
 
     toast({
         title: title,
-        icon: 'alert',
+        icon: "alert",
         message: message,
         autohide: true,
         delay
@@ -123,4 +122,4 @@ export default {
     throwError,
     showPersistent,
     closePersistent
-}
+};

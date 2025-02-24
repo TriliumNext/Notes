@@ -36,16 +36,15 @@ function rebuildIntegrationTestDatabase() {
     statementCache = {};
 }
 
-
 if (!process.env.TRILIUM_INTEGRATION_TEST) {
-    dbConnection.pragma('journal_mode = WAL');
+    dbConnection.pragma("journal_mode = WAL");
 }
 
 const LOG_ALL_QUERIES = false;
 
 type Params = any;
 
-[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach(eventType => {
+[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach((eventType) => {
     process.on(eventType, () => {
         if (dbConnection) {
             // closing connection is especially important to fold -wal file into the main DB file
@@ -63,7 +62,7 @@ function insert<T extends {}>(tableName: string, rec: T, replace = false) {
     }
 
     const columns = keys.join(", ");
-    const questionMarks = keys.map(p => "?").join(", ");
+    const questionMarks = keys.map((p) => "?").join(", ");
 
     const query = `INSERT
     ${replace ? "OR REPLACE" : ""} INTO
@@ -91,9 +90,9 @@ function upsert<T extends {}>(tableName: string, primaryKey: string, rec: T) {
 
     const columns = keys.join(", ");
 
-    const questionMarks = keys.map(colName => `@${colName}`).join(", ");
+    const questionMarks = keys.map((colName) => `@${colName}`).join(", ");
 
-    const updateMarks = keys.map(colName => `${colName} = @${colName}`).join(", ");
+    const updateMarks = keys.map((colName) => `${colName} = @${colName}`).join(", ");
 
     const query = `INSERT INTO ${tableName} (${columns}) VALUES (${questionMarks})
                     ON CONFLICT (${primaryKey}) DO UPDATE SET ${updateMarks}`;
@@ -116,7 +115,7 @@ function stmt(sql: string) {
 }
 
 function getRow<T>(query: string, params: Params = []): T {
-    return wrap(query, s => s.get(params)) as T;
+    return wrap(query, (s) => s.get(params)) as T;
 }
 
 function getRowOrNull<T>(query: string, params: Params = []): T | null {
@@ -125,11 +124,11 @@ function getRowOrNull<T>(query: string, params: Params = []): T | null {
         return null;
     }
 
-    return (all.length > 0 ? all[0] : null) as (T | null);
+    return (all.length > 0 ? all[0] : null) as T | null;
 }
 
 function getValue<T>(query: string, params: Params = []): T {
-    return wrap(query, s => s.pluck().get(params)) as T;
+    return wrap(query, (s) => s.pluck().get(params)) as T;
 }
 
 // smaller values can result in better performance due to better usage of statement cache
@@ -146,30 +145,28 @@ function getManyRows<T>(query: string, params: Params): T[] {
 
         let j = 1;
         for (const param of curParams) {
-            curParamsObj['param' + j++] = param;
+            curParamsObj["param" + j++] = param;
         }
 
         let i = 1;
         const questionMarks = curParams.map(() => ":param" + i++).join(",");
         const curQuery = query.replace(/\?\?\?/g, questionMarks);
 
-        const statement = curParams.length === PARAM_LIMIT
-            ? stmt(curQuery)
-            : dbConnection.prepare(curQuery);
+        const statement = curParams.length === PARAM_LIMIT ? stmt(curQuery) : dbConnection.prepare(curQuery);
 
         const subResults = statement.all(curParamsObj);
         results = results.concat(subResults);
     }
 
-    return (results as (T[] | null) || []);
+    return (results as T[] | null) || [];
 }
 
 function getRows<T>(query: string, params: Params = []): T[] {
-    return wrap(query, s => s.all(params)) as T[];
+    return wrap(query, (s) => s.all(params)) as T[];
 }
 
 function getRawRows<T extends {} | unknown[]>(query: string, params: Params = []): T[] {
-    return (wrap(query, s => s.raw().all(params)) as T[]) || [];
+    return (wrap(query, (s) => s.raw().all(params)) as T[]) || [];
 }
 
 function iterateRows<T>(query: string, params: Params = []): IterableIterator<T> {
@@ -192,11 +189,11 @@ function getMap<K extends string | number | symbol, V>(query: string, params: Pa
 }
 
 function getColumn<T>(query: string, params: Params = []): T[] {
-    return wrap(query, s => s.pluck().all(params)) as T[];
+    return wrap(query, (s) => s.pluck().all(params)) as T[];
 }
 
 function execute(query: string, params: Params = []): RunResult {
-    return wrap(query, s => s.run(params)) as RunResult;
+    return wrap(query, (s) => s.run(params)) as RunResult;
 }
 
 function executeMany(query: string, params: Params) {
@@ -212,7 +209,7 @@ function executeMany(query: string, params: Params) {
 
         let j = 1;
         for (const param of curParams) {
-            curParamsObj['param' + j++] = param;
+            curParamsObj["param" + j++] = param;
         }
 
         let i = 1;
@@ -241,8 +238,7 @@ function wrap(query: string, func: (statement: Statement) => unknown): unknown {
 
     try {
         result = func(stmt(query));
-    }
-    catch (e: any) {
+    } catch (e: any) {
         if (e.message.includes("The database connection is not open")) {
             // this often happens on killing the app which puts these alerts in front of user
             // in these cases error should be simply ignored.
@@ -259,8 +255,7 @@ function wrap(query: string, func: (statement: Statement) => unknown): unknown {
     if (milliseconds >= 20 && !cls.isSlowQueryLoggingDisabled()) {
         if (query.includes("WITH RECURSIVE")) {
             log.info(`Slow recursive query took ${milliseconds}ms.`);
-        }
-        else {
+        } else {
             log.info(`Slow query took ${milliseconds}ms: ${query.trim().replace(/\s+/g, " ")}`);
         }
     }
@@ -272,13 +267,13 @@ function transactional<T>(func: (statement: Statement) => T) {
     try {
         const ret = (dbConnection.transaction(func) as any).deferred();
 
-        if (!dbConnection.inTransaction) { // i.e. transaction was really committed (and not just savepoint released)
+        if (!dbConnection.inTransaction) {
+            // i.e. transaction was really committed (and not just savepoint released)
             ws.sendTransactionEntityChangesToAllClients();
         }
 
         return ret;
-    }
-    catch (e) {
+    } catch (e) {
         const entityChangeIds = cls.getAndClearEntityChangeIds();
 
         if (entityChangeIds.length > 0) {
@@ -312,7 +307,7 @@ function fillParamList(paramIds: string[] | Set<string>, truncate = true) {
     }
 
     // doing it manually to avoid this showing up on the slow query list
-    const s = stmt(`INSERT INTO param_list VALUES ${paramIds.map(paramId => `(?)`).join(',')}`);
+    const s = stmt(`INSERT INTO param_list VALUES ${paramIds.map((paramId) => `(?)`).join(",")}`);
 
     s.run(paramIds);
 }
@@ -320,8 +315,7 @@ function fillParamList(paramIds: string[] | Set<string>, truncate = true) {
 async function copyDatabase(targetFilePath: string) {
     try {
         fs.unlinkSync(targetFilePath);
-    } catch (e) {
-    } // unlink throws exception if the file did not exist
+    } catch (e) {} // unlink throws exception if the file did not exist
 
     await dbConnection.backup(targetFilePath);
 }
@@ -333,8 +327,7 @@ function disableSlowQueryLogging<T>(cb: () => T) {
         cls.disableSlowQueryLogging(true);
 
         return cb();
-    }
-    finally {
+    } finally {
         cls.disableSlowQueryLogging(orig);
     }
 }
@@ -345,60 +338,60 @@ export default {
     replace,
 
     /**
-    * Get single value from the given query - first column from first returned row.
-    *
-    * @param query - SQL query with ? used as parameter placeholder
-    * @param params - array of params if needed
-    * @returns single value
-    */
+     * Get single value from the given query - first column from first returned row.
+     *
+     * @param query - SQL query with ? used as parameter placeholder
+     * @param params - array of params if needed
+     * @returns single value
+     */
     getValue,
 
     /**
-    * Get first returned row.
-    *
-    * @param query - SQL query with ? used as parameter placeholder
-    * @param params - array of params if needed
-    * @returns - map of column name to column value
-    */
+     * Get first returned row.
+     *
+     * @param query - SQL query with ? used as parameter placeholder
+     * @param params - array of params if needed
+     * @returns - map of column name to column value
+     */
     getRow,
     getRowOrNull,
 
     /**
-    * Get all returned rows.
-    *
-    * @param query - SQL query with ? used as parameter placeholder
-    * @param params - array of params if needed
-    * @returns - array of all rows, each row is a map of column name to column value
-    */
+     * Get all returned rows.
+     *
+     * @param query - SQL query with ? used as parameter placeholder
+     * @param params - array of params if needed
+     * @returns - array of all rows, each row is a map of column name to column value
+     */
     getRows,
     getRawRows,
     iterateRows,
     getManyRows,
 
     /**
-    * Get a map of first column mapping to second column.
-    *
-    * @param query - SQL query with ? used as parameter placeholder
-    * @param params - array of params if needed
-    * @returns - map of first column to second column
-    */
+     * Get a map of first column mapping to second column.
+     *
+     * @param query - SQL query with ? used as parameter placeholder
+     * @param params - array of params if needed
+     * @returns - map of first column to second column
+     */
     getMap,
 
     /**
-    * Get a first column in an array.
-    *
-    * @param query - SQL query with ? used as parameter placeholder
-    * @param params - array of params if needed
-    * @returns array of first column of all returned rows
-    */
+     * Get a first column in an array.
+     *
+     * @param query - SQL query with ? used as parameter placeholder
+     * @param params - array of params if needed
+     * @returns array of first column of all returned rows
+     */
     getColumn,
 
     /**
-    * Execute SQL
-    *
-    * @param query - SQL query with ? used as parameter placeholder
-    * @param params - array of params if needed
-    */
+     * Execute SQL
+     *
+     * @param query - SQL query with ? used as parameter placeholder
+     * @param params - array of params if needed
+     */
     execute,
     executeMany,
     executeScript,

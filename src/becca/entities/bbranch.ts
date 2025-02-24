@@ -7,7 +7,7 @@ import utils from "../../services/utils.js";
 import TaskContext from "../../services/task_context.js";
 import cls from "../../services/cls.js";
 import log from "../../services/log.js";
-import { BranchRow } from './rows.js';
+import type { BranchRow } from "./rows.js";
 import handlers from "../../services/handlers.js";
 
 /**
@@ -18,10 +18,16 @@ import handlers from "../../services/handlers.js";
  * Always check noteId instead.
  */
 class BBranch extends AbstractBeccaEntity<BBranch> {
-    static get entityName() { return "branches"; }
-    static get primaryKeyName() { return "branchId"; }
+    static get entityName() {
+        return "branches";
+    }
+    static get primaryKeyName() {
+        return "branchId";
+    }
     // notePosition is not part of hash because it would produce a lot of updates in case of reordering
-    static get hashedProperties() { return ["branchId", "noteId", "parentNoteId", "prefix"]; }
+    static get hashedProperties() {
+        return ["branchId", "noteId", "parentNoteId", "prefix"];
+    }
 
     branchId?: string;
     noteId!: string;
@@ -42,15 +48,7 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
     }
 
     updateFromRow(row: BranchRow) {
-        this.update([
-            row.branchId,
-            row.noteId,
-            row.parentNoteId,
-            row.prefix,
-            row.notePosition,
-            row.isExpanded,
-            row.utcDateModified
-        ]);
+        this.update([row.branchId, row.noteId, row.parentNoteId, row.prefix, row.notePosition, row.isExpanded, row.utcDateModified]);
     }
 
     update([branchId, noteId, parentNoteId, prefix, notePosition, isExpanded, utcDateModified]: any) {
@@ -78,7 +76,7 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
             childNote.parentBranches.push(this);
         }
 
-        if (this.noteId === 'root') {
+        if (this.noteId === "root") {
             return;
         }
 
@@ -97,7 +95,7 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
     get childNote(): BNote {
         if (!(this.noteId in this.becca.notes)) {
             // entities can come out of order in sync/import, create skeleton which will be filled later
-            this.becca.addNote(this.noteId, new BNote({noteId: this.noteId}));
+            this.becca.addNote(this.noteId, new BNote({ noteId: this.noteId }));
         }
 
         return this.becca.notes[this.noteId];
@@ -109,43 +107,43 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
 
     /** @returns root branch will have undefined parent, all other branches have to have a parent note */
     get parentNote(): BNote | undefined {
-        if (!(this.parentNoteId in this.becca.notes) && this.parentNoteId !== 'none') {
+        if (!(this.parentNoteId in this.becca.notes) && this.parentNoteId !== "none") {
             // entities can come out of order in sync/import, create skeleton which will be filled later
-            this.becca.addNote(this.parentNoteId, new BNote({noteId: this.parentNoteId}));
+            this.becca.addNote(this.parentNoteId, new BNote({ noteId: this.parentNoteId }));
         }
 
         return this.becca.notes[this.parentNoteId];
     }
 
     get isDeleted() {
-        return (this.branchId == undefined || !(this.branchId in this.becca.branches));
+        return this.branchId == undefined || !(this.branchId in this.becca.branches);
     }
 
     /**
-    * Branch is weak when its existence should not hinder deletion of its note.
-    * As a result, note with only weak branches should be immediately deleted.
-    * An example is shared or bookmarked clones - they are created automatically and exist for technical reasons,
-    * not as user-intended actions. From user perspective, they don't count as real clones and for the purpose
-    * of deletion should not act as a clone.
-    */
+     * Branch is weak when its existence should not hinder deletion of its note.
+     * As a result, note with only weak branches should be immediately deleted.
+     * An example is shared or bookmarked clones - they are created automatically and exist for technical reasons,
+     * not as user-intended actions. From user perspective, they don't count as real clones and for the purpose
+     * of deletion should not act as a clone.
+     */
     get isWeak() {
-        return ['_share', '_lbBookmarks'].includes(this.parentNoteId);
+        return ["_share", "_lbBookmarks"].includes(this.parentNoteId);
     }
 
     /**
-    * Delete a branch. If this is a last note's branch, delete the note as well.
-    *
-    * @param deleteId - optional delete identified
-    *
-    * @returns true if note has been deleted, false otherwise
-    */
+     * Delete a branch. If this is a last note's branch, delete the note as well.
+     *
+     * @param deleteId - optional delete identified
+     *
+     * @returns true if note has been deleted, false otherwise
+     */
     deleteBranch(deleteId?: string, taskContext?: TaskContext): boolean {
         if (!deleteId) {
             deleteId = utils.randomString(10);
         }
 
         if (!taskContext) {
-            taskContext = new TaskContext('no-progress-reporting');
+            taskContext = new TaskContext("no-progress-reporting");
         }
 
         taskContext.increaseProgressCount();
@@ -157,13 +155,11 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
 
             if (parentBranches.length === 1 && parentBranches[0] === this) {
                 // needs to be run before branches and attributes are deleted and thus attached relations disappear
-                handlers.runAttachedRelations(note, 'runOnNoteDeletion', note);
+                handlers.runAttachedRelations(note, "runOnNoteDeletion", note);
             }
         }
 
-        if (this.noteId === 'root'
-            || this.noteId === cls.getHoistedNoteId()) {
-
+        if ((this.noteId === "root" || this.noteId === cls.getHoistedNoteId()) && !this.isWeak) {
             throw new Error("Can't delete root or hoisted branch/note");
         }
 
@@ -203,8 +199,7 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
             note.markAsDeleted(deleteId);
 
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -225,8 +220,9 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
                         continue;
                     }
 
-                    if (maxNotePos < childBranch.notePosition
-                        && childBranch.noteId !== '_hidden' // hidden has a very large notePosition to always stay last
+                    if (
+                        maxNotePos < childBranch.notePosition &&
+                        childBranch.noteId !== "_hidden" // hidden has a very large notePosition to always stay last
                     ) {
                         maxNotePos = childBranch.notePosition;
                     }

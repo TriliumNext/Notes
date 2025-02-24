@@ -1,13 +1,12 @@
 "use strict";
 
-import { TaskData } from './task_context_interface.js';
+import type { TaskData } from "./task_context_interface.js";
 import ws from "./ws.js";
 
 // taskId => TaskContext
 const taskContexts: Record<string, TaskContext> = {};
 
 class TaskContext {
-
     private taskId: string;
     private taskType: string | null;
     private progressCount: number;
@@ -43,11 +42,11 @@ class TaskContext {
     increaseProgressCount() {
         this.progressCount++;
 
-        if (Date.now() - this.lastSentCountTs >= 300 && this.taskId !== 'no-progress-reporting') {
+        if (Date.now() - this.lastSentCountTs >= 300 && this.taskId !== "no-progress-reporting") {
             this.lastSentCountTs = Date.now();
 
             ws.sendMessageToAllClients({
-                type: 'taskProgressCount',
+                type: "taskProgressCount",
                 taskId: this.taskId,
                 taskType: this.taskType,
                 data: this.data,
@@ -58,7 +57,7 @@ class TaskContext {
 
     reportError(message: string) {
         ws.sendMessageToAllClients({
-            type: 'taskError',
+            type: "taskError",
             taskId: this.taskId,
             taskType: this.taskType,
             data: this.data,
@@ -68,7 +67,7 @@ class TaskContext {
 
     taskSucceeded(result?: string | Record<string, string | undefined>) {
         ws.sendMessageToAllClients({
-            type: 'taskSucceeded',
+            type: "taskSucceeded",
             taskId: this.taskId,
             taskType: this.taskType,
             data: this.data,

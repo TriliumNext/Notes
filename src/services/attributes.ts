@@ -6,13 +6,13 @@ import becca from "../becca/becca.js";
 import BAttribute from "../becca/entities/battribute.js";
 import attributeFormatter from "./attribute_formatter.js";
 import BUILTIN_ATTRIBUTES from "./builtin_attributes.js";
-import BNote from "../becca/entities/bnote.js";
-import { AttributeRow } from '../becca/entities/rows.js';
+import type BNote from "../becca/entities/bnote.js";
+import type { AttributeRow } from "../becca/entities/rows.js";
 
-const ATTRIBUTE_TYPES = ['label', 'relation'];
+const ATTRIBUTE_TYPES = new Set(["label", "relation"]);
 
 function getNotesWithLabel(name: string, value?: string): BNote[] {
-    const query = attributeFormatter.formatAttrForSearch({type: 'label', name, value}, value !== undefined);
+    const query = attributeFormatter.formatAttrForSearch({ type: "label", name, value }, value !== undefined);
     return searchService.searchNotes(query, {
         includeArchivedNotes: true,
         ignoreHoistedNote: true
@@ -22,7 +22,7 @@ function getNotesWithLabel(name: string, value?: string): BNote[] {
 // TODO: should be in search service
 function getNoteWithLabel(name: string, value?: string): BNote | null {
     // optimized version (~20 times faster) without using normal search, useful for e.g., finding date notes
-    const attrs = becca.findAttributes('label', name);
+    const attrs = becca.findAttributes("label", name);
 
     if (value === undefined) {
         return attrs[0]?.getNote();
@@ -42,7 +42,7 @@ function getNoteWithLabel(name: string, value?: string): BNote | null {
 function createLabel(noteId: string, name: string, value: string = "") {
     return createAttribute({
         noteId: noteId,
-        type: 'label',
+        type: "label",
         name: name,
         value: value
     });
@@ -51,7 +51,7 @@ function createLabel(noteId: string, name: string, value: string = "") {
 function createRelation(noteId: string, name: string, targetNoteId: string) {
     return createAttribute({
         noteId: noteId,
-        type: 'relation',
+        type: "relation",
         name: name,
         value: targetNoteId
     });
@@ -69,7 +69,9 @@ function getAttributeNames(type: string, nameLike: string) {
             FROM attributes
             WHERE isDeleted = 0
                 AND type = ?
-                AND name LIKE ?`, [type, `%${nameLike}%`]);
+                AND name LIKE ?`,
+        [type, `%${nameLike}%`]
+    );
 
     for (const attr of BUILTIN_ATTRIBUTES) {
         if (attr.type === type && attr.name.toLowerCase().includes(nameLike) && !names.includes(attr.name)) {
@@ -77,12 +79,7 @@ function getAttributeNames(type: string, nameLike: string) {
         }
     }
 
-    names = names.filter(name => ![
-        'internalLink',
-        'imageLink',
-        'includeNoteLink',
-        'relationMapLink'
-    ].includes(name));
+    names = names.filter((name) => !["internalLink", "imageLink", "includeNoteLink", "relationMapLink"].includes(name));
 
     names.sort((a, b) => {
         const aPrefix = a.toLowerCase().startsWith(nameLike);
@@ -99,15 +96,11 @@ function getAttributeNames(type: string, nameLike: string) {
 }
 
 function isAttributeType(type: string): boolean {
-    return ATTRIBUTE_TYPES.includes(type);
+    return ATTRIBUTE_TYPES.has(type);
 }
 
 function isAttributeDangerous(type: string, name: string): boolean {
-    return BUILTIN_ATTRIBUTES.some(attr =>
-        attr.type === type &&
-        attr.name.toLowerCase() === name.trim().toLowerCase() &&
-        attr.isDangerous
-    );
+    return BUILTIN_ATTRIBUTES.some((attr) => attr.type === type && attr.name.toLowerCase() === name.trim().toLowerCase() && attr.isDangerous);
 }
 
 export default {

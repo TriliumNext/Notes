@@ -3,46 +3,48 @@ import froca from "./froca.js";
 import utils from "./utils.js";
 import options from "./options.js";
 import noteAttributeCache from "./note_attribute_cache.js";
-import FBranch, { FBranchRow } from "../entities/fbranch.js";
-import FAttribute, { FAttributeRow } from "../entities/fattribute.js";
-import FAttachment, { FAttachmentRow } from "../entities/fattachment.js";
-import FNote, { FNoteRow } from "../entities/fnote.js";
-import type { EntityChange } from "../server_types.js"
+import FBranch, { type FBranchRow } from "../entities/fbranch.js";
+import FAttribute, { type FAttributeRow } from "../entities/fattribute.js";
+import FAttachment, { type FAttachmentRow } from "../entities/fattachment.js";
+import type { default as FNote, FNoteRow } from "../entities/fnote.js";
+import type { EntityChange } from "../server_types.js";
+import type { FTaskRow } from "../entities/ftask.js";
+import FTask from "../entities/ftask.js";
 
 async function processEntityChanges(entityChanges: EntityChange[]) {
     const loadResults = new LoadResults(entityChanges);
 
     for (const ec of entityChanges) {
         try {
-            if (ec.entityName === 'notes') {
+            if (ec.entityName === "notes") {
                 processNoteChange(loadResults, ec);
-            } else if (ec.entityName === 'branches') {
+            } else if (ec.entityName === "branches") {
                 await processBranchChange(loadResults, ec);
-            } else if (ec.entityName === 'attributes') {
+            } else if (ec.entityName === "attributes") {
                 processAttributeChange(loadResults, ec);
-            } else if (ec.entityName === 'note_reordering') {
+            } else if (ec.entityName === "note_reordering") {
                 processNoteReordering(loadResults, ec);
-            } else if (ec.entityName === 'revisions') {
+            } else if (ec.entityName === "revisions") {
                 loadResults.addRevision(ec.entityId, ec.noteId, ec.componentId);
-            } else if (ec.entityName === 'options') {
+            } else if (ec.entityName === "options") {
                 const attributeEntity = ec.entity as FAttributeRow;
-                if (attributeEntity.name === 'openNoteContexts') {
+                if (attributeEntity.name === "openNoteContexts") {
                     continue; // only noise
                 }
 
                 options.set(attributeEntity.name, attributeEntity.value);
 
                 loadResults.addOption(attributeEntity.name);
-            } else if (ec.entityName === 'attachments') {
+            } else if (ec.entityName === "attachments") {
                 processAttachment(loadResults, ec);
-            } else if (ec.entityName === 'blobs' || ec.entityName === 'etapi_tokens') {
+            } else if (ec.entityName === "blobs" || ec.entityName === "etapi_tokens") {
                 // NOOP
-            }
-            else {
+            } else if (ec.entityName === "tasks") {
+                processTaskChange(loadResults, ec);
+            } else {
                 throw new Error(`Unknown entityName '${ec.entityName}'`);
             }
-        }
-        catch (e: any) {
+        } catch (e: any) {
             throw new Error(`Can't process entity ${JSON.stringify(ec)} with error ${e.message} ${e.stack}`);
         }
     }
@@ -54,19 +56,17 @@ async function processEntityChanges(entityChanges: EntityChange[]) {
     // mean we need to load the target of the relation (and then perhaps transitively the whole note path of this target).
     const missingNoteIds = [];
 
-    for (const {entityName, entity} of entityChanges) {
-        if (!entity) { // if erased
+    for (const { entityName, entity } of entityChanges) {
+        if (!entity) {
+            // if erased
             continue;
         }
 
-        if (entityName === 'branches' && !((entity as FBranchRow).parentNoteId in froca.notes)) {
+        if (entityName === "branches" && !((entity as FBranchRow).parentNoteId in froca.notes)) {
             missingNoteIds.push((entity as FBranchRow).parentNoteId);
-        }
-        else if (entityName === 'attributes') {
+        } else if (entityName === "attributes") {
             let attributeEntity = entity as FAttributeRow;
-            if (attributeEntity.type === 'relation'
-                && (attributeEntity.name === 'template' || attributeEntity.name === 'inherit')
-                && !(attributeEntity.value in froca.notes)) {
+            if (attributeEntity.type === "relation" && (attributeEntity.name === "template" || attributeEntity.name === "inherit") && !(attributeEntity.value in froca.notes)) {
                 missingNoteIds.push(attributeEntity.value);
             }
         }
@@ -84,7 +84,7 @@ async function processEntityChanges(entityChanges: EntityChange[]) {
         // TODO: Remove after porting the file
         // @ts-ignore
         const appContext = (await import("../components/app_context.js")).default as any;
-        await appContext.triggerEvent('entitiesReloaded', {loadResults});
+        await appContext.triggerEvent("entitiesReloaded", { loadResults });
     }
 }
 
@@ -106,8 +106,7 @@ function processNoteChange(loadResults: LoadResults, ec: EntityChange) {
 
     if (ec.isErased || ec.entity?.isDeleted) {
         delete froca.notes[ec.entityId];
-    }
-    else {
+    } else {
         if (note.blobId !== (ec.entity as FNoteRow).blobId) {
             for (const key of Object.keys(froca.blobPromises)) {
                 if (key.includes(note.noteId)) {
@@ -138,12 +137,12 @@ async function processBranchChange(loadResults: LoadResults, ec: EntityChange) {
             const parentNote = froca.notes[branch.parentNoteId];
 
             if (childNote) {
-                childNote.parents = childNote.parents.filter(parentNoteId => parentNoteId !== branch.parentNoteId);
+                childNote.parents = childNote.parents.filter((parentNoteId) => parentNoteId !== branch.parentNoteId);
                 delete childNote.parentToBranch[branch.parentNoteId];
             }
 
             if (parentNote) {
-                parentNote.children = parentNote.children.filter(childNoteId => childNoteId !== branch.noteId);
+                parentNote.children = parentNote.children.filter((childNoteId) => childNoteId !== branch.noteId);
                 delete parentNote.childToBranch[branch.noteId];
             }
 
@@ -175,8 +174,7 @@ async function processBranchChange(loadResults: LoadResults, ec: EntityChange) {
 
     if (branch) {
         branch.update(ec.entity as FBranch);
-    }
-    else if (childNote || parentNote) {
+    } else if (childNote || parentNote) {
         froca.branches[ec.entityId] = branch = new FBranch(froca, branchEntity);
     }
 
@@ -226,14 +224,14 @@ function processAttributeChange(loadResults: LoadResults, ec: EntityChange) {
     if (ec.isErased || ec.entity?.isDeleted) {
         if (attribute) {
             const sourceNote = froca.notes[attribute.noteId];
-            const targetNote = attribute.type === 'relation' && froca.notes[attribute.value];
+            const targetNote = attribute.type === "relation" && froca.notes[attribute.value];
 
             if (sourceNote) {
-                sourceNote.attributes = sourceNote.attributes.filter(attributeId => attributeId !== attribute.attributeId);
+                sourceNote.attributes = sourceNote.attributes.filter((attributeId) => attributeId !== attribute.attributeId);
             }
 
             if (targetNote) {
-                targetNote.targetRelations = targetNote.targetRelations.filter(attributeId => attributeId !== attribute.attributeId);
+                targetNote.targetRelations = targetNote.targetRelations.filter((attributeId) => attributeId !== attribute.attributeId);
             }
 
             if (ec.componentId) {
@@ -252,7 +250,7 @@ function processAttributeChange(loadResults: LoadResults, ec: EntityChange) {
 
     const attributeEntity = ec.entity as FAttributeRow;
     const sourceNote = froca.notes[attributeEntity.noteId];
-    const targetNote = attributeEntity.type === 'relation' && froca.notes[attributeEntity.value];
+    const targetNote = attributeEntity.type === "relation" && froca.notes[attributeEntity.value];
 
     if (attribute) {
         attribute.update(ec.entity as FAttributeRow);
@@ -285,7 +283,7 @@ function processAttachment(loadResults: LoadResults, ec: EntityChange) {
             const note = attachment.getNote();
 
             if (note && note.attachments) {
-                note.attachments = note.attachments.filter(att => att.attachmentId !== attachment.attachmentId);
+                note.attachments = note.attachments.filter((att) => att.attachmentId !== attachment.attachmentId);
             }
 
             loadResults.addAttachmentRow(attachmentEntity);
@@ -296,20 +294,51 @@ function processAttachment(loadResults: LoadResults, ec: EntityChange) {
         return;
     }
 
-    if (attachment) {
-        attachment.update(ec.entity as FAttachmentRow);
-    } else {
-        const attachmentRow = ec.entity as FAttachmentRow;
-        const note = froca.notes[attachmentRow.ownerId];
+    if (ec.entity) {
+        if (attachment) {
+            attachment.update(ec.entity as FAttachmentRow);
+        } else {
+            const attachmentRow = ec.entity as FAttachmentRow;
+            const note = froca.notes[attachmentRow.ownerId];
 
-        if (note?.attachments) {
-            note.attachments.push(new FAttachment(froca, attachmentRow));
+            if (note?.attachments) {
+                note.attachments.push(new FAttachment(froca, attachmentRow));
+            }
         }
     }
 
     loadResults.addAttachmentRow(attachmentEntity);
 }
 
+function processTaskChange(loadResults: LoadResults, ec: EntityChange) {
+    if (ec.isErased && ec.entityId in froca.tasks) {
+        utils.reloadFrontendApp(`${ec.entityName} '${ec.entityId}' is erased, need to do complete reload.`);
+        return;
+    }
+
+    let task = froca.tasks[ec.entityId];
+    const taskEntity = ec.entity as FTaskRow;
+
+    if (ec.isErased || (ec.entity as any)?.isDeleted) {
+        if (task) {
+            delete froca.tasks[ec.entityId];
+        }
+
+        return;
+    }
+
+    if (ec.entity) {
+        if (task) {
+            task.update(ec.entity as FTaskRow);
+        } else {
+            task = new FTask(froca, ec.entity as FTaskRow);
+            froca.tasks[task.taskId] = task;
+        }
+    }
+
+    loadResults.addTaskRow(taskEntity);
+}
+
 export default {
     processEntityChanges
-}
+};

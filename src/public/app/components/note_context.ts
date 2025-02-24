@@ -1,36 +1,34 @@
 import protectedSessionHolder from "../services/protected_session_holder.js";
 import server from "../services/server.js";
 import utils from "../services/utils.js";
-import appContext, { EventData, EventListener } from "./app_context.js";
+import appContext, { type EventData, type EventListener } from "./app_context.js";
 import treeService from "../services/tree.js";
 import Component from "./component.js";
 import froca from "../services/froca.js";
 import hoistedNoteService from "../services/hoisted_note.js";
 import options from "../services/options.js";
-import { ViewScope } from "../services/link.js";
-import FNote from "../entities/fnote.js";
+import type { ViewScope } from "../services/link.js";
+import type FNote from "../entities/fnote.js";
+import type TypeWidget from "../widgets/type_widgets/type_widget.js";
 
-interface SetNoteOpts {
+export interface SetNoteOpts {
     triggerSwitchEvent?: unknown;
     viewScope?: ViewScope;
 }
 
 export type GetTextEditorCallback = () => void;
 
-class NoteContext extends Component
-    implements EventListener<"entitiesReloaded">
-{
-
+class NoteContext extends Component implements EventListener<"entitiesReloaded"> {
     ntxId: string | null;
     hoistedNoteId: string;
-    private mainNtxId: string | null;
+    mainNtxId: string | null;
 
     notePath?: string | null;
-    private noteId?: string | null;
-    private parentNoteId?: string | null;
-    private viewScope?: ViewScope;
+    noteId?: string | null;
+    parentNoteId?: string | null;
+    viewScope?: ViewScope;
 
-    constructor(ntxId: string | null = null, hoistedNoteId: string = 'root', mainNtxId: string | null = null) {
+    constructor(ntxId: string | null = null, hoistedNoteId: string = "root", mainNtxId: string | null = null) {
         super();
 
         this.ntxId = ntxId || NoteContext.generateNtxId();
@@ -50,7 +48,7 @@ class NoteContext extends Component
         this.parentNoteId = null;
         // hoisted note is kept intentionally
 
-        this.triggerEvent('noteSwitched', {
+        this.triggerEvent("noteSwitched", {
             noteContext: this,
             notePath: this.notePath
         });
@@ -81,20 +79,20 @@ class NoteContext extends Component
             return;
         }
 
-        await this.triggerEvent('beforeNoteSwitch', {noteContext: this});
+        await this.triggerEvent("beforeNoteSwitch", { noteContext: this });
 
         utils.closeActiveDialog();
 
         this.notePath = resolvedNotePath;
         this.viewScope = opts.viewScope;
-        ({noteId: this.noteId, parentNoteId: this.parentNoteId} = treeService.getNoteIdAndParentIdFromUrl(resolvedNotePath));
+        ({ noteId: this.noteId, parentNoteId: this.parentNoteId } = treeService.getNoteIdAndParentIdFromUrl(resolvedNotePath));
 
         this.saveToRecentNotes(resolvedNotePath);
 
         protectedSessionHolder.touchProtectedSessionIfNecessary(this.note);
 
         if (opts.triggerSwitchEvent) {
-            await this.triggerEvent('noteSwitched', {
+            await this.triggerEvent("noteSwitched", {
                 noteContext: this,
                 notePath: this.notePath
             });
@@ -103,23 +101,20 @@ class NoteContext extends Component
         await this.setHoistedNoteIfNeeded();
 
         if (utils.isMobile()) {
-            this.triggerCommand('setActiveScreen', {screen: 'detail'});
+            this.triggerCommand("setActiveScreen", { screen: "detail" });
         }
     }
 
     async setHoistedNoteIfNeeded() {
-        if (this.hoistedNoteId === 'root'
-            && this.notePath?.startsWith("root/_hidden")
-            && !this.note?.isLabelTruthy("keepCurrentHoisting")
-        ) {
+        if (this.hoistedNoteId === "root" && this.notePath?.startsWith("root/_hidden") && !this.note?.isLabelTruthy("keepCurrentHoisting")) {
             // hidden subtree displays only when hoisted, so it doesn't make sense to keep root as hoisted note
 
-            let hoistedNoteId = '_hidden';
+            let hoistedNoteId = "_hidden";
 
             if (this.note?.isLaunchBarConfig()) {
-                hoistedNoteId = '_lbRoot';
+                hoistedNoteId = "_lbRoot";
             } else if (this.note?.isOptions()) {
-                hoistedNoteId = '_options';
+                hoistedNoteId = "_options";
             }
 
             await this.setHoistedNoteId(hoistedNoteId);
@@ -127,7 +122,7 @@ class NoteContext extends Component
     }
 
     getSubContexts() {
-        return appContext.tabManager.noteContexts.filter(nc => nc.ntxId === this.ntxId || nc.mainNtxId === this.ntxId);
+        return appContext.tabManager.noteContexts.filter((nc) => nc.ntxId === this.ntxId || nc.mainNtxId === this.ntxId);
     }
 
     /**
@@ -152,13 +147,11 @@ class NoteContext extends Component
         if (this.mainNtxId) {
             try {
                 return appContext.tabManager.getNoteContextById(this.mainNtxId);
-            }
-            catch (e) {
+            } catch (e) {
                 this.mainNtxId = null;
                 return this;
             }
-        }
-        else {
+        } else {
             return this;
         }
     }
@@ -167,10 +160,11 @@ class NoteContext extends Component
         setTimeout(async () => {
             // we include the note in the recent list only if the user stayed on the note at least 5 seconds
             if (resolvedNotePath && resolvedNotePath === this.notePath) {
-                await server.post('recent-notes', {
+                await server.post("recent-notes", {
                     noteId: this.note?.noteId,
                     notePath: this.notePath
                 });
+                utils.reloadTray();
             }
         }, 5000);
     }
@@ -183,7 +177,7 @@ class NoteContext extends Component
             return;
         }
 
-        if (await hoistedNoteService.checkNoteAccess(resolvedNotePath, this) === false) {
+        if ((await hoistedNoteService.checkNoteAccess(resolvedNotePath, this)) === false) {
             return; // note is outside of hoisted subtree and user chose not to unhoist
         }
 
@@ -200,7 +194,7 @@ class NoteContext extends Component
 
     /** @returns {string[]} */
     get notePathArray() {
-        return this.notePath ? this.notePath.split('/') : [];
+        return this.notePath ? this.notePath.split("/") : [];
     }
 
     isActive() {
@@ -208,7 +202,7 @@ class NoteContext extends Component
     }
 
     getPojoState() {
-        if (this.hoistedNoteId !== 'root') {
+        if (this.hoistedNoteId !== "root") {
             // keeping empty hoisted tab is esp. important for mobile (e.g. opened launcher config)
 
             if (!this.notePath && this.getSubContexts().length === 0) {
@@ -223,11 +217,11 @@ class NoteContext extends Component
             hoistedNoteId: this.hoistedNoteId,
             active: this.isActive(),
             viewScope: this.viewScope
-        }
+        };
     }
 
     async unhoist() {
-        await this.setHoistedNoteId('root');
+        await this.setHoistedNoteId("root");
     }
 
     async setHoistedNoteId(noteIdToHoist: string) {
@@ -237,11 +231,11 @@ class NoteContext extends Component
 
         this.hoistedNoteId = noteIdToHoist;
 
-        if (!this.notePathArray?.includes(noteIdToHoist) && !utils.isMobile()) {
+        if (!this.notePathArray?.includes(noteIdToHoist)) {
             await this.setNote(noteIdToHoist);
         }
 
-        await this.triggerEvent('hoistedNoteChanged', {
+        await this.triggerEvent("hoistedNoteChanged", {
             noteId: noteIdToHoist,
             ntxId: this.ntxId
         });
@@ -254,15 +248,15 @@ class NoteContext extends Component
         }
 
         // "readOnly" is a state valid only for text/code notes
-        if (!this.note || (this.note.type !== 'text' && this.note.type !== 'code')) {
+        if (!this.note || (this.note.type !== "text" && this.note.type !== "code")) {
             return false;
         }
 
-        if (this.note.isLabelTruthy('readOnly')) {
+        if (this.note.isLabelTruthy("readOnly")) {
             return true;
         }
 
-        if (this.viewScope?.viewMode === 'source') {
+        if (this.viewScope?.viewMode === "source") {
             return true;
         }
 
@@ -271,24 +265,20 @@ class NoteContext extends Component
             return false;
         }
 
-        const sizeLimit = this.note.type === 'text'
-            ? options.getInt('autoReadonlySizeText')
-            : options.getInt('autoReadonlySizeCode');
+        const sizeLimit = this.note.type === "text" ? options.getInt("autoReadonlySizeText") : options.getInt("autoReadonlySizeCode");
 
-        return sizeLimit
-            && blob.contentLength > sizeLimit
-            && !this.note.isLabelTruthy('autoReadOnlyDisabled');
+        return sizeLimit && blob.contentLength > sizeLimit && !this.note.isLabelTruthy("autoReadOnlyDisabled");
     }
 
-    async entitiesReloadedEvent({loadResults}: EventData<"entitiesReloaded">) {
+    async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
         if (this.noteId && loadResults.isNoteReloaded(this.noteId)) {
-            const noteRow = loadResults.getEntityRow('notes', this.noteId);
+            const noteRow = loadResults.getEntityRow("notes", this.noteId);
 
             if (noteRow.isDeleted) {
                 this.noteId = null;
                 this.notePath = null;
 
-                this.triggerEvent('noteSwitched', {
+                this.triggerEvent("noteSwitched", {
                     noteContext: this,
                     notePath: this.notePath
                 });
@@ -297,48 +287,72 @@ class NoteContext extends Component
     }
 
     hasNoteList() {
-        return this.note
-            && this.viewScope?.viewMode === 'default'
-            && this.note.hasChildren()
-            && ['book', 'text', 'code'].includes(this.note.type)
-            && this.note.mime !== 'text/x-sqlite;schema=trilium'
-            && !this.note.isLabelTruthy('hideChildrenOverview');
+        return (
+            this.note &&
+            ["default", "contextual-help"].includes(this.viewScope?.viewMode ?? "") &&
+            (this.note.hasChildren() || this.note.getLabelValue("viewType") === "calendar") &&
+            ["book", "text", "code"].includes(this.note.type) &&
+            this.note.mime !== "text/x-sqlite;schema=trilium" &&
+            !this.note.isLabelTruthy("hideChildrenOverview")
+        );
     }
 
     async getTextEditor(callback?: GetTextEditorCallback) {
-        return this.timeout(new Promise(resolve => appContext.triggerCommand('executeWithTextEditor', {
-            callback,
-            resolve,
-            ntxId: this.ntxId
-        })));
+        return this.timeout<TextEditor>(
+            new Promise((resolve) =>
+                appContext.triggerCommand("executeWithTextEditor", {
+                    callback,
+                    resolve,
+                    ntxId: this.ntxId
+                })
+            )
+        );
     }
 
     async getCodeEditor() {
-        return this.timeout(new Promise(resolve => appContext.triggerCommand('executeWithCodeEditor', {
-            resolve,
-            ntxId: this.ntxId
-        })));
+        return this.timeout(
+            new Promise((resolve) =>
+                appContext.triggerCommand("executeWithCodeEditor", {
+                    resolve,
+                    ntxId: this.ntxId
+                })
+            )
+        );
     }
 
+    /**
+     * Returns a promise which will retrieve the JQuery element of the content of this note context.
+     *
+     * Do note that retrieving the content element needs to be handled by the type widget, which is the one which
+     * provides the content element by listening to the `executeWithContentElement` event. Not all note types support
+     * this.
+     *
+     * If no content could be determined `null` is returned instead.
+     */
     async getContentElement() {
-        return this.timeout(new Promise(resolve => appContext.triggerCommand('executeWithContentElement', {
-            resolve,
-            ntxId: this.ntxId
-        })));
+        return this.timeout<JQuery<HTMLElement>>(
+            new Promise((resolve) =>
+                appContext.triggerCommand("executeWithContentElement", {
+                    resolve,
+                    ntxId: this.ntxId
+                })
+            )
+        );
     }
 
     async getTypeWidget() {
-        return this.timeout(new Promise(resolve => appContext.triggerCommand('executeWithTypeWidget', {
-            resolve,
-            ntxId: this.ntxId
-        })));
+        return this.timeout(
+            new Promise<TypeWidget | null>((resolve) =>
+                appContext.triggerCommand("executeWithTypeWidget", {
+                    resolve,
+                    ntxId: this.ntxId
+                })
+            )
+        );
     }
 
-    timeout(promise: Promise<unknown>) {
-        return Promise.race([
-            promise,
-            new Promise(res => setTimeout(() => res(null), 200))
-        ]);
+    timeout<T>(promise: Promise<T | null>) {
+        return Promise.race([promise, new Promise((res) => setTimeout(() => res(null), 200))]) as Promise<T>;
     }
 
     resetViewScope() {
@@ -355,9 +369,7 @@ class NoteContext extends Component
 
         const { note, viewScope } = this;
 
-        let title = viewScope?.viewMode === 'default'
-            ? note.title
-            : `${note.title}: ${viewScope?.viewMode}`;
+        let title = viewScope?.viewMode === "default" ? note.title : `${note.title}: ${viewScope?.viewMode}`;
 
         if (viewScope?.attachmentId) {
             // assuming the attachment has been already loaded

@@ -2,8 +2,8 @@ import ScriptContext from "./script_context.js";
 import cls from "./cls.js";
 import log from "./log.js";
 import becca from "../becca/becca.js";
-import BNote from "../becca/entities/bnote.js";
-import { ApiParams } from './backend_script_api_interface.js';
+import type BNote from "../becca/entities/bnote.js";
+import type { ApiParams } from "./backend_script_api_interface.js";
 
 interface Bundle {
     note?: BNote;
@@ -17,13 +17,13 @@ interface Bundle {
 type ScriptParams = any[];
 
 function executeNote(note: BNote, apiParams: ApiParams) {
-    if (!note.isJavaScript() || note.getScriptEnv() !== 'backend' || !note.isContentAvailable()) {
+    if (!note.isJavaScript() || note.getScriptEnv() !== "backend" || !note.isContentAvailable()) {
         log.info(`Cannot execute note ${note.noteId} "${note.title}", note must be of type "Code: JS backend"`);
 
         return;
     }
 
-    const bundle = getScriptBundle(note, true, 'backend');
+    const bundle = getScriptBundle(note, true, "backend");
     if (!bundle) {
         throw new Error("Unable to determine bundle.");
     }
@@ -34,8 +34,7 @@ function executeNote(note: BNote, apiParams: ApiParams) {
 function executeNoteNoException(note: BNote, apiParams: ApiParams) {
     try {
         executeNote(note, apiParams);
-    }
-    catch (e) {
+    } catch (e) {
         // just swallow, exception is logged already in executeNote
     }
 }
@@ -46,10 +45,10 @@ function executeBundle(bundle: Bundle, apiParams: ApiParams = {}) {
         apiParams.startNote = bundle.note;
     }
 
-    const originalComponentId = cls.get('componentId');
+    const originalComponentId = cls.get("componentId");
 
-    cls.set('componentId', 'script');
-    cls.set('bundleNoteId', bundle.note?.noteId);
+    cls.set("componentId", "script");
+    cls.set("bundleNoteId", bundle.note?.noteId);
 
     // last \r\n is necessary if the script contains line comment on its last line
     const script = `function() {\r
@@ -59,14 +58,12 @@ ${bundle.script}\r
 
     try {
         return execute(ctx, script);
-    }
-    catch (e: any) {
+    } catch (e: any) {
         log.error(`Execution of script "${bundle.note?.title}" (${bundle.note?.noteId}) failed with error: ${e.message}`);
 
         throw e;
-    }
-    finally {
-        cls.set('componentId', originalComponentId);
+    } finally {
+        cls.set("componentId", originalComponentId);
     }
 }
 
@@ -90,7 +87,7 @@ function executeScript(script: string, params: ScriptParams, startNoteId: string
     // override normal note's content, and it's mime type / script environment
     const overrideContent = `return (${script}\r\n)(${getParams(params)})`;
 
-    const bundle = getScriptBundle(currentNote, true, 'backend', [], overrideContent);
+    const bundle = getScriptBundle(currentNote, true, "backend", [], overrideContent);
     if (!bundle) {
         throw new Error("Unable to determine script bundle.");
     }
@@ -99,7 +96,9 @@ function executeScript(script: string, params: ScriptParams, startNoteId: string
 }
 
 function execute(ctx: ScriptContext, script: string) {
-    return function () { return eval(`const apiContext = this;\r\n(${script}\r\n)()`); }.call(ctx);
+    return function () {
+        return eval(`const apiContext = this;\r\n(${script}\r\n)()`);
+    }.call(ctx);
 }
 
 function getParams(params?: ScriptParams) {
@@ -107,14 +106,15 @@ function getParams(params?: ScriptParams) {
         return params;
     }
 
-    return params.map(p => {
-        if (typeof p === "string" && p.startsWith("!@#Function: ")) {
-            return p.substr(13);
-        }
-        else {
-            return JSON.stringify(p);
-        }
-    }).join(",");
+    return params
+        .map((p) => {
+            if (typeof p === "string" && p.startsWith("!@#Function: ")) {
+                return p.substr(13);
+            } else {
+                return JSON.stringify(p);
+            }
+        })
+        .join(",");
 }
 
 function getScriptBundleForFrontend(note: BNote, script?: string, params?: ScriptParams) {
@@ -124,7 +124,7 @@ function getScriptBundleForFrontend(note: BNote, script?: string, params?: Scrip
         overrideContent = `return (${script}\r\n)(${getParams(params)})`;
     }
 
-    const bundle = getScriptBundle(note, true, 'frontend', [], overrideContent);
+    const bundle = getScriptBundle(note, true, "frontend", [], overrideContent);
 
     if (!bundle) {
         return;
@@ -134,7 +134,7 @@ function getScriptBundleForFrontend(note: BNote, script?: string, params?: Scrip
     bundle.noteId = bundle.note?.noteId;
     delete bundle.note;
 
-    bundle.allNoteIds = bundle.allNotes?.map(note => note.noteId);
+    bundle.allNoteIds = bundle.allNotes?.map((note) => note.noteId);
     delete bundle.allNotes;
 
     return bundle;
@@ -149,18 +149,18 @@ function getScriptBundle(note: BNote, root: boolean = true, scriptEnv: string | 
         return;
     }
 
-    if (!root && note.hasOwnedLabel('disableInclusion')) {
+    if (!root && note.hasOwnedLabel("disableInclusion")) {
         return;
     }
 
-    if (note.type !== 'file' && !root && scriptEnv !== note.getScriptEnv()) {
+    if (note.type !== "file" && !root && scriptEnv !== note.getScriptEnv()) {
         return;
     }
 
     const bundle: Bundle = {
         note: note,
-        script: '',
-        html: '',
+        script: "",
+        html: "",
         allNotes: [note]
     };
 
@@ -187,24 +187,23 @@ function getScriptBundle(note: BNote, root: boolean = true, scriptEnv: string | 
         }
     }
 
-    const moduleNoteIds = modules.map(mod => mod.noteId);
+    const moduleNoteIds = modules.map((mod) => mod.noteId);
 
     // only frontend scripts are async. Backend cannot be async because of transaction management.
-    const isFrontend = scriptEnv === 'frontend';
+    const isFrontend = scriptEnv === "frontend";
 
     if (note.isJavaScript()) {
         bundle.script += `
 apiContext.modules['${note.noteId}'] = { exports: {} };
-${root ? 'return ' : ''}${isFrontend ? 'await' : ''} ((${isFrontend ? 'async' : ''} function(exports, module, require, api${modules.length > 0 ? ', ' : ''}${modules.map(child => sanitizeVariableName(child.title)).join(', ')}) {
+${root ? "return " : ""}${isFrontend ? "await" : ""} ((${isFrontend ? "async" : ""} function(exports, module, require, api${modules.length > 0 ? ", " : ""}${modules.map((child) => sanitizeVariableName(child.title)).join(", ")}) {
 try {
 ${overrideContent || note.getContent()};
 } catch (e) { throw new Error("Load of script note \\"${note.title}\\" (${note.noteId}) failed with: " + e.message); }
 for (const exportKey in exports) module.exports[exportKey] = exports[exportKey];
 return module.exports;
-}).call({}, {}, apiContext.modules['${note.noteId}'], apiContext.require(${JSON.stringify(moduleNoteIds)}), apiContext.apis['${note.noteId}']${modules.length > 0 ? ', ' : ''}${modules.map(mod => `apiContext.modules['${mod.noteId}'].exports`).join(', ')}));
+}).call({}, {}, apiContext.modules['${note.noteId}'], apiContext.require(${JSON.stringify(moduleNoteIds)}), apiContext.apis['${note.noteId}']${modules.length > 0 ? ", " : ""}${modules.map((mod) => `apiContext.modules['${mod.noteId}'].exports`).join(", ")}));
 `;
-    }
-    else if (note.isHtml()) {
+    } else if (note.isHtml()) {
         bundle.html += note.getContent();
     }
 

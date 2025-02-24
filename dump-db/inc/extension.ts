@@ -5,15 +5,17 @@ function getFileName(note: any, childTargetPath: string, safeTitle: string) {
     let existingExtension = path.extname(safeTitle).toLowerCase();
     let newExtension;
 
-    if (note.type === 'text') {
-        newExtension = 'html';
-    } else if (note.mime === 'application/x-javascript' || note.mime === 'text/javascript') {
-        newExtension = 'js';
-    } else if (existingExtension.length > 0) { // if the page already has an extension, then we'll just keep it
+    if (note.type === "text") {
+        newExtension = "html";
+    } else if (note.mime === "application/x-javascript" || note.mime === "text/javascript") {
+        newExtension = "js";
+    } else if (existingExtension.length > 0) {
+        // if the page already has an extension, then we'll just keep it
         newExtension = null;
     } else {
-        if (note.mime?.toLowerCase()?.trim() === "image/jpg") { // image/jpg is invalid but pretty common
-            newExtension = 'jpg';
+        if (note.mime?.toLowerCase()?.trim() === "image/jpg") {
+            // image/jpg is invalid but pretty common
+            newExtension = "jpg";
         } else {
             newExtension = mimeTypes.extension(note.mime) || "dat";
         }

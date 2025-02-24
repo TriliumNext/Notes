@@ -5,10 +5,7 @@ import { t } from "../../services/i18n.js";
 
 export default class ShowTocWidgetButton extends OnClickButtonWidget {
     isEnabled() {
-        return super.isEnabled()
-            && this.note
-            && this.note.type === 'text'
-            && this.noteContext.viewScope.viewMode === 'default';
+        return super.isEnabled() && this.note && this.note.type === "text" && this.noteContext.viewScope.viewMode === "default";
     }
 
     constructor() {
@@ -17,7 +14,7 @@ export default class ShowTocWidgetButton extends OnClickButtonWidget {
         this.icon("bx-objects-horizontal-left")
             .title(t("show_toc_widget_button.show_toc"))
             .titlePlacement("bottom")
-            .onClick(widget => {
+            .onClick((widget) => {
                 this.noteContext.viewScope.tocTemporarilyHidden = false;
                 appContext.triggerEvent("showTocWidget", { noteId: this.noteId });
                 this.toggleInt(false);
@@ -35,9 +32,11 @@ export default class ShowTocWidgetButton extends OnClickButtonWidget {
     async entitiesReloadedEvent({ loadResults }) {
         if (loadResults.isNoteContentReloaded(this.noteId)) {
             await this.refresh();
-        } else if (loadResults.getAttributeRows().find(attr => attr.type === 'label'
-            && (attr.name.toLowerCase().includes('readonly') || attr.name === 'toc')
-            && attributeService.isAffecting(attr, this.note))) {
+        } else if (
+            loadResults
+                .getAttributeRows()
+                .find((attr) => attr.type === "label" && (attr.name.toLowerCase().includes("readonly") || attr.name === "toc") && attributeService.isAffecting(attr, this.note))
+        ) {
             await this.refresh();
         }
     }

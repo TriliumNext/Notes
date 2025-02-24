@@ -9,7 +9,7 @@ import cls from "../../services/cls.js";
 import log from "../../services/log.js";
 import protectedSessionService from "../../services/protected_session.js";
 import blobService from "../../services/blob.js";
-import Becca, { ConstructorData } from '../becca-interface.js';
+import type { default as Becca, ConstructorData } from "../becca-interface.js";
 import becca from "../becca.js";
 
 interface ContentOpts {
@@ -23,7 +23,6 @@ interface ContentOpts {
  * @type T the same entity type needed for self-reference in {@link ConstructorData}.
  */
 abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
-
     utcDateModified?: string;
     dateCreated?: string;
     dateModified?: string;
@@ -35,7 +34,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     blobId?: string;
 
     protected beforeSaving(opts?: {}) {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         if (!(this as any)[constructorData.primaryKeyName]) {
             (this as any)[constructorData.primaryKeyName] = utils.newEntityId();
         }
@@ -50,19 +49,19 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     protected putEntityChange(isDeleted: boolean) {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         entityChangesService.putEntityChange({
             entityName: constructorData.entityName,
             entityId: (this as any)[constructorData.primaryKeyName],
             hash: this.generateHash(isDeleted),
             isErased: false,
             utcDateChanged: this.getUtcDateChanged(),
-            isSynced: constructorData.entityName !== 'options' || !!this.isSynced
+            isSynced: constructorData.entityName !== "options" || !!this.isSynced
         });
     }
 
     generateHash(isDeleted?: boolean): string {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         let contentToHash = "";
 
         for (const propertyName of constructorData.hashedProperties) {
@@ -99,10 +98,10 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     /**
-    * Saves entity - executes SQL, but doesn't commit the transaction on its own
-    */
+     * Saves entity - executes SQL, but doesn't commit the transaction on its own
+     */
     save(opts?: {}): this {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         const entityName = constructorData.entityName;
         const primaryKeyName = constructorData.primaryKeyName;
 
@@ -115,7 +114,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         sql.transactional(() => {
             sql.upsert(entityName, primaryKeyName, pojo);
 
-            if (entityName === 'recent_notes') {
+            if (entityName === "recent_notes") {
                 return;
             }
 
@@ -144,7 +143,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         opts.forceFrontendReload = !!opts.forceFrontendReload;
 
         if (content === null || content === undefined) {
-            const constructorData = (this.constructor as unknown as ConstructorData<T>);
+            const constructorData = this.constructor as unknown as ConstructorData<T>;
             throw new Error(`Cannot set null content to ${constructorData.primaryKeyName} '${(this as any)[constructorData.primaryKeyName]}'`);
         }
 
@@ -206,9 +205,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         if (this.isProtected) {
             // a "random" prefix makes sure that the calculated hash/blobId is different for a decrypted/encrypted content
             const encryptedPrefixSuffix = "t$[nvQg7q)&_ENCRYPTED_?M:Bf&j3jr_";
-            return Buffer.isBuffer(unencryptedContent)
-                ? Buffer.concat([Buffer.from(encryptedPrefixSuffix), unencryptedContent])
-                : `${encryptedPrefixSuffix}${unencryptedContent}`;
+            return Buffer.isBuffer(unencryptedContent) ? Buffer.concat([Buffer.from(encryptedPrefixSuffix), unencryptedContent]) : `${encryptedPrefixSuffix}${unencryptedContent}`;
         } else {
             return unencryptedContent;
         }
@@ -216,13 +213,13 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
 
     private saveBlob(content: string | Buffer, unencryptedContentForHashCalculation: string | Buffer, opts: ContentOpts = {}) {
         /*
-        * We're using the unencrypted blob for the hash calculation, because otherwise the random IV would
-        * cause every content blob to be unique which would balloon the database size (esp. with revisioning).
-        * This has minor security implications (it's easy to infer that given content is shared between different
-        * notes/attachments), but the trade-off comes out clearly positive.
-        */
+         * We're using the unencrypted blob for the hash calculation, because otherwise the random IV would
+         * cause every content blob to be unique which would balloon the database size (esp. with revisioning).
+         * This has minor security implications (it's easy to infer that given content is shared between different
+         * notes/attachments), but the trade-off comes out clearly positive.
+         */
         const newBlobId = utils.hashedBlobId(unencryptedContentForHashCalculation);
-        const blobNeedsInsert = !sql.getValue('SELECT 1 FROM blobs WHERE blobId = ?', [newBlobId]);
+        const blobNeedsInsert = !sql.getValue("SELECT 1 FROM blobs WHERE blobId = ?", [newBlobId]);
 
         if (!blobNeedsInsert) {
             return newBlobId;
@@ -242,7 +239,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         const hash = blobService.calculateContentHash(pojo);
 
         entityChangesService.putEntityChange({
-            entityName: 'blobs',
+            entityName: "blobs",
             entityId: newBlobId,
             hash: hash,
             isErased: false,
@@ -254,7 +251,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         });
 
         eventService.emit(eventService.ENTITY_CHANGED, {
-            entityName: 'blobs',
+            entityName: "blobs",
             entity: this
         });
 
@@ -265,7 +262,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         const row = sql.getRow<{ content: string | Buffer }>(`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
 
         if (!row) {
-            const constructorData = (this.constructor as unknown as ConstructorData<T>);
+            const constructorData = this.constructor as unknown as ConstructorData<T>;
             throw new Error(`Cannot find content for ${constructorData.primaryKeyName} '${(this as any)[constructorData.primaryKeyName]}', blobId '${this.blobId}'`);
         }
 
@@ -273,26 +270,27 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     /**
-    * Mark the entity as (soft) deleted. It will be completely erased later.
-    *
-    * This is a low-level method, for notes and branches use `note.deleteNote()` and 'branch.deleteBranch()` instead.
-    */
+     * Mark the entity as (soft) deleted. It will be completely erased later.
+     *
+     * This is a low-level method, for notes and branches use `note.deleteNote()` and 'branch.deleteBranch()` instead.
+     */
     markAsDeleted(deleteId: string | null = null) {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         const entityId = (this as any)[constructorData.primaryKeyName];
         const entityName = constructorData.entityName;
 
         this.utcDateModified = dateUtils.utcNowDateTime();
 
-        sql.execute(`UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
+        sql.execute(
+            `UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
                             WHERE ${constructorData.primaryKeyName} = ?`,
-            [deleteId, this.utcDateModified, entityId]);
+            [deleteId, this.utcDateModified, entityId]
+        );
 
         if (this.dateModified) {
             this.dateModified = dateUtils.localNowDateTime();
 
-            sql.execute(`UPDATE ${entityName} SET dateModified = ? WHERE ${constructorData.primaryKeyName} = ?`,
-                [this.dateModified, entityId]);
+            sql.execute(`UPDATE ${entityName} SET dateModified = ? WHERE ${constructorData.primaryKeyName} = ?`, [this.dateModified, entityId]);
         }
 
         log.info(`Marking ${entityName} ${entityId} as deleted`);
@@ -303,15 +301,17 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     markAsDeletedSimple() {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         const entityId = (this as any)[constructorData.primaryKeyName];
         const entityName = constructorData.entityName;
 
         this.utcDateModified = dateUtils.utcNowDateTime();
 
-        sql.execute(`UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
+        sql.execute(
+            `UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
                             WHERE ${constructorData.primaryKeyName} = ?`,
-            [this.utcDateModified, entityId]);
+            [this.utcDateModified, entityId]
+        );
 
         log.info(`Marking ${entityName} ${entityId} as deleted`);
 

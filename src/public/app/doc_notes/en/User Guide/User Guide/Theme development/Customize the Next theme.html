@@ -1,0 +1,36 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Customize the Next theme</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Customize the Next theme</h1>
+
+      <div class="ck-content">
+        <p>By default, any custom theme will be based on the legacy light theme.
+          To use the TriliumNext theme instead, add the <code>#appThemeBase=next</code> attribute
+          onto the existing theme. The <code>appTheme</code> attribute must also be
+          present.</p>
+        <p>
+          <img src="Customize the Next theme_i.png" width="424" height="140">
+        </p>
+        <p>When <code>appThemeBase</code> is set to <code>next</code> it will use the
+          “TriliumNext (auto)” theme. Any other value is ignored and will use the
+          legacy white theme instead.</p>
+        <h2>Overrides</h2>
+        <p>Do note that the TriliumNext theme has a few more overrides than the legacy
+          theme, so you might need to suffix <code>!important</code> if the style changes
+          are not applied.</p><pre><code class="language-text-css">:root {
+	--launcher-pane-background-color: #0d6efd !important;
+}</code></pre>
+      </div>
+    </div>
+  </body>
+
+</html>

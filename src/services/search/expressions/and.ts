@@ -1,12 +1,12 @@
 "use strict";
 
-import NoteSet from "../note_set.js";
-import SearchContext from "../search_context.js";
+import type NoteSet from "../note_set.js";
+import type SearchContext from "../search_context.js";
 import Expression from "./expression.js";
 import TrueExp from "./true.js";
 
 class AndExp extends Expression {
-    private subExpressions: Expression[];
+    subExpressions: Expression[];
 
     static of(_subExpressions: (Expression | null | undefined)[]) {
         const subExpressions = _subExpressions.filter((exp) => !!exp) as Expression[];

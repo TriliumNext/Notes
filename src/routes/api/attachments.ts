@@ -2,46 +2,46 @@ import becca from "../../becca/becca.js";
 import blobService from "../../services/blob.js";
 import ValidationError from "../../errors/validation_error.js";
 import imageService from "../../services/image.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 function getAttachmentBlob(req: Request) {
-    const preview = req.query.preview === 'true';
+    const preview = req.query.preview === "true";
 
-    return blobService.getBlobPojo('attachments', req.params.attachmentId, { preview });
+    return blobService.getBlobPojo("attachments", req.params.attachmentId, { preview });
 }
 
 function getAttachments(req: Request) {
     const note = becca.getNoteOrThrow(req.params.noteId);
 
-    return note.getAttachments({includeContentLength: true});
+    return note.getAttachments({ includeContentLength: true });
 }
 
 function getAttachment(req: Request) {
-    const {attachmentId} = req.params;
+    const { attachmentId } = req.params;
 
-    return becca.getAttachmentOrThrow(attachmentId, {includeContentLength: true});
+    return becca.getAttachmentOrThrow(attachmentId, { includeContentLength: true });
 }
 
 function getAllAttachments(req: Request) {
-    const {attachmentId} = req.params;
+    const { attachmentId } = req.params;
     // one particular attachment is requested, but return all note's attachments
 
     const attachment = becca.getAttachmentOrThrow(attachmentId);
-    return attachment.getNote()?.getAttachments({includeContentLength: true}) || [];
+    return attachment.getNote()?.getAttachments({ includeContentLength: true }) || [];
 }
 
 function saveAttachment(req: Request) {
-    const {noteId} = req.params;
-    const {attachmentId, role, mime, title, content} = req.body;
-    const {matchBy} = req.query as any;
+    const { noteId } = req.params;
+    const { attachmentId, role, mime, title, content } = req.body;
+    const { matchBy } = req.query as any;
 
     const note = becca.getNoteOrThrow(noteId);
-    note.saveAttachment({attachmentId, role, mime, title, content}, matchBy);
+    note.saveAttachment({ attachmentId, role, mime, title, content }, matchBy);
 }
 
 function uploadAttachment(req: Request) {
-    const {noteId} = req.params;
-    const {file} = req as any;
+    const { noteId } = req.params;
+    const { file } = req as any;
 
     const note = becca.getNoteOrThrow(noteId);
     let url;
@@ -51,7 +51,7 @@ function uploadAttachment(req: Request) {
         url = `api/attachments/${attachment.attachmentId}/image/${encodeURIComponent(attachment.title)}`;
     } else {
         const attachment = note.saveAttachment({
-            role: 'file',
+            role: "file",
             mime: file.mimetype,
             title: file.originalname,
             content: file.buffer
@@ -67,8 +67,8 @@ function uploadAttachment(req: Request) {
 }
 
 function renameAttachment(req: Request) {
-    const {title} = req.body;
-    const {attachmentId} = req.params;
+    const { title } = req.body;
+    const { attachmentId } = req.params;
 
     const attachment = becca.getAttachmentOrThrow(attachmentId);
 
@@ -81,7 +81,7 @@ function renameAttachment(req: Request) {
 }
 
 function deleteAttachment(req: Request) {
-    const {attachmentId} = req.params;
+    const { attachmentId } = req.params;
 
     const attachment = becca.getAttachment(attachmentId);
 
@@ -91,7 +91,7 @@ function deleteAttachment(req: Request) {
 }
 
 function convertAttachmentToNote(req: Request) {
-    const {attachmentId} = req.params;
+    const { attachmentId } = req.params;
 
     const attachment = becca.getAttachmentOrThrow(attachmentId);
     return attachment.convertToNote();

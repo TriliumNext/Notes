@@ -1,5 +1,5 @@
-import utils from "./utils.js";
+import { randomString } from "./utils.js";
 
-const instanceId = utils.randomString(12);
+const instanceId = randomString(12);
 
 export default instanceId;

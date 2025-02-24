@@ -1,0 +1,1393 @@
+{
+	"formatVersion": 2,
+	"appVersion": "0.92.0-beta",
+	"files": [
+		{
+			"isClone": false,
+			"noteId": "OkOZllzB3fqN",
+			"notePath": [
+				"OkOZllzB3fqN"
+			],
+			"title": "User Guide",
+			"notePosition": 20,
+			"prefix": null,
+			"isExpanded": true,
+			"type": "text",
+			"mime": "text/html",
+			"attributes": [
+				{
+					"type": "label",
+					"name": "iconClass",
+					"value": "bx bx-help-circle",
+					"isInheritable": false,
+					"position": 10
+				}
+			],
+			"format": "html",
+			"attachments": [],
+			"dirFileName": "User Guide",
+			"children": [
+				{
+					"isClone": false,
+					"noteId": "yoAe4jV2yzbd",
+					"notePath": [
+						"OkOZllzB3fqN",
+						"yoAe4jV2yzbd"
+					],
+					"title": "Features",
+					"notePosition": 40,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [
+						{
+							"type": "label",
+							"name": "iconClass",
+							"value": "bx bx-star",
+							"isInheritable": false,
+							"position": 10
+						}
+					],
+					"format": "html",
+					"attachments": [],
+					"dirFileName": "Features",
+					"children": [
+						{
+							"isClone": false,
+							"noteId": "13D1lOc9sqmZ",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"yoAe4jV2yzbd",
+								"13D1lOc9sqmZ"
+							],
+							"title": "Export as PDF",
+							"notePosition": 20,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"dataFileName": "Export as PDF.html",
+							"attachments": [
+								{
+									"attachmentId": "xsGM34t8ssKV",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "Export as PDF_image.png"
+								},
+								{
+									"attachmentId": "cvyes4f1Vhmm",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "1_Export as PDF_image.png"
+								},
+								{
+									"attachmentId": "b3v1pLE6TF1Y",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "2_Export as PDF_image.png"
+								}
+							]
+						},
+						{
+							"isClone": false,
+							"noteId": "B3YLYM4erjnW",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"yoAe4jV2yzbd",
+								"B3YLYM4erjnW"
+							],
+							"title": "Zen mode",
+							"notePosition": 30,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"dataFileName": "Zen mode.html",
+							"attachments": [
+								{
+									"attachmentId": "cswryNtIFZHy",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/jpg",
+									"position": 10,
+									"dataFileName": "Zen mode_image.png"
+								},
+								{
+									"attachmentId": "TS5MS8fQ8Rfr",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/jpg",
+									"position": 10,
+									"dataFileName": "1_Zen mode_image.png"
+								},
+								{
+									"attachmentId": "UDk4M7uiTE7w",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/jpg",
+									"position": 10,
+									"dataFileName": "2_Zen mode_image.png"
+								},
+								{
+									"attachmentId": "sQldbByAmE0k",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "3_Zen mode_image.png"
+								},
+								{
+									"attachmentId": "DzrJD3hXJwXJ",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "4_Zen mode_image.png"
+								},
+								{
+									"attachmentId": "HeGfp8wObFO5",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "5_Zen mode_image.png"
+								},
+								{
+									"attachmentId": "uWsrFwgfypsS",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "6_Zen mode_image.png"
+								},
+								{
+									"attachmentId": "hX8xmbxgSNFh",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "7_Zen mode_image.png"
+								}
+							]
+						}
+					]
+				},
+				{
+					"isClone": false,
+					"noteId": "wmegHv51MJMd",
+					"notePath": [
+						"OkOZllzB3fqN",
+						"wmegHv51MJMd"
+					],
+					"title": "Note Types",
+					"notePosition": 70,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [
+						{
+							"type": "label",
+							"name": "iconClass",
+							"value": "bx bx-edit",
+							"isInheritable": false,
+							"position": 10
+						}
+					],
+					"format": "html",
+					"attachments": [],
+					"dirFileName": "Note Types",
+					"children": [
+						{
+							"isClone": false,
+							"noteId": "crJtzsol4olb",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"crJtzsol4olb"
+							],
+							"title": "Text",
+							"notePosition": 10,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-note",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Text.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "xtVDKff8qpTn",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"xtVDKff8qpTn"
+							],
+							"title": "Code",
+							"notePosition": 20,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-code",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Code.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "hMtmqVKygCi3",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"hMtmqVKygCi3"
+							],
+							"title": "Saved Search",
+							"notePosition": 30,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-file-find",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Saved Search.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "n9SQevPhMDAs",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"n9SQevPhMDAs"
+							],
+							"title": "Relation Map",
+							"notePosition": 40,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bxs-network-chart",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Relation Map.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "3fbsp7IqZXtk",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"3fbsp7IqZXtk"
+							],
+							"title": "Note Map",
+							"notePosition": 50,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bxs-network-chart",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Note Map.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "hcbVFFSyBbb3",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"hcbVFFSyBbb3"
+							],
+							"title": "Render Note",
+							"notePosition": 60,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-extension",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Render Note.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "pSDzQIgLGswQ",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"pSDzQIgLGswQ"
+							],
+							"title": "Book",
+							"notePosition": 70,
+							"prefix": null,
+							"isExpanded": true,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-book",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"attachments": [],
+							"dirFileName": "Book",
+							"children": [
+								{
+									"isClone": false,
+									"noteId": "fDGg7QcJg3Xm",
+									"notePath": [
+										"OkOZllzB3fqN",
+										"wmegHv51MJMd",
+										"pSDzQIgLGswQ",
+										"fDGg7QcJg3Xm"
+									],
+									"title": "Calendar View",
+									"notePosition": 10,
+									"prefix": null,
+									"isExpanded": false,
+									"type": "text",
+									"mime": "text/html",
+									"attributes": [
+										{
+											"type": "label",
+											"name": "iconClass",
+											"value": "bx bx-calendar",
+											"isInheritable": false,
+											"position": 10
+										}
+									],
+									"format": "html",
+									"dataFileName": "Calendar View.html",
+									"attachments": [
+										{
+											"attachmentId": "j1NIQJvjsFrc",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "Calendar View_image.png"
+										},
+										{
+											"attachmentId": "9FxGltAPWr9V",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "1_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "GaH4K6lKfcQe",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "2_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "xr4c0Mdf7gPm",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "3_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "K8NQktF9sCss",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "4_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "8kfaJPGjJ1t5",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "5_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "fFaq1mWTFlJA",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "6_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "2CExLYphNtCd",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "7_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "UaXBPb7fINm4",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "8_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "TIzqtnGIPlxu",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "9_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "p7eRe4TFFdIt",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "10_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "bnKESYv4Toa1",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "11_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "0J8MfQPq7E1H",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "12_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "0yGXmgB3yfGg",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "13_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "MwECr6EjQjEE",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "14_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "XBOyB2RH28OS",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "15_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "BsiAqW51VJOz",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "16_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "RTFdV19BHn28",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "17_Calendar View_image.png"
+										},
+										{
+											"attachmentId": "ifhS1bKggh23",
+											"title": "image.png",
+											"role": "image",
+											"mime": "image/png",
+											"position": 10,
+											"dataFileName": "18_Calendar View_image.png"
+										}
+									]
+								}
+							]
+						},
+						{
+							"isClone": false,
+							"noteId": "TTWESa9YFyB4",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"TTWESa9YFyB4"
+							],
+							"title": "Mermaid Diagram",
+							"notePosition": 80,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-selection",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Mermaid Diagram.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "Aw4yGrN6rxV5",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"Aw4yGrN6rxV5"
+							],
+							"title": "Canvas",
+							"notePosition": 90,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-pen",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Canvas.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "dQ3FSQuJmaIR",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"dQ3FSQuJmaIR"
+							],
+							"title": "Web View",
+							"notePosition": 100,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-globe-alt",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Web View.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "j2FPSUXO17lK",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"j2FPSUXO17lK"
+							],
+							"title": "Mind Map",
+							"notePosition": 110,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-sitemap",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Mind Map.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "foPEtsL51pD2",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"wmegHv51MJMd",
+								"foPEtsL51pD2"
+							],
+							"title": "Geo Map",
+							"notePosition": 120,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "label",
+									"name": "iconClass",
+									"value": "bx bx-map-alt",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Geo Map.html",
+							"attachments": [
+								{
+									"attachmentId": "J0baLTpafs7C",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "Geo Map_image.png"
+								},
+								{
+									"attachmentId": "kcYjOvJDFkbS",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "1_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "FDP3JzIVSnuJ",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "2_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "eUrcqc8RRuZG",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "3_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "1quk4yxJpeHZ",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "4_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "iSpyhQ5Ya6Nk",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "5_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "ut6vm2aXVfXI",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "6_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "uYdb9wWf5Nuv",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "7_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "GhHYO2LteDmZ",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "8_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "viN50n5G4kB0",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "9_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "mgwGrtQZjxxb",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "10_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "PMqmCbNLlZOG",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "11_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "0AwaQMqt3FVA",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "12_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "gR2c2Thmfy3I",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "13_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "JULizn130rVI",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "14_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "MdC0DpifJwu4",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "15_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "gFR2Izzp18LQ",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "16_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "42AncDs7SSAf",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "17_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "pKdtiq4r0eFY",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "18_Geo Map_image.png"
+								},
+								{
+									"attachmentId": "FXRVvYpOxWyR",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "19_Geo Map_image.png"
+								}
+							]
+						}
+					]
+				},
+				{
+					"isClone": false,
+					"noteId": "BhLd0mxKn0gY",
+					"notePath": [
+						"OkOZllzB3fqN",
+						"BhLd0mxKn0gY"
+					],
+					"title": "Shared notes",
+					"notePosition": 100,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [
+						{
+							"type": "label",
+							"name": "iconClass",
+							"value": "bx bx-share-alt",
+							"isInheritable": false,
+							"position": 10
+						}
+					],
+					"format": "html",
+					"attachments": [],
+					"dirFileName": "Shared notes",
+					"children": [
+						{
+							"isClone": false,
+							"noteId": "1DtQ2mHreeOI",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"BhLd0mxKn0gY",
+								"1DtQ2mHreeOI"
+							],
+							"title": "Serving directly the content of a note",
+							"notePosition": 10,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"dataFileName": "Serving directly the content o.html",
+							"attachments": [
+								{
+									"attachmentId": "2zgbdi7zMieM",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/jpg",
+									"position": 10,
+									"dataFileName": "Serving directly the conte.png"
+								},
+								{
+									"attachmentId": "DsKDaFOcumH6",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/jpg",
+									"position": 10,
+									"dataFileName": "1_Serving directly the conte.png"
+								}
+							]
+						}
+					]
+				},
+				{
+					"isClone": false,
+					"noteId": "DtJJ20yEozPA",
+					"notePath": [
+						"OkOZllzB3fqN",
+						"DtJJ20yEozPA"
+					],
+					"title": "Theme development",
+					"notePosition": 130,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [
+						{
+							"type": "label",
+							"name": "iconClass",
+							"value": "bx bx-palette",
+							"isInheritable": false,
+							"position": 10
+						}
+					],
+					"format": "html",
+					"attachments": [],
+					"dirFileName": "Theme development",
+					"children": [
+						{
+							"isClone": false,
+							"noteId": "5HH79ztN0fZA",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"DtJJ20yEozPA",
+								"5HH79ztN0fZA"
+							],
+							"title": "Creating a custom theme",
+							"notePosition": 10,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "relation",
+									"name": "internalLink",
+									"value": "aH8Dk5aMiq7R",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Creating a custom theme.html",
+							"attachments": [
+								{
+									"attachmentId": "AJHVfQtIQgJ7",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "Creating a custom theme_im.png"
+								},
+								{
+									"attachmentId": "gXLyv5KXjfxg",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "1_Creating a custom theme_im.png"
+								},
+								{
+									"attachmentId": "on1gD7BzCWdN",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "2_Creating a custom theme_im.png"
+								},
+								{
+									"attachmentId": "17p6z24yW5eP",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "3_Creating a custom theme_im.png"
+								},
+								{
+									"attachmentId": "K3cdwj8f90m0",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "4_Creating a custom theme_im.png"
+								},
+								{
+									"attachmentId": "bn93hwF7C8sR",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "5_Creating a custom theme_im.png"
+								}
+							]
+						},
+						{
+							"isClone": false,
+							"noteId": "aH8Dk5aMiq7R",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"DtJJ20yEozPA",
+								"aH8Dk5aMiq7R"
+							],
+							"title": "Customize the Next theme",
+							"notePosition": 20,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"dataFileName": "Customize the Next theme.html",
+							"attachments": [
+								{
+									"attachmentId": "5z4bC0x0eH0P",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "Customize the Next theme_i.png"
+								},
+								{
+									"attachmentId": "u0zkXkD7rGXA",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "1_Customize the Next theme_i.png"
+								}
+							]
+						},
+						{
+							"isClone": false,
+							"noteId": "pMq6N1oBV9oo",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"DtJJ20yEozPA",
+								"pMq6N1oBV9oo"
+							],
+							"title": "Reference",
+							"notePosition": 30,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [
+								{
+									"type": "relation",
+									"name": "internalLink",
+									"value": "po38jIc0LD2H",
+									"isInheritable": false,
+									"position": 10
+								}
+							],
+							"format": "html",
+							"dataFileName": "Reference.html",
+							"attachments": []
+						}
+					]
+				},
+				{
+					"isClone": false,
+					"noteId": "LTnkDnYmmZ7s",
+					"notePath": [
+						"OkOZllzB3fqN",
+						"LTnkDnYmmZ7s"
+					],
+					"title": "Scripting",
+					"notePosition": 140,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [
+						{
+							"type": "label",
+							"name": "iconClass",
+							"value": "bx bx-package",
+							"isInheritable": false,
+							"position": 10
+						}
+					],
+					"format": "html",
+					"attachments": [],
+					"dirFileName": "Scripting",
+					"children": [
+						{
+							"isClone": false,
+							"noteId": "cTWlUHkiv1fB",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"LTnkDnYmmZ7s",
+								"cTWlUHkiv1fB"
+							],
+							"title": "Examples",
+							"notePosition": 10,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"attachments": [],
+							"dirFileName": "Examples",
+							"children": [
+								{
+									"isClone": false,
+									"noteId": "g5Vta7jt3aq3",
+									"notePath": [
+										"OkOZllzB3fqN",
+										"LTnkDnYmmZ7s",
+										"cTWlUHkiv1fB",
+										"g5Vta7jt3aq3"
+									],
+									"title": "Downloading responses from Google Forms",
+									"notePosition": 10,
+									"prefix": null,
+									"isExpanded": false,
+									"type": "text",
+									"mime": "text/html",
+									"attributes": [],
+									"format": "html",
+									"dataFileName": "Downloading responses from Goo.html",
+									"attachments": []
+								}
+							]
+						},
+						{
+							"isClone": false,
+							"noteId": "Yo16FgbwBvdM",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"LTnkDnYmmZ7s",
+								"Yo16FgbwBvdM"
+							],
+							"title": "Using promoted attributes to configure scripts",
+							"notePosition": 20,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"dataFileName": "Using promoted attributes to c.html",
+							"attachments": [
+								{
+									"attachmentId": "j8HQoFca79U2",
+									"title": "image.png",
+									"role": "image",
+									"mime": "image/png",
+									"position": 10,
+									"dataFileName": "Using promoted attributes .png"
+								}
+							]
+						}
+					]
+				},
+				{
+					"isClone": false,
+					"noteId": "3wuignsm05k2",
+					"notePath": [
+						"OkOZllzB3fqN",
+						"3wuignsm05k2"
+					],
+					"title": "Advanced topics",
+					"notePosition": 150,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [
+						{
+							"type": "label",
+							"name": "iconClass",
+							"value": "bx bx-rocket",
+							"isInheritable": false,
+							"position": 10
+						}
+					],
+					"format": "html",
+					"attachments": [],
+					"dirFileName": "Advanced topics",
+					"children": [
+						{
+							"isClone": false,
+							"noteId": "po38jIc0LD2H",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"3wuignsm05k2",
+								"po38jIc0LD2H"
+							],
+							"title": "Custom resource providers",
+							"notePosition": 10,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"dataFileName": "Custom resource providers.html",
+							"attachments": []
+						},
+						{
+							"isClone": false,
+							"noteId": "rGq9oI9hWwGf",
+							"notePath": [
+								"OkOZllzB3fqN",
+								"3wuignsm05k2",
+								"rGq9oI9hWwGf"
+							],
+							"title": "REST API",
+							"notePosition": 20,
+							"prefix": null,
+							"isExpanded": false,
+							"type": "text",
+							"mime": "text/html",
+							"attributes": [],
+							"format": "html",
+							"attachments": [],
+							"dirFileName": "REST API",
+							"children": [
+								{
+									"isClone": false,
+									"noteId": "sztusxU10ADE",
+									"notePath": [
+										"OkOZllzB3fqN",
+										"3wuignsm05k2",
+										"rGq9oI9hWwGf",
+										"sztusxU10ADE"
+									],
+									"title": "ETAPI",
+									"notePosition": 10,
+									"prefix": null,
+									"isExpanded": true,
+									"type": "text",
+									"mime": "text/html",
+									"attributes": [],
+									"format": "html",
+									"attachments": [],
+									"dirFileName": "ETAPI",
+									"children": [
+										{
+											"isClone": false,
+											"noteId": "f3xpgx6H01PW",
+											"notePath": [
+												"OkOZllzB3fqN",
+												"3wuignsm05k2",
+												"rGq9oI9hWwGf",
+												"sztusxU10ADE",
+												"f3xpgx6H01PW"
+											],
+											"title": "API Reference",
+											"notePosition": 10,
+											"prefix": null,
+											"isExpanded": false,
+											"type": "webView",
+											"mime": "",
+											"attributes": [
+												{
+													"type": "label",
+													"name": "webViewSrc",
+													"value": "/etapi/docs",
+													"isInheritable": false,
+													"position": 10
+												}
+											],
+											"dataFileName": "API Reference.dat",
+											"attachments": []
+										}
+									]
+								},
+								{
+									"isClone": false,
+									"noteId": "9OiEC6pf3Wfv",
+									"notePath": [
+										"OkOZllzB3fqN",
+										"3wuignsm05k2",
+										"rGq9oI9hWwGf",
+										"9OiEC6pf3Wfv"
+									],
+									"title": "Internal API",
+									"notePosition": 20,
+									"prefix": null,
+									"isExpanded": true,
+									"type": "text",
+									"mime": "text/html",
+									"attributes": [],
+									"format": "html",
+									"attachments": [],
+									"dirFileName": "Internal API",
+									"children": [
+										{
+											"isClone": false,
+											"noteId": "7uB5k0iCmOtZ",
+											"notePath": [
+												"OkOZllzB3fqN",
+												"3wuignsm05k2",
+												"rGq9oI9hWwGf",
+												"9OiEC6pf3Wfv",
+												"7uB5k0iCmOtZ"
+											],
+											"title": "API Reference",
+											"notePosition": 10,
+											"prefix": null,
+											"isExpanded": false,
+											"type": "webView",
+											"mime": "",
+											"attributes": [
+												{
+													"type": "label",
+													"name": "webViewSrc",
+													"value": "/api/docs",
+													"isInheritable": false,
+													"position": 10
+												}
+											],
+											"dataFileName": "API Reference.dat",
+											"attachments": []
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"noImport": true,
+			"dataFileName": "navigation.html"
+		},
+		{
+			"noImport": true,
+			"dataFileName": "index.html"
+		},
+		{
+			"noImport": true,
+			"dataFileName": "style.css"
+		}
+	]
+}

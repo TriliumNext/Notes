@@ -2,15 +2,21 @@
 
 import dateUtils from "../../services/date_utils.js";
 import AbstractBeccaEntity from "./abstract_becca_entity.js";
-import { OptionRow } from './rows.js';
+import type { OptionRow } from "./rows.js";
 
 /**
  * Option represents a name-value pair, either directly configurable by the user or some system property.
  */
 class BOption extends AbstractBeccaEntity<BOption> {
-    static get entityName() { return "options"; }
-    static get primaryKeyName() { return "name"; }
-    static get hashedProperties() { return ["name", "value"]; }
+    static get entityName() {
+        return "options";
+    }
+    static get primaryKeyName() {
+        return "name";
+    }
+    static get hashedProperties() {
+        return ["name", "value"];
+    }
 
     name!: string;
     value!: string;
@@ -43,7 +49,7 @@ class BOption extends AbstractBeccaEntity<BOption> {
             value: this.value,
             isSynced: this.isSynced,
             utcDateModified: this.utcDateModified
-        }
+        };
     }
 }
 

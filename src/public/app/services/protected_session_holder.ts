@@ -1,4 +1,4 @@
-import FNote from "../entities/fnote.js";
+import type FNote from "../entities/fnote.js";
 import server from "./server.js";
 
 function enableProtectedSession() {

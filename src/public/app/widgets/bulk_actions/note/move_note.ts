@@ -7,12 +7,12 @@ const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;" class="text-nowrap">${t('move_note.move_note')}</div> 
+            <div style="margin-right: 10px;" class="text-nowrap">${t("move_note.move_note")}</div> 
                             
-            <div style="margin-right: 10px;" class="text-nowrap">${t('move_note.to')}</div>
+            <div style="margin-right: 10px;" class="text-nowrap">${t("move_note.to")}</div>
             
             <div class="input-group">
-                <input type="text" class="form-control target-parent-note" placeholder="${t('move_note.target_parent_note')}"/>
+                <input type="text" class="form-control target-parent-note" placeholder="${t("move_note.target_parent_note")}"/>
             </div>
         </div>
     </td>
@@ -20,12 +20,12 @@ const TPL = `
         <div class="dropdown help-dropdown">
             <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
-                <p>${t('move_note.on_all_matched_notes')}:</p>
+                <p>${t("move_note.on_all_matched_notes")}:</p>
                 
                 <ul style="margin-bottom: 0;">
-                    <li>${t('move_note.move_note_new_parent')}</li>
-                    <li>${t('move_note.clone_note_new_parent')}</li>
-                    <li>${t('move_note.nothing_will_happen')}</li>
+                    <li>${t("move_note.move_note_new_parent")}</li>
+                    <li>${t("move_note.clone_note_new_parent")}</li>
+                    <li>${t("move_note.nothing_will_happen")}</li>
                 </ul>
             </div> 
         </div>
@@ -35,25 +35,29 @@ const TPL = `
 </tr>`;
 
 export default class MoveNoteBulkAction extends AbstractBulkAction {
-    static get actionName() { return "moveNote"; }
-    static get actionTitle() { return t('move_note.move_note'); }
+    static get actionName() {
+        return "moveNote";
+    }
+    static get actionTitle() {
+        return t("move_note.move_note");
+    }
 
     doRender() {
         const $action = $(TPL);
 
-        const $targetParentNote = $action.find('.target-parent-note');
+        const $targetParentNote = $action.find(".target-parent-note");
         noteAutocompleteService.initNoteAutocomplete($targetParentNote);
         $targetParentNote.setNote(this.actionDef.targetParentNoteId);
 
-        $targetParentNote.on('autocomplete:closed', () => spacedUpdate.scheduleUpdate());
+        $targetParentNote.on("autocomplete:closed", () => spacedUpdate.scheduleUpdate());
 
         const spacedUpdate = new SpacedUpdate(async () => {
             await this.saveAction({
                 targetParentNoteId: $targetParentNote.getSelectedNoteId()
             });
-        }, 1000)
+        }, 1000);
 
-        $targetParentNote.on('input', () => spacedUpdate.scheduleUpdate());
+        $targetParentNote.on("input", () => spacedUpdate.scheduleUpdate());
 
         return $action;
     }

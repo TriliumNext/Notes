@@ -12,27 +12,21 @@ export default class HistoryNavigationButton extends ButtonFromNoteWidget {
             .command(() => command)
             .titlePlacement("right")
             .buttonNoteIdProvider(() => launcherNote.noteId)
-            .onContextMenu(e => this.showContextMenu(e))
+            .onContextMenu((e) => this.showContextMenu(e))
             .class("launcher-button");
-    }
-
-    isEnabled() {
-        return super.isEnabled() && utils.isElectron();
     }
 
     doRender() {
         super.doRender();
 
-        if (!utils.isElectron()) {
-            return;
+        if (utils.isElectron()) {
+            this.webContents = utils.dynamicRequire("@electron/remote").getCurrentWebContents();
+
+            // without this, the history is preserved across frontend reloads
+            this.webContents.clearHistory();
+
+            this.refresh();
         }
-
-        this.webContents = utils.dynamicRequire('@electron/remote').getCurrentWebContents();
-
-        // without this, the history is preserved across frontend reloads
-        this.webContents.clearHistory();
-
-        this.refresh();
     }
 
     async showContextMenu(e) {
@@ -40,7 +34,8 @@ export default class HistoryNavigationButton extends ButtonFromNoteWidget {
 
         // API is broken and will be replaced: https://github.com/electron/electron/issues/33899
         // until then no context menu
-        if (true) { // avoid warning in dev console
+        if (true) {
+            // avoid warning in dev console
             return;
         }
 
@@ -54,17 +49,21 @@ export default class HistoryNavigationButton extends ButtonFromNoteWidget {
 
         for (const idx in this.webContents.history) {
             const url = this.webContents.history[idx];
-            const [_, notePathWithTab] = url.split('#');
+            const [_, notePathWithTab] = url.split("#");
             // broken: use linkService.parseNavigationStateFromUrl();
-            const [notePath, ntxId] = notePathWithTab.split('-');
+            const [notePath, ntxId] = notePathWithTab.split("-");
 
             const title = await treeService.getNotePathTitle(notePath);
 
             items.push({
                 title,
                 idx,
-                uiIcon: idx == activeIndex ? "bx bx-radio-circle-marked" : // compare with type coercion!
-                    (idx < activeIndex ? "bx bx-left-arrow-alt" : "bx bx-right-arrow-alt")
+                uiIcon:
+                    idx == activeIndex
+                        ? "bx bx-radio-circle-marked" // compare with type coercion!
+                        : idx < activeIndex
+                          ? "bx bx-left-arrow-alt"
+                          : "bx bx-right-arrow-alt"
             });
         }
 
@@ -78,7 +77,7 @@ export default class HistoryNavigationButton extends ButtonFromNoteWidget {
             x: e.pageX,
             y: e.pageY,
             items,
-            selectMenuItemHandler: ({idx}) => this.webContents.goToIndex(idx)
+            selectMenuItemHandler: ({ idx }) => this.webContents.goToIndex(idx)
         });
     }
 

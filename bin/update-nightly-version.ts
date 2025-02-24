@@ -20,11 +20,7 @@ function processVersion(version) {
     version = version.replace("-beta", "");
 
     // Add the nightly suffix, plus the date.
-    const referenceDate = new Date()
-        .toISOString()
-        .substring(2, 19)
-        .replace(/[-:]*/g, "")
-        .replace("T", "-");
+    const referenceDate = new Date().toISOString().substring(2, 19).replace(/[-:]*/g, "").replace("T", "-");
     version = `${version}-test-${referenceDate}`;
 
     return version;

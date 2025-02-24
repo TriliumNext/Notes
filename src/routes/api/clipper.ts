@@ -1,6 +1,6 @@
 "use strict";
 
-import { Request } from "express";
+import type { Request } from "express";
 
 import attributeService from "../../services/attributes.js";
 import cloneService from "../../services/cloning.js";
@@ -16,7 +16,7 @@ import path from "path";
 import htmlSanitizer from "../../services/html_sanitizer.js";
 import attributeFormatter from "../../services/attribute_formatter.js";
 import jsdom from "jsdom";
-import BNote from "../../becca/entities/bnote.js";
+import type BNote from "../../becca/entities/bnote.js";
 import ValidationError from "../../errors/validation_error.js";
 const { JSDOM } = jsdom;
 
@@ -30,8 +30,8 @@ function addClipping(req: Request) {
     // if a note under the clipperInbox has the same 'pageUrl' attribute,
     // add the content to that note and clone it under today's inbox
     // otherwise just create a new note under today's inbox
-    let {title, content, pageUrl, images} = req.body;
-    const clipType = 'clippings';
+    let { title, content, pageUrl, images } = req.body;
+    const clipType = "clippings";
 
     const clipperInbox = getClipperInboxNote();
 
@@ -42,13 +42,13 @@ function addClipping(req: Request) {
         clippingNote = noteService.createNewNote({
             parentNoteId: clipperInbox.noteId,
             title: title,
-            content: '',
-            type: 'text'
+            content: "",
+            type: "text"
         }).note;
 
-        clippingNote.setLabel('clipType', 'clippings');
-        clippingNote.setLabel('pageUrl', pageUrl);
-        clippingNote.setLabel('iconClass', 'bx bx-globe');
+        clippingNote.setLabel("clipType", "clippings");
+        clippingNote.setLabel("pageUrl", pageUrl);
+        clippingNote.setLabel("iconClass", "bx bx-globe");
     }
 
     const rewrittenContent = processContent(images, clippingNote, content);
@@ -76,20 +76,21 @@ function findClippingNote(clipperInboxNote: BNote, pageUrl: string, clipType: st
     }
 
     const notes = clipperInboxNote.searchNotesInSubtree(
-        attributeFormatter.formatAttrForSearch({
-            type: 'label',
-            name: "pageUrl",
-            value: pageUrl
-        }, true)
+        attributeFormatter.formatAttrForSearch(
+            {
+                type: "label",
+                name: "pageUrl",
+                value: pageUrl
+            },
+            true
+        )
     );
 
-    return clipType
-        ? notes.find(note => note.getOwnedLabelValue('clipType') === clipType)
-        : notes[0];
+    return clipType ? notes.find((note) => note.getOwnedLabelValue("clipType") === clipType) : notes[0];
 }
 
 function getClipperInboxNote() {
-    let clipperInbox = attributeService.getNoteWithLabel('clipperInbox');
+    let clipperInbox = attributeService.getNoteWithLabel("clipperInbox");
 
     if (!clipperInbox) {
         clipperInbox = dateNoteService.getDayNote(dateUtils.localNowDate());
@@ -99,7 +100,7 @@ function getClipperInboxNote() {
 }
 
 function createNote(req: Request) {
-    let {title, content, pageUrl, images, clipType, labels} = req.body;
+    let { title, content, pageUrl, images, clipType, labels } = req.body;
 
     if (!title || !title.trim()) {
         title = `Clipped note from ${pageUrl}`;
@@ -115,17 +116,17 @@ function createNote(req: Request) {
         note = noteService.createNewNote({
             parentNoteId: clipperInbox.noteId,
             title,
-            content: '',
-            type: 'text'
+            content: "",
+            type: "text"
         }).note;
 
-        note.setLabel('clipType', clipType);
+        note.setLabel("clipType", clipType);
 
         if (pageUrl) {
             pageUrl = htmlSanitizer.sanitizeUrl(pageUrl);
 
-            note.setLabel('pageUrl', pageUrl);
-            note.setLabel('iconClass', 'bx bx-globe');
+            note.setLabel("pageUrl", pageUrl);
+            note.setLabel("iconClass", "bx bx-globe");
         }
     }
 
@@ -155,19 +156,17 @@ function processContent(images: Image[], note: BNote, content: string) {
     let rewrittenContent = htmlSanitizer.sanitize(content);
 
     if (images) {
-        for (const {src, dataUrl, imageId} of images) {
+        for (const { src, dataUrl, imageId } of images) {
             const filename = path.basename(src);
 
             if (!dataUrl || !dataUrl.startsWith("data:image")) {
-                const excerpt = dataUrl
-                    ? dataUrl.substr(0, Math.min(100, dataUrl.length))
-                    : "null";
+                const excerpt = dataUrl ? dataUrl.substr(0, Math.min(100, dataUrl.length)) : "null";
 
                 log.info(`Image could not be recognized as data URL: ${excerpt}`);
                 continue;
             }
 
-            const buffer = Buffer.from(dataUrl.split(",")[1], 'base64');
+            const buffer = Buffer.from(dataUrl.split(",")[1], "base64");
 
             const attachment = imageService.saveImageToAttachment(note.noteId, buffer, filename, true);
 
@@ -196,20 +195,19 @@ function processContent(images: Image[], note: BNote, content: string) {
 }
 
 function openNote(req: Request) {
-    if (utils.isElectron()) {
+    if (utils.isElectron) {
         ws.sendMessageToAllClients({
-            type: 'openNote',
+            type: "openNote",
             noteId: req.params.noteId
         });
 
         return {
-            result: 'ok'
+            result: "ok"
         };
-    }
-    else {
+    } else {
         return {
-            result: 'open-in-browser'
-        }
+            result: "open-in-browser"
+        };
     }
 }
 
@@ -217,16 +215,16 @@ function handshake() {
     return {
         appName: "trilium",
         protocolVersion: appInfo.clipperProtocolVersion
-    }
+    };
 }
 
-function findNotesByUrl(req: Request){
+function findNotesByUrl(req: Request) {
     let pageUrl = req.params.noteUrl;
     const clipperInbox = getClipperInboxNote();
     let foundPage = findClippingNote(clipperInbox, pageUrl, null);
     return {
         noteId: foundPage ? foundPage.noteId : null
-    }
+    };
 }
 
 export default {

@@ -51,16 +51,15 @@ export default class MoveToDialog extends BasicWidget {
         this.$noteAutoComplete = this.$widget.find(".move-to-note-autocomplete");
         this.$noteList = this.$widget.find(".move-to-note-list");
 
-        this.$form.on('submit', () => {
+        this.$form.on("submit", () => {
             const notePath = this.$noteAutoComplete.getSelectedNotePath();
 
             if (notePath) {
-                this.$widget.modal('hide');
+                this.$widget.modal("hide");
 
-                const {noteId, parentNoteId} = treeService.getNoteIdAndParentIdFromUrl(notePath);
-                froca.getBranchId(parentNoteId, noteId).then(branchId => this.moveNotesTo(branchId));
-            }
-            else {
+                const { noteId, parentNoteId } = treeService.getNoteIdAndParentIdFromUrl(notePath);
+                froca.getBranchId(parentNoteId, noteId).then((branchId) => this.moveNotesTo(branchId));
+            } else {
                 logError(t("move_to.error_no_path"));
             }
 
@@ -68,12 +67,12 @@ export default class MoveToDialog extends BasicWidget {
         });
     }
 
-    async moveBranchIdsToEvent({branchIds}) {
+    async moveBranchIdsToEvent({ branchIds }) {
         this.movedBranchIds = branchIds;
 
         utils.openDialog(this.$widget);
 
-        this.$noteAutoComplete.val('').trigger('focus');
+        this.$noteAutoComplete.val("").trigger("focus");
 
         this.$noteList.empty();
 

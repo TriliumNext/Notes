@@ -51,7 +51,7 @@ span.fancytree-node.fancytree-hide {
 }
 
 .fancytree-node:not(.fancytree-loading) .fancytree-expander:before {
-    font-family: 'boxicons' !important;
+    font-family: "boxicons" !important;
     content: "\ea50"; /* lookup code for "chevron-right" in boxicons.css */
     speak: none;
     font-size: x-large;
@@ -104,15 +104,23 @@ ul.fancytree-container li {
 }
 
 .fancytree-node.fancytree-expanded .fancytree-expander:before {
-    font-family: 'boxicons' !important;
+    font-family: "boxicons" !important;
     content: "\ea4a"; /* lookup code for "chevron-down" in boxicons.css */
 }
 
 /** some common text styling for cssClass label */
-span.fancytree-node.underline .fancytree-title { text-decoration: underline; }
-span.fancytree-node.dotted .fancytree-title { text-decoration: dotted; }
-span.fancytree-node.bold .fancytree-title { font-weight: bold; }
-span.fancytree-node.muted { opacity: 0.6; }
+span.fancytree-node.underline .fancytree-title {
+    text-decoration: underline;
+}
+span.fancytree-node.dotted .fancytree-title {
+    text-decoration: dotted;
+}
+span.fancytree-node.bold .fancytree-title {
+    font-weight: bold;
+}
+span.fancytree-node.muted {
+    opacity: 0.6;
+}
 
 /** following will hide ancestors of hoisted (filtered) note */
 .fancytree-submatch:not(.fancytree-match) {
@@ -138,19 +146,19 @@ span.fancytree-node.protected > span.fancytree-custom-icon {
 }
 
 span.fancytree-node.multiple-parents.shared .fancytree-title::after {
-    font-family: 'boxicons' !important;
+    font-family: "boxicons" !important;
     font-size: smaller;
     content: " \eb3d \ec03";
 }
 
 span.fancytree-node.multiple-parents .fancytree-title::after {
-    font-family: 'boxicons' !important;
+    font-family: "boxicons" !important;
     font-size: smaller;
     content: " \eb3d"; /* lookup code for "link-alt" in boxicons.css */
 }
 
 span.fancytree-node.shared .fancytree-title::after {
-    font-family: 'boxicons' !important;
+    font-family: "boxicons" !important;
     font-size: smaller;
     content: " \ec03"; /* lookup code for "share-alt" in boxicons.css */
 }
@@ -200,7 +208,8 @@ span.fancytree-node:hover {
     border: 1px solid var(--main-border-color);
 }
 
-.fancytree-title:hover, span.fancytree-node:hover .fancytree-title {
+.fancytree-title:hover,
+span.fancytree-node:hover .fancytree-title {
     border: 0;
 }
 
@@ -243,7 +252,8 @@ span.fancytree-node:hover .add-note-button {
     border: 1px solid var(--main-border-color);
 }
 
-#fancytree-drop-marker.fancytree-drop-after, #fancytree-drop-marker.fancytree-drop-before {
+#fancytree-drop-marker.fancytree-drop-after,
+#fancytree-drop-marker.fancytree-drop-before {
     width: 100px;
     /* marker is by default position: relative which doesn't make sense */
     position: absolute !important;

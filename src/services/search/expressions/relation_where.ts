@@ -3,7 +3,7 @@
 import Expression from "./expression.js";
 import NoteSet from "../note_set.js";
 import becca from "../../../becca/becca.js";
-import SearchContext from "../search_context.js";
+import type SearchContext from "../search_context.js";
 
 class RelationWhereExp extends Expression {
     private relationName: string;
@@ -19,7 +19,7 @@ class RelationWhereExp extends Expression {
     execute(inputNoteSet: NoteSet, executionContext: {}, searchContext: SearchContext) {
         const candidateNoteSet = new NoteSet();
 
-        for (const attr of becca.findAttributes('relation', this.relationName)) {
+        for (const attr of becca.findAttributes("relation", this.relationName)) {
             const note = attr.note;
 
             if (inputNoteSet.hasNoteId(note.noteId) && attr.targetNote) {

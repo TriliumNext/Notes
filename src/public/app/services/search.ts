@@ -14,4 +14,4 @@ async function searchForNotes(searchString: string) {
 export default {
     searchForNoteIds,
     searchForNotes
-}
+};

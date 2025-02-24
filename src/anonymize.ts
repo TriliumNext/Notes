@@ -6,7 +6,7 @@ sqlInit.dbReady.then(async () => {
     try {
         console.log("Starting anonymization...");
 
-        const resp = await anonymizationService.createAnonymizedCopy('full');
+        const resp = await anonymizationService.createAnonymizedCopy("full");
 
         if (resp.success) {
             console.log(`Anonymized file has been saved to: ${resp.anonymizedFilePath}`);
@@ -15,8 +15,7 @@ sqlInit.dbReady.then(async () => {
         } else {
             console.log("Anonymization failed.");
         }
-    }
-    catch (e: any) {
+    } catch (e: any) {
         console.error(e.message, e.stack);
     }
 

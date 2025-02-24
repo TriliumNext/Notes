@@ -6,7 +6,7 @@ import log from "./log.js";
 import os from "os";
 import fs from "fs";
 import config from "./config.js";
-import utils from "./utils.js";
+import { isElectron } from "./utils.js";
 
 const template = `[Desktop Entry]
 Type=Application
@@ -23,9 +23,7 @@ Terminal=false
  * We overwrite this file during every run as it might have been updated.
  */
 function installLocalAppIcon() {
-    if (!utils.isElectron()
-        || ["win32", "darwin"].includes(os.platform())
-        || (config.General && config.General.noDesktopIcon)) {
+    if (!isElectron || ["win32", "darwin"].includes(os.platform()) || (config.General && config.General.noDesktopIcon)) {
         return;
     }
 
@@ -35,7 +33,7 @@ function installLocalAppIcon() {
         return;
     }
 
-    const desktopDir = path.resolve(os.homedir(), '.local/share/applications');
+    const desktopDir = path.resolve(os.homedir(), ".local/share/applications");
 
     fs.stat(desktopDir, function (err, stats) {
         if (err) {
@@ -56,9 +54,7 @@ function installLocalAppIcon() {
 }
 
 function getDesktopFileContent() {
-    return template
-        .replace("#APP_ROOT_DIR#", escapePath(resourceDir.ELECTRON_APP_ROOT_DIR))
-        .replace("#EXE_PATH#", escapePath(getExePath()));
+    return template.replace("#APP_ROOT_DIR#", escapePath(resourceDir.ELECTRON_APP_ROOT_DIR)).replace("#EXE_PATH#", escapePath(getExePath()));
 }
 
 function escapePath(path: string) {
@@ -66,7 +62,7 @@ function escapePath(path: string) {
 }
 
 function getExePath() {
-    return path.resolve(resourceDir.ELECTRON_APP_ROOT_DIR, 'trilium');
+    return path.resolve(resourceDir.ELECTRON_APP_ROOT_DIR, "trilium");
 }
 
 export default {

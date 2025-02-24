@@ -1,12 +1,17 @@
 [Desktop Entry]
-<% if (productName) { %>Name=<%= productName %>
-<% } %><% if (description) { %>Comment=<%= description %>
-<% } %><% if (genericName) { %>GenericName=<%= genericName %>
-<% } %><% if (name) { %>Exec=<%= name %> %U
-Icon=<%= name %>
-<% } %>Type=Application
-StartupNotify=true
-<% if (productName) { %>StartupWMClass=<%= productName %>
-<% } if (categories && categories.length) { %>Categories=<%= categories.join(';') %>;
-<% } %><% if (mimeType && mimeType.length) { %>MimeType=<%= mimeType.join(';') %>;
-<% } %>
+<%=
+Object.entries({
+    "Name": productName,
+    "Comment": description,
+    "GenericName": genericName,
+    "Exec": name ? `${name} %U` : undefined,
+    "Icon": name,
+    "Type": "Application",
+    "StartupNotify": "true",
+    "StartupWMClass": productName,
+    "Categories": categories?.length ? `${categories.join(";")};` : undefined,
+    "MimeType": mimeType?.length ? `${mimeType.join(";")};` : undefined
+})
+.map(line => line[1] ? line.join("=") : undefined)
+.filter(line => !!line)
+.join("\n")%>

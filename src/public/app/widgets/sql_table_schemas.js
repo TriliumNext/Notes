@@ -34,22 +34,20 @@ const TPL = `
     }
     </style>
 
-    ${t('sql_table_schemas.tables')}:
+    ${t("sql_table_schemas.tables")}:
     <span class="sql-table-schemas"></span>
 </div>`;
 
 export default class SqlTableSchemasWidget extends NoteContextAwareWidget {
     isEnabled() {
-        return this.note
-            && this.note.mime === 'text/x-sqlite;schema=trilium'
-            && super.isEnabled();
+        return this.note && this.note.mime === "text/x-sqlite;schema=trilium" && super.isEnabled();
     }
 
     doRender() {
         this.$widget = $(TPL);
         this.contentSized();
 
-        this.$sqlConsoleTableSchemas = this.$widget.find('.sql-table-schemas');
+        this.$sqlConsoleTableSchemas = this.$widget.find(".sql-table-schemas");
     }
 
     async refreshWithNote(note) {
@@ -59,7 +57,7 @@ export default class SqlTableSchemasWidget extends NoteContextAwareWidget {
 
         this.tableSchemasShown = true;
 
-        const tableSchema = await server.get('sql/schema');
+        const tableSchema = await server.get("sql/schema");
 
         for (const table of tableSchema) {
             const $tableLink = $('<button class="btn">').text(table.name);
@@ -67,19 +65,15 @@ export default class SqlTableSchemasWidget extends NoteContextAwareWidget {
             const $table = $('<table class="table-schema">');
 
             for (const column of table.columns) {
-                $table.append(
-                    $("<tr>")
-                        .append($("<td>").text(column.name))
-                        .append($("<td>").text(column.type))
-                );
+                $table.append($("<tr>").append($("<td>").text(column.name)).append($("<td>").text(column.type)));
             }
 
             this.$sqlConsoleTableSchemas.append($tableLink).append(" ");
 
             $tableLink.tooltip({
                 html: true,
-                placement: 'bottom',
-                boundary: 'window',
+                placement: "bottom",
+                boundary: "window",
                 title: $table[0].outerHTML,
                 sanitize: false
             });

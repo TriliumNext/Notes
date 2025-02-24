@@ -12,57 +12,75 @@ import dialogService from "../../services/dialog.js";
 import { t } from "../../services/i18n.js";
 
 const uniDirectionalOverlays = [
-    [ "Arrow", {
-        location: 1,
-        id: "arrow",
-        length: 14,
-        foldback: 0.8
-    } ],
-    [ "Label", { label: "", id: "label", cssClass: "connection-label" }]
+    [
+        "Arrow",
+        {
+            location: 1,
+            id: "arrow",
+            length: 14,
+            foldback: 0.8
+        }
+    ],
+    ["Label", { label: "", id: "label", cssClass: "connection-label" }]
 ];
 
 const biDirectionalOverlays = [
-    [ "Arrow", {
-        location: 1,
-        id: "arrow",
-        length: 14,
-        foldback: 0.8
-    } ],
-    [ "Label", { label: "", id: "label", cssClass: "connection-label" }],
-    [ "Arrow", {
-        location: 0,
-        id: "arrow2",
-        length: 14,
-        direction: -1,
-        foldback: 0.8
-    } ]
+    [
+        "Arrow",
+        {
+            location: 1,
+            id: "arrow",
+            length: 14,
+            foldback: 0.8
+        }
+    ],
+    ["Label", { label: "", id: "label", cssClass: "connection-label" }],
+    [
+        "Arrow",
+        {
+            location: 0,
+            id: "arrow2",
+            length: 14,
+            direction: -1,
+            foldback: 0.8
+        }
+    ]
 ];
 
 const inverseRelationsOverlays = [
-    [ "Arrow", {
-        location: 1,
-        id: "arrow",
-        length: 14,
-        foldback: 0.8
-    } ],
-    [ "Label", { label: "", location: 0.2, id: "label-source", cssClass: "connection-label" }],
-    [ "Label", { label: "", location: 0.8, id: "label-target", cssClass: "connection-label" }],
-    [ "Arrow", {
-        location: 0,
-        id: "arrow2",
-        length: 14,
-        direction: -1,
-        foldback: 0.8
-    } ]
+    [
+        "Arrow",
+        {
+            location: 1,
+            id: "arrow",
+            length: 14,
+            foldback: 0.8
+        }
+    ],
+    ["Label", { label: "", location: 0.2, id: "label-source", cssClass: "connection-label" }],
+    ["Label", { label: "", location: 0.8, id: "label-target", cssClass: "connection-label" }],
+    [
+        "Arrow",
+        {
+            location: 0,
+            id: "arrow2",
+            length: 14,
+            direction: -1,
+            foldback: 0.8
+        }
+    ]
 ];
 
 const linkOverlays = [
-    [ "Arrow", {
-        location: 1,
-        id: "arrow",
-        length: 14,
-        foldback: 0.8
-    } ]
+    [
+        "Arrow",
+        {
+            location: 1,
+            id: "arrow",
+            length: 14,
+            foldback: 0.8
+        }
+    ]
 ];
 
 const TPL = `
@@ -75,7 +93,9 @@ const TPL = `
 let containerCounter = 1;
 
 export default class RelationMapTypeWidget extends TypeWidget {
-    static getType() { return "relationMap"; }
+    static getType() {
+        return "relationMap";
+    }
 
     doRender() {
         this.$widget = $(TPL);
@@ -87,10 +107,10 @@ export default class RelationMapTypeWidget extends TypeWidget {
         this.relations = null;
         this.pzInstance = null;
 
-        this.$relationMapWrapper = this.$widget.find('.relation-map-wrapper');
-        this.$relationMapWrapper.on('click', event => {
+        this.$relationMapWrapper = this.$widget.find(".relation-map-wrapper");
+        this.$relationMapWrapper.on("click", (event) => {
             if (this.clipboard) {
-                let {x, y} = this.getMousePosition(event);
+                let { x, y } = this.getMousePosition(event);
 
                 // modifying position so that the cursor is on the top-center of the box
                 x -= 80;
@@ -108,8 +128,8 @@ export default class RelationMapTypeWidget extends TypeWidget {
             return true;
         });
 
-        this.$relationMapContainer.attr("id", "relation-map-container-" + (containerCounter++));
-        this.$relationMapContainer.on("contextmenu", ".note-box", e => {
+        this.$relationMapContainer.attr("id", "relation-map-container-" + containerCounter++);
+        this.$relationMapContainer.on("contextmenu", ".note-box", (e) => {
             contextMenu.show({
                 x: e.pageX,
                 y: e.pageY,
@@ -118,7 +138,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
                     { title: t("relation_map.remove_note"), command: "remove", uiIcon: "bx bx-trash" },
                     { title: t("relation_map.edit_title"), command: "editTitle", uiIcon: "bx bx-pencil" }
                 ],
-                selectMenuItemHandler: ({command}) => this.contextMenuHandler(command, e.target)
+                selectMenuItemHandler: ({ command }) => this.contextMenuHandler(command, e.target)
             });
 
             return false; // blocks default browser right click menu
@@ -126,10 +146,10 @@ export default class RelationMapTypeWidget extends TypeWidget {
 
         this.clipboard = null;
 
-        this.$widget.on("drop", ev => this.dropNoteOntoRelationMapHandler(ev));
-        this.$widget.on("dragover", ev => ev.preventDefault());
+        this.$widget.on("drop", (ev) => this.dropNoteOntoRelationMapHandler(ev));
+        this.$widget.on("dragover", (ev) => ev.preventDefault());
 
-        this.initialized = new Promise(async res => {
+        this.initialized = new Promise(async (res) => {
             await libraryLoader.requireLibrary(libraryLoader.RELATION_MAP);
 
             jsPlumb.ready(res);
@@ -145,8 +165,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
 
         if (command === "openInNewTab") {
             appContext.tabManager.openTabWithNoteWithHoisting(noteId);
-        }
-        else if (command === "remove") {
+        } else if (command === "remove") {
             const result = await dialogService.confirmDeleteNoteBoxWithNote($title.text());
 
             if (!result.confirmed) {
@@ -161,13 +180,12 @@ export default class RelationMapTypeWidget extends TypeWidget {
                 await server.remove(`notes/${noteId}?taskId=${taskId}&last=true`);
             }
 
-            this.mapData.notes = this.mapData.notes.filter(note => note.noteId !== noteId);
+            this.mapData.notes = this.mapData.notes.filter((note) => note.noteId !== noteId);
 
-            this.relations = this.relations.filter(relation => relation.sourceNoteId !== noteId && relation.targetNoteId !== noteId);
+            this.relations = this.relations.filter((relation) => relation.sourceNoteId !== noteId && relation.targetNoteId !== noteId);
 
             this.saveData();
-        }
-        else if (command === "editTitle") {
+        } else if (command === "editTitle") {
             const title = await dialogService.prompt({
                 title: t("relation_map.rename_note"),
                 message: t("relation_map.enter_new_title"),
@@ -237,29 +255,31 @@ export default class RelationMapTypeWidget extends TypeWidget {
     }
 
     async loadNotesAndRelations() {
-        const noteIds = this.mapData.notes.map(note => note.noteId);
-        const data = await server.post("relation-map", {noteIds, relationMapNoteId: this.noteId});
+        const noteIds = this.mapData.notes.map((note) => note.noteId);
+        const data = await server.post("relation-map", { noteIds, relationMapNoteId: this.noteId });
 
         this.relations = [];
 
         for (const relation of data.relations) {
-            const match = this.relations.find(rel =>
-                rel.name === data.inverseRelations[relation.name]
-                && ((rel.sourceNoteId === relation.sourceNoteId && rel.targetNoteId === relation.targetNoteId)
-                || (rel.sourceNoteId === relation.targetNoteId && rel.targetNoteId === relation.sourceNoteId)));
+            const match = this.relations.find(
+                (rel) =>
+                    rel.name === data.inverseRelations[relation.name] &&
+                    ((rel.sourceNoteId === relation.sourceNoteId && rel.targetNoteId === relation.targetNoteId) ||
+                        (rel.sourceNoteId === relation.targetNoteId && rel.targetNoteId === relation.sourceNoteId))
+            );
 
             if (match) {
-                match.type = relation.type = relation.name === data.inverseRelations[relation.name] ? 'biDirectional' : 'inverse';
+                match.type = relation.type = relation.name === data.inverseRelations[relation.name] ? "biDirectional" : "inverse";
                 relation.render = false; // don't render second relation
             } else {
-                relation.type = 'uniDirectional';
+                relation.type = "uniDirectional";
                 relation.render = true;
             }
 
             this.relations.push(relation);
         }
 
-        this.mapData.notes = this.mapData.notes.filter(note => note.noteId in data.noteTitles);
+        this.mapData.notes = this.mapData.notes.filter((note) => note.noteId in data.noteTitles);
 
         this.jsPlumbInstance.batch(async () => {
             this.clearMap();
@@ -283,11 +303,10 @@ export default class RelationMapTypeWidget extends TypeWidget {
 
                 connection.id = relation.attributeId;
 
-                if (relation.type === 'inverse') {
+                if (relation.type === "inverse") {
                     connection.getOverlay("label-source").setLabel(relation.name);
                     connection.getOverlay("label-target").setLabel(data.inverseRelations[relation.name]);
-                }
-                else {
+                } else {
                     connection.getOverlay("label").setLabel(relation.name);
                 }
 
@@ -305,14 +324,15 @@ export default class RelationMapTypeWidget extends TypeWidget {
             maxZoom: 2,
             minZoom: 0.3,
             smoothScroll: false,
-            filterKey: function(e, dx, dy, dz) {
+            filterKey: function (e, dx, dy, dz) {
                 // if ALT is pressed, then panzoom should bubble the event up
                 // this is to preserve ALT-LEFT, ALT-RIGHT navigation working
                 return e.altKey;
             }
         });
 
-        this.pzInstance.on('transform', () => { // gets triggered on any transform change
+        this.pzInstance.on("transform", () => {
+            // gets triggered on any transform change
             this.jsPlumbInstance.setZoom(this.getZoom());
 
             this.saveCurrentTransform();
@@ -322,8 +342,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
             this.pzInstance.zoomTo(0, 0, this.mapData.transform.scale);
 
             this.pzInstance.moveTo(this.mapData.transform.x, this.mapData.transform.y);
-        }
-        else {
+        } else {
             // set to initial coordinates
             this.pzInstance.moveTo(0, 0);
         }
@@ -351,7 +370,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         }
     }
 
-    initJsPlumbInstance () {
+    initJsPlumbInstance() {
         if (this.jsPlumbInstance) {
             this.cleanup();
 
@@ -359,20 +378,20 @@ export default class RelationMapTypeWidget extends TypeWidget {
         }
 
         this.jsPlumbInstance = jsPlumb.getInstance({
-            Endpoint: ["Dot", {radius: 2}],
+            Endpoint: ["Dot", { radius: 2 }],
             Connector: "StateMachine",
             ConnectionOverlays: uniDirectionalOverlays,
             HoverPaintStyle: { stroke: "#777", strokeWidth: 1 },
             Container: this.$relationMapContainer.attr("id")
         });
 
-        this.jsPlumbInstance.registerConnectionType("uniDirectional", { anchor:"Continuous", connector:"StateMachine", overlays: uniDirectionalOverlays });
+        this.jsPlumbInstance.registerConnectionType("uniDirectional", { anchor: "Continuous", connector: "StateMachine", overlays: uniDirectionalOverlays });
 
-        this.jsPlumbInstance.registerConnectionType("biDirectional", { anchor:"Continuous", connector:"StateMachine", overlays: biDirectionalOverlays });
+        this.jsPlumbInstance.registerConnectionType("biDirectional", { anchor: "Continuous", connector: "StateMachine", overlays: biDirectionalOverlays });
 
-        this.jsPlumbInstance.registerConnectionType("inverse", { anchor:"Continuous", connector:"StateMachine", overlays: inverseRelationsOverlays });
+        this.jsPlumbInstance.registerConnectionType("inverse", { anchor: "Continuous", connector: "StateMachine", overlays: inverseRelationsOverlays });
 
-        this.jsPlumbInstance.registerConnectionType("link", { anchor:"Continuous", connector:"StateMachine", overlays: linkOverlays });
+        this.jsPlumbInstance.registerConnectionType("link", { anchor: "Continuous", connector: "StateMachine", overlays: linkOverlays });
 
         this.jsPlumbInstance.bind("connection", (info, originalEvent) => this.connectionCreatedHandler(info, originalEvent));
     }
@@ -385,28 +404,27 @@ export default class RelationMapTypeWidget extends TypeWidget {
                 // don't create context menu if it's a link since there's nothing to do with link from relation map
                 // (don't open browser menu either)
                 event.preventDefault();
-            }
-            else {
+            } else {
                 event.preventDefault();
                 event.stopPropagation();
 
                 contextMenu.show({
                     x: event.pageX,
                     y: event.pageY,
-                    items: [{title: t("relation_map.remove_relation"), command: "remove", uiIcon: "bx bx-trash"}],
-                    selectMenuItemHandler: async ({command}) => {
-                        if (command === 'remove') {
-                            if (!await dialogService.confirm(t("relation_map.confirm_remove_relation"))) {
+                    items: [{ title: t("relation_map.remove_relation"), command: "remove", uiIcon: "bx bx-trash" }],
+                    selectMenuItemHandler: async ({ command }) => {
+                        if (command === "remove") {
+                            if (!(await dialogService.confirm(t("relation_map.confirm_remove_relation")))) {
                                 return;
                             }
 
-                            const relation = this.relations.find(rel => rel.attributeId === connection.id);
+                            const relation = this.relations.find((rel) => rel.attributeId === connection.id);
 
                             await server.remove(`notes/${relation.sourceNoteId}/relations/${relation.name}/to/${relation.targetNoteId}`);
 
                             this.jsPlumbInstance.deleteConnection(connection);
 
-                            this.relations = this.relations.filter(relation => relation.attributeId !== connection.id);
+                            this.relations = this.relations.filter((relation) => relation.attributeId !== connection.id);
                         }
                     }
                 });
@@ -421,7 +439,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         let name = await dialogService.prompt({
             message: t("relation_map.specify_new_relation_name"),
             shown: ({ $answer }) => {
-                $answer.on('keyup', () => {
+                $answer.on("keyup", () => {
                     // invalid characters are simply ignored (from user perspective they are not even entered)
                     const attrName = utils.filterAttributeName($answer.val());
 
@@ -447,13 +465,10 @@ export default class RelationMapTypeWidget extends TypeWidget {
         const targetNoteId = this.idToNoteId(connection.target.id);
         const sourceNoteId = this.idToNoteId(connection.source.id);
 
-        const relationExists = this.relations.some(rel =>
-            rel.targetNoteId === targetNoteId
-            && rel.sourceNoteId === sourceNoteId
-            && rel.name === name);
+        const relationExists = this.relations.some((rel) => rel.targetNoteId === targetNoteId && rel.sourceNoteId === sourceNoteId && rel.name === name);
 
         if (relationExists) {
-            await dialogService.info(t("relation_map.connection_exists", {name}));
+            await dialogService.info(t("relation_map.connection_exists", { name }));
 
             this.jsPlumbInstance.deleteConnection(connection);
 
@@ -470,8 +485,8 @@ export default class RelationMapTypeWidget extends TypeWidget {
     }
 
     async createNoteBox(noteId, title, x, y) {
-        const $link = await linkService.createLink(noteId, {title});
-        $link.mousedown(e => linkService.goToLink(e));
+        const $link = await linkService.createLink(noteId, { title });
+        $link.mousedown((e) => linkService.goToLink(e));
 
         const note = await froca.getNote(noteId);
 
@@ -487,15 +502,15 @@ export default class RelationMapTypeWidget extends TypeWidget {
         this.jsPlumbInstance.getContainer().appendChild($noteBox[0]);
 
         this.jsPlumbInstance.draggable($noteBox[0], {
-            start: params => {},
-            drag: params => {},
-            stop: params => {
+            start: (params) => {},
+            drag: (params) => {},
+            stop: (params) => {
                 const noteId = this.idToNoteId(params.el.id);
 
-                const note = this.mapData.notes.find(note => note.noteId === noteId);
+                const note = this.mapData.notes.find((note) => note.noteId === noteId);
 
                 if (!note) {
-                    logError(t("relation_map.note_not_found", {noteId}));
+                    logError(t("relation_map.note_not_found", { noteId }));
                     return;
                 }
 
@@ -510,8 +525,8 @@ export default class RelationMapTypeWidget extends TypeWidget {
             anchor: "Continuous",
             connectorStyle: { stroke: "#000", strokeWidth: 1 },
             connectionType: "basic",
-            extract:{
-                "action": "the-action"
+            extract: {
+                action: "the-action"
             }
         });
 
@@ -525,16 +540,16 @@ export default class RelationMapTypeWidget extends TypeWidget {
     getZoom() {
         const matrixRegex = /matrix\((-?\d*\.?\d+),\s*0,\s*0,\s*-?\d*\.?\d+,\s*-?\d*\.?\d+,\s*-?\d*\.?\d+\)/;
 
-        const transform = this.$relationMapContainer.css('transform');
+        const transform = this.$relationMapContainer.css("transform");
 
-        if (transform === 'none') {
+        if (transform === "none") {
             return 1;
         }
 
         const matches = transform.match(matrixRegex);
 
         if (!matches) {
-            throw new Error(t("relation_map.cannot_match_transform", {transform}));
+            throw new Error(t("relation_map.cannot_match_transform", { transform }));
         }
 
         return matches[1];
@@ -545,23 +560,22 @@ export default class RelationMapTypeWidget extends TypeWidget {
 
         const notes = JSON.parse(ev.originalEvent.dataTransfer.getData("text"));
 
-        let {x, y} = this.getMousePosition(ev);
+        let { x, y } = this.getMousePosition(ev);
 
         for (const note of notes) {
-            const exists = this.mapData.notes.some(n => n.noteId === note.noteId);
+            const exists = this.mapData.notes.some((n) => n.noteId === note.noteId);
 
             if (exists) {
-                toastService.showError(t("relation_map.note_already_in_diagram", {title: note.title}));
+                toastService.showError(t("relation_map.note_already_in_diagram", { title: note.title }));
                 continue;
             }
 
-            this.mapData.notes.push({noteId: note.noteId, x, y});
+            this.mapData.notes.push({ noteId: note.noteId, x, y });
 
             if (x > 1000) {
                 y += 100;
                 x = 0;
-            }
-            else {
+            } else {
                 x += 200;
             }
         }
@@ -588,7 +602,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         };
     }
 
-    async relationMapCreateChildNoteEvent({ntxId}) {
+    async relationMapCreateChildNoteEvent({ ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -599,10 +613,10 @@ export default class RelationMapTypeWidget extends TypeWidget {
             return;
         }
 
-        const {note} = await server.post(`notes/${this.noteId}/children?target=into`, {
+        const { note } = await server.post(`notes/${this.noteId}/children?target=into`, {
             title,
-            content: '',
-            type: 'text'
+            content: "",
+            type: "text"
         });
 
         toastService.showMessage(t("relation_map.click_on_canvas_to_place_new_note"));
@@ -610,7 +624,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         this.clipboard = { noteId: note.noteId, title };
     }
 
-    relationMapResetPanZoomEvent({ntxId}) {
+    relationMapResetPanZoomEvent({ ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -620,7 +634,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         this.pzInstance.moveTo(0, 0);
     }
 
-    relationMapResetZoomInEvent({ntxId}) {
+    relationMapResetZoomInEvent({ ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -628,7 +642,7 @@ export default class RelationMapTypeWidget extends TypeWidget {
         this.pzInstance.zoomTo(0, 0, 1.2);
     }
 
-    relationMapResetZoomOutEvent({ntxId}) {
+    relationMapResetZoomOutEvent({ ntxId }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }

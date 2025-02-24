@@ -11,13 +11,13 @@ class ZoomComponent extends Component {
 
         if (utils.isElectron()) {
             options.initializedPromise.then(() => {
-                const zoomFactor = options.getFloat('zoomFactor');
+                const zoomFactor = options.getFloat("zoomFactor");
                 if (zoomFactor) {
                     this.setZoomFactor(zoomFactor);
                 }
             });
 
-            window.addEventListener("wheel", event => {
+            window.addEventListener("wheel", (event) => {
                 if (event.ctrlKey) {
                     this.setZoomFactorAndSave(this.getCurrentZoom() - event.deltaY * 0.001);
                 }
@@ -26,8 +26,8 @@ class ZoomComponent extends Component {
     }
 
     setZoomFactor(zoomFactor: string | number) {
-        const parsedZoomFactor = (typeof zoomFactor !== "number" ? parseFloat(zoomFactor) : zoomFactor);
-        const webFrame = utils.dynamicRequire('electron').webFrame;
+        const parsedZoomFactor = typeof zoomFactor !== "number" ? parseFloat(zoomFactor) : zoomFactor;
+        const webFrame = utils.dynamicRequire("electron").webFrame;
         webFrame.setZoomFactor(parsedZoomFactor);
     }
 
@@ -37,15 +37,14 @@ class ZoomComponent extends Component {
 
             this.setZoomFactor(zoomFactor);
 
-            await options.save('zoomFactor', zoomFactor);
-        }
-        else {
+            await options.save("zoomFactor", zoomFactor);
+        } else {
             console.log(`Zoom factor ${zoomFactor} outside of the range, ignored.`);
         }
     }
 
     getCurrentZoom() {
-        return utils.dynamicRequire('electron').webFrame.getZoomFactor();
+        return utils.dynamicRequire("electron").webFrame.getZoomFactor();
     }
 
     zoomOutEvent() {
@@ -58,7 +57,7 @@ class ZoomComponent extends Component {
     zoomResetEvent() {
         this.setZoomFactorAndSave(1);
     }
-    
+
     setZoomFactorAndSaveEvent({ zoomFactor }: { zoomFactor: number }) {
         this.setZoomFactorAndSave(zoomFactor);
     }

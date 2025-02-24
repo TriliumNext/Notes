@@ -1,4 +1,4 @@
-import { OptionRow } from "../becca/entities/rows.js";
+import type { OptionRow } from "../becca/entities/rows.js";
 
 /**
  * Response for /api/setup/status.
@@ -13,5 +13,5 @@ export interface SetupStatusResponse {
  */
 export interface SetupSyncSeedResponse {
     syncVersion: number;
-    options: OptionRow[]
+    options: OptionRow[];
 }

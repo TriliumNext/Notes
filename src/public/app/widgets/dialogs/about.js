@@ -1,10 +1,9 @@
-import { formatDateTime } from "../../utils/formatters.js"
+import { formatDateTime } from "../../utils/formatters.js";
 import { t } from "../../services/i18n.js";
 import BasicWidget from "../basic_widget.js";
 import openService from "../../services/open.js";
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
-
 
 const TPL = `
 <div class="about-dialog modal fade mx-auto" tabindex="-1" role="dialog">
@@ -12,13 +11,13 @@ const TPL = `
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">${t("about.title")}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('about.close')}"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("about.close")}"></button>
             </div>
             <div class="modal-body">
-                <table class="table table-borderless text-nowrap">
+                <table class="table table-borderless">
                     <tr>
                         <th>${t("about.homepage")}</th>
-                        <td><a href="https://github.com/TriliumNext/Notes" class="external">https://github.com/TriliumNext/Notes</a></td>
+                        <td><a class="tn-link" href="https://github.com/TriliumNext/Notes" class="external">https://github.com/TriliumNext/Notes</a></td>
                     </tr>
                     <tr>
                         <th>${t("about.app_version")}</th>
@@ -39,7 +38,7 @@ const TPL = `
 
                     <tr>
                         <th>${t("about.build_revision")}</th>
-                        <td><a href="" class="build-revision external" target="_blank"></a></td>
+                        <td><a class="tn-link" href="" class="build-revision external" target="_blank"></a></td>
                     </tr>
 
                     <tr>
@@ -50,7 +49,14 @@ const TPL = `
             </div>
         </div>
     </div>
-</div>`;
+</div>
+
+<style>
+.about-dialog a {
+    word-break: break-all;
+}
+</style>
+`;
 
 export default class AboutDialog extends BasicWidget {
     doRender() {
@@ -64,23 +70,26 @@ export default class AboutDialog extends BasicWidget {
     }
 
     async refresh() {
-        const appInfo = await server.get('app-info');
+        const appInfo = await server.get("app-info");
 
         this.$appVersion.text(appInfo.appVersion);
         this.$dbVersion.text(appInfo.dbVersion);
         this.$syncVersion.text(appInfo.syncVersion);
         this.$buildDate.text(formatDateTime(appInfo.buildDate));
         this.$buildRevision.text(appInfo.buildRevision);
-        this.$buildRevision.attr('href', `https://github.com/TriliumNext/Notes/commit/${appInfo.buildRevision}`);
+        this.$buildRevision.attr("href", `https://github.com/TriliumNext/Notes/commit/${appInfo.buildRevision}`);
         if (utils.isElectron()) {
-            this.$dataDirectory.html($('<a></a>', {
-                href: '#',
-                text: appInfo.dataDirectory,
-            }));
-            this.$dataDirectory.find("a").on('click', (event) => {
+            this.$dataDirectory.html(
+                $("<a></a>", {
+                    href: "#",
+                    class: "tn-link",
+                    text: appInfo.dataDirectory
+                })
+            );
+            this.$dataDirectory.find("a").on("click", (event) => {
                 event.preventDefault();
                 openService.openDirectory(appInfo.dataDirectory);
-            })
+            });
         } else {
             this.$dataDirectory.text(appInfo.dataDirectory);
         }

@@ -11,8 +11,7 @@ async function doExclusively<T>(func: () => T) {
 
     try {
         return await func();
-    }
-    finally {
+    } finally {
         releaseMutex();
     }
 }

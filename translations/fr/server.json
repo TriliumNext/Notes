@@ -100,6 +100,7 @@
     "button": "Connexion"
   },
   "set_password": {
+    "title": "Définir un mot de passe",
     "heading": "Définir un mot de passe",
     "description": "Avant de pouvoir commencer à utiliser Trilium depuis le web, vous devez d'abord définir un mot de passe. Vous utiliserez ensuite ce mot de passe pour vous connecter.",
     "password": "Mot de passe",

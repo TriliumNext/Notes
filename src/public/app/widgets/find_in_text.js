@@ -18,7 +18,7 @@ export default class FindInText {
         let currentFound = -1;
 
         // Clear
-        const findAndReplaceEditing = textEditor.plugins.get('FindAndReplaceEditing');
+        const findAndReplaceEditing = textEditor.plugins.get("FindAndReplaceEditing");
         findAndReplaceEditing.state.clear(model);
         findAndReplaceEditing.stop();
         this.editingState = findAndReplaceEditing.state;
@@ -30,8 +30,8 @@ export default class FindInText {
             // let re = new RegExp(searchTerm, 'gi');
             // let m = text.match(re);
             // totalFound = m ? m.length : 0;
-            const options = { "matchCase": matchCase, "wholeWords": wholeWord };
-            findResult = textEditor.execute('find', searchTerm, options);
+            const options = { matchCase: matchCase, wholeWords: wholeWord };
+            findResult = textEditor.execute("find", searchTerm, options);
             totalFound = findResult.results.length;
             // Find the result beyond the cursor
             const cursorPos = model.document.selection.getLastPosition();
@@ -53,8 +53,8 @@ export default class FindInText {
             currentFound = Math.max(0, currentFound);
             // XXX Do this accessing the private data?
             // See https://github.com/ckeditor/ckeditor5/blob/b95e2faf817262ac0e1e21993d9c0bde3f1be594/packages/ckeditor5-find-and-replace/src/findnextcommand.js
-            for (let i = 0 ; i < currentFound; ++i) {
-                textEditor.execute('findNext', searchTerm);
+            for (let i = 0; i < currentFound; ++i) {
+                textEditor.execute("findNext", searchTerm);
             }
         }
 
@@ -72,9 +72,9 @@ export default class FindInText {
         // curFound wrap around above assumes findNext and
         // findPrevious wraparound, which is what they do
         if (direction > 0) {
-            textEditor.execute('findNext');
+            textEditor.execute("findNext");
         } else {
-            textEditor.execute('findPrevious');
+            textEditor.execute("findPrevious");
         }
     }
 
@@ -90,10 +90,10 @@ export default class FindInText {
             // https://github.com/ckeditor/ckeditor5/blob/b95e2faf817262ac0e1e21993d9c0bde3f1be594/packages/ckeditor5-find-and-replace/src/findandreplace.js#L92
             // XXX Roll our own since already done for codeEditor and
             //     will probably allow more refactoring?
-            let findAndReplaceEditing = textEditor.plugins.get('FindAndReplaceEditing');
+            let findAndReplaceEditing = textEditor.plugins.get("FindAndReplaceEditing");
             findAndReplaceEditing.state.clear(model);
             findAndReplaceEditing.stop();
-            model.change(writer => {
+            model.change((writer) => {
                 writer.setSelection(range, 0);
             });
             textEditor.editing.view.scrollToTheSelection();
@@ -107,14 +107,14 @@ export default class FindInText {
     async replace(replaceText) {
         if (this.editingState !== undefined && this.editingState.highlightedResult !== null) {
             const textEditor = await this.getTextEditor();
-            textEditor.execute('replace', replaceText, this.editingState.highlightedResult);
+            textEditor.execute("replace", replaceText, this.editingState.highlightedResult);
         }
     }
 
     async replaceAll(replaceText) {
-        if (this.editingState !== undefined  && this.editingState.results.length > 0) {
+        if (this.editingState !== undefined && this.editingState.results.length > 0) {
             const textEditor = await this.getTextEditor();
-            textEditor.execute('replaceAll', replaceText, this.editingState.results);
+            textEditor.execute("replaceAll", replaceText, this.editingState.results);
         }
     }
 }

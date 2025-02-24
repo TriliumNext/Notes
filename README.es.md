@@ -86,7 +86,7 @@ Clone localmente y ejecute
 
 ```shell
 npm install
-npm run start-server
+npm run server:start
 ```
 
 ## 👏 Reconocimientos

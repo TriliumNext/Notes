@@ -1,4 +1,4 @@
-import { Froca } from "../services/froca-interface.js";
+import type { Froca } from "../services/froca-interface.js";
 
 export interface FBranchRow {
     branchId: string;
@@ -8,6 +8,7 @@ export interface FBranchRow {
     prefix?: string;
     isExpanded?: boolean;
     fromSearchNote: boolean;
+    isDeleted?: boolean;
 }
 
 /**
@@ -61,7 +62,7 @@ class FBranch {
 
     /** @returns true if it's top level, meaning its parent is the root note */
     isTopLevel() {
-        return this.parentNoteId === 'root';
+        return this.parentNoteId === "root";
     }
 
     get toString() {
@@ -69,7 +70,7 @@ class FBranch {
     }
 
     get pojo(): Omit<FBranch, "froca"> {
-        const pojo = {...this} as any;
+        const pojo = { ...this } as any;
         delete pojo.froca;
         return pojo;
     }

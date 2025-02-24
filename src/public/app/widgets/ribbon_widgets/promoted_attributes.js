@@ -16,7 +16,7 @@ const TPL = `
         flex-shrink: 0.4;
         overflow: auto;
     }
-    
+
     .promoted-attributes-container {
         margin: 0 1.5em;
         overflow: auto;
@@ -39,7 +39,7 @@ const TPL = `
         display: table-cell;
         padding: 1px 0;
     }
-    
+
     .promoted-attribute-cell div.input-group {
         margin-left: 10px;
         display: flex;
@@ -54,9 +54,9 @@ const TPL = `
         flex-grow: 0;
         width: unset;
     }
-    
+
     </style>
-    
+
     <div class="promoted-attributes-container"></div>
 </div>`;
 
@@ -89,8 +89,8 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
 
         return {
             show: true,
-            activate: options.is('promotedAttributesOpenInRibbon'),
-            title: t('promoted_attributes.promoted_attributes'),
+            activate: options.is("promotedAttributesOpenInRibbon"),
+            title: t("promoted_attributes.promoted_attributes"),
             icon: "bx bx-table"
         };
     }
@@ -113,10 +113,10 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
         const $cells = [];
 
         for (const definitionAttr of promotedDefAttrs) {
-            const valueType = definitionAttr.name.startsWith('label:') ? 'label' : 'relation';
+            const valueType = definitionAttr.name.startsWith("label:") ? "label" : "relation";
             const valueName = definitionAttr.name.substr(valueType.length + 1);
 
-            let valueAttrs = ownedAttributes.filter(el => el.name === valueName && el.type === valueType);
+            let valueAttrs = ownedAttributes.filter((el) => el.name === valueName && el.type === valueType);
 
             if (valueAttrs.length === 0) {
                 valueAttrs.push({
@@ -127,7 +127,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 });
             }
 
-            if (definitionAttr.getDefinition().multiplicity === 'single') {
+            if (definitionAttr.getDefinition().multiplicity === "single") {
                 valueAttrs = valueAttrs.slice(0, 1);
             }
 
@@ -151,62 +151,69 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
         const $input = $("<input>")
             .prop("tabindex", 200 + definitionAttr.position)
             .prop("id", id)
-            .attr("data-attribute-id", valueAttr.noteId === this.noteId ? valueAttr.attributeId : '') // if not owned, we'll force creation of a new attribute instead of updating the inherited one
+            .attr("data-attribute-id", valueAttr.noteId === this.noteId ? valueAttr.attributeId : "") // if not owned, we'll force creation of a new attribute instead of updating the inherited one
             .attr("data-attribute-type", valueAttr.type)
             .attr("data-attribute-name", valueAttr.name)
             .prop("value", valueAttr.value)
+            .prop("placeholder", t("promoted_attributes.unset-field-placeholder"))
             .addClass("form-control")
             .addClass("promoted-attribute-input")
-            .on('change', event => this.promotedAttributeChanged(event));
+            .on("change", (event) => this.promotedAttributeChanged(event));
 
         const $actionCell = $("<div>");
-        const $multiplicityCell = $("<td>")
-            .addClass("multiplicity")
-            .attr("nowrap", true);
+        const $multiplicityCell = $("<td>").addClass("multiplicity").attr("nowrap", true);
 
         const $wrapper = $('<div class="promoted-attribute-cell">')
-            .append($("<label>").prop("for", id).text(definition.promotedAlias ?? valueName))
+            .append(
+                $("<label>")
+                    .prop("for", id)
+                    .text(definition.promotedAlias ?? valueName)
+            )
             .append($("<div>").addClass("input-group").append($input))
             .append($actionCell)
             .append($multiplicityCell);
 
-        if (valueAttr.type === 'label') {
-            if (definition.labelType === 'text') {
+        if (valueAttr.type === "label") {
+            if (definition.labelType === "text") {
                 $input.prop("type", "text");
 
                 // autocomplete for label values is just nice to have, mobile can keep labels editable without autocomplete
                 if (utils.isDesktop()) {
                     // no need to await for this, can be done asynchronously
-                    server.get(`attribute-values/${encodeURIComponent(valueAttr.name)}`).then(attributeValues => {
+                    server.get(`attribute-values/${encodeURIComponent(valueAttr.name)}`).then((attributeValues) => {
                         if (attributeValues.length === 0) {
                             return;
                         }
 
-                        attributeValues = attributeValues.map(attribute => ({ value: attribute }));
+                        attributeValues = attributeValues.map((attribute) => ({ value: attribute }));
 
-                        $input.autocomplete({
-                            appendTo: document.querySelector('body'),
-                            hint: false,
-                            autoselect: false,
-                            openOnFocus: true,
-                            minLength: 0,
-                            tabAutocomplete: false
-                        }, [{
-                            displayKey: 'value',
-                            source: function (term, cb) {
-                                term = term.toLowerCase();
+                        $input.autocomplete(
+                            {
+                                appendTo: document.querySelector("body"),
+                                hint: false,
+                                autoselect: false,
+                                openOnFocus: true,
+                                minLength: 0,
+                                tabAutocomplete: false
+                            },
+                            [
+                                {
+                                    displayKey: "value",
+                                    source: function (term, cb) {
+                                        term = term.toLowerCase();
 
-                                const filtered = attributeValues.filter(attr => attr.value.toLowerCase().includes(term));
+                                        const filtered = attributeValues.filter((attr) => attr.value.toLowerCase().includes(term));
 
-                                cb(filtered);
-                            }
-                        }]);
+                                        cb(filtered);
+                                    }
+                                }
+                            ]
+                        );
 
-                        $input.on('autocomplete:selected', e => this.promotedAttributeChanged(e));
+                        $input.on("autocomplete:selected", (e) => this.promotedAttributeChanged(e));
                     });
                 }
-            }
-            else if (definition.labelType === 'number') {
+            } else if (definition.labelType === "number") {
                 $input.prop("type", "number");
 
                 let step = 1;
@@ -216,41 +223,35 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 }
 
                 $input.prop("step", step);
-                $input
-                    .css("text-align", "right")
-                    .css("width", "120");
-            }
-            else if (definition.labelType === 'boolean') {
+                $input.css("text-align", "right").css("width", "120");
+            } else if (definition.labelType === "boolean") {
                 $input.prop("type", "checkbox");
+
+                $input.wrap($(`<label class="tn-checkbox"></label>`));
+                $wrapper.find(".input-group").removeClass("input-group");
 
                 if (valueAttr.value === "true") {
                     $input.prop("checked", "checked");
                 }
-            }
-            else if (definition.labelType === 'date') {
+            } else if (definition.labelType === "date") {
                 $input.prop("type", "date");
-            }
-            else if (definition.labelType === 'datetime') {
-                $input.prop('type', 'datetime-local')
-            }
-            else if (definition.labelType === 'time') {
-                $input.prop('type', 'time')
-            }
-            else if (definition.labelType === 'url') {
+            } else if (definition.labelType === "datetime") {
+                $input.prop("type", "datetime-local");
+            } else if (definition.labelType === "time") {
+                $input.prop("type", "time");
+            } else if (definition.labelType === "url") {
                 $input.prop("placeholder", t("promoted_attributes.url_placeholder"));
 
                 const $openButton = $("<span>")
                     .addClass("input-group-text open-external-link-button bx bx-window-open")
                     .prop("title", t("promoted_attributes.open_external_link"))
-                    .on('click', () => window.open($input.val(), '_blank'));
+                    .on("click", () => window.open($input.val(), "_blank"));
 
                 $input.after($openButton);
-            }
-            else {
+            } else {
                 ws.logError(t("promoted_attributes.unknown_label_type", { type: definitionAttr.labelType }));
             }
-        }
-        else if (valueAttr.type === 'relation') {
+        } else if (valueAttr.type === "relation") {
             if (valueAttr.value) {
                 $input.val(await treeService.getNoteTitle(valueAttr.value));
             }
@@ -259,7 +260,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 // no need to wait for this
                 noteAutocompleteService.initNoteAutocomplete($input, { allowCreatingNotes: true });
 
-                $input.on('autocomplete:noteselected', (event, suggestion, dataset) => {
+                $input.on("autocomplete:noteselected", (event, suggestion, dataset) => {
                     this.promotedAttributeChanged(event);
                 });
 
@@ -268,33 +269,36 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 // we can't provide user a way to edit the relation so make it read only
                 $input.attr("readonly", "readonly");
             }
-        }
-        else {
+        } else {
             ws.logError(t(`promoted_attributes.unknown_attribute_type`, { type: valueAttr.type }));
             return;
         }
 
         if (definition.multiplicity === "multi") {
             const $addButton = $("<span>")
-                .addClass("bx bx-plus pointer")
+                .addClass("bx bx-plus pointer tn-tool-button")
                 .prop("title", t("promoted_attributes.add_new_attribute"))
-                .on('click', async () => {
-                    const $new = await this.createPromotedAttributeCell(definitionAttr, {
-                        attributeId: "",
-                        type: valueAttr.type,
-                        name: valueName,
-                        value: ""
-                    }, valueName);
+                .on("click", async () => {
+                    const $new = await this.createPromotedAttributeCell(
+                        definitionAttr,
+                        {
+                            attributeId: "",
+                            type: valueAttr.type,
+                            name: valueName,
+                            value: ""
+                        },
+                        valueName
+                    );
 
                     $wrapper.after($new);
 
-                    $new.find('input').trigger('focus');
+                    $new.find("input").trigger("focus");
                 });
 
             const $removeButton = $("<span>")
-                .addClass("bx bx-trash pointer")
+                .addClass("bx bx-trash pointer tn-tool-button")
                 .prop("title", t("promoted_attributes.remove_this_attribute"))
-                .on('click', async () => {
+                .on("click", async () => {
                     const attributeId = $input.attr("data-attribute-id");
 
                     if (attributeId) {
@@ -305,12 +309,16 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                     const sameAttrSelector = `input[data-attribute-type='${valueAttr.type}'][data-attribute-name='${valueName}']`;
 
                     if (this.$widget.find(sameAttrSelector).length <= 1) {
-                        const $new = await this.createPromotedAttributeCell(definitionAttr, {
-                            attributeId: "",
-                            type: valueAttr.type,
-                            name: valueName,
-                            value: ""
-                        }, valueName);
+                        const $new = await this.createPromotedAttributeCell(
+                            definitionAttr,
+                            {
+                                attributeId: "",
+                                type: valueAttr.type,
+                                name: valueName,
+                                value: ""
+                            },
+                            valueName
+                        );
 
                         $wrapper.after($new);
                     }
@@ -318,11 +326,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                     $wrapper.remove();
                 });
 
-            $multiplicityCell
-                .append(" &nbsp;")
-                .append($addButton)
-                .append(" &nbsp;")
-                .append($removeButton);
+            $multiplicityCell.append(" &nbsp;").append($addButton).append(" &nbsp;").append($removeButton);
         }
 
         return $wrapper;
@@ -334,23 +338,25 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
         let value;
 
         if ($attr.prop("type") === "checkbox") {
-            value = $attr.is(':checked') ? "true" : "false";
-        }
-        else if ($attr.attr("data-attribute-type") === "relation") {
+            value = $attr.is(":checked") ? "true" : "false";
+        } else if ($attr.attr("data-attribute-type") === "relation") {
             const selectedPath = $attr.getSelectedNotePath();
 
             value = selectedPath ? treeService.getNoteIdFromUrl(selectedPath) : "";
-        }
-        else {
+        } else {
             value = $attr.val();
         }
 
-        const result = await server.put(`notes/${this.noteId}/attribute`, {
-            attributeId: $attr.attr("data-attribute-id"),
-            type: $attr.attr("data-attribute-type"),
-            name: $attr.attr("data-attribute-name"),
-            value: value
-        }, this.componentId);
+        const result = await server.put(
+            `notes/${this.noteId}/attribute`,
+            {
+                attributeId: $attr.attr("data-attribute-id"),
+                type: $attr.attr("data-attribute-type"),
+                name: $attr.attr("data-attribute-name"),
+                value: value
+            },
+            this.componentId
+        );
 
         $attr.attr("data-attribute-id", result.attributeId);
     }
@@ -360,7 +366,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
     }
 
     entitiesReloadedEvent({ loadResults }) {
-        if (loadResults.getAttributeRows(this.componentId).find(attr => attributeService.isAffecting(attr, this.note))) {
+        if (loadResults.getAttributeRows(this.componentId).find((attr) => attributeService.isAffecting(attr, this.note))) {
             this.refresh();
         }
     }

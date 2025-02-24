@@ -60,14 +60,7 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
         this.sharedSwitchWidget = new SharedSwitchWidget().contentSized();
         this.templateSwitchWidget = new TemplateSwitchWidget().contentSized();
 
-        this.child(
-            this.noteTypeWidget,
-            this.protectedNoteSwitchWidget,
-            this.editabilitySelectWidget,
-            this.bookmarkSwitchWidget,
-            this.sharedSwitchWidget,
-            this.templateSwitchWidget
-        );
+        this.child(this.noteTypeWidget, this.protectedNoteSwitchWidget, this.editabilitySelectWidget, this.bookmarkSwitchWidget, this.sharedSwitchWidget, this.templateSwitchWidget);
     }
 
     get name() {
@@ -82,7 +75,7 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
         return {
             show: !this.note.isLaunchBarConfig(),
             title: t("basic_properties.basic_properties"),
-            icon: 'bx bx-slider'
+            icon: "bx bx-slider"
         };
     }
 
@@ -101,6 +94,6 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
     async refreshWithNote(note) {
         await super.refreshWithNote(note);
 
-        this.$widget.find(".editability-select-container").toggle(this.note && ['text', 'code'].includes(this.note.type))
+        this.$widget.find(".editability-select-container").toggle(this.note && ["text", "code"].includes(this.note.type));
     }
 }

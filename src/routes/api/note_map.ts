@@ -2,13 +2,19 @@
 
 import becca from "../../becca/becca.js";
 import { JSDOM } from "jsdom";
-import BNote from "../../becca/entities/bnote.js";
-import BAttribute from "../../becca/entities/battribute.js";
-import { Request } from 'express';
+import type BNote from "../../becca/entities/bnote.js";
+import type BAttribute from "../../becca/entities/battribute.js";
+import type { Request } from "express";
+
+interface Backlink {
+    noteId: string;
+    relationName?: string;
+    excerpts?: string[];
+}
 
 function buildDescendantCountMap(noteIdsToCount: string[]) {
     if (!Array.isArray(noteIdsToCount)) {
-        throw new Error('noteIdsToCount: type error');
+        throw new Error("noteIdsToCount: type error");
     }
 
     const noteIdToCountMap = Object.create(null);
@@ -20,9 +26,9 @@ function buildDescendantCountMap(noteIdsToCount: string[]) {
                 return;
             }
 
-            const hiddenImageNoteIds = note.getRelations('imageLink').map(rel => rel.value);
-            const childNoteIds = note.children.map(child => child.noteId);
-            const nonHiddenNoteIds = childNoteIds.filter(childNoteId => !hiddenImageNoteIds.includes(childNoteId));
+            const hiddenImageNoteIds = note.getRelations("imageLink").map((rel) => rel.value);
+            const childNoteIds = note.children.map((child) => child.noteId);
+            const nonHiddenNoteIds = childNoteIds.filter((childNoteId) => !hiddenImageNoteIds.includes(childNoteId));
 
             noteIdToCountMap[noteId] = nonHiddenNoteIds.length;
 
@@ -47,7 +53,7 @@ function getNeighbors(note: BNote, depth: number): string[] {
     const retNoteIds = [];
 
     function isIgnoredRelation(relation: BAttribute) {
-        return ['relationMapLink', 'template', 'inherit', 'image', 'ancestor'].includes(relation.name);
+        return ["relationMapLink", "template", "inherit", "image", "ancestor"].includes(relation.name);
     }
 
     // forward links
@@ -58,7 +64,7 @@ function getNeighbors(note: BNote, depth: number): string[] {
 
         const targetNote = relation.getTargetNote();
 
-        if (!targetNote || targetNote.isLabelTruthy('excludeFromNoteMap')) {
+        if (!targetNote || targetNote.isLabelTruthy("excludeFromNoteMap")) {
             continue;
         }
 
@@ -77,7 +83,7 @@ function getNeighbors(note: BNote, depth: number): string[] {
 
         const sourceNote = relation.getNote();
 
-        if (!sourceNote || sourceNote.isLabelTruthy('excludeFromNoteMap')) {
+        if (!sourceNote || sourceNote.isLabelTruthy("excludeFromNoteMap")) {
             continue;
         }
 
@@ -96,10 +102,10 @@ function getLinkMap(req: Request) {
 
     // if the map root itself has "excludeFromNoteMap" attribute (journal typically) then there wouldn't be anything
     // to display, so we'll just ignore it
-    const ignoreExcludeFromNoteMap = mapRootNote.isLabelTruthy('excludeFromNoteMap');
+    const ignoreExcludeFromNoteMap = mapRootNote.isLabelTruthy("excludeFromNoteMap");
     let unfilteredNotes;
 
-    if (mapRootNote.type === 'search') {
+    if (mapRootNote.type === "search") {
         // for search notes, we want to consider the direct search results only without the descendants
         unfilteredNotes = mapRootNote.getSearchResultNotes();
     } else {
@@ -110,13 +116,9 @@ function getLinkMap(req: Request) {
         }).notes;
     }
 
-    const noteIds = new Set(
-        unfilteredNotes
-            .filter(note => ignoreExcludeFromNoteMap || !note.isLabelTruthy('excludeFromNoteMap'))
-            .map(note => note.noteId)
-    );
+    const noteIds = new Set(unfilteredNotes.filter((note) => ignoreExcludeFromNoteMap || !note.isLabelTruthy("excludeFromNoteMap")).map((note) => note.noteId));
 
-    if (mapRootNote.type === 'search') {
+    if (mapRootNote.type === "search") {
         noteIds.delete(mapRootNote.noteId);
     }
 
@@ -124,44 +126,37 @@ function getLinkMap(req: Request) {
         noteIds.add(noteId);
     }
 
-    const noteIdsArray = Array.from(noteIds)
+    const noteIdsArray = Array.from(noteIds);
 
-    const notes = noteIdsArray.map(noteId => {
+    const notes = noteIdsArray.map((noteId) => {
         const note = becca.getNoteOrThrow(noteId);
 
-        return [
-            note.noteId,
-            note.getTitleOrProtected(),
-            note.type,
-            note.getLabelValue('color')
-        ];
+        return [note.noteId, note.getTitleOrProtected(), note.type, note.getLabelValue("color")];
     });
 
-    const links = Object.values(becca.attributes).filter(rel => {
-        if (rel.type !== 'relation' || rel.name === 'relationMapLink' || rel.name === 'template' || rel.name === 'inherit') {
-            return false;
-        }
-        else if (!noteIds.has(rel.noteId) || !noteIds.has(rel.value)) {
-            return false;
-        }
-        else if (rel.name === 'imageLink') {
-            const parentNote = becca.getNote(rel.noteId);
-            if (!parentNote) {
+    const links = Object.values(becca.attributes)
+        .filter((rel) => {
+            if (rel.type !== "relation" || rel.name === "relationMapLink" || rel.name === "template" || rel.name === "inherit") {
                 return false;
-            }
+            } else if (!noteIds.has(rel.noteId) || !noteIds.has(rel.value)) {
+                return false;
+            } else if (rel.name === "imageLink") {
+                const parentNote = becca.getNote(rel.noteId);
+                if (!parentNote) {
+                    return false;
+                }
 
-            return !parentNote.getChildNotes().find(childNote => childNote.noteId === rel.value);
-        }
-        else {
-            return true;
-        }
-    })
-    .map(rel => ({
-        id: `${rel.noteId}-${rel.name}-${rel.value}`,
-        sourceNoteId: rel.noteId,
-        targetNoteId: rel.value,
-        name: rel.name
-    }));
+                return !parentNote.getChildNotes().find((childNote) => childNote.noteId === rel.value);
+            } else {
+                return true;
+            }
+        })
+        .map((rel) => ({
+            id: `${rel.noteId}-${rel.name}-${rel.value}`,
+            sourceNoteId: rel.noteId,
+            targetNoteId: rel.value,
+            name: rel.name
+        }));
 
     return {
         notes: notes,
@@ -174,7 +169,7 @@ function getTreeMap(req: Request) {
     const mapRootNote = becca.getNoteOrThrow(req.params.noteId);
     // if the map root itself has "excludeFromNoteMap" (journal typically) then there wouldn't be anything to display,
     // so we'll just ignore it
-    const ignoreExcludeFromNoteMap = mapRootNote.isLabelTruthy('excludeFromNoteMap');
+    const ignoreExcludeFromNoteMap = mapRootNote.isLabelTruthy("excludeFromNoteMap");
     const subtree = mapRootNote.getSubtree({
         includeArchived: false,
         resolveSearch: true,
@@ -182,33 +177,28 @@ function getTreeMap(req: Request) {
     });
 
     const notes = subtree.notes
-        .filter(note => ignoreExcludeFromNoteMap || !note.isLabelTruthy('excludeFromNoteMap'))
-        .filter(note => {
-            if (note.type !== 'image' || note.getChildNotes().length > 0) {
+        .filter((note) => ignoreExcludeFromNoteMap || !note.isLabelTruthy("excludeFromNoteMap"))
+        .filter((note) => {
+            if (note.type !== "image" || note.getChildNotes().length > 0) {
                 return true;
             }
 
-            const imageLinkRelation = note.getTargetRelations().find(rel => rel.name === 'imageLink');
+            const imageLinkRelation = note.getTargetRelations().find((rel) => rel.name === "imageLink");
 
             if (!imageLinkRelation) {
                 return true;
             }
 
-            return !note.getParentNotes().find(parentNote => parentNote.noteId === imageLinkRelation.noteId);
+            return !note.getParentNotes().find((parentNote) => parentNote.noteId === imageLinkRelation.noteId);
         })
-        .map(note => [
-            note.noteId,
-            note.getTitleOrProtected(),
-            note.type,
-            note.getLabelValue('color')
-        ]);
+        .map((note) => [note.noteId, note.getTitleOrProtected(), note.type, note.getLabelValue("color")]);
 
     const noteIds = new Set<string>();
     notes.forEach(([noteId]) => noteId && noteIds.add(noteId));
 
     const links = [];
 
-    for (const {parentNoteId, childNoteId} of subtree.relationships) {
+    for (const { parentNoteId, childNoteId } of subtree.relationships) {
         if (!noteIds.has(parentNoteId) || !noteIds.has(childNoteId)) {
             continue;
         }
@@ -230,10 +220,10 @@ function getTreeMap(req: Request) {
     };
 }
 
-function updateDescendantCountMapForSearch(noteIdToDescendantCountMap: Record<string, number>, relationships: { parentNoteId: string, childNoteId: string }[]) {
-    for (const {parentNoteId, childNoteId} of relationships) {
+function updateDescendantCountMapForSearch(noteIdToDescendantCountMap: Record<string, number>, relationships: { parentNoteId: string; childNoteId: string }[]) {
+    for (const { parentNoteId, childNoteId } of relationships) {
         const parentNote = becca.notes[parentNoteId];
-        if (!parentNote || parentNote.type !== 'search') {
+        if (!parentNote || parentNote.type !== "search") {
             continue;
         }
 
@@ -243,14 +233,14 @@ function updateDescendantCountMapForSearch(noteIdToDescendantCountMap: Record<st
 }
 
 function removeImages(document: Document) {
-    const images = document.getElementsByTagName('img');
+    const images = document.getElementsByTagName("img");
     while (images && images.length > 0) {
         images[0]?.parentNode?.removeChild(images[0]);
     }
 }
 
 const EXCERPT_CHAR_LIMIT = 200;
-type ElementOrText = (Element | Text);
+type ElementOrText = Element | Text;
 
 function findExcerpts(sourceNote: BNote, referencedNoteId: string) {
     const html = sourceNote.getContent();
@@ -271,7 +261,7 @@ function findExcerpts(sourceNote: BNote, referencedNoteId: string) {
 
         let centerEl: HTMLElement = linkEl;
 
-        while (centerEl.tagName !== 'BODY' && centerEl.parentElement && (centerEl.parentElement?.textContent?.length || 0) <= EXCERPT_CHAR_LIMIT) {
+        while (centerEl.tagName !== "BODY" && centerEl.parentElement && (centerEl.parentElement?.textContent?.length || 0) <= EXCERPT_CHAR_LIMIT) {
             centerEl = centerEl.parentElement;
         }
 
@@ -328,7 +318,7 @@ function findExcerpts(sourceNote: BNote, referencedNoteId: string) {
             }
         }
 
-        const excerptWrapper = document.createElement('div');
+        const excerptWrapper = document.createElement("div");
         excerptWrapper.classList.add("ck-content");
         excerptWrapper.classList.add("backlink-excerpt");
 
@@ -341,14 +331,17 @@ function findExcerpts(sourceNote: BNote, referencedNoteId: string) {
     return excerpts;
 }
 
-function getFilteredBacklinks(note: BNote) {
-    return note.getTargetRelations()
-        // search notes have "ancestor" relations which are not interesting
-        .filter(relation => !!relation.getNote() && relation.getNote().type !== 'search');
+function getFilteredBacklinks(note: BNote): BAttribute[] {
+    return (
+        note
+            .getTargetRelations()
+            // search notes have "ancestor" relations which are not interesting
+            .filter((relation) => !!relation.getNote() && relation.getNote().type !== "search")
+    );
 }
 
 function getBacklinkCount(req: Request) {
-    const {noteId} = req.params;
+    const { noteId } = req.params;
 
     const note = becca.getNoteOrThrow(noteId);
 
@@ -357,16 +350,16 @@ function getBacklinkCount(req: Request) {
     };
 }
 
-function getBacklinks(req: Request) {
-    const {noteId} = req.params;
+function getBacklinks(req: Request): Backlink[] {
+    const { noteId } = req.params;
     const note = becca.getNoteOrThrow(noteId);
 
     let backlinksWithExcerptCount = 0;
 
-    return getFilteredBacklinks(note).map(backlink => {
+    return getFilteredBacklinks(note).map((backlink) => {
         const sourceNote = backlink.note;
 
-        if (sourceNote.type !== 'text' || backlinksWithExcerptCount > 50) {
+        if (sourceNote.type !== "text" || backlinksWithExcerptCount > 50) {
             return {
                 noteId: sourceNote.noteId,
                 relationName: backlink.name

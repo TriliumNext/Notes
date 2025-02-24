@@ -7,51 +7,43 @@ import becca from "../../becca/becca.js";
 import TaskContext from "../../services/task_context.js";
 import log from "../../services/log.js";
 import NotFoundError from "../../errors/not_found_error.js";
-import { Request, Response } from 'express';
+import type { Request, Response } from "express";
 import ValidationError from "../../errors/validation_error.js";
 
 function exportBranch(req: Request, res: Response) {
-    const {branchId, type, format, version, taskId} = req.params;
+    const { branchId, type, format, version, taskId } = req.params;
     const branch = becca.getBranch(branchId);
 
     if (!branch) {
         const message = `Cannot export branch '${branchId}' since it does not exist.`;
         log.error(message);
 
-        res.setHeader("Content-Type", "text/plain")
-            .status(500)
-            .send(message);
+        res.setHeader("Content-Type", "text/plain").status(500).send(message);
         return;
     }
 
-    const taskContext = new TaskContext(taskId, 'export');
+    const taskContext = new TaskContext(taskId, "export");
 
     try {
-        if (type === 'subtree' && (format === 'html' || format === 'markdown')) {
+        if (type === "subtree" && (format === "html" || format === "markdown")) {
             zipExportService.exportToZip(taskContext, branch, format, res);
-        }
-        else if (type === 'single') {
+        } else if (type === "single") {
             if (format !== "html" && format !== "markdown") {
                 throw new ValidationError("Invalid export type.");
             }
             singleExportService.exportSingleNote(taskContext, branch, format, res);
-        }
-        else if (format === 'opml') {
+        } else if (format === "opml") {
             opmlExportService.exportToOpml(taskContext, branch, version, res);
-        }
-        else {
+        } else {
             throw new NotFoundError(`Unrecognized export format '${format}'`);
         }
-    }
-    catch (e: any) {
+    } catch (e: any) {
         const message = `Export failed with following error: '${e.message}'. More details might be in the logs.`;
         taskContext.reportError(message);
 
         log.error(message + e.stack);
 
-        res.setHeader("Content-Type", "text/plain")
-            .status(500)
-            .send(message);
+        res.setHeader("Content-Type", "text/plain").status(500).send(message);
     }
 }
 

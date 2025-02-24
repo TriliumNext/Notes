@@ -1,14 +1,14 @@
 import utils from "./utils.js";
 import server from "./server.js";
 
-type ExecFunction = (command: string, cb: ((err: string, stdout: string, stderror: string) => void)) => void;
+type ExecFunction = (command: string, cb: (err: string, stdout: string, stderror: string) => void) => void;
 
 interface TmpResponse {
     tmpFilePath: string;
 }
 
 function checkType(type: string) {
-    if (type !== 'notes' && type !== 'attachments') {
+    if (type !== "notes" && type !== "attachments") {
         throw new Error(`Unrecognized type '${type}', should be 'notes' or 'attachments'`);
     }
 }
@@ -27,7 +27,7 @@ function getOpenFileUrl(type: string, noteId: string) {
 
 function download(url: string) {
     if (utils.isElectron()) {
-        const remote = utils.dynamicRequire('@electron/remote');
+        const remote = utils.dynamicRequire("@electron/remote");
 
         remote.getCurrentWebContents().downloadURL(url);
     } else {
@@ -36,13 +36,13 @@ function download(url: string) {
 }
 
 function downloadFileNote(noteId: string) {
-    const url = `${getFileUrl('notes', noteId)}?${Date.now()}`; // don't use cache
+    const url = `${getFileUrl("notes", noteId)}?${Date.now()}`; // don't use cache
 
     download(url);
 }
 
 function downloadAttachment(attachmentId: string) {
-    const url = `${getFileUrl('attachments', attachmentId)}?${Date.now()}`; // don't use cache
+    const url = `${getFileUrl("attachments", attachmentId)}?${Date.now()}`; // don't use cache
 
     download(url);
 }
@@ -55,12 +55,12 @@ async function openCustom(type: string, entityId: string, mime: string) {
 
     const resp = await server.post<TmpResponse>(`${type}/${entityId}/save-to-tmp-dir`);
     let filePath = resp.tmpFilePath;
-    const exec = utils.dynamicRequire('child_process').exec as ExecFunction;
+    const exec = utils.dynamicRequire("child_process").exec as ExecFunction;
     const platform = process.platform;
 
-    if (platform === 'linux') {
+    if (platform === "linux") {
         // we don't know which terminal is available, try in succession
-        const terminals = ['x-terminal-emulator', 'gnome-terminal', 'konsole', 'xterm', 'xfce4-terminal', 'mate-terminal', 'rxvt', 'terminator', 'terminology'];
+        const terminals = ["x-terminal-emulator", "gnome-terminal", "konsole", "xterm", "xfce4-terminal", "mate-terminal", "rxvt", "terminator", "terminology"];
         const openFileWithTerminal = (terminal: string) => {
             const command = `${terminal} -e 'mimeopen -d "${filePath}"'`;
             console.log(`Open Note custom: ${command} `);
@@ -77,9 +77,9 @@ async function openCustom(type: string, entityId: string, mime: string) {
         const searchTerminal = (index: number) => {
             const terminal = terminals[index];
             if (!terminal) {
-                console.error('Open Note custom: No terminal found!');
+                console.error("Open Note custom: No terminal found!");
                 // TODO: Remove {url: true} if not needed.
-                (open as any)(getFileUrl(type, entityId), {url: true});
+                (open as any)(getFileUrl(type, entityId), { url: true });
                 return;
             }
             exec(`which ${terminal}`, (error, stdout, stderr) => {
@@ -91,7 +91,7 @@ async function openCustom(type: string, entityId: string, mime: string) {
             });
         };
         searchTerminal(0);
-    } else if (platform === 'win32') {
+    } else if (platform === "win32") {
         if (filePath.indexOf("/") !== -1) {
             // Note that the path separator must be \ instead of /
             filePath = filePath.replace(/\//g, "\\");
@@ -102,7 +102,7 @@ async function openCustom(type: string, entityId: string, mime: string) {
                 console.error("Open Note custom: ", err);
                 // TODO: This appears to be broken, since getFileUrl expects two arguments, with the first one being the type.
                 // Also don't know why {url: true} is passed.
-                (open as any)(getFileUrl(entityId), {url: true});
+                (open as any)(getFileUrl(entityId), { url: true });
                 return;
             }
         });
@@ -110,15 +110,12 @@ async function openCustom(type: string, entityId: string, mime: string) {
         console.log('Currently "Open Note custom" only supports linux and windows systems');
         // TODO: This appears to be broken, since getFileUrl expects two arguments, with the first one being the type.
         // Also don't know why {url: true} is passed.
-        (open as any)(getFileUrl(entityId), {url: true});
+        (open as any)(getFileUrl(entityId), { url: true });
     }
 }
 
-const openNoteCustom = 
-    async (noteId: string, mime: string) => await openCustom('notes', noteId, mime);
-const openAttachmentCustom = 
-    async (attachmentId: string, mime: string) => await openCustom('attachments', attachmentId, mime);
-
+const openNoteCustom = async (noteId: string, mime: string) => await openCustom("notes", noteId, mime);
+const openAttachmentCustom = async (attachmentId: string, mime: string) => await openCustom("attachments", attachmentId, mime);
 
 function downloadRevision(noteId: string, revisionId: string) {
     const url = getUrlForDownload(`api/revisions/${revisionId}/download`);
@@ -133,18 +130,14 @@ function getUrlForDownload(url: string) {
     if (utils.isElectron()) {
         // electron needs absolute URL, so we extract current host, port, protocol
         return `${getHost()}/${url}`;
-    }
-    else {
+    } else {
         // web server can be deployed on subdomain, so we need to use a relative path
         return url;
     }
 }
 
 function canOpenInBrowser(mime: string) {
-    return mime === "application/pdf"
-        || mime.startsWith("image")
-        || mime.startsWith("audio")
-        || mime.startsWith("video");
+    return mime === "application/pdf" || mime.startsWith("image") || mime.startsWith("audio") || mime.startsWith("video");
 }
 
 async function openExternally(type: string, entityId: string, mime: string) {
@@ -153,15 +146,14 @@ async function openExternally(type: string, entityId: string, mime: string) {
     if (utils.isElectron()) {
         const resp = await server.post<TmpResponse>(`${type}/${entityId}/save-to-tmp-dir`);
 
-        const electron = utils.dynamicRequire('electron');
+        const electron = utils.dynamicRequire("electron");
         const res = await electron.shell.openPath(resp.tmpFilePath);
 
         if (res) {
             // fallback in case there's no default application for this file
             window.open(getFileUrl(type, entityId));
         }
-    }
-    else {
+    } else {
         // allow browser to handle opening common file
         if (canOpenInBrowser(mime)) {
             window.open(getOpenFileUrl(type, entityId));
@@ -171,10 +163,8 @@ async function openExternally(type: string, entityId: string, mime: string) {
     }
 }
 
-const openNoteExternally =
-    async (noteId: string, mime: string) => await openExternally('notes', noteId, mime);
-const openAttachmentExternally = 
-    async (attachmentId: string, mime: string) => await openExternally('attachments', attachmentId, mime);
+const openNoteExternally = async (noteId: string, mime: string) => await openExternally("notes", noteId, mime);
+const openAttachmentExternally = async (attachmentId: string, mime: string) => await openExternally("attachments", attachmentId, mime);
 
 function getHost() {
     const url = new URL(window.location.href);
@@ -184,17 +174,17 @@ function getHost() {
 async function openDirectory(directory: string) {
     try {
         if (utils.isElectron()) {
-            const electron = utils.dynamicRequire('electron');
+            const electron = utils.dynamicRequire("electron");
             const res = await electron.shell.openPath(directory);
             if (res) {
-                console.error('Failed to open directory:', res);
+                console.error("Failed to open directory:", res);
             }
         } else {
-            console.error('Not running in an Electron environment.');
+            console.error("Not running in an Electron environment.");
         }
     } catch (err: any) {
         // Handle file system errors (e.g. path does not exist or is inaccessible)
-        console.error('Error:', err.message);
+        console.error("Error:", err.message);
     }
 }
 
@@ -209,4 +199,4 @@ export default {
     openNoteCustom,
     openAttachmentCustom,
     openDirectory
-}
+};

@@ -101,6 +101,7 @@
     "button": "Login"
   },
   "set_password": {
+    "title": "Definir senha",
     "heading": "Definir senha",
     "description": "Antes de começar a usar o Trilium web, você precisa definir uma senha. Você usará essa senha para fazer login.",
     "password": "Senha",

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Modal } from "bootstrap";
 
 function reloadFrontendApp(reason?: string) {
     if (reason) {
@@ -8,13 +9,47 @@ function reloadFrontendApp(reason?: string) {
     window.location.reload();
 }
 
+/**
+ * Triggers the system tray to update its menu items, i.e. after a change in dynamic content such as bookmarks or recent notes.
+ *
+ * On any other platform than Electron, nothing happens.
+ */
+function reloadTray() {
+    if (!isElectron()) {
+        return;
+    }
+
+    const { ipcRenderer } = dynamicRequire("electron");
+    ipcRenderer.send("reload-tray");
+}
+
 function parseDate(str: string) {
     try {
         return new Date(Date.parse(str));
-    }
-    catch (e: any) {
+    } catch (e: any) {
         throw new Error(`Can't parse date from '${str}': ${e.message} ${e.stack}`);
     }
+}
+
+// Source: https://stackoverflow.com/a/30465299/4898894
+function getMonthsInDateRange(startDate: string, endDate: string) {
+    const start = startDate.split('-');
+    const end = endDate.split('-');
+    const startYear = parseInt(start[0]);
+    const endYear = parseInt(end[0]);
+    const dates = [];
+
+    for (let i = startYear; i <= endYear; i++) {
+        const endMonth = i != endYear ? 11 : parseInt(end[1]) - 1;
+        const startMon = i === startYear ? parseInt(start[1])-1 : 0;
+
+        for(let j = startMon; j <= endMonth; j = j > 12 ? j % 12 || 11 : j+1) {
+            const month = j+1;
+            const displayMonth = month < 10 ? '0'+month : month;
+            dates.push([i, displayMonth].join('-'));
+        }
+    }
+    return dates;
 }
 
 function padNum(num: number) {
@@ -34,26 +69,26 @@ function formatTimeInterval(ms: number) {
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
-    const plural = (count: number, name: string) => `${count} ${name}${count > 1 ? 's' : ''}`;
+    const plural = (count: number, name: string) => `${count} ${name}${count > 1 ? "s" : ""}`;
     const segments = [];
 
     if (days > 0) {
-        segments.push(plural(days, 'day'));
+        segments.push(plural(days, "day"));
     }
 
     if (days < 2) {
         if (hours % 24 > 0) {
-            segments.push(plural(hours % 24, 'hour'));
+            segments.push(plural(hours % 24, "hour"));
         }
 
         if (hours < 4) {
             if (minutes % 60 > 0) {
-                segments.push(plural(minutes % 60, 'minute'));
+                segments.push(plural(minutes % 60, "minute"));
             }
 
             if (minutes < 5) {
                 if (seconds % 60 > 0) {
-                    segments.push(plural(seconds % 60, 'second'));
+                    segments.push(plural(seconds % 60, "second"));
                 }
             }
         }
@@ -80,7 +115,7 @@ function formatDateTime(date: Date) {
 }
 
 function localNowDateTime() {
-    return dayjs().format('YYYY-MM-DD HH:mm:ss.SSSZZ');
+    return dayjs().format("YYYY-MM-DD HH:mm:ss.SSSZZ");
 }
 
 function now() {
@@ -95,15 +130,14 @@ function isElectron() {
 }
 
 function isMac() {
-    return navigator.platform.indexOf('Mac') > -1;
+    return navigator.platform.indexOf("Mac") > -1;
 }
 
-function isCtrlKey(evt: KeyboardEvent | MouseEvent | JQuery.ClickEvent) {
-    return (!isMac() && evt.ctrlKey)
-        || (isMac() && evt.metaKey);
+function isCtrlKey(evt: KeyboardEvent | MouseEvent | JQuery.ClickEvent | JQuery.ContextMenuEvent | JQuery.TriggeredEvent | React.PointerEvent<HTMLCanvasElement>) {
+    return (!isMac() && evt.ctrlKey) || (isMac() && evt.metaKey);
 }
 
-function assertArguments(...args: string[]) {
+function assertArguments<T>(...args: T[]) {
     for (const i in args) {
         if (!args[i]) {
             console.trace(`Argument idx#${i} should not be falsy: ${args[i]}`);
@@ -112,18 +146,22 @@ function assertArguments(...args: string[]) {
 }
 
 const entityMap: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '/': '&#x2F;',
-    '`': '&#x60;',
-    '=': '&#x3D;'
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+    "=": "&#x3D;"
 };
 
 function escapeHtml(str: string) {
-    return str.replace(/[&<>"'`=\/]/g, s => entityMap[s]);
+    return str.replace(/[&<>"'`=\/]/g, (s) => entityMap[s]);
+}
+
+export function escapeQuotes(value: string) {
+    return value.replaceAll("\"", "&quot;");
 }
 
 function formatSize(size: number) {
@@ -131,8 +169,7 @@ function formatSize(size: number) {
 
     if (size < 1024) {
         return `${size} KiB`;
-    }
-    else {
+    } else {
         return `${Math.round(size / 102.4) / 10} MiB`;
     }
 }
@@ -161,15 +198,19 @@ function randomString(len: number) {
 }
 
 function isMobile() {
-    return window.glob?.device === "mobile"
+    return (
+        window.glob?.device === "mobile" ||
         // window.glob.device is not available in setup
-        || (!window.glob?.device && /Mobi/.test(navigator.userAgent));
+        (!window.glob?.device && /Mobi/.test(navigator.userAgent))
+    );
 }
 
 function isDesktop() {
-    return window.glob?.device === "desktop"
+    return (
+        window.glob?.device === "desktop" ||
         // window.glob.device is not available in setup
-        || (!window.glob?.device && !/Mobi/.test(navigator.userAgent));
+        (!window.glob?.device && !/Mobi/.test(navigator.userAgent))
+    );
 }
 
 /**
@@ -192,7 +233,7 @@ function getMimeTypeClass(mime: string) {
         return "";
     }
 
-    const semicolonIdx = mime.indexOf(';');
+    const semicolonIdx = mime.indexOf(";");
 
     if (semicolonIdx !== -1) {
         // stripping everything following the semicolon
@@ -204,9 +245,7 @@ function getMimeTypeClass(mime: string) {
 
 function closeActiveDialog() {
     if (glob.activeDialog) {
-        // TODO: Fix once we use proper ES imports.
-        //@ts-ignore
-        bootstrap.Modal.getOrCreateInstance(glob.activeDialog[0]).hide();
+        Modal.getOrCreateInstance(glob.activeDialog[0]).hide();
         glob.activeDialog = null;
     }
 }
@@ -227,9 +266,7 @@ function focusSavedElement() {
         // must handle CKEditor separately because of this bug: https://github.com/ckeditor/ckeditor5/issues/607
         // the bug manifests itself in resetting the cursor position to the first character - jumping above
 
-        const editor = $lastFocusedElement
-            .closest('.ck-editor__editable')
-            .prop('ckeditorInstance');
+        const editor = $lastFocusedElement.closest(".ck-editor__editable").prop("ckeditorInstance");
 
         if (editor) {
             editor.editing.view.focus();
@@ -250,12 +287,13 @@ async function openDialog($dialog: JQuery<HTMLElement>, closeActDialog = true) {
     }
 
     saveFocusedElement();
-    // TODO: Fix once we use proper ES imports.
-    //@ts-ignore
-    bootstrap.Modal.getOrCreateInstance($dialog[0]).show();
+    Modal.getOrCreateInstance($dialog[0]).show();
 
-    $dialog.on('hidden.bs.modal', () => {
-        $(".aa-input").autocomplete("close");
+    $dialog.on("hidden.bs.modal", () => {
+        const $autocompleteEl = $(".aa-input");
+        if ("autocomplete" in $autocompleteEl) {
+            $autocompleteEl.autocomplete("close");
+        }
 
         if (!glob.activeDialog || glob.activeDialog === $dialog) {
             focusSavedElement();
@@ -266,27 +304,31 @@ async function openDialog($dialog: JQuery<HTMLElement>, closeActDialog = true) {
     // @ts-ignore
     const keyboardActionsService = (await import("./keyboard_actions.js")).default;
     keyboardActionsService.updateDisplayedShortcuts($dialog);
+
+    return $dialog;
 }
 
 function isHtmlEmpty(html: string) {
     if (!html) {
         return true;
-    } else if (typeof html !== 'string') {
+    } else if (typeof html !== "string") {
         logError(`Got object of type '${typeof html}' where string was expected.`);
         return false;
     }
 
     html = html.toLowerCase();
 
-    return !html.includes('<img')
-        && !html.includes('<section')
+    return (
+        !html.includes("<img") &&
+        !html.includes("<section") &&
         // the line below will actually attempt to load images so better to check for images first
-        && $("<div>").html(html).text().trim().length === 0;
+        $("<div>").html(html).text().trim().length === 0
+    );
 }
 
 async function clearBrowserCache() {
     if (isElectron()) {
-        const win = dynamicRequire('@electron/remote').getCurrentWindow();
+        const win = dynamicRequire("@electron/remote").getCurrentWindow();
         await win.webContents.session.clearCache();
     }
 }
@@ -299,16 +341,18 @@ function copySelectionToClipboard() {
 }
 
 function dynamicRequire(moduleName: string) {
-    if (typeof __non_webpack_require__ !== 'undefined') {
+    if (typeof __non_webpack_require__ !== "undefined") {
         return __non_webpack_require__(moduleName);
-    }
-    else {
-        return require(moduleName);
+    } else {
+        // explicitly pass as string and not as expression to suppress webpack warning
+        // 'Critical dependency: the request of a dependency is an expression'
+        return require(`${moduleName}`);
     }
 }
 
 function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: string) {
-    if (!promise || !promise.then) { // it's not actually a promise
+    if (!promise || !promise.then) {
+        // it's not actually a promise
         return promise;
     }
 
@@ -318,7 +362,7 @@ function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: strin
     return new Promise<T>((res, rej) => {
         let resolved = false;
 
-        promise.then(result => {
+        promise.then((result) => {
             resolved = true;
 
             res(result);
@@ -334,8 +378,8 @@ function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: strin
 
 function initHelpDropdown($el: JQuery<HTMLElement>) {
     // stop inside clicks from closing the menu
-    const $dropdownMenu = $el.find('.help-dropdown .dropdown-menu');
-    $dropdownMenu.on('click', e => e.stopPropagation());
+    const $dropdownMenu = $el.find(".help-dropdown .dropdown-menu");
+    $dropdownMenu.on("click", (e) => e.stopPropagation());
 
     // previous propagation stop will also block help buttons from being opened, so we need to re-init for this element
     initHelpButtons($dropdownMenu);
@@ -349,21 +393,21 @@ function openHelp($button: JQuery<HTMLElement>) {
     if (helpPage) {
         const url = wikiBaseUrl + helpPage;
 
-        window.open(url, '_blank');
+        window.open(url, "_blank");
     }
 }
 
 function initHelpButtons($el: JQuery<HTMLElement> | JQuery<Window>) {
     // for some reason, the .on(event, listener, handler) does not work here (e.g. Options -> Sync -> Help button)
     // so we do it manually
-    $el.on("click", e => {
+    $el.on("click", (e) => {
         const $helpButton = $(e.target).closest("[data-help-page]");
         openHelp($helpButton);
     });
 }
 
 function filterAttributeName(name: string) {
-    return name.replace(/[^\p{L}\p{N}_:]/ug, "");
+    return name.replace(/[^\p{L}\p{N}_:]/gu, "");
 }
 
 const ATTR_NAME_MATCHER = new RegExp("^[\\p{L}\\p{N}_:]+$", "u");
@@ -388,12 +432,12 @@ function areObjectsEqual(...args: unknown[]) {
     let leftChain: Object[];
     let rightChain: Object[];
 
-    function compare2Objects (x: unknown, y: unknown) {
+    function compare2Objects(x: unknown, y: unknown) {
         let p;
 
         // remember that NaN === NaN returns false
         // and isNaN(undefined) returns true
-        if (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y)) {
+        if (typeof x === "number" && typeof y === "number" && isNaN(x) && isNaN(y)) {
             return true;
         }
 
@@ -407,11 +451,13 @@ function areObjectsEqual(...args: unknown[]) {
         // Works in case when functions are created in constructor.
         // Comparing dates is a common scenario. Another built-ins?
         // We can even handle functions passed across iframes
-        if ((typeof x === 'function' && typeof y === 'function') ||
+        if (
+            (typeof x === "function" && typeof y === "function") ||
             (x instanceof Date && y instanceof Date) ||
             (x instanceof RegExp && y instanceof RegExp) ||
             (x instanceof String && y instanceof String) ||
-            (x instanceof Number && y instanceof Number)) {
+            (x instanceof Number && y instanceof Number)
+        ) {
             return x.toString() === y.toString();
         }
 
@@ -442,8 +488,7 @@ function areObjectsEqual(...args: unknown[]) {
         for (p in y) {
             if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
                 return false;
-            }
-            else if (typeof (y as any)[p] !== typeof (x as any)[p]) {
+            } else if (typeof (y as any)[p] !== typeof (x as any)[p]) {
                 return false;
             }
         }
@@ -451,15 +496,13 @@ function areObjectsEqual(...args: unknown[]) {
         for (p in x) {
             if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
                 return false;
-            }
-            else if (typeof (y as any)[p] !== typeof (x as any)[p]) {
+            } else if (typeof (y as any)[p] !== typeof (x as any)[p]) {
                 return false;
             }
 
-            switch (typeof ((x as any)[p])) {
-                case 'object':
-                case 'function':
-
+            switch (typeof (x as any)[p]) {
+                case "object":
+                case "function":
                     leftChain.push(x);
                     rightChain.push(y);
 
@@ -488,7 +531,6 @@ function areObjectsEqual(...args: unknown[]) {
     }
 
     for (i = 1, l = arguments.length; i < l; i++) {
-
         leftChain = []; //Todo: this can be cached
         rightChain = [];
 
@@ -526,11 +568,11 @@ function createImageSrcUrl(note: { noteId: string; title: string }) {
  */
 function downloadSvg(nameWithoutExtension: string, svgContent: string) {
     const filename = `${nameWithoutExtension}.svg`;
-    const element = document.createElement('a');
-    element.setAttribute('href', `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`);
-    element.setAttribute('download', filename);
+    const element = document.createElement("a");
+    element.setAttribute("href", `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`);
+    element.setAttribute("download", filename);
 
-    element.style.display = 'none';
+    element.style.display = "none";
     document.body.appendChild(element);
 
     element.click();
@@ -550,13 +592,12 @@ function downloadSvg(nameWithoutExtension: string, svgContent: string) {
  * @returns
  */
 function compareVersions(v1: string, v2: string): number {
-
     // Remove 'v' prefix and everything after dash if present
-    v1 = v1.replace(/^v/, '').split('-')[0];
-    v2 = v2.replace(/^v/, '').split('-')[0];
+    v1 = v1.replace(/^v/, "").split("-")[0];
+    v2 = v2.replace(/^v/, "").split("-")[0];
 
-    const v1parts = v1.split('.').map(Number);
-    const v2parts = v2.split('.').map(Number);
+    const v1parts = v1.split(".").map(Number);
+    const v2parts = v2.split(".").map(Number);
 
     // Pad shorter version with zeros
     while (v1parts.length < 3) v1parts.push(0);
@@ -583,13 +624,22 @@ function compareVersions(v1: string, v2: string): number {
 /**
  * Compares two semantic version strings and returns `true` if the latest version is greater than the current version.
  */
-function isUpdateAvailable(latestVersion: string, currentVersion: string): boolean {
+function isUpdateAvailable(latestVersion: string | null | undefined, currentVersion: string): boolean {
+    if (!latestVersion) {
+        return false;
+    }
     return compareVersions(latestVersion, currentVersion) > 0;
+}
+
+function isLaunchBarConfig(noteId: string) {
+    return ["_lbRoot", "_lbAvailableLaunchers", "_lbVisibleLaunchers", "_lbMobileRoot", "_lbMobileAvailableLaunchers", "_lbMobileVisibleLaunchers"].includes(noteId);
 }
 
 export default {
     reloadFrontendApp,
+    reloadTray,
     parseDate,
+    getMonthsInDateRange,
     formatDateISO,
     formatDateTime,
     formatTimeInterval,
@@ -629,5 +679,6 @@ export default {
     createImageSrcUrl,
     downloadSvg,
     compareVersions,
-    isUpdateAvailable
+    isUpdateAvailable,
+    isLaunchBarConfig
 };

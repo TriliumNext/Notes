@@ -1,15 +1,15 @@
 "use strict";
 
-import { Request } from "express";
+import type { Request } from "express";
 
 import becca from "../../becca/becca.js";
 import SearchContext from "../../services/search/search_context.js";
-import searchService, { EMPTY_RESULT, SearchNoteResult } from "../../services/search/services/search.js";
+import searchService, { EMPTY_RESULT, type SearchNoteResult } from "../../services/search/services/search.js";
 import bulkActionService from "../../services/bulk_actions.js";
 import cls from "../../services/cls.js";
 import attributeFormatter from "../../services/attribute_formatter.js";
 import ValidationError from "../../errors/validation_error.js";
-import SearchResult from "../../services/search/search_result.js";
+import type SearchResult from "../../services/search/search_result.js";
 
 function searchFromNote(req: Request): SearchNoteResult {
     const note = becca.getNoteOrThrow(req.params.noteId);
@@ -19,7 +19,7 @@ function searchFromNote(req: Request): SearchNoteResult {
         return EMPTY_RESULT;
     }
 
-    if (note.type !== 'search') {
+    if (note.type !== "search") {
         throw new ValidationError(`Note '${req.params.noteId}' is not a search note.`);
     }
 
@@ -34,17 +34,17 @@ function searchAndExecute(req: Request) {
         return [];
     }
 
-    if (note.type !== 'search') {
+    if (note.type !== "search") {
         throw new ValidationError(`Note '${req.params.noteId}' is not a search note.`);
     }
 
-    const {searchResultNoteIds} = searchService.searchFromNote(note);
+    const { searchResultNoteIds } = searchService.searchFromNote(note);
 
     bulkActionService.executeActions(note, searchResultNoteIds);
 }
 
 function quickSearch(req: Request) {
-    const {searchString} = req.params;
+    const { searchString } = req.params;
 
     const searchContext = new SearchContext({
         fastSearch: false,
@@ -52,8 +52,7 @@ function quickSearch(req: Request) {
         fuzzyAttributeSearch: false
     });
 
-    const resultNoteIds = searchService.findResultsWithQuery(searchString, searchContext)
-        .map(sr => sr.noteId);
+    const resultNoteIds = searchService.findResultsWithQuery(searchString, searchContext).map((sr) => sr.noteId);
 
     return {
         searchResultNoteIds: resultNoteIds,
@@ -62,7 +61,7 @@ function quickSearch(req: Request) {
 }
 
 function search(req: Request) {
-    const {searchString} = req.params;
+    const { searchString } = req.params;
 
     const searchContext = new SearchContext({
         fastSearch: false,
@@ -71,8 +70,7 @@ function search(req: Request) {
         ignoreHoistedNote: true
     });
 
-    return searchService.findResultsWithQuery(searchString, searchContext)
-        .map(sr => sr.noteId);
+    return searchService.findResultsWithQuery(searchString, searchContext).map((sr) => sr.noteId);
 }
 
 function getRelatedNotes(req: Request) {
@@ -102,7 +100,7 @@ function getRelatedNotes(req: Request) {
             break;
         }
 
-        if (results.find(res => res.noteId === record.noteId)) {
+        if (results.find((res) => res.noteId === record.noteId)) {
             continue;
         }
 
@@ -116,14 +114,14 @@ function getRelatedNotes(req: Request) {
 }
 
 function searchTemplates() {
-    const query = cls.getHoistedNoteId() === 'root'
-        ? '#template'
-        : '#template OR #workspaceTemplate';
+    const query = cls.getHoistedNoteId() === "root" ? "#template" : "#template OR #workspaceTemplate";
 
-    return searchService.searchNotes(query, {
-        includeArchivedNotes: true,
-        ignoreHoistedNote: false
-    }).map(note => note.noteId);
+    return searchService
+        .searchNotes(query, {
+            includeArchivedNotes: true,
+            ignoreHoistedNote: false
+        })
+        .map((note) => note.noteId);
 }
 
 export default {

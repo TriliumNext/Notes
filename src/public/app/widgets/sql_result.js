@@ -10,7 +10,7 @@ const TPL = `
     </style>
    
     <div class="sql-query-no-rows alert alert-info" style="display: none;">
-        ${t('sql_result.no_rows')}
+        ${t("sql_result.no_rows")}
     </div>
    
     <div class="sql-console-result-container"></div>
@@ -18,19 +18,17 @@ const TPL = `
 
 export default class SqlResultWidget extends NoteContextAwareWidget {
     isEnabled() {
-        return this.note
-            && this.note.mime === 'text/x-sqlite;schema=trilium'
-            && super.isEnabled();
+        return this.note && this.note.mime === "text/x-sqlite;schema=trilium" && super.isEnabled();
     }
 
     doRender() {
         this.$widget = $(TPL);
 
-        this.$resultContainer = this.$widget.find('.sql-console-result-container');
-        this.$noRowsAlert = this.$widget.find('.sql-query-no-rows');
+        this.$resultContainer = this.$widget.find(".sql-console-result-container");
+        this.$noRowsAlert = this.$widget.find(".sql-query-no-rows");
     }
 
-    async sqlQueryResultsEvent({ntxId, results}) {
+    async sqlQueryResultsEvent({ ntxId, results }) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -41,11 +39,12 @@ export default class SqlResultWidget extends NoteContextAwareWidget {
         this.$resultContainer.empty();
 
         for (const rows of results) {
-            if (typeof rows === 'object' && !Array.isArray(rows)) {
+            if (typeof rows === "object" && !Array.isArray(rows)) {
                 // inserts, updates
-                this.$resultContainer.empty().show().append(
-                    $("<pre>").text(JSON.stringify(rows, null, '\t'))
-                );
+                this.$resultContainer
+                    .empty()
+                    .show()
+                    .append($("<pre>").text(JSON.stringify(rows, null, "\t")));
 
                 continue;
             }

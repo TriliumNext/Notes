@@ -1,20 +1,20 @@
 import ws from "./ws.js";
 import froca from "./froca.js";
-import FAttribute from "../entities/fattribute.js";
-import FNote from "../entities/fnote.js";
+import type FAttribute from "../entities/fattribute.js";
+import type FNote from "../entities/fnote.js";
 
 async function renderAttribute(attribute: FAttribute, renderIsInheritable: boolean) {
-    const isInheritable = renderIsInheritable && attribute.isInheritable ? `(inheritable)` : '';
+    const isInheritable = renderIsInheritable && attribute.isInheritable ? `(inheritable)` : "";
     const $attr = $("<span>");
 
-    if (attribute.type === 'label') {
+    if (attribute.type === "label") {
         $attr.append(document.createTextNode(`#${attribute.name}${isInheritable}`));
 
         if (attribute.value) {
-            $attr.append('=');
+            $attr.append("=");
             $attr.append(document.createTextNode(formatValue(attribute.value)));
         }
-    } else if (attribute.type === 'relation') {
+    } else if (attribute.type === "relation") {
         if (attribute.isAutoLink) {
             return $attr;
         }
@@ -38,17 +38,13 @@ async function renderAttribute(attribute: FAttribute, renderIsInheritable: boole
 function formatValue(val: string) {
     if (/^[\p{L}\p{N}\-_,.]+$/u.test(val)) {
         return val;
-    }
-    else if (!val.includes('"')) {
+    } else if (!val.includes('"')) {
         return `"${val}"`;
-    }
-    else if (!val.includes("'")) {
+    } else if (!val.includes("'")) {
         return `'${val}'`;
-    }
-    else if (!val.includes("`")) {
+    } else if (!val.includes("`")) {
         return `\`${val}\``;
-    }
-    else {
+    } else {
         return `"${val.replace(/"/g, '\\"')}"`;
     }
 }
@@ -62,9 +58,8 @@ async function createLink(noteId: string) {
 
     return $("<a>", {
         href: `#root/${noteId}`,
-        class: 'reference-link'
-    })
-        .text(note.title);
+        class: "reference-link"
+    }).text(note.title);
 }
 
 async function renderAttributes(attributes: FAttribute[], renderIsInheritable: boolean) {
@@ -84,31 +79,16 @@ async function renderAttributes(attributes: FAttribute[], renderIsInheritable: b
     return $container;
 }
 
-const HIDDEN_ATTRIBUTES = [
-    'originalFileName',
-    'fileSize',
-    'template',
-    'inherit',
-    'cssClass',
-    'iconClass',
-    'pageSize',
-    'viewType'
-];
+const HIDDEN_ATTRIBUTES = [ "originalFileName", "fileSize", "template", "inherit", "cssClass", "iconClass", "pageSize", "viewType", "geolocation", "docName" ];
 
 async function renderNormalAttributes(note: FNote) {
     const promotedDefinitionAttributes = note.getPromotedDefinitionAttributes();
     let attrs = note.getAttributes();
 
     if (promotedDefinitionAttributes.length > 0) {
-        attrs = attrs.filter(attr => !!promotedDefinitionAttributes.find(promAttr => promAttr.isDefinitionFor(attr)));
-    }
-    else {
-        attrs = attrs.filter(
-            attr => !attr.isDefinition()
-                 && !attr.isAutoLink
-                 && !HIDDEN_ATTRIBUTES.includes(attr.name)
-                 && attr.noteId === note.noteId
-        );
+        attrs = attrs.filter((attr) => !!promotedDefinitionAttributes.find((promAttr) => promAttr.isDefinitionFor(attr)));
+    } else {
+        attrs = attrs.filter((attr) => !attr.isDefinition() && !attr.isAutoLink && !HIDDEN_ATTRIBUTES.includes(attr.name) && attr.noteId === note.noteId);
     }
 
     const $renderedAttributes = await renderAttributes(attrs, false);
@@ -116,11 +96,11 @@ async function renderNormalAttributes(note: FNote) {
     return {
         count: attrs.length,
         $renderedAttributes
-    }
+    };
 }
 
 export default {
     renderAttribute,
     renderAttributes,
     renderNormalAttributes
-}
+};

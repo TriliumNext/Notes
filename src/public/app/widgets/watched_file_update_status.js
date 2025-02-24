@@ -12,7 +12,7 @@ const TPL = `
         }
     </style>
     
-    <p>${t("watched_file_update_status.file_last_modified", { count: '' })}</p> 
+    <p>${t("watched_file_update_status.file_last_modified", { count: "" })}</p> 
 
     <div style="display: flex; flex-direction: row; justify-content: space-evenly;">
         <button class="btn btn-sm file-upload-button">${t("watched_file_update_status.upload_modified_file")}</button>
@@ -47,7 +47,7 @@ export default class WatchedFileUpdateStatusWidget extends NoteContextAwareWidge
         });
 
         this.$ignoreThisChangeButton = this.$widget.find(".ignore-this-change-button");
-        this.$ignoreThisChangeButton.on('click', () => {
+        this.$ignoreThisChangeButton.on("click", () => {
             const { entityType, entityId } = this.getEntity();
 
             fileWatcher.ignoreModification(entityType, entityId);
@@ -70,20 +70,21 @@ export default class WatchedFileUpdateStatusWidget extends NoteContextAwareWidge
 
         const { viewScope } = this.noteContext;
 
-        if (viewScope.viewMode === 'attachments' && viewScope.attachmentId) {
+        if (viewScope.viewMode === "attachments" && viewScope.attachmentId) {
             return {
-                entityType: 'attachments',
+                entityType: "attachments",
                 entityId: viewScope.attachmentId
             };
         } else {
             return {
-                entityType: 'notes',
+                entityType: "notes",
                 entityId: this.noteId
             };
         }
     }
 
-    openedFileUpdatedEvent(data) {console.log(data);
+    openedFileUpdatedEvent(data) {
+        console.log(data);
         const { entityType, entityId } = this.getEntity();
 
         if (data.entityType === entityType && data.entityId === entityId) {

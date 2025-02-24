@@ -1,6 +1,6 @@
 module.exports = () => {
-    const sql = require('../../src/services/sql');
-    const utils = require('../../src/services/utils');
+    const sql = require("../../src/services/sql");
+    const utils = require("../../src/services/utils");
 
     const existingBlobIds = new Set();
 
@@ -11,7 +11,7 @@ module.exports = () => {
         if (!existingBlobIds.has(blobId)) {
             existingBlobIds.add(blobId);
 
-            sql.insert('blobs', {
+            sql.insert("blobs", {
                 blobId,
                 content: row.content,
                 dateModified: row.dateModified,
@@ -24,7 +24,7 @@ module.exports = () => {
             sql.execute("DELETE FROM entity_changes WHERE entityName = 'note_contents' AND entityId = ?", [row.noteId]);
         }
 
-        sql.execute('UPDATE notes SET blobId = ? WHERE noteId = ?', [blobId, row.noteId]);
+        sql.execute("UPDATE notes SET blobId = ? WHERE noteId = ?", [blobId, row.noteId]);
     }
 
     for (const noteRevisionId of sql.getColumn(`SELECT noteRevisionId FROM note_revision_contents`)) {
@@ -34,7 +34,7 @@ module.exports = () => {
         if (!existingBlobIds.has(blobId)) {
             existingBlobIds.add(blobId);
 
-            sql.insert('blobs', {
+            sql.insert("blobs", {
                 blobId,
                 content: row.content,
                 dateModified: row.utcDateModified,
@@ -47,7 +47,7 @@ module.exports = () => {
             sql.execute("DELETE FROM entity_changes WHERE entityName = 'note_revision_contents' AND entityId = ?", [row.noteId]);
         }
 
-        sql.execute('UPDATE note_revisions SET blobId = ? WHERE noteRevisionId = ?', [blobId, row.noteRevisionId]);
+        sql.execute("UPDATE note_revisions SET blobId = ? WHERE noteRevisionId = ?", [blobId, row.noteRevisionId]);
     }
 
     const notesWithoutBlobIds = sql.getColumn("SELECT noteId FROM notes WHERE blobId IS NULL");

@@ -1,5 +1,5 @@
 import { t } from "../../services/i18n.js";
-import treeService from '../../services/tree.js';
+import treeService from "../../services/tree.js";
 import noteAutocompleteService from "../../services/note_autocomplete.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
@@ -9,17 +9,17 @@ const TPL = `
     <div class="modal-dialog modal-lg" style="max-width: 1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title flex-grow-1">${t('add_link.add_link')}</h5>
-                <button type="button" class="help-button" title="${t('add_link.help_on_links')}" data-help-page="links.html">?</button>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('add_link.close')}"></button>
+                <h5 class="modal-title flex-grow-1">${t("add_link.add_link")}</h5>
+                <button type="button" class="help-button" title="${t("add_link.help_on_links")}" data-help-page="links.html">?</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("add_link.close")}"></button>
             </div>
             <form class="add-link-form">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="add-link-note-autocomplete">${t('add_link.note')}</label>
+                        <label for="add-link-note-autocomplete">${t("add_link.note")}</label>
 
                         <div class="input-group">
-                            <input class="add-link-note-autocomplete form-control" placeholder="${t('add_link.search_note')}">
+                            <input class="add-link-note-autocomplete form-control" placeholder="${t("add_link.search_note")}">
                         </div>
                     </div>
 
@@ -27,20 +27,20 @@ const TPL = `
                         <div class="add-link-title-radios form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="link-type" value="reference-link" checked>
-                                ${t('add_link.link_title_mirrors')}
+                                ${t("add_link.link_title_mirrors")}
                             </label>
                         </div>
                         <div class="add-link-title-radios form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" type="radio" name="link-type" value="hyper-link">
-                                ${t('add_link.link_title_arbitrary')}
+                                ${t("add_link.link_title_arbitrary")}
                             </label>
                         </div>
 
                         <div class="add-link-title-form-group form-group">
                             <br/>
                             <label>
-                                ${t('add_link.link_title')}
+                                ${t("add_link.link_title")}
                                 
                                 <input class="link-title form-control" style="width: 100%;">
                             </label>
@@ -48,7 +48,7 @@ const TPL = `
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">${t('add_link.add_link')} <kbd>enter</kbd></button>
+                    <button type="submit" class="btn btn-primary">${t("add_link.button_add_link")}</button>
                 </div>
             </form>
         </div>
@@ -68,20 +68,18 @@ export default class AddLinkDialog extends BasicWidget {
         /** @var TextTypeWidget */
         this.textTypeWidget = null;
 
-        this.$form.on('submit', () => {
+        this.$form.on("submit", () => {
             if (this.$autoComplete.getSelectedNotePath()) {
-                this.$widget.modal('hide');
+                this.$widget.modal("hide");
 
-                const linkTitle = this.getLinkType() === 'reference-link' ? null : this.$linkTitle.val();
+                const linkTitle = this.getLinkType() === "reference-link" ? null : this.$linkTitle.val();
 
                 this.textTypeWidget.addLink(this.$autoComplete.getSelectedNotePath(), linkTitle);
-            }
-            else if (this.$autoComplete.getSelectedExternalLink()) {
-                this.$widget.modal('hide');
+            } else if (this.$autoComplete.getSelectedExternalLink()) {
+                this.$widget.modal("hide");
 
                 this.textTypeWidget.addLink(this.$autoComplete.getSelectedExternalLink(), this.$linkTitle.val());
-            }
-            else {
+            } else {
                 logError("No link to add.");
             }
 
@@ -89,18 +87,17 @@ export default class AddLinkDialog extends BasicWidget {
         });
     }
 
-    async showAddLinkDialogEvent({textTypeWidget, text = ''}) {
+    async showAddLinkDialogEvent({ textTypeWidget, text = "" }) {
         this.textTypeWidget = textTypeWidget;
 
         this.$addLinkTitleSettings.toggle(!this.textTypeWidget.hasSelection());
 
-        this.$addLinkTitleSettings.find('input[type=radio]').on('change', e => this.updateTitleSettingsVisibility(e));
+        this.$addLinkTitleSettings.find("input[type=radio]").on("change", (e) => this.updateTitleSettingsVisibility(e));
 
         // with selection hyperlink is implied
         if (this.textTypeWidget.hasSelection()) {
             this.$addLinkTitleSettings.find("input[value='hyper-link']").prop("checked", true);
-        }
-        else {
+        } else {
             this.$addLinkTitleSettings.find("input[value='reference-link']").prop("checked", true);
         }
 
@@ -108,10 +105,10 @@ export default class AddLinkDialog extends BasicWidget {
 
         utils.openDialog(this.$widget);
 
-        this.$autoComplete.val('');
-        this.$linkTitle.val('');
+        this.$autoComplete.val("");
+        this.$linkTitle.val("");
 
-        const setDefaultLinkTitle = async noteId => {
+        const setDefaultLinkTitle = async (noteId) => {
             const noteTitle = await treeService.getNoteTitle(noteId);
 
             this.$linkTitle.val(noteTitle);
@@ -122,7 +119,7 @@ export default class AddLinkDialog extends BasicWidget {
             allowCreatingNotes: true
         });
 
-        this.$autoComplete.on('autocomplete:noteselected', (event, suggestion, dataset) => {
+        this.$autoComplete.on("autocomplete:noteselected", (event, suggestion, dataset) => {
             if (!suggestion.notePath) {
                 return false;
             }
@@ -136,7 +133,7 @@ export default class AddLinkDialog extends BasicWidget {
             }
         });
 
-        this.$autoComplete.on('autocomplete:externallinkselected', (event, suggestion, dataset) => {
+        this.$autoComplete.on("autocomplete:externallinkselected", (event, suggestion, dataset) => {
             if (!suggestion.externalLink) {
                 return false;
             }
@@ -146,11 +143,10 @@ export default class AddLinkDialog extends BasicWidget {
             this.$linkTitle.val(suggestion.externalLink);
         });
 
-        this.$autoComplete.on('autocomplete:cursorchanged',  (event, suggestion, dataset) => {
+        this.$autoComplete.on("autocomplete:cursorchanged", (event, suggestion, dataset) => {
             if (suggestion.externalLink) {
-                this.$linkTitle.val(suggestion.externalLink)
-            }
-            else {
+                this.$linkTitle.val(suggestion.externalLink);
+            } else {
                 const noteId = treeService.getNoteIdFromUrl(suggestion.notePath);
 
                 if (noteId) {
@@ -161,28 +157,25 @@ export default class AddLinkDialog extends BasicWidget {
 
         if (text && text.trim()) {
             noteAutocompleteService.setText(this.$autoComplete, text);
-        }
-        else {
+        } else {
             noteAutocompleteService.showRecentNotes(this.$autoComplete);
         }
 
-        this.$autoComplete
-            .trigger('focus')
-            .trigger('select'); // to be able to quickly remove entered text
+        this.$autoComplete.trigger("focus").trigger("select"); // to be able to quickly remove entered text
     }
 
     getLinkType() {
         if (this.$autoComplete.getSelectedExternalLink()) {
-            return 'external-link';
+            return "external-link";
         }
 
-        return this.$addLinkTitleSettings.find('input[type=radio]:checked').val();
+        return this.$addLinkTitleSettings.find("input[type=radio]:checked").val();
     }
 
     updateTitleSettingsVisibility() {
         const linkType = this.getLinkType();
 
-        this.$addLinkTitleFormGroup.toggle(linkType !== 'reference-link');
-        this.$addLinkTitleRadios.toggle(linkType !== 'external-link')
+        this.$addLinkTitleFormGroup.toggle(linkType !== "reference-link");
+        this.$addLinkTitleRadios.toggle(linkType !== "external-link");
     }
 }

@@ -4,7 +4,7 @@ type ElementType = HTMLElement | Document;
 type Handler = (e: JQuery.TriggeredEvent<ElementType, string, ElementType, ElementType>) => void;
 
 function removeGlobalShortcut(namespace: string) {
-    bindGlobalShortcut('', null, namespace);
+    bindGlobalShortcut("", null, namespace);
 }
 
 function bindGlobalShortcut(keyboardShortcut: string, handler: Handler | null, namespace: string | null = null) {
@@ -15,7 +15,7 @@ function bindElShortcut($el: JQuery<ElementType>, keyboardShortcut: string, hand
     if (utils.isDesktop()) {
         keyboardShortcut = normalizeShortcut(keyboardShortcut);
 
-        let eventName = 'keydown';
+        let eventName = "keydown";
 
         if (namespace) {
             eventName += `.${namespace}`;
@@ -26,7 +26,7 @@ function bindElShortcut($el: JQuery<ElementType>, keyboardShortcut: string, hand
 
         // method can be called to remove the shortcut (e.g. when keyboardShortcut label is deleted)
         if (keyboardShortcut) {
-            $el.bind(eventName, keyboardShortcut, e => {
+            $el.bind(eventName, keyboardShortcut, (e) => {
                 if (handler) {
                     handler(e);
                 }
@@ -46,12 +46,7 @@ function normalizeShortcut(shortcut: string): string {
         return shortcut;
     }
 
-    return shortcut
-        .toLowerCase()
-        .replace("enter", "return")
-        .replace("delete", "del")
-        .replace("ctrl+alt", "alt+ctrl")
-        .replace("meta+alt", "alt+meta"); // alt needs to be first;
+    return shortcut.toLowerCase().replace("enter", "return").replace("delete", "del").replace("ctrl+alt", "alt+ctrl").replace("meta+alt", "alt+meta"); // alt needs to be first;
 }
 
 export default {
@@ -59,4 +54,4 @@ export default {
     bindElShortcut,
     removeGlobalShortcut,
     normalizeShortcut
-}
+};

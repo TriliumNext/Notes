@@ -1,11 +1,13 @@
 import BAttribute from "../becca/entities/battribute.js";
-import { AttributeType, NoteType } from "../becca/entities/rows.js";
+import type { AttributeType, NoteType } from "../becca/entities/rows.js";
 
 import becca from "../becca/becca.js";
 import noteService from "./notes.js";
 import log from "./log.js";
 import migrationService from "./migration.js";
 import { t } from "i18next";
+import { cleanUpHelp, getHelpHiddenSubtreeData } from "./in_app_help.js";
+import buildLaunchBarConfig from "./hidden_subtree_launcherbar.js";
 
 const LBTPL_ROOT = "_lbTplRoot";
 const LBTPL_BASE = "_lbTplBase";
@@ -16,21 +18,21 @@ const LBTPL_BUILTIN_WIDGET = "_lbTplBuiltinWidget";
 const LBTPL_SPACER = "_lbTplSpacer";
 const LBTPL_CUSTOM_WIDGET = "_lbTplCustomWidget";
 
-interface Attribute {
+interface HiddenSubtreeAttribute {
     type: AttributeType;
     name: string;
     isInheritable?: boolean;
-    value?: string
+    value?: string;
 }
 
-interface Item {
+export interface HiddenSubtreeItem {
     notePosition?: number;
     id: string;
     title: string;
     type: NoteType;
     icon?: string;
-    attributes?: Attribute[];
-    children?: Item[];
+    attributes?: HiddenSubtreeAttribute[];
+    children?: HiddenSubtreeItem[];
     isExpanded?: boolean;
     baseSize?: string;
     growthFactor?: string;
@@ -54,225 +56,235 @@ enum Command {
  * duplicate subtrees. This way, all instances will generate the same structure with the same IDs.
  */
 
-let hiddenSubtreeDefinition: Item;
+let hiddenSubtreeDefinition: HiddenSubtreeItem;
 
-function buildHiddenSubtreeDefinition(): Item {
+function buildHiddenSubtreeDefinition(helpSubtree: HiddenSubtreeItem[]): HiddenSubtreeItem {
+    const launchbarConfig = buildLaunchBarConfig();
+
     return {
-        id: '_hidden',
+        id: "_hidden",
         title: t("hidden-subtree.root-title"),
-        type: 'doc',
-        icon: 'bx bx-hide',
+        type: "doc",
+        icon: "bx bx-hide",
         // we want to keep the hidden subtree always last, otherwise there will be problems with e.g., keyboard navigation
         // over tree when it's in the middle
         notePosition: 999_999_999,
         attributes: [
-            { type: 'label', name: 'excludeFromNoteMap', isInheritable: true },
-            { type: 'label', name: 'docName', value: 'hidden' }
+            { type: "label", name: "excludeFromNoteMap", isInheritable: true },
+            { type: "label", name: "docName", value: "hidden" }
         ],
         children: [
             {
-                id: '_search',
+                id: "_search",
                 title: t("hidden-subtree.search-history-title"),
-                type: 'doc'
+                type: "doc"
             },
             {
-                id: '_globalNoteMap',
+                id: "_globalNoteMap",
                 title: t("hidden-subtree.note-map-title"),
-                type: 'noteMap',
+                type: "noteMap",
                 attributes: [
-                    { type: 'label', name: 'mapRootNoteId', value: 'hoisted' },
-                    { type: 'label', name: 'keepCurrentHoisting' }
+                    { type: "label", name: "mapRootNoteId", value: "hoisted" },
+                    { type: "label", name: "keepCurrentHoisting" }
                 ]
             },
             {
-                id: '_sqlConsole',
+                id: "_sqlConsole",
                 title: t("hidden-subtree.sql-console-history-title"),
-                type: 'doc',
-                icon: 'bx-data'
+                type: "doc",
+                icon: "bx-data"
             },
             {
-                id: '_share',
+                id: "_share",
                 title: t("hidden-subtree.shared-notes-title"),
-                type: 'doc',
-                attributes: [ { type: 'label', name: 'docName', value: 'share' } ]
+                type: "doc",
+                attributes: [{ type: "label", name: "docName", value: "share" }]
             },
             {
-                id: '_bulkAction',
+                id: "_bulkAction",
                 title: t("hidden-subtree.bulk-action-title"),
-                type: 'doc',
+                type: "doc"
             },
             {
-                id: '_backendLog',
+                id: "_backendLog",
                 title: t("hidden-subtree.backend-log-title"),
-                type: 'contentWidget',
-                icon: 'bx-terminal',
+                type: "contentWidget",
+                icon: "bx-terminal",
                 attributes: [
-                    { type: 'label', name: 'keepCurrentHoisting' },
-                    { type: 'label', name: 'fullContentWidth' }
+                    { type: "label", name: "keepCurrentHoisting" },
+                    { type: "label", name: "fullContentWidth" }
                 ]
             },
             {
                 // place for user scripts hidden stuff (scripts should not create notes directly under hidden root)
-                id: '_userHidden',
+                id: "_userHidden",
                 title: t("hidden-subtree.user-hidden-title"),
-                type: 'doc',
-                attributes: [ { type: 'label', name: 'docName', value: 'user_hidden' } ]
+                type: "doc",
+                attributes: [{ type: "label", name: "docName", value: "user_hidden" }]
             },
             {
                 id: LBTPL_ROOT,
                 title: t("hidden-subtree.launch-bar-templates-title"),
-                type: 'doc',
+                type: "doc",
                 children: [
                     {
                         id: LBTPL_BASE,
                         title: t("hidden-subtree.base-abstract-launcher-title"),
-                        type: 'doc'
+                        type: "doc"
                     },
                     {
                         id: LBTPL_COMMAND,
                         title: t("hidden-subtree.command-launcher-title"),
-                        type: 'doc',
+                        type: "doc",
                         attributes: [
-                            { type: 'relation', name: 'template', value: LBTPL_BASE },
-                            { type: 'label', name: 'launcherType', value: 'command' },
-                            { type: 'label', name: 'docName', value: 'launchbar_command_launcher' }
+                            { type: "relation", name: "template", value: LBTPL_BASE },
+                            { type: "label", name: "launcherType", value: "command" },
+                            { type: "label", name: "docName", value: "launchbar_command_launcher" }
                         ]
                     },
                     {
                         id: LBTPL_NOTE_LAUNCHER,
                         title: t("hidden-subtree.note-launcher-title"),
-                        type: 'doc',
+                        type: "doc",
                         attributes: [
-                            { type: 'relation', name: 'template', value: LBTPL_BASE },
-                            { type: 'label', name: 'launcherType', value: 'note' },
-                            { type: 'label', name: 'relation:target', value: 'promoted' },
-                            { type: 'label', name: 'relation:hoistedNote', value: 'promoted' },
-                            { type: 'label', name: 'label:keyboardShortcut', value: 'promoted,text' },
-                            { type: 'label', name: 'docName', value: 'launchbar_note_launcher' }
+                            { type: "relation", name: "template", value: LBTPL_BASE },
+                            { type: "label", name: "launcherType", value: "note" },
+                            { type: "label", name: "relation:target", value: "promoted" },
+                            { type: "label", name: "relation:hoistedNote", value: "promoted" },
+                            { type: "label", name: "label:keyboardShortcut", value: "promoted,text" },
+                            { type: "label", name: "docName", value: "launchbar_note_launcher" }
                         ]
                     },
                     {
                         id: LBTPL_SCRIPT,
                         title: t("hidden-subtree.script-launcher-title"),
-                        type: 'doc',
+                        type: "doc",
                         attributes: [
-                            { type: 'relation', name: 'template', value: LBTPL_BASE },
-                            { type: 'label', name: 'launcherType', value: 'script' },
-                            { type: 'label', name: 'relation:script', value: 'promoted' },
-                            { type: 'label', name: 'label:keyboardShortcut', value: 'promoted,text' },
-                            { type: 'label', name: 'docName', value: 'launchbar_script_launcher' }
+                            { type: "relation", name: "template", value: LBTPL_BASE },
+                            { type: "label", name: "launcherType", value: "script" },
+                            { type: "label", name: "relation:script", value: "promoted" },
+                            { type: "label", name: "label:keyboardShortcut", value: "promoted,text" },
+                            { type: "label", name: "docName", value: "launchbar_script_launcher" }
                         ]
                     },
                     {
                         id: LBTPL_BUILTIN_WIDGET,
                         title: t("hidden-subtree.built-in-widget-title"),
-                        type: 'doc',
+                        type: "doc",
                         attributes: [
-                            { type: 'relation', name: 'template', value: LBTPL_BASE },
-                            { type: 'label', name: 'launcherType', value: 'builtinWidget' }
+                            { type: "relation", name: "template", value: LBTPL_BASE },
+                            { type: "label", name: "launcherType", value: "builtinWidget" }
                         ]
                     },
                     {
                         id: LBTPL_SPACER,
                         title: t("hidden-subtree.spacer-title"),
-                        type: 'doc',
-                        icon: 'bx-move-vertical',
+                        type: "doc",
+                        icon: "bx-move-vertical",
                         attributes: [
-                            { type: 'relation', name: 'template', value: LBTPL_BUILTIN_WIDGET },
-                            { type: 'label', name: 'builtinWidget', value: 'spacer' },
-                            { type: 'label', name: 'label:baseSize', value: 'promoted,number' },
-                            { type: 'label', name: 'label:growthFactor', value: 'promoted,number' },
-                            { type: 'label', name: 'docName', value: 'launchbar_spacer' }
+                            { type: "relation", name: "template", value: LBTPL_BUILTIN_WIDGET },
+                            { type: "label", name: "builtinWidget", value: "spacer" },
+                            { type: "label", name: "label:baseSize", value: "promoted,number" },
+                            { type: "label", name: "label:growthFactor", value: "promoted,number" },
+                            { type: "label", name: "docName", value: "launchbar_spacer" }
                         ]
                     },
                     {
                         id: LBTPL_CUSTOM_WIDGET,
                         title: t("hidden-subtree.custom-widget-title"),
-                        type: 'doc',
+                        type: "doc",
                         attributes: [
-                            { type: 'relation', name: 'template', value: LBTPL_BASE },
-                            { type: 'label', name: 'launcherType', value: 'customWidget' },
-                            { type: 'label', name: 'relation:widget', value: 'promoted' },
-                            { type: 'label', name: 'docName', value: 'launchbar_widget_launcher' }
-                        ]
-                    },
-                ]
-            },
-            {
-                id: '_lbRoot',
-                title: t("hidden-subtree.launch-bar-title"),
-                type: 'doc',
-                icon: 'bx-sidebar',
-                isExpanded: true,
-                attributes: [ { type: 'label', name: 'docName', value: 'launchbar_intro' } ],
-                children: [
-                    {
-                        id: '_lbAvailableLaunchers',
-                        title: t("hidden-subtree.available-launchers-title"),
-                        type: 'doc',
-                        icon: 'bx-hide',
-                        isExpanded: true,
-                        attributes: [ { type: 'label', name: 'docName', value: 'launchbar_intro' } ],
-                        children: [
-                            { id: '_lbBackInHistory', title: t("hidden-subtree.go-to-previous-note-title"), type: 'launcher', builtinWidget: 'backInHistoryButton', icon: 'bx bxs-chevron-left',
-                                attributes: [ { type: 'label', name: 'docName', value: 'launchbar_history_navigation' } ]},
-                            { id: '_lbForwardInHistory', title: t("hidden-subtree.go-to-next-note-title"), type: 'launcher', builtinWidget: 'forwardInHistoryButton', icon: 'bx bxs-chevron-right',
-                                attributes: [ { type: 'label', name: 'docName', value: 'launchbar_history_navigation' } ]},
-                            { id: '_lbBackendLog', title: t("hidden-subtree.backend-log-title"), type: 'launcher', targetNoteId: '_backendLog', icon: 'bx bx-terminal' },
-                        ]
-                    },
-                    {
-                        id: '_lbVisibleLaunchers',
-                        title: t("hidden-subtree.visible-launchers-title"),
-                        type: 'doc',
-                        icon: 'bx-show',
-                        isExpanded: true,
-                        attributes: [ { type: 'label', name: 'docName', value: 'launchbar_intro' } ],
-                        children: [
-                            { id: '_lbNewNote', title: t("hidden-subtree.new-note-title"), type: 'launcher', command: 'createNoteIntoInbox', icon: 'bx bx-file-blank' },
-                            { id: '_lbSearch', title: t("hidden-subtree.search-notes-title"), type: 'launcher', command: 'searchNotes', icon: 'bx bx-search', attributes: [
-                                    { type: 'label', name: 'desktopOnly' }
-                                ] },
-                            { id: '_lbJumpTo', title: t("hidden-subtree.jump-to-note-title"), type: 'launcher', command: 'jumpToNote', icon: 'bx bx-send', attributes: [
-                                    { type: 'label', name: 'desktopOnly' }
-                                ] },
-                            { id: '_lbNoteMap', title: t("hidden-subtree.note-map-title"), type: 'launcher', targetNoteId: '_globalNoteMap', icon: 'bx bxs-network-chart' },
-                            { id: '_lbCalendar', title: t("hidden-subtree.calendar-title"), type: 'launcher', builtinWidget: 'calendar', icon: 'bx bx-calendar' },
-                            { id: '_lbRecentChanges', title: t("hidden-subtree.recent-changes-title"), type: 'launcher', command: 'showRecentChanges', icon: 'bx bx-history', attributes: [
-                                    { type: 'label', name: 'desktopOnly' }
-                                ] },
-                            { id: '_lbSpacer1', title: t("hidden-subtree.spacer-title"), type: 'launcher', builtinWidget: 'spacer', baseSize: "50", growthFactor: "0" },
-                            { id: '_lbBookmarks', title: t("hidden-subtree.bookmarks-title"), type: 'launcher', builtinWidget: 'bookmarks', icon: 'bx bx-bookmark' },
-                            { id: '_lbToday', title: t("hidden-subtree.open-today-journal-note-title"), type: 'launcher', builtinWidget: 'todayInJournal', icon: 'bx bx-calendar-star' },
-                            { id: '_lbSpacer2', title: t("hidden-subtree.spacer-title"), type: 'launcher', builtinWidget: 'spacer', baseSize: "0", growthFactor: "1" },
-                            { id: '_lbQuickSearch', title: t("hidden-subtree.quick-search-title"), type: "launcher", builtinWidget: "quickSearch", icon: "bx bx-rectangle" },
-                            { id: '_lbProtectedSession', title: t("hidden-subtree.protected-session-title"), type: 'launcher', builtinWidget: 'protectedSession', icon: 'bx bx bx-shield-quarter' },
-                            { id: '_lbSyncStatus', title: t("hidden-subtree.sync-status-title"), type: 'launcher', builtinWidget: 'syncStatus', icon: 'bx bx-wifi' },
-                            { id: '_lbSettings', title: t("hidden-subtree.settings-title"), type: 'launcher', command: 'showOptions', icon: 'bx bx-cog' }
+                            { type: "relation", name: "template", value: LBTPL_BASE },
+                            { type: "label", name: "launcherType", value: "customWidget" },
+                            { type: "label", name: "relation:widget", value: "promoted" },
+                            { type: "label", name: "docName", value: "launchbar_widget_launcher" }
                         ]
                     }
                 ]
             },
             {
-                id: '_options',
-                title: t("hidden-subtree.options-title"),
-                type: 'book',
-                icon: 'bx-cog',
+                id: "_lbRoot",
+                title: t("hidden-subtree.launch-bar-title"),
+                type: "doc",
+                icon: "bx-sidebar",
+                isExpanded: true,
+                attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
                 children: [
-                    { id: '_optionsAppearance', title: t("hidden-subtree.appearance-title"), type: 'contentWidget', icon: 'bx-layout' },
-                    { id: '_optionsShortcuts', title: t("hidden-subtree.shortcuts-title"), type: 'contentWidget', icon: 'bxs-keyboard' },
-                    { id: '_optionsTextNotes', title: t("hidden-subtree.text-notes"), type: 'contentWidget', icon: 'bx-text' },
-                    { id: '_optionsCodeNotes', title: t("hidden-subtree.code-notes-title"), type: 'contentWidget', icon: 'bx-code' },
-                    { id: '_optionsImages', title: t("hidden-subtree.images-title"), type: 'contentWidget', icon: 'bx-image' },
-                    { id: '_optionsSpellcheck', title: t("hidden-subtree.spellcheck-title"), type: 'contentWidget', icon: 'bx-check-double' },
-                    { id: '_optionsPassword', title: t("hidden-subtree.password-title"), type: 'contentWidget', icon: 'bx-lock' },
-                    { id: '_optionsEtapi', title: t("hidden-subtree.etapi-title"), type: 'contentWidget', icon: 'bx-extension' },
-                    { id: '_optionsBackup', title: t("hidden-subtree.backup-title"), type: 'contentWidget', icon: 'bx-data' },
-                    { id: '_optionsSync', title: t("hidden-subtree.sync-title"), type: 'contentWidget', icon: 'bx-wifi' },
-                    { id: '_optionsLLM', title: t("hidden-subtree.llm-title"), type: 'contentWidget', icon: 'bx-bot' },
-                    { id: '_optionsOther', title: t("hidden-subtree.other"), type: 'contentWidget', icon: 'bx-dots-horizontal' },
-                    { id: '_optionsAdvanced', title: t("hidden-subtree.advanced-title"), type: 'contentWidget' }
+                    {
+                        id: "_lbAvailableLaunchers",
+                        title: t("hidden-subtree.available-launchers-title"),
+                        type: "doc",
+                        icon: "bx-hide",
+                        isExpanded: true,
+                        attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
+                        children: launchbarConfig.desktopAvailableLaunchers
+                    },
+                    {
+                        id: "_lbVisibleLaunchers",
+                        title: t("hidden-subtree.visible-launchers-title"),
+                        type: "doc",
+                        icon: "bx-show",
+                        isExpanded: true,
+                        attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
+                        children: launchbarConfig.desktopVisibleLaunchers
+                    }
                 ]
+            },
+            {
+                id: "_lbMobileRoot",
+                title: "Mobile Launch Bar",
+                type: "doc",
+                icon: "bx-mobile",
+                isExpanded: true,
+                attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
+                children: [
+                    {
+                        id: "_lbMobileAvailableLaunchers",
+                        title: t("hidden-subtree.available-launchers-title"),
+                        type: "doc",
+                        icon: "bx-hide",
+                        isExpanded: true,
+                        attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
+                        children: launchbarConfig.mobileAvailableLaunchers
+                    },
+                    {
+                        id: "_lbMobileVisibleLaunchers",
+                        title: t("hidden-subtree.visible-launchers-title"),
+                        type: "doc",
+                        icon: "bx-show",
+                        isExpanded: true,
+                        attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
+                        children: launchbarConfig.mobileVisibleLaunchers
+                    }
+                ]
+            },
+            {
+                id: "_options",
+                title: t("hidden-subtree.options-title"),
+                type: "book",
+                icon: "bx-cog",
+                children: [
+                    { id: "_optionsAppearance", title: t("hidden-subtree.appearance-title"), type: "contentWidget", icon: "bx-layout" },
+                    { id: "_optionsShortcuts", title: t("hidden-subtree.shortcuts-title"), type: "contentWidget", icon: "bxs-keyboard" },
+                    { id: "_optionsTextNotes", title: t("hidden-subtree.text-notes"), type: "contentWidget", icon: "bx-text" },
+                    { id: "_optionsCodeNotes", title: t("hidden-subtree.code-notes-title"), type: "contentWidget", icon: "bx-code" },
+                    { id: "_optionsImages", title: t("hidden-subtree.images-title"), type: "contentWidget", icon: "bx-image" },
+                    { id: "_optionsSpellcheck", title: t("hidden-subtree.spellcheck-title"), type: "contentWidget", icon: "bx-check-double" },
+                    { id: "_optionsPassword", title: t("hidden-subtree.password-title"), type: "contentWidget", icon: "bx-lock" },
+                    { id: "_optionsEtapi", title: t("hidden-subtree.etapi-title"), type: "contentWidget", icon: "bx-extension" },
+                    { id: "_optionsBackup", title: t("hidden-subtree.backup-title"), type: "contentWidget", icon: "bx-data" },
+                    { id: "_optionsSync", title: t("hidden-subtree.sync-title"), type: "contentWidget", icon: "bx-wifi" },
+                    { id: "_optionsOther", title: t("hidden-subtree.other"), type: "contentWidget", icon: "bx-dots-horizontal" },
+                    { id: "_optionsAdvanced", title: t("hidden-subtree.advanced-title"), type: "contentWidget" }
+                ]
+            },
+            {
+                id: "_help",
+                title: t("hidden-subtree.user-guide"),
+                type: "book",
+                icon: "bx-help-circle",
+                children: helpSubtree,
+                isExpanded: true
             }
         ]
     };
@@ -289,19 +301,27 @@ function checkHiddenSubtree(force = false, extraOpts: CheckHiddenExtraOpts = {})
         return;
     }
 
+    const helpSubtree = getHelpHiddenSubtreeData();
     if (!hiddenSubtreeDefinition || force) {
-        hiddenSubtreeDefinition = buildHiddenSubtreeDefinition();
+        hiddenSubtreeDefinition = buildHiddenSubtreeDefinition(helpSubtree);
     }
 
-    checkHiddenSubtreeRecursively('root', hiddenSubtreeDefinition, extraOpts);
+    checkHiddenSubtreeRecursively("root", hiddenSubtreeDefinition, extraOpts);
+
+    try {
+        cleanUpHelp(helpSubtree);
+    } catch (e) {
+        // Non-critical operation should something go wrong.
+        console.error(e);
+    }
 }
 
-function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOpts: CheckHiddenExtraOpts = {}) {
+function checkHiddenSubtreeRecursively(parentNoteId: string, item: HiddenSubtreeItem, extraOpts: CheckHiddenExtraOpts = {}) {
     if (!item.id || !item.type || !item.title) {
         throw new Error(`Item does not contain mandatory properties: ${JSON.stringify(item)}`);
     }
 
-    if (item.id.charAt(0) !== '_') {
+    if (item.id.charAt(0) !== "_") {
         throw new Error(`ID has to start with underscore, given '${item.id}'`);
     }
 
@@ -309,41 +329,41 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOp
     let branch;
 
     if (!note) {
-        ({note, branch} = noteService.createNewNote({
+        ({ note, branch } = noteService.createNewNote({
             noteId: item.id,
             title: item.title,
             type: item.type,
             parentNoteId: parentNoteId,
-            content: '',
+            content: "",
             ignoreForbiddenParents: true
         }));
     } else {
-        branch = note.getParentBranches().find(branch => branch.parentNoteId === parentNoteId);
+        branch = note.getParentBranches().find((branch) => branch.parentNoteId === parentNoteId);
     }
 
     const attrs = [...(item.attributes || [])];
 
     if (item.icon) {
-        attrs.push({ type: 'label', name: 'iconClass', value: `bx ${item.icon}` });
+        attrs.push({ type: "label", name: "iconClass", value: `bx ${item.icon}` });
     }
 
-    if (item.type === 'launcher') {
+    if (item.type === "launcher") {
         if (item.command) {
-            attrs.push({ type: 'relation', name: 'template', value: LBTPL_COMMAND });
-            attrs.push({ type: 'label', name: 'command', value: item.command });
+            attrs.push({ type: "relation", name: "template", value: LBTPL_COMMAND });
+            attrs.push({ type: "label", name: "command", value: item.command });
         } else if (item.builtinWidget) {
-            if (item.builtinWidget === 'spacer') {
-                attrs.push({ type: 'relation', name: 'template', value: LBTPL_SPACER });
-                attrs.push({ type: 'label', name: 'baseSize', value: item.baseSize });
-                attrs.push({ type: 'label', name: 'growthFactor', value: item.growthFactor });
+            if (item.builtinWidget === "spacer") {
+                attrs.push({ type: "relation", name: "template", value: LBTPL_SPACER });
+                attrs.push({ type: "label", name: "baseSize", value: item.baseSize });
+                attrs.push({ type: "label", name: "growthFactor", value: item.growthFactor });
             } else {
-                attrs.push({ type: 'relation', name: 'template', value: LBTPL_BUILTIN_WIDGET });
+                attrs.push({ type: "relation", name: "template", value: LBTPL_BUILTIN_WIDGET });
             }
 
-            attrs.push({ type: 'label', name: 'builtinWidget', value: item.builtinWidget });
+            attrs.push({ type: "label", name: "builtinWidget", value: item.builtinWidget });
         } else if (item.targetNoteId) {
-            attrs.push({ type: 'relation', name: 'template', value: LBTPL_NOTE_LAUNCHER });
-            attrs.push({ type: 'relation', name: 'target', value: item.targetNoteId });
+            attrs.push({ type: "relation", name: "template", value: LBTPL_NOTE_LAUNCHER });
+            attrs.push({ type: "relation", name: "target", value: item.targetNoteId });
         } else {
             throw new Error(`No action defined for launcher ${JSON.stringify(item)}`);
         }
@@ -377,7 +397,9 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOp
     for (const attr of attrs) {
         const attrId = note.noteId + "_" + attr.type.charAt(0) + attr.name;
 
-        if (!note.getAttributes().find(attr => attr.attributeId === attrId)) {
+        const existingAttribute = note.getAttributes().find((attr) => attr.attributeId === attrId);
+
+        if (!existingAttribute) {
             new BAttribute({
                 attributeId: attrId,
                 noteId: note.noteId,
@@ -386,6 +408,13 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOp
                 value: attr.value,
                 isInheritable: false
             }).save();
+        } else if (attr.name === "docName"
+                || (existingAttribute.noteId.startsWith("_help") && attr.name === "iconClass")) {
+            if (existingAttribute.value !== attr.value) {
+                existingAttribute.value = attr.value ?? "";
+                console.log("Updating attribute ", attrId);
+                existingAttribute.save();
+            }
         }
     }
 

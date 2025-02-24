@@ -12,21 +12,21 @@ function setupLeftPaneResizer(leftPaneVisible: boolean) {
     $("#left-pane").toggle(leftPaneVisible);
 
     if (!leftPaneVisible) {
-        $("#rest-pane").css('width', '100%');
+        $("#rest-pane").css("width", "100%");
 
         return;
     }
 
-    let leftPaneWidth = options.getInt('leftPaneWidth');
+    let leftPaneWidth = options.getInt("leftPaneWidth");
     if (!leftPaneWidth || leftPaneWidth < 5) {
         leftPaneWidth = 5;
     }
 
     if (leftPaneVisible) {
-        leftInstance = Split(['#left-pane', '#rest-pane'], {
+        leftInstance = Split(["#left-pane", "#rest-pane"], {
             sizes: [leftPaneWidth, 100 - leftPaneWidth],
             gutterSize: 5,
-            onDragEnd: sizes => options.save('leftPaneWidth', Math.round(sizes[0]))
+            onDragEnd: (sizes) => options.save("leftPaneWidth", Math.round(sizes[0]))
         });
     }
 }
@@ -40,26 +40,26 @@ function setupRightPaneResizer() {
     const rightPaneVisible = $("#right-pane").is(":visible");
 
     if (!rightPaneVisible) {
-        $("#center-pane").css('width', '100%');
+        $("#center-pane").css("width", "100%");
 
         return;
     }
 
-    let rightPaneWidth = options.getInt('rightPaneWidth');
+    let rightPaneWidth = options.getInt("rightPaneWidth");
     if (!rightPaneWidth || rightPaneWidth < 5) {
         rightPaneWidth = 5;
     }
 
     if (rightPaneVisible) {
-        rightInstance = Split(['#center-pane', '#right-pane'], {
+        rightInstance = Split(["#center-pane", "#right-pane"], {
             sizes: [100 - rightPaneWidth, rightPaneWidth],
             gutterSize: 5,
-            onDragEnd: sizes => options.save('rightPaneWidth', Math.round(sizes[1]))
+            onDragEnd: (sizes) => options.save("rightPaneWidth", Math.round(sizes[1]))
         });
     }
 }
 
 export default {
     setupLeftPaneResizer,
-    setupRightPaneResizer,
+    setupRightPaneResizer
 };

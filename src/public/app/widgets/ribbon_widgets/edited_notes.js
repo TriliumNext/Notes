@@ -28,33 +28,30 @@ export default class EditedNotesWidget extends NoteContextAwareWidget {
     }
 
     isEnabled() {
-        return super.isEnabled()
-            && this.note.hasOwnedLabel("dateNote");
+        return super.isEnabled() && this.note.hasOwnedLabel("dateNote");
     }
 
     getTitle() {
         return {
             show: this.isEnabled(),
             // promoted attributes have priority over edited notes
-            activate:
-                (this.note.getPromotedDefinitionAttributes().length === 0 || !options.is('promotedAttributesOpenInRibbon'))
-                && options.is('editedNotesOpenInRibbon'),
+            activate: (this.note.getPromotedDefinitionAttributes().length === 0 || !options.is("promotedAttributesOpenInRibbon")) && options.is("editedNotesOpenInRibbon"),
             title: t("edited_notes.title"),
-            icon: 'bx bx-calendar-edit'
+            icon: "bx bx-calendar-edit"
         };
     }
 
     async doRender() {
         this.$widget = $(TPL);
         this.contentSized();
-        this.$list = this.$widget.find('.edited-notes-list');
-        this.$noneFound = this.$widget.find('.no-edited-notes-found');
+        this.$list = this.$widget.find(".edited-notes-list");
+        this.$noneFound = this.$widget.find(".no-edited-notes-found");
     }
 
     async refreshWithNote(note) {
         let editedNotes = await server.get(`edited-notes/${note.getLabelValue("dateNote")}`);
 
-        editedNotes = editedNotes.filter(n => n.noteId !== note.noteId);
+        editedNotes = editedNotes.filter((n) => n.noteId !== note.noteId);
 
         this.$list.empty();
         this.$noneFound.hide();
@@ -64,7 +61,7 @@ export default class EditedNotesWidget extends NoteContextAwareWidget {
             return;
         }
 
-        const noteIds = editedNotes.flatMap(n => n.noteId);
+        const noteIds = editedNotes.flatMap((n) => n.noteId);
 
         await froca.getNotes(noteIds, true); // preload all at once
 
@@ -74,16 +71,9 @@ export default class EditedNotesWidget extends NoteContextAwareWidget {
 
             if (editedNote.isDeleted) {
                 const title = `${editedNote.title} ${t("edited_notes.deleted")}`;
-                $item.append(
-                    $("<i>")
-                        .text(title)
-                        .attr("title", title)
-                );
-            }
-            else {
-                $item.append(editedNote.notePath
-                    ? await linkService.createLink(editedNote.notePath.join("/"), {showNotePath: true})
-                    : $("<span>").text(editedNote.title));
+                $item.append($("<i>").text(title).attr("title", title));
+            } else {
+                $item.append(editedNote.notePath ? await linkService.createLink(editedNote.notePath.join("/"), { showNotePath: true }) : $("<span>").text(editedNote.title));
             }
 
             if (i < editedNotes.length - 1) {

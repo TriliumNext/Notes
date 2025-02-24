@@ -43,7 +43,9 @@
     font-weight: 600;
 }
 
-.note-detail-relation-map .connection-label.jtk-hover, .jtk-source-hover, .jtk-target-hover {
+.note-detail-relation-map .connection-label.jtk-hover,
+.jtk-source-hover,
+.jtk-target-hover {
     background-color: var(--more-accented-background-color);
 }
 
@@ -76,7 +78,10 @@
     border: 2px solid orange;
 }
 
-.note-detail-relation-map path, .note-detail-relation-map .jtk-endpoint { cursor:pointer; }
+.note-detail-relation-map path,
+.note-detail-relation-map .jtk-endpoint {
+    cursor: pointer;
+}
 
 .note-detail-relation-map .ui-contextmenu {
     z-index: 100;

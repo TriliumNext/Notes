@@ -3,15 +3,11 @@ import log from "../services/log.js";
 import beccaService from "./becca_service.js";
 import dateUtils from "../services/date_utils.js";
 import { JSDOM } from "jsdom";
-import BNote from "./entities/bnote.js";
+import type BNote from "./entities/bnote.js";
 
 const DEBUG = false;
 
-const IGNORED_ATTRS = [
-    "datenote",
-    "monthnote",
-    "yearnote"
-];
+const IGNORED_ATTRS = ["datenote", "monthnote", "yearnote"];
 
 const IGNORED_ATTR_NAMES = [
     "includenotelink",
@@ -30,7 +26,7 @@ const IGNORED_ATTR_NAMES = [
     "similarnoteswidgetdisabled",
     "disableinclusion",
     "rendernote",
-    "pageurl",
+    "pageurl"
 ];
 
 interface DateLimits {
@@ -40,11 +36,17 @@ interface DateLimits {
     maxDate: string;
 }
 
+interface SimilarNote {
+    score: number;
+    notePath: string[];
+    noteId: string;
+}
+
 function filterUrlValue(value: string) {
     return value
-        .replace(/https?:\/\//ig, "")
-        .replace(/www.js\./ig, "")
-        .replace(/(\.net|\.com|\.org|\.info|\.edu)/ig, "");
+        .replace(/https?:\/\//gi, "")
+        .replace(/www.js\./gi, "")
+        .replace(/(\.net|\.com|\.org|\.info|\.edu)/gi, "");
 }
 
 function buildRewardMap(note: BNote) {
@@ -61,8 +63,7 @@ function buildRewardMap(note: BNote) {
                 const currentReward = map.get(word) || 0;
 
                 // reward grows with the length of matched string
-                const length = word.length
-                    - 0.9; // to penalize specifically very short words - 1 and 2 characters
+                const length = word.length - 0.9; // to penalize specifically very short words - 1 and 2 characters
 
                 map.set(word, currentReward + rewardFactor * Math.pow(length, 0.7));
             }
@@ -70,7 +71,7 @@ function buildRewardMap(note: BNote) {
     }
 
     for (const ancestorNote of note.getAncestors()) {
-        if (ancestorNote.noteId === 'root') {
+        if (ancestorNote.noteId === "root") {
             continue;
         }
 
@@ -94,9 +95,7 @@ function buildRewardMap(note: BNote) {
     }
 
     for (const attr of note.getAttributes()) {
-        if (attr.name.startsWith('child:')
-            || attr.name.startsWith('relation:')
-            || attr.name.startsWith('label:')) {
+        if (attr.name.startsWith("child:") || attr.name.startsWith("relation:") || attr.name.startsWith("label:")) {
             continue;
         }
 
@@ -111,13 +110,13 @@ function buildRewardMap(note: BNote) {
             addToRewardMap(attr.name, reward);
         }
 
-        if (attr.name === 'cliptype') {
+        if (attr.name === "cliptype") {
             reward /= 2;
         }
 
         let value = attr.value;
 
-        if (value.startsWith('http')) {
+        if (value.startsWith("http")) {
             value = filterUrlValue(value);
 
             // words in URLs are not that valuable
@@ -127,7 +126,7 @@ function buildRewardMap(note: BNote) {
         addToRewardMap(value, reward);
     }
 
-    if (note.type === 'text' && note.isDecrypted) {
+    if (note.type === "text" && note.isDecrypted) {
         const content = note.getContent();
         const dom = new JSDOM(content);
 
@@ -135,7 +134,7 @@ function buildRewardMap(note: BNote) {
             for (const el of dom.window.document.querySelectorAll(elName)) {
                 addToRewardMap(el.textContent, rewardFactor);
             }
-        }
+        };
 
         // the title is the top with weight 1 so smaller headings will have lower weight
 
@@ -154,12 +153,12 @@ function buildRewardMap(note: BNote) {
 const mimeCache: Record<string, string> = {};
 
 function trimMime(mime: string) {
-    if (!mime || mime === 'text/html') {
+    if (!mime || mime === "text/html") {
         return;
     }
 
     if (!(mime in mimeCache)) {
-        const chunks = mime.split('/');
+        const chunks = mime.split("/");
 
         let str = "";
 
@@ -167,7 +166,7 @@ function trimMime(mime: string) {
             // we're not interested in 'text/' or 'application/' prefix
             str = chunks[1];
 
-            if (str.startsWith('-x')) {
+            if (str.startsWith("-x")) {
                 str = str.substr(2);
             }
         }
@@ -185,7 +184,7 @@ function buildDateLimits(baseNote: BNote): DateLimits {
         minDate: dateUtils.utcDateTimeStr(new Date(dateCreatedTs - 3600 * 1000)),
         minExcludedDate: dateUtils.utcDateTimeStr(new Date(dateCreatedTs - 5 * 1000)),
         maxExcludedDate: dateUtils.utcDateTimeStr(new Date(dateCreatedTs + 5 * 1000)),
-        maxDate: dateUtils.utcDateTimeStr(new Date(dateCreatedTs + 3600 * 1000)),
+        maxDate: dateUtils.utcDateTimeStr(new Date(dateCreatedTs + 3600 * 1000))
     };
 }
 
@@ -193,9 +192,34 @@ function buildDateLimits(baseNote: BNote): DateLimits {
 const wordCache = new Map();
 
 const WORD_BLACKLIST = [
-    "a", "the", "in", "for", "from", "but", "s", "so", "if", "while", "until",
-    "whether", "after", "before", "because", "since", "when", "where", "how",
-    "than", "then", "and", "either", "or", "neither", "nor", "both", "also"
+    "a",
+    "the",
+    "in",
+    "for",
+    "from",
+    "but",
+    "s",
+    "so",
+    "if",
+    "while",
+    "until",
+    "whether",
+    "after",
+    "before",
+    "because",
+    "since",
+    "when",
+    "where",
+    "how",
+    "than",
+    "then",
+    "and",
+    "either",
+    "or",
+    "neither",
+    "nor",
+    "both",
+    "also"
 ];
 
 function splitToWords(text: string) {
@@ -212,8 +236,7 @@ function splitToWords(text: string) {
             // special case for english plurals
             else if (words[idx].length > 2 && words[idx].endsWith("es")) {
                 words[idx] = words[idx].substr(0, words[idx] - 2);
-            }
-            else if (words[idx].length > 1 && words[idx].endsWith("s")) {
+            } else if (words[idx].length > 1 && words[idx].endsWith("s")) {
                 words[idx] = words[idx].substr(0, words[idx] - 1);
             }
         }
@@ -227,12 +250,10 @@ function splitToWords(text: string) {
  * that it doesn't actually need to be shown to the user.
  */
 function hasConnectingRelation(sourceNote: BNote, targetNote: BNote) {
-    return sourceNote.getAttributes().find(attr => attr.type === 'relation'
-        && ['includenotelink', 'imagelink'].includes(attr.name)
-        && attr.value === targetNote.noteId);
+    return sourceNote.getAttributes().find((attr) => attr.type === "relation" && ["includenotelink", "imagelink"].includes(attr.name) && attr.value === targetNote.noteId);
 }
 
-async function findSimilarNotes(noteId: string) {
+async function findSimilarNotes(noteId: string): Promise<SimilarNote[] | undefined> {
     const results = [];
     let i = 0;
 
@@ -246,14 +267,13 @@ async function findSimilarNotes(noteId: string) {
 
     try {
         dateLimits = buildDateLimits(baseNote);
-    }
-    catch (e: any) {
+    } catch (e: any) {
         throw new Error(`Date limits failed with ${e.message}, entity: ${JSON.stringify(baseNote.getPojo())}`);
     }
 
     const rewardMap = buildRewardMap(baseNote);
     let ancestorRewardCache: Record<string, number> = {};
-    const ancestorNoteIds = new Set(baseNote.getAncestors().map(note => note.noteId));
+    const ancestorNoteIds = new Set(baseNote.getAncestors().map((note) => note.noteId));
     ancestorNoteIds.add(baseNote.noteId);
 
     let displayRewards = false;
@@ -270,7 +290,7 @@ async function findSimilarNotes(noteId: string) {
         const lengthPenalization = 1 / Math.pow(text.length, 0.3);
 
         for (const word of splitToWords(text)) {
-            const reward = (rewardMap.get(word) * factor * lengthPenalization) || 0;
+            const reward = rewardMap.get(word) * factor * lengthPenalization || 0;
 
             if (displayRewards && reward > 0) {
                 console.log(`Reward ${Math.round(reward * 10) / 10} for word: ${word}`);
@@ -294,7 +314,6 @@ async function findSimilarNotes(noteId: string) {
 
             for (const parentNote of note.parents) {
                 if (!ancestorNoteIds.has(parentNote.noteId)) {
-
                     if (displayRewards) {
                         console.log("Considering", parentNote.title);
                     }
@@ -304,8 +323,7 @@ async function findSimilarNotes(noteId: string) {
                     }
 
                     for (const branch of parentNote.getParentBranches()) {
-                        score += gatherRewards(branch.prefix, 0.3)
-                            + gatherAncestorRewards(branch.parentNote);
+                        score += gatherRewards(branch.prefix, 0.3) + gatherAncestorRewards(branch.parentNote);
                     }
                 }
             }
@@ -317,8 +335,7 @@ async function findSimilarNotes(noteId: string) {
     }
 
     function computeScore(candidateNote: BNote) {
-        let score = gatherRewards(trimMime(candidateNote.mime))
-            + gatherAncestorRewards(candidateNote);
+        let score = gatherRewards(trimMime(candidateNote.mime)) + gatherAncestorRewards(candidateNote);
 
         if (candidateNote.isDecrypted) {
             score += gatherRewards(candidateNote.title);
@@ -329,9 +346,7 @@ async function findSimilarNotes(noteId: string) {
         }
 
         for (const attr of candidateNote.getAttributes()) {
-            if (attr.name.startsWith('child:')
-                || attr.name.startsWith('relation:')
-                || attr.name.startsWith('label:')) {
+            if (attr.name.startsWith("child:") || attr.name.startsWith("relation:") || attr.name.startsWith("label:")) {
                 continue;
             }
 
@@ -349,8 +364,7 @@ async function findSimilarNotes(noteId: string) {
             if (!value.startsWith) {
                 log.info(`Unexpected falsy value for attribute ${JSON.stringify(attr.getPojo())}`);
                 continue;
-            }
-            else if (value.startsWith('http')) {
+            } else if (value.startsWith("http")) {
                 value = filterUrlValue(value);
 
                 // words in URLs are not that valuable
@@ -369,13 +383,13 @@ async function findSimilarNotes(noteId: string) {
         }
 
         /**
-        * We want to improve the standing of notes which have been created in similar time to each other since
-        * there's a good chance they are related.
-        *
-        * But there's an exception - if they were created really close to each other (within few seconds) then
-        * they are probably part of the import and not created by hand - these OTOH should not benefit.
-        */
-        const {utcDateCreated} = candidateNote;
+         * We want to improve the standing of notes which have been created in similar time to each other since
+         * there's a good chance they are related.
+         *
+         * But there's an exception - if they were created really close to each other (within few seconds) then
+         * they are probably part of the import and not created by hand - these OTOH should not benefit.
+         */
+        const { utcDateCreated } = candidateNote;
 
         if (utcDateCreated < dateLimits.minExcludedDate || utcDateCreated > dateLimits.maxExcludedDate) {
             if (utcDateCreated >= dateLimits.minDate && utcDateCreated <= dateLimits.maxDate) {
@@ -384,9 +398,7 @@ async function findSimilarNotes(noteId: string) {
                 }
 
                 score += 1;
-            }
-            else if (utcDateCreated.substr(0, 10) === dateLimits.minDate.substr(0, 10)
-                || utcDateCreated.substr(0, 10) === dateLimits.maxDate.substr(0, 10)) {
+            } else if (utcDateCreated.substr(0, 10) === dateLimits.minDate.substr(0, 10) || utcDateCreated.substr(0, 10) === dateLimits.maxDate.substr(0, 10)) {
                 if (displayRewards) {
                     console.log("Adding reward for same day of creation");
                 }
@@ -400,9 +412,7 @@ async function findSimilarNotes(noteId: string) {
     }
 
     for (const candidateNote of Object.values(becca.notes)) {
-        if (candidateNote.noteId === baseNote.noteId
-            || hasConnectingRelation(candidateNote, baseNote)
-            || hasConnectingRelation(baseNote, candidateNote)) {
+        if (candidateNote.noteId === baseNote.noteId || hasConnectingRelation(candidateNote, baseNote) || hasConnectingRelation(baseNote, candidateNote)) {
             continue;
         }
 
@@ -413,6 +423,7 @@ async function findSimilarNotes(noteId: string) {
 
             // this takes care of note hoisting
             if (!notePath) {
+                // TODO: This return is suspicious, it should probably be continue
                 return;
             }
 
@@ -420,7 +431,7 @@ async function findSimilarNotes(noteId: string) {
                 score -= 0.5; // archived penalization
             }
 
-            results.push({score, notePath, noteId: candidateNote.noteId});
+            results.push({ score, notePath, noteId: candidateNote.noteId });
         }
 
         i++;
@@ -430,13 +441,13 @@ async function findSimilarNotes(noteId: string) {
         }
     }
 
-    results.sort((a, b) => a.score > b.score ? -1 : 1);
+    results.sort((a, b) => (a.score > b.score ? -1 : 1));
 
     if (DEBUG) {
         console.log("REWARD MAP", rewardMap);
 
         if (results.length >= 1) {
-            for (const {noteId} of results) {
+            for (const { noteId } of results) {
                 const note = becca.notes[noteId];
 
                 displayRewards = true;

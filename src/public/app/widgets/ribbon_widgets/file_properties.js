@@ -66,7 +66,7 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
     }
 
     isEnabled() {
-        return this.note && this.note.type === 'file';
+        return this.note && this.note.type === "file";
     }
 
     getTitle() {
@@ -74,7 +74,7 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
             show: this.isEnabled(),
             activate: true,
             title: t("file_properties.title"),
-            icon: 'bx bx-file'
+            icon: "bx bx-file"
         };
     }
 
@@ -90,16 +90,16 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
         this.$uploadNewRevisionButton = this.$widget.find(".file-upload-new-revision");
         this.$uploadNewRevisionInput = this.$widget.find(".file-upload-new-revision-input");
 
-        this.$downloadButton.on('click', () => openService.downloadFileNote(this.noteId));
-        this.$openButton.on('click', () => openService.openNoteExternally(this.noteId, this.note.mime));
+        this.$downloadButton.on("click", () => openService.downloadFileNote(this.noteId));
+        this.$openButton.on("click", () => openService.openNoteExternally(this.noteId, this.note.mime));
 
         this.$uploadNewRevisionButton.on("click", () => {
             this.$uploadNewRevisionInput.trigger("click");
         });
 
-        this.$uploadNewRevisionInput.on('change', async () => {
+        this.$uploadNewRevisionInput.on("change", async () => {
             const fileToUpload = this.$uploadNewRevisionInput[0].files[0]; // copy to allow reset below
-            this.$uploadNewRevisionInput.val('');
+            this.$uploadNewRevisionInput.val("");
 
             const result = await server.upload(`notes/${this.noteId}/file`, fileToUpload);
 
@@ -117,7 +117,7 @@ export default class FilePropertiesWidget extends NoteContextAwareWidget {
         this.$widget.show();
 
         this.$fileNoteId.text(note.noteId);
-        this.$fileName.text(note.getLabelValue('originalFileName') || "?");
+        this.$fileName.text(note.getLabelValue("originalFileName") || "?");
         this.$fileType.text(note.mime);
 
         const blob = await this.note.getBlob();

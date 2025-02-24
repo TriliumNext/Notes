@@ -2,10 +2,11 @@
  * USER INTERFACE
  */
 
- @keyframes fade-in {
+@keyframes fade-in {
     from {
         opacity: 0;
-    } to {
+    }
+    to {
         opacity: 1;
     }
 }
@@ -46,7 +47,7 @@ body.background-effects.platform-win32 {
     --tab-background-color: transparent;
     --new-tab-button-background: transparent;
     --active-tab-background-color: var(--launcher-pane-background-color);
-    --background-material: tabbed;    
+    --background-material: tabbed;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -66,7 +67,7 @@ body.background-effects.platform-win32.layout-vertical {
 body.background-effects.platform-win32,
 body.background-effects.platform-win32 #root-widget,
 body.background-effects.platform-win32 #launcher-pane .launcher-button {
-    background: transparent !important;   
+    background: transparent !important;
 }
 
 body.background-effects.platform-win32.layout-horizontal #horizontal-main-container,
@@ -112,8 +113,24 @@ body.layout-horizontal > .horizontal {
 
 #launcher-pane.horizontal {
     height: var(--launcher-pane-size) !important;
-    border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
     align-items: center;
+}
+
+@media (max-width: 991px) {
+    #mobile-bottom-bar {
+        background: var(--launcher-pane-background-color);
+    }
+
+    body.mobile #launcher-pane {
+        background: transparent !important;
+    }
+}
+
+@media (min-width: 992px) {
+    #launcher-pane.horizontal {
+        border-top: unset;
+        border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
+    }
 }
 
 #launcher-pane .launcher-button,
@@ -123,12 +140,13 @@ body.layout-horizontal > .horizontal {
     margin: var(--launcher-pane-button-gap) var(--launcher-pane-button-margin);
 }
 
-#launcher-pane .launcher-button {    
+#launcher-pane .launcher-button {
     padding: 0 !important;
     border-radius: 8px;
-    transition: background-color 300ms ease-out,
-                color 300ms ease-out,
-                box-shadow 300ms ease-out;
+    transition:
+        background-color 300ms ease-out,
+        color 300ms ease-out,
+        box-shadow 300ms ease-out;
     cursor: default;
 }
 
@@ -149,9 +167,10 @@ body.layout-horizontal > .horizontal {
     background: var(--launcher-pane-button-hover-background) !important;
     color: var(--launcher-pane-button-hover-color);
     box-shadow: var(--launcher-pane-button-hover-shadow);
-    transition: background-color 100ms ease-in,
-                color 80ms ease-in,
-                box-shadow 100ms ease-in;
+    transition:
+        background-color 100ms ease-in,
+        color 80ms ease-in,
+        box-shadow 100ms ease-in;
 }
 
 #launcher-pane div.launcher-button {
@@ -188,8 +207,9 @@ body.layout-horizontal > .horizontal {
 
 @keyframes sync-status-pulse {
     from {
-        color: currentColor
-    } to {
+        color: currentColor;
+    }
+    to {
         color: var(--pulse-color);
     }
 }
@@ -207,21 +227,28 @@ body.layout-horizontal > .horizontal {
     --hover-item-background-color: transparent;
 }
 
+#launcher-pane.horizontal .global-menu-button .global-menu-button-update-available {
+    right: -23px;
+    bottom: -22px;
+    transform: scale(0.85);
+}
+
 .tooltip .tooltip-arrow {
     display: none;
 }
 
 .tooltip .tooltip-inner {
     padding: 6px 10px !important;
-    box-shadow: -1px -1px 2px var(--tooltip-shadow-color),
-                2px 2px 8px var(--tooltip-shadow-color) !important;
+    box-shadow:
+        -1px -1px 2px var(--tooltip-shadow-color),
+        2px 2px 8px var(--tooltip-shadow-color) !important;
     border: unset !important;
     border-radius: 6px;
     backdrop-filter: blur(5px);
     color: var(--tooltip-foreground-color) !important;
 }
 
- /* 
+/* 
   * Search Box
   */
 
@@ -237,6 +264,12 @@ div.quick-search {
     height: unset;
     contain: unset;
     padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
+}
+
+div.quick-search, div.quick-search:hover, div.quick-search:focus-within {
+    /* Prevent changes to background and outline when the state of the input group changes */
+    background: transparent;
+    outline: none;
 }
 
 div.quick-search::before {
@@ -295,7 +328,7 @@ div.quick-search .search-button {
 }
 
 div.quick-search .search-button:active {
-    transform: scale(.85);
+    transform: scale(0.85);
 }
 
 div.quick-search:focus-within:has(input:not(:placeholder-shown)) .search-button {
@@ -306,7 +339,7 @@ div.quick-search:focus-within:has(input:not(:placeholder-shown)) .search-button 
 }
 
 html body .quick-search:focus-within .search-button:hover,
-div.quick-search .search-button.show  {
+div.quick-search .search-button.show {
     /* Hover state */
     background: var(--left-pane-item-action-button-hover-background) !important;
     color: var(--left-pane-item-action-button-color) !important;
@@ -321,7 +354,6 @@ div.quick-search .search-button.show  {
 .quick-search .dropdown-menu *.dropdown-item {
     padding: 8px 12px !important;
 }
-
 
 /* Note icon */
 .quick-search .dropdown-menu .dropdown-item > .bx {
@@ -339,19 +371,12 @@ div.quick-search .search-button.show  {
     text-decoration: underline;
 }
 
-
 /* Note path */
 .quick-search .dropdown-menu small {
     display: block;
-    opacity: .5;
-    font-size: .75em;
+    opacity: 0.5;
+    font-size: 0.75em;
     overflow: hidden;
-}
-
-/* The "Show in full search" button */
-.quick-search .dropdown-menu button {
-    padding: 0;
-    color: var(--menu-text-color) !important;
 }
 
 /*
@@ -389,7 +414,8 @@ div.quick-search .search-button.show  {
 @keyframes left-pane-item-select {
     from {
         opacity: 0;
-    } to {
+    }
+    to {
         opacity: 1;
     }
 }
@@ -419,7 +445,7 @@ div.quick-search .search-button.show  {
     right: 0;
     font-size: 14px;
     content: "\eb4a";
-    font-family: "boxicons";   
+    font-family: "boxicons";
     transform: translateX(25%);
     background: var(--left-pane-background-color);
     border-radius: 50%;
@@ -431,8 +457,20 @@ body.mobile .fancytree-node > span {
     font-size: 1rem !important;
 }
 
+@media (max-width: 991px) {
+    body.mobile #mobile-sidebar-container {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    body.mobile:not(.force-fixed-tree) #mobile-sidebar-wrapper {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+        border-right: 1px solid var(--subtle-border-color);
+    }
+}
+
 #left-pane .fancytree-expander {
-    opacity: .65;
+    opacity: 0.65;
     transition: opacity 150ms ease-in;
 }
 
@@ -446,7 +484,7 @@ body.mobile .fancytree-node > span {
 }
 
 #left-pane span .fancytree-title {
-    margin-top: -5px;    
+    margin-top: -5px;
 }
 
 #left-pane span.fancytree-active .fancytree-title {
@@ -458,7 +496,7 @@ body.mobile .fancytree-node > span {
 }
 
 #left-pane span.fancytree-node.shared .fancytree-title::after {
-    opacity: .5;
+    opacity: 0.5;
 }
 
 #left-pane .tree-item-button {
@@ -467,15 +505,17 @@ body.mobile .fancytree-node > span {
     border-radius: 50%;
     background: var(--left-pane-item-action-button-background);
     color: var(--left-pane-item-action-button-color);
-    transition: background-color 200ms ease-out,
-                box-shadow 200ms ease-out;
+    transition:
+        background-color 200ms ease-out,
+        box-shadow 200ms ease-out;
 }
 
 #left-pane .tree-item-button:hover {
     background: var(--left-pane-item-action-button-hover-background);
     box-shadow: var(--left-pane-item-action-button-hover-shadow);
-    transition: background-color 100ms ease-in,
-                box-shadow 100ms ease-in;
+    transition:
+        background-color 100ms ease-in,
+        box-shadow 100ms ease-in;
 }
 
 #left-pane span.fancytree-node.fancytree-active .tree-item-button:hover {
@@ -484,7 +524,7 @@ body.mobile .fancytree-node > span {
 
 #context-menu-container {
     /* The context menu of the tree */
-    --menu-item-icon-vert-offset: 1.5px;
+    --menu-item-icon-vert-offset: -1px;
 }
 
 /* Tree actions toolbar */
@@ -499,9 +539,10 @@ body.mobile .fancytree-node > span {
     padding: var(--tree-actions-toolbar-padding-size);
     padding-right: var(--tree-actions-toolbar-collapsed-width);
     background: transparent;
-    transition: max-width 400ms ease-out,
-                background-color 400ms ease-out,
-                border-color 400ms ease-out;
+    transition:
+        max-width 400ms ease-out,
+        background-color 400ms ease-out,
+        border-color 400ms ease-out;
 }
 
 /* Toolbar container (expanded state) */
@@ -577,7 +618,7 @@ body.mobile .fancytree-node > span {
 }
 
 #left-pane .tree-settings-popup h4 {
-    margin-bottom: .75em;
+    margin-bottom: 0.75em;
     font-size: 1.5em;
     line-height: 1;
 }
@@ -626,7 +667,7 @@ body.layout-horizontal .tab-row-container .note-tab[active] {
     overflow: visible !important;
 }
 
-body.layout-horizontal .tab-row-container .note-tab[active]:before {    
+body.layout-horizontal .tab-row-container .note-tab[active]:before {
     content: "";
     position: absolute;
     bottom: 0;
@@ -637,7 +678,7 @@ body.layout-horizontal .tab-row-container .note-tab[active]:before {
     border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
 }
 
-body.layout-horizontal .tab-row-container .note-tab[active]:after {    
+body.layout-horizontal .tab-row-container .note-tab[active]:after {
     content: "";
     position: absolute;
     bottom: 0;
@@ -656,17 +697,21 @@ body.layout-vertical.electron.platform-darwin .tab-row-container {
 
 .tab-row-widget-container {
     margin-top: calc((var(--tab-bar-height) - var(--tab-height)) / 2);
-    height: var(--tab-height) !important;    
+    height: var(--tab-height) !important;
 }
 
 body.layout-horizontal .tab-row-container {
-    padding-top: calc((var(--tab-bar-height) - var(--tab-height)));    
+    padding-top: calc((var(--tab-bar-height) - var(--tab-height)));
 }
 
 body.layout-horizontal .tab-row-widget-container {
     margin-top: 0;
     position: relative;
     overflow: hidden;
+}
+
+body.desktop:not(.background-effects.platform-win32) #root-widget.horizontal-layout {
+    background-color: var(--root-background) !important;
 }
 
 #root-widget.horizontal-layout .tab-row-widget .note-tab .note-tab-wrapper {
@@ -682,8 +727,9 @@ body.layout-horizontal .tab-row-widget-container {
 
 .tab-row-widget .note-tab .note-tab-wrapper {
     height: var(--tab-height) !important;
-    transition: background 75ms ease-in,
-                box-shadow 75ms ease-in;
+    transition:
+        background 75ms ease-in,
+        box-shadow 75ms ease-in;
 }
 
 .tab-row-widget .note-tab .note-tab-wrapper:hover {
@@ -696,7 +742,7 @@ body.layout-horizontal .tab-row-widget-container {
 
 body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;   
+    border-bottom-right-radius: 0;
 }
 
 .note-tab .note-tab-wrapper {
@@ -722,15 +768,16 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
 }
 
 .tab-row-widget-is-sorting .note-tab[active] .note-tab-wrapper {
-    transform: scale(.85);
+    transform: scale(0.85);
     box-shadow: var(--active-tab-dragging-shadow) !important;
 }
 
 .tab-row-widget .note-tab[active] .note-tab-wrapper {
     box-shadow: var(--active-tab-shadow);
     font-weight: unset !important;
-    transition: background 150ms ease-out,
-                box-shadow 300ms ease-out;
+    transition:
+        background 150ms ease-out,
+        box-shadow 300ms ease-out;
 }
 
 .tab-row-widget-is-sorting .note-tab-drag-handle {
@@ -741,9 +788,9 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 75ms ease-out,
-                color 75ms ease-out;
-    
+    transition:
+        background-color 75ms ease-out,
+        color 75ms ease-out;
 }
 
 .tab-row-widget .note-tab-close:hover {
@@ -772,17 +819,19 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     height: var(--new-tab-button-size);
     background: var(--new-tab-button-background);
     border-radius: 50%;
-    transition: background-color 200ms ease-out,
-                box-shadow 200ms ease-out,
-                transform 300ms ease-in;
+    transition:
+        background-color 200ms ease-out,
+        box-shadow 200ms ease-out,
+        transform 300ms ease-in;
     will-change: transform;
 }
 
 .tab-row-widget .note-new-tab:hover::before {
     background: var(--new-tab-button-hover-background);
     box-shadow: var(--new-tab-button-shadow);
-    transition: background-color 100ms ease-in,
-                box-shadow 100ms ease-in;
+    transition:
+        background-color 100ms ease-in,
+        box-shadow 100ms ease-in;
 }
 
 .tab-row-widget .note-new-tab::after {
@@ -797,21 +846,22 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     align-items: center;
     justify-content: center;
     font-family: boxicons;
-    font-size: calc(var(--new-tab-button-size) * .75);
+    font-size: calc(var(--new-tab-button-size) * 0.75);
     color: var(--new-tab-button-color);
-    transition: color 300ms ease-out,
-                transform 300ms ease-in;
+    transition:
+        color 300ms ease-out,
+        transform 300ms ease-in;
     will-change: transform;
 }
 
 .tab-row-widget .note-new-tab:hover::after {
     color: var(--new-tab-button-hover-color);
-    transition: color 100ms ease-in,
+    transition: color 100ms ease-in;
 }
 
 .tab-row-widget .note-new-tab:active:before,
 .tab-row-widget .note-new-tab:active:after {
-    transform: scale(.85);
+    transform: scale(0.85);
     transition: transform 75ms ease-out;
 }
 
@@ -824,8 +874,8 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
  */
 
 #center-pane {
-   padding-top: 2px;
-   background: var(--main-background-color);
+    padding-top: 2px;
+    background: var(--main-background-color);
 }
 
 .vertical-layout #center-pane {
@@ -837,6 +887,10 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
  */
 .note-title.protected {
     text-shadow: unset !important;
+}
+
+body.mobile .note-title {
+    background: transparent;
 }
 
 .ribbon-container {
@@ -851,13 +905,18 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     background: var(--main-background-color);
 }
 
+#right-pane .card-header-buttons {
+    align-items: center;
+}
+
 #right-pane .toc li,
 #right-pane .highlights-list li {
     padding: 2px 8px;
     border-radius: 4px;
     text-align: unset;
-    transition: background-color 150ms ease-in,
-                color 150ms ease-in;
+    transition:
+        background-color 150ms ease-in,
+        color 150ms ease-in;
 }
 
 #right-pane .highlights-list li {
@@ -875,8 +934,7 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     background: var(--right-pane-item-hover-background);
     color: var(--right-pane-item-hover-color);
     font-weight: normal;
-    transition: background-color 300ms ease-out
-                color 300ms ease-out;
+    transition: background-color 300ms ease-out color 300ms ease-out;
 }
 
 #right-pane .toc li:active,
@@ -887,12 +945,19 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
 
 /*
  * Menus
+ *
+ * Note: apply the "tn-dropdown-list" class for scrollable dropdown menus. Submenus are not
+ * supported when this class is used.
  */
 
-.dropdown-menu {
+.dropdown-menu:not(.static) {
     border-radius: var(--dropdown-border-radius);
     padding: var(--menu-padding-size) !important;
-    font-size: .90rem !important;    
+    font-size: 0.9rem !important;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: var(--menu-background-color);
 }
 
 body.mobile .dropdown-menu {
@@ -916,6 +981,14 @@ body.desktop .dropdown-menu::before {
     right: 0;
     bottom: 0;
     z-index: -1;
+}
+
+body.desktop .dropdown-menu.tn-dropdown-list {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+}
+
+body.desktop .dropdown-menu.tn-dropdown-list::before {
+    display: none;
 }
 
 body.desktop .dropdown-submenu .dropdown-menu::before {
@@ -947,15 +1020,12 @@ body.mobile .dropdown-item:not(:last-of-type) {
     margin-bottom: 0.5em;
 }
 
-body.mobile #launcher-pane .dropdown-submenu > .dropdown-toggle {
-    display: none;
-}
-
 body.mobile .dropdown-submenu:hover {
     background: transparent !important;
 }
 
-html body .dropdown-item.disabled {
+html body .dropdown-item.disabled,
+html body .dropdown-item[disabled] {
     color: var(--menu-text-color) !important;
     opacity: var(--menu-item-disabled-opacity);
 }
@@ -973,6 +1043,7 @@ html body .dropdown-item.disabled {
     font-family: unset !important;
     font-size: unset !important;
     color: var(--menu-item-keyboard-shortcut-color) !important;
+    padding-top: 0;
 }
 
 .dropdown-divider {
@@ -1007,6 +1078,43 @@ html body .dropdown-item.disabled {
     color: var(--menu-item-arrow-color) !important;
 }
 
+/* Menu item group heading */
+
+/* The heading body */
+.dropdown-menu h6 {
+    position: relative;
+    background: transparent;
+    padding: 1em 8px 14px 8px;
+    text-transform: uppercase;
+    font-size: .8em;
+    letter-spacing: 1pt;
+    color: var(--menu-item-group-header-color) !important;
+}
+
+/* The delimiter line */
+.dropdown-menu h6::before {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: calc(0px - var(--menu-padding-size));
+    right: calc(0px - var(--menu-padding-size));
+    border-top: 1px solid var(--menu-item-delimiter-color);
+}
+
+/* Static menus (used as a list, such as on the note revisions dialog) */
+body.desktop .dropdown-menu.static {
+    box-shadow: unset;
+    border-radius: 4px;
+    border: unset;
+    background-color: var(--card-background-color) !important;
+    padding: var(--menu-padding-size) !important;
+    user-select: none;
+}
+
+body.desktop .dropdown-menu.static .dropdown-item.active {
+    --active-item-text-color: var(--menu-text-color);
+}
+
 body.desktop .dropdown-menu .dropdown-toggle::after {
     height: 100%;
 }
@@ -1024,32 +1132,52 @@ body.mobile .dropdown-menu .dropdown-item.submenu-open .dropdown-toggle::after {
  */
 
 .calendar-dropdown-widget {
+    width: unset !important;
     padding: 12px;
     color: var(--calendar-color);
+    user-select: none;
 }
 
 .calendar-dropdown-widget .calendar-header {
     padding: 8px 0 20px 0;
-}
-
-.calendar-dropdown-widget .calendar-header input[type="number"] {
-    appearance: textfield !important;
-}
-
-.calendar-dropdown-widget .calendar-header input[type="number"]::-webkit-outer-spin-button,
-.calendar-dropdown-widget .calendar-header input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    gap: 10px;
 }
 
 .calendar-dropdown-widget .calendar-header input,
 .calendar-dropdown-widget .calendar-header [data-calendar-input="month"] {
-    /* TODO: Provide styling for background and states */
-    background: transparent !important;
-    border: unset;
+    --input-background-color: transparent;
+    --menu-background-color: transparent;
+
     text-align: center;
     font-size: 1.4em;
     font-weight: 300;
+}
+
+.calendar-dropdown-widget .calendar-header input:not(:focus) {
+    outline: 3px solid transparent;
+}
+
+.calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+    --select-arrow-svg: ""; /* Disable the dropdown arrow */    
+}
+
+@media (max-width: 992px) {
+    .calendar-dropdown-widget .calendar-header button {
+        margin: 0 !important;
+        padding: 0;
+    }
+
+    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+        padding: 0 8px;
+        flex-grow: 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+        min-width: 120px;
+        padding: 0 10px;
+    }
 }
 
 .calendar-dropdown-widget .calendar-header .dropdown-toggle::after {
@@ -1057,13 +1185,13 @@ body.mobile .dropdown-menu .dropdown-item.submenu-open .dropdown-toggle::after {
 }
 
 .calendar-dropdown-widget .calendar-week span {
-    font-size: .85em;
+    font-size: 0.85em;
     font-weight: 500;
     color: var(--calendar-weekday-labels-color);
 }
 
 .calendar-dropdown-widget .calendar-body {
-    font-size: .9em;
+    font-size: 0.9em;
 }
 
 .calendar-dropdown-widget .calendar-body a {
@@ -1094,6 +1222,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     border-radius: 6px;
     background: var(--calendar-day-hover-background);
     color: var(--calendar-day-hover-color) !important;
+    text-decoration: unset;
 }
 
 /*
@@ -1106,25 +1235,36 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 .note-tooltip-content {
     padding: 8px;
- }
+    min-height: 56px;
+}
 
-.note-tooltip-content .note-title-with-path {
+.note-tooltip-title .note-title-with-path {
     display: flex;
     flex-direction: column-reverse;
-    border-bottom: 2px solid currentColor;
-    padding-bottom: 6px;
+}
 
+.note-tooltip-title a {
+    color: inherit !important;
+}
+
+.note-tooltip-title.note-no-content {
+    margin: 0;
+}
+
+.note-tooltip-title:not(.note-no-content) .note-title-with-path {
+    padding-bottom: 6px;
+    border-bottom: 2px solid currentColor;
 }
 
 .note-tooltip-content .note-path {
     display: block;
     color: var(--muted-text-color);
-    font-size: .75em;
+    font-size: 0.75em;
 }
 
 .note-tooltip-content .note-tooltip-attributes {
     margin-top: -4px;
-    font-size: .75em;
+    font-size: 0.75em;
 }
 
 .note-tooltip-content .rendered-content {
@@ -1162,10 +1302,6 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 /* Search box wrapper */
 .jump-to-note-dialog .input-group {
     margin-right: 16px;
-    background: var(--quick-search-background);
-    border: 2px solid transparent;
-    border-radius: 6px;
-    color: var(--quick-search-color);
 }
 
 .jump-to-note-dialog .input-group:hover {
@@ -1176,50 +1312,19 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 .jump-to-note-dialog .input-group:focus-within {
     border-color: var(--quick-search-focus-border);
     background: var(--quick-search-focus-background);
-    color: var(--quick-search-focus-color)
-}
-
-/* Search box input */
-.jump-to-note-dialog .input-group input {
-    --bs-border-width: 0;
-
-    box-shadow: unset;
-    background: transparent;
-    color: currentColor;
-}
-
-/* Search box buttons */
-.jump-to-note-dialog .input-group button {
-    --bs-border-width: 0;
-    --accented-background-color: transparent;
-    padding: 0 4px;
-}
-
-.jump-to-note-dialog .input-group button:last-child {
-    padding-right: .75em;
+    color: var(--quick-search-focus-color);
 }
 
 .jump-to-note-dialog .input-clearer-button {
     background: transparent !important;
 }
 
-/* List body */
-.jump-to-note-dialog .jump-to-note-results .aa-suggestions {
-    padding: 0;
-}
+/*
+ * Note Map
+ */
 
-/* List item */
-.jump-to-note-dialog .aa-suggestions div {
-    border-radius: 6px;
-    padding: 6px 12px;
-    color: var(--menu-text-color);
-    cursor: default;
-}
-
-/* Selected list item */
-.jump-to-note-dialog  .aa-suggestions div.aa-cursor {
-    background: var(--hover-item-background-color);
-    color: var(--hover-item-text-color);
+.note-detail-note-map .fixnodes-type-switcher .tn-tool-button.toggled {
+    color: var(--tab-close-button-hover-background);
 }
 
 /*
@@ -1270,7 +1375,6 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     content: "" !important;
 }
 
-
 .recent-changes-content ul li:not(.deleted-note):hover {
     border-radius: 8px;
     background: var(--hover-item-background-color);
@@ -1279,7 +1383,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 .recent-changes-content ul li .note-path {
     color: var(--muted-text-color);
-    font-size: .75em;
+    font-size: 0.75em;
 }
 
 /* Item time */
@@ -1306,16 +1410,15 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /* Item title for deleted notes */
-.recent-changes-content ul li.deleted-note .note-title {
+.recent-changes-content ul li.deleted-note .note-title > .note-title {
     text-decoration: line-through;
 }
-
 
 /* Item path */
 .recent-changes-content ul li > span:nth-child(2) small {
     display: block;
     line-height: 1;
-    opacity: .75;
+    opacity: 0.75;
 }
 
 /* Timeline connector */
@@ -1347,7 +1450,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /* The last item of the timeline */
-.recent-changes-content > div:last-child  li:last-child {
+.recent-changes-content > div:last-child li:last-child {
     --connector-bottom: 50%;
 }
 
@@ -1370,9 +1473,59 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /*
+ * Bookmarks folder popup
+ */
+
+div.bookmark-folder-widget {
+    min-width: auto;
+    max-width: 40vw;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+div.bookmark-folder-widget .children-notes {
+    margin: 0;
+}
+
+/* Item */
+div.bookmark-folder-widget span.note-link {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 6px 25px;
+}
+
+/* Item: the parent note */
+div.bookmark-folder-widget .parent-note .note-link {
+    padding: 6px 8px;
+    font-weight: bold;
+}
+
+div.bookmark-folder-widget .note-link:hover {
+    background: var(--hover-item-background-color);
+}
+
+div.bookmark-folder-widget .note-link a {
+    padding-left: 8px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+div.bookmark-folder-widget .note-link:hover a {
+    color: var(--hover-item-text-color);
+}
+
+/* The item's icon */
+div.bookmark-folder-widget .note-link .bx {
+    color: var(--menu-item-icon-color);
+    font-size: 1.2em;
+}
+
+/*
  * Note list
  */
- .note-list .note-book-card {
+.note-list .note-book-card {
     --note-list-horizontal-padding: 22px;
     --note-list-vertical-padding: 15px;
     background-color: var(--card-background-color);
@@ -1408,11 +1561,11 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 .note-list-wrapper .note-book-card .note-book-header .note-icon {
-    font-size: 17px;                
+    font-size: 17px;
     vertical-align: text-bottom;
 }
 
-.note-list-wrapper .note-book-card .note-book-header .note-book-title {            
+.note-list-wrapper .note-book-card .note-book-header .note-book-title {
     font-size: 1em;
     color: var(--active-item-text-color);
     vertical-align: middle;
@@ -1448,7 +1601,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 .note-list-wrapper .note-book-card .note-book-content h5,
 .note-list-wrapper .note-book-card .note-book-content h6 {
     font-size: 1rem;
-    color: var(--active-item-text-color);   
+    color: var(--active-item-text-color);
 }
 
 .note-list-wrapper .note-book-card .note-book-content p:last-child {
@@ -1508,9 +1661,9 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     /* Replace the path delimiters with arrows */
     display: inline-block;
     content: "\ed3b";
-    padding: 0 .25em;
+    padding: 0 0.25em;
     font-family: boxicons;
-    opacity: .75;
+    opacity: 0.75;
     transform: translateY(4%);
 }
 
@@ -1521,6 +1674,280 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 .search-result-widget-content .note-path {
-    opacity: .75;
+    opacity: 0.75;
     font-weight: normal;
+}
+
+/* Help */
+
+.help-dialog .modal-content {
+    --modal-background-color: var(--help-background-color);
+    backdrop-filter: blur(var(--help-backdrop-blur));
+}
+
+.help-dialog .help-cards {
+    display: block;
+    columns: 3;
+    column-gap: 20px;
+}
+
+.help-dialog .card {
+    margin: 0;
+    width: auto;
+    border: none;
+    background: unset;
+    padding: 16px 8px;
+    break-inside: avoid-column;
+}
+
+.help-dialog .card-body {
+    box-shadow: var(--help-card-shadow);
+    border-radius: 6px;
+    background: var(--help-card-background);
+}
+
+.help-dialog .card-body h5,
+.help-dialog .card-body h6 {
+    color: var(--help-card-heading-color);
+    font-weight: 600;
+}
+
+.help-dialog .card-body h5 {
+    font-size: 20px;
+}
+
+.help-dialog .card-body h6 {
+    font-size: 15px;
+    padding-bottom: 0.5em;
+}
+
+/* Help card item */
+.help-dialog .help-cards ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.help-dialog .help-cards li + li {
+    margin-top: 0.4em;
+}
+
+/* Keyboard shortcut */
+.help-dialog .help-cards kbd {
+    box-shadow: var(--help-kbd-shortcut-shadow);
+    margin: 0 4px;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 10px;
+    background: var(--help-kbd-shortcut-background);
+    color: var(--help-kbd-shortcut-color);
+    font-weight: 500;
+    letter-spacing: 0.5pt;
+}
+
+.help-dialog .help-cards kbd:first-child {
+    margin-left: 0;
+}
+
+/* Inline code - used for Markdown samples */
+.help-dialog .help-cards code {
+    border-radius: 4px;
+    background: var(--help-code-background);
+    padding: 0 8px;
+    color: var(--help-code-color);
+}
+
+/* Note area */
+
+.title-row > *:first-child {
+    margin-right: 0;
+}
+
+.title-row > *:nth-child(2) {
+    margin-left: 0;
+}
+
+.title-row {
+    /* Aligns the "Create new split" button with the note menu button (the three dots button) */
+    padding-right: 3px;
+}
+
+.note-title-widget input {
+    --input-background-color: transparent;
+    
+    border-radius: 8px;
+    padding-left: 12px;
+}
+
+.note-actions {
+    --menu-item-icon-vert-offset: -2.5px;
+}
+
+/* Promoted attributes */
+.promoted-attribute-cell div.input-group {
+    margin: 1px 0;    
+}
+
+/* Delete notes preview dialog */
+
+.delete-notes-list .note-path {
+    padding-left: 8px;
+}
+
+/* The "Change note icon" button */
+
+.note-icon-widget .note-icon {
+    border: none;
+    border-radius: 8px;
+}
+
+.note-icon-widget .note-icon:hover {
+    background: var(--icon-button-hover-background);
+    color: var(--icon-button-hover-color);
+}
+
+/* Note icon popup */
+
+.note-icon-widget .icon-list span {
+    border-radius: 8px;
+}
+
+.note-icon-widget .icon-list span:hover {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
+}
+
+body.background-effects.zen #root-widget {
+    --main-background-color: transparent;
+    --root-background: transparent;
+}
+
+
+/* Alert bar */
+
+@keyframes alert-show {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}
+
+#center-pane div.alert {
+    position: relative;
+    margin: 8px 0 0 0;
+    border: unset;
+    border-radius: 0;
+    padding: 8px 16px;
+    background: var(--alert-bar-background) !important;
+    font-size: .9em;
+    font-weight: normal;
+    animation: alert-show 300ms ease-in;
+    border-bottom: 2px solid #0000001c !important;
+}
+
+/*
+ * Promoted attributes
+ */
+
+/* The promoted attributes section */
+div.promoted-attributes-container {
+    display: flex;
+    margin-right: 10%;
+    padding: 6px 0;
+    gap: 8px;
+    align-items: stretch;
+    container-type: inline-size;
+}
+
+div.promoted-attributes-container,
+div.promoted-attributes-container input {
+    font-size: .9rem;
+}
+
+/* A promoted attribute card */
+div.promoted-attribute-cell {
+    --pa-card-padding-left: 16px;
+    --pa-card-padding-right: 2px;
+    --input-background-color: transparent;
+
+    box-shadow: 1px 1px 2px var(--promoted-attribute-card-shadow-color);
+
+    display: inline-flex;
+    margin: 0;
+    border-radius: 8px;
+    padding: 2px var(--pa-card-padding-right) 2px var(--pa-card-padding-left);
+    background: var(--promoted-attribute-card-background-color);
+    overflow-y: visible;
+}
+
+@container (max-width: 500px) {
+    /* Narrow promoted attributes section */
+    div.promoted-attribute-cell {
+        flex-grow: 1;
+    }
+}
+
+/* A promoted attribute card (boolean attribute) */
+div.promoted-attribute-cell:has(input[type="checkbox"]):not(:has(.multiplicity > span)) {
+    /* Checbox attribute, without multiplicity */
+    padding-right: var(--pa-card-padding-left);
+}
+
+div.promoted-attribute-cell > * {
+    display: inline-block;
+}
+
+div.promoted-attribute-cell > label {
+    font-weight: normal;
+    white-space: nowrap;
+    opacity: .75;
+}
+
+div.promoted-attribute-cell:not(:has(input[type="checkbox"])) > label::after {
+    content: ":";
+}
+
+div.promoted-attribute-cell div.input-group {
+    min-height: auto;
+    padding: 1px 6px;
+}
+
+div.promoted-attribute-cell input {
+    padding: 2px 8px;
+    font-weight: 500;
+}
+
+div.promoted-attribute-cell input[type="text"] {
+    width: 10em !important;
+}
+
+div.promoted-attribute-cell input[type="number"] {
+    width: 6em !important;
+}
+
+div.promoted-attribute-cell span.open-external-link-button {
+    display: flex;
+    padding: 0;
+    font-size: 1.2em;
+}
+
+div.promoted-attribute-cell .tn-checkbox {
+    --box-label-gap: 0;
+
+    height: 1cap;
+}
+
+/* The <div> containing the checkbox for a promoted boolean attribute */
+div.promoted-attribute-cell div:has(input[type="checkbox"]) {
+    order: -1; /* Relocate the checkbox before the label */
+    margin-right: 1.5em;
+}
+
+/* The element containing the "new attribute" and "remove this attribute button" */
+div.promoted-attribute-cell .multiplicity:has(span) {
+    --icon-button-size: 24px;
+
+    margin-left: 8px;
+    margin-right: calc(var(--pa-card-padding-left) - var(--pa-card-padding-right));
+    font-size: 0; /* Prevent whitespaces creating a gap between buttons */
 }

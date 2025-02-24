@@ -1,33 +1,17 @@
+@import url(./forms.css);
 @import url(./shell.css);
+@import url(./ribbon.css);
 @import url(./settings.css);
+@import url(./notes/empty.css);
 @import url(./notes/text.css);
 
 @font-face {
-    font-family: "Noto Sans";
-    src: url(../fonts/Noto_Sans/NotoSans-VariableFont_wdth\,wght.ttf);
-}
-
-@font-face {
-    font-family: "Ubuntu Sans";
-    src: url(../fonts/Ubuntu_Sans/UbuntuSans-VariableFont_wdth\,wght.ttf);
-}
-
-@font-face {
-    font-family: "Nunito";
-    src: url(../fonts/Nunito/Nunito-VariableFont_wght.ttf);
-}
-
-@font-face {
     font-family: "Inter";
-    src: url(../fonts/Inter/Inter-VariableFont_opsz\,wght.ttf);
+    src: url(../../fonts/Inter/Inter-VariableFont_opsz\,wght.ttf);
 }
 
 :root {
-    /* --main-font-family: "Noto Sans", sans-serif; */
-    --main-font-family: "Segoe UI", sans-serif;
-    /* --main-font-family: "Ubuntu", sans-serif; */
-    /* --main-font-family: "Nunito", sans-serif; */
-    /* --main-font-family: "Inter", sans-serif; */
+    --main-font-family: "Inter", sans-serif;
 
     --main-font-size: normal;
 
@@ -44,7 +28,7 @@
 
     --launcher-pane-size: 58px;
     --launcher-pane-horizontal-size: 54px;
-    --launcher-pane-horizontal-icon-size: 20px;    
+    --launcher-pane-horizontal-icon-size: 20px;
     --launcher-pane-button-margin: 6px;
     --launcher-pane-button-gap: 3px;
 
@@ -62,7 +46,7 @@
     --center-pane-border-radius: 10px;
 
     --menu-padding-size: 8px;
-    --menu-item-icon-vert-offset: 0;    
+    --menu-item-icon-vert-offset: -2px;
 
     --more-accented-background-color: var(--card-background-hover-color);
 
@@ -71,9 +55,48 @@
     --timeline-item-top-padding: 4px;
     --timeline-item-bottom-padding: 8px;
     --timeline-bullet-size: 10px;
-    --timeline-bullet-vertical-pos: .75em;
+    --timeline-bullet-vertical-pos: 0.75em;
     --timeline-connector-size: 4px;
+
+    --help-backdrop-blur: 10px;
+
+    --icon-button-size: 32px;
+    --icon-button-icon-ratio: .65;
 
     /* Theme capabilities */
     --tab-note-icons: true;
+}
+
+/* Tool dialogs - small dialogs without a backdrop */
+div.tn-tool-dialog {
+    border-radius: 10px;
+    background: var(--tool-dialog-background-color) !important;
+    user-select: none;
+    box-shadow: 10px 10px 93px -25px var(--tool-dialog-shadow-color);
+}
+
+/*
+ * Note search suggestions
+ */
+
+/* List body */
+.jump-to-note-dialog .jump-to-note-results .aa-suggestions,
+.note-detail-empty .aa-suggestions {
+    padding: 0;
+}
+
+/* List item */
+.jump-to-note-dialog .aa-suggestions div,
+.note-detail-empty .aa-suggestions div {
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+/* Selected list item */
+.jump-to-note-dialog .aa-suggestions div.aa-cursor,
+.note-detail-empty .aa-suggestions div.aa-cursor {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
 }

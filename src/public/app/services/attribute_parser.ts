@@ -1,4 +1,4 @@
-import FAttribute, { AttributeType, FAttributeRow } from "../entities/fattribute.js";
+import type { AttributeType, FAttributeRow } from "../entities/fattribute.js";
 import utils from "./utils.js";
 
 interface Token {
@@ -23,17 +23,16 @@ function lex(str: string) {
     const tokens: Token[] = [];
 
     let quotes: boolean | string = false;
-    let currentWord = '';
+    let currentWord = "";
 
     function isOperatorSymbol(chr: string) {
-        return ['=', '*', '>', '<', '!'].includes(chr);
+        return ["=", "*", ">", "<", "!"].includes(chr);
     }
 
     function previousOperatorSymbol() {
         if (currentWord.length === 0) {
             return false;
-        }
-        else {
+        } else {
             return isOperatorSymbol(currentWord[currentWord.length - 1]);
         }
     }
@@ -42,7 +41,7 @@ function lex(str: string) {
      * @param endIndex - index of the last character of the token
      */
     function finishWord(endIndex: number) {
-        if (currentWord === '') {
+        if (currentWord === "") {
             return;
         }
 
@@ -52,54 +51,47 @@ function lex(str: string) {
             endIndex: endIndex
         });
 
-        currentWord = '';
+        currentWord = "";
     }
 
     for (let i = 0; i < str.length; i++) {
         const chr = str[i];
 
-        if (chr === '\\') {
-            if ((i + 1) < str.length) {
+        if (chr === "\\") {
+            if (i + 1 < str.length) {
                 i++;
 
                 currentWord += str[i];
-            }
-            else {
+            } else {
                 currentWord += chr;
             }
 
             continue;
-        }
-        else if (['"', "'", '`'].includes(chr)) {
+        } else if (['"', "'", "`"].includes(chr)) {
             if (!quotes) {
                 if (previousOperatorSymbol()) {
                     finishWord(i - 1);
                 }
 
                 quotes = chr;
-            }
-            else if (quotes === chr) {
+            } else if (quotes === chr) {
                 quotes = false;
 
                 finishWord(i - 1);
-            }
-            else {
+            } else {
                 // it's a quote, but within other kind of quotes, so it's valid as a literal character
                 currentWord += chr;
             }
             continue;
-        }
-        else if (!quotes) {
-            if (currentWord.length === 0 && (chr === '#' || chr === '~')) {
+        } else if (!quotes) {
+            if (currentWord.length === 0 && (chr === "#" || chr === "~")) {
                 currentWord = chr;
 
                 continue;
-            }
-            else if (chr === ' ') {
+            } else if (chr === " ") {
                 finishWord(i - 1);
                 continue;
-            }
-            else if (['(', ')'].includes(chr)) {
+            } else if (["(", ")"].includes(chr)) {
                 finishWord(i - 1);
 
                 currentWord = chr;
@@ -107,8 +99,7 @@ function lex(str: string) {
                 finishWord(i);
 
                 continue;
-            }
-            else if (previousOperatorSymbol() !== isOperatorSymbol(chr)) {
+            } else if (previousOperatorSymbol() !== isOperatorSymbol(chr)) {
                 finishWord(i - 1);
 
                 currentWord += chr;
@@ -149,27 +140,22 @@ function parse(tokens: Token[], str: string, allowEmptyRelations = false) {
         const { text, startIndex } = tokens[i];
 
         function isInheritable() {
-            if (tokens.length > i + 3
-                && tokens[i + 1].text === '('
-                && tokens[i + 2].text === 'inheritable'
-                && tokens[i + 3].text === ')') {
-
+            if (tokens.length > i + 3 && tokens[i + 1].text === "(" && tokens[i + 2].text === "inheritable" && tokens[i + 3].text === ")") {
                 i += 3;
 
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }
 
-        if (text.startsWith('#')) {
+        if (text.startsWith("#")) {
             const labelName = text.substr(1);
 
             checkAttributeName(labelName);
 
             const attr: Attribute = {
-                type: 'label',
+                type: "label",
                 name: labelName,
                 isInheritable: isInheritable(),
                 startIndex: startIndex,
@@ -188,14 +174,13 @@ function parse(tokens: Token[], str: string, allowEmptyRelations = false) {
             }
 
             attrs.push(attr);
-        }
-        else if (text.startsWith('~')) {
+        } else if (text.startsWith("~")) {
             const relationName = text.substr(1);
 
             checkAttributeName(relationName);
 
             const attr: Attribute = {
-                type: 'relation',
+                type: "relation",
                 name: relationName,
                 isInheritable: isInheritable(),
                 startIndex: startIndex,
@@ -204,11 +189,10 @@ function parse(tokens: Token[], str: string, allowEmptyRelations = false) {
 
             attrs.push(attr);
 
-            if (i + 2 >= tokens.length || tokens[i + 1].text !== '=') {
+            if (i + 2 >= tokens.length || tokens[i + 1].text !== "=") {
                 if (allowEmptyRelations) {
                     break;
-                }
-                else {
+                } else {
                     throw new Error(`Relation "${text}" in ${context(i)} should point to a note.`);
                 }
             }
@@ -220,12 +204,11 @@ function parse(tokens: Token[], str: string, allowEmptyRelations = false) {
                 notePath = notePath.substr(1);
             }
 
-            const noteId = notePath.split('/').pop();
+            const noteId = notePath.split("/").pop();
 
             attr.value = noteId;
             attr.endIndex = tokens[i].endIndex;
-        }
-        else {
+        } else {
             throw new Error(`Invalid attribute "${text}" in ${context(i)}`);
         }
     }
@@ -243,4 +226,4 @@ export default {
     lex,
     parse,
     lexAndParse
-}
+};

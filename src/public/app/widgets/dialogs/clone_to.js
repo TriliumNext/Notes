@@ -13,34 +13,34 @@ const TPL = `
     <div class="modal-dialog modal-lg" style="max-width: 1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title flex-grow-1">${t('clone_to.clone_notes_to')}</h5>
-                <button type="button" class="help-button" title="${t('clone_to.help_on_links')}" data-help-page="cloning-notes.html">?</button>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('clone_to.close')}"></button>
+                <h5 class="modal-title flex-grow-1">${t("clone_to.clone_notes_to")}</h5>
+                <button type="button" class="help-button" title="${t("clone_to.help_on_links")}" data-help-page="cloning-notes.html">?</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("clone_to.close")}"></button>
             </div>
             <form class="clone-to-form">
                 <div class="modal-body">
-                    <h5>${t('clone_to.notes_to_clone')}</h5>
+                    <h5>${t("clone_to.notes_to_clone")}</h5>
 
                     <ul class="clone-to-note-list" style="max-height: 200px; overflow: auto;"></ul>
 
                     <div class="form-group">
                         <label style="width: 100%">
-                            ${t('clone_to.target_parent_note')}
+                            ${t("clone_to.target_parent_note")}
                             <div class="input-group">
-                                <input class="clone-to-note-autocomplete form-control" placeholder="${t('clone_to.search_for_note_by_its_name')}">
+                                <input class="clone-to-note-autocomplete form-control" placeholder="${t("clone_to.search_for_note_by_its_name")}">
                             </div>
                         </label>
                     </div>
 
-                    <div class="form-group" title="${t('clone_to.cloned_note_prefix_title')}">
+                    <div class="form-group" title="${t("clone_to.cloned_note_prefix_title")}">
                         <label style="width: 100%">
-                            ${t('clone_to.prefix_optional')}
+                            ${t("clone_to.prefix_optional")}
                             <input class="clone-prefix form-control" style="width: 100%;">
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">${t('clone_to.clone_to_selected_note')}</button>
+                    <button type="submit" class="btn btn-primary">${t("clone_to.clone_to_selected_note")}</button>
                 </div>
             </form>
         </div>
@@ -61,16 +61,15 @@ export default class CloneToDialog extends BasicWidget {
         this.$clonePrefix = this.$widget.find(".clone-prefix");
         this.$noteList = this.$widget.find(".clone-to-note-list");
 
-        this.$form.on('submit', () => {
+        this.$form.on("submit", () => {
             const notePath = this.$noteAutoComplete.getSelectedNotePath();
 
             if (notePath) {
-                this.$widget.modal('hide');
+                this.$widget.modal("hide");
 
                 this.cloneNotesTo(notePath);
-            }
-            else {
-                logError(t('clone_to.no_path_to_clone_to'));
+            } else {
+                logError(t("clone_to.no_path_to_clone_to"));
             }
 
             return false;
@@ -92,7 +91,7 @@ export default class CloneToDialog extends BasicWidget {
 
         utils.openDialog(this.$widget);
 
-        this.$noteAutoComplete.val('').trigger('focus');
+        this.$noteAutoComplete.val("").trigger("focus");
 
         this.$noteList.empty();
 
@@ -116,7 +115,7 @@ export default class CloneToDialog extends BasicWidget {
             const clonedNote = await froca.getNote(cloneNoteId);
             const targetNote = await froca.getBranch(targetBranchId).getNote();
 
-            toastService.showMessage(t('clone_to.note_cloned', { clonedTitle: clonedNote.title, targetTitle: targetNote.title }));
+            toastService.showMessage(t("clone_to.note_cloned", { clonedTitle: clonedNote.title, targetTitle: targetNote.title }));
         }
     }
 }

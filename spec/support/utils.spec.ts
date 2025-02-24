@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { trimIndentation } from "./utils.js";
 
 describe("Utils", () => {
@@ -5,8 +6,7 @@ describe("Utils", () => {
         expect(trimIndentation`\
             Hello
                 world
-            123`
-        ).toBe(`\
+            123`).toBe(`\
 Hello
     world
 123`);

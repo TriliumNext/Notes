@@ -13,14 +13,13 @@ async function pasteAfter(afterBranchId: string) {
         return;
     }
 
-    if (clipboardMode === 'cut') {
+    if (clipboardMode === "cut") {
         await branchService.moveAfterBranch(clipboardBranchIds, afterBranchId);
 
         clipboardBranchIds = [];
         clipboardMode = null;
-    }
-    else if (clipboardMode === 'copy') {
-        const clipboardBranches = clipboardBranchIds.map(branchId => froca.getBranch(branchId));
+    } else if (clipboardMode === "copy") {
+        const clipboardBranches = clipboardBranchIds.map((branchId) => froca.getBranch(branchId));
 
         for (const clipboardBranch of clipboardBranches) {
             if (!clipboardBranch) {
@@ -36,8 +35,7 @@ async function pasteAfter(afterBranchId: string) {
         }
 
         // copy will keep clipboardBranchIds and clipboardMode, so it's possible to paste into multiple places
-    }
-    else {
+    } else {
         toastService.throwError(`Unrecognized clipboard mode=${clipboardMode}`);
     }
 }
@@ -47,14 +45,13 @@ async function pasteInto(parentBranchId: string) {
         return;
     }
 
-    if (clipboardMode === 'cut') {
+    if (clipboardMode === "cut") {
         await branchService.moveToParentNote(clipboardBranchIds, parentBranchId);
 
         clipboardBranchIds = [];
         clipboardMode = null;
-    }
-    else if (clipboardMode === 'copy') {
-        const clipboardBranches = clipboardBranchIds.map(branchId => froca.getBranch(branchId));
+    } else if (clipboardMode === "copy") {
+        const clipboardBranches = clipboardBranchIds.map((branchId) => froca.getBranch(branchId));
 
         for (const clipboardBranch of clipboardBranches) {
             if (!clipboardBranch) {
@@ -70,19 +67,18 @@ async function pasteInto(parentBranchId: string) {
         }
 
         // copy will keep clipboardBranchIds and clipboardMode, so it's possible to paste into multiple places
-    }
-    else {
+    } else {
         toastService.throwError(`Unrecognized clipboard mode=${clipboardMode}`);
     }
 }
 
 async function copy(branchIds: string[]) {
     clipboardBranchIds = branchIds;
-    clipboardMode = 'copy';
+    clipboardMode = "copy";
 
     if (utils.isElectron()) {
         // https://github.com/zadam/trilium/issues/2401
-        const {clipboard} = require('electron');
+        const { clipboard } = require("electron");
         const links = [];
 
         for (const branch of froca.getBranches(clipboardBranchIds)) {
@@ -90,7 +86,7 @@ async function copy(branchIds: string[]) {
             links.push($link[0].outerHTML);
         }
 
-        clipboard.writeHTML(links.join(', '));
+        clipboard.writeHTML(links.join(", "));
     }
 
     toastService.showMessage(t("clipboard.copied"));
@@ -100,14 +96,14 @@ function cut(branchIds: string[]) {
     clipboardBranchIds = branchIds;
 
     if (clipboardBranchIds.length > 0) {
-        clipboardMode = 'cut';
+        clipboardMode = "cut";
 
         toastService.showMessage(t("clipboard.cut"));
     }
 }
 
 function isClipboardEmpty() {
-    clipboardBranchIds = clipboardBranchIds.filter(branchId => !!froca.getBranch(branchId));
+    clipboardBranchIds = clipboardBranchIds.filter((branchId) => !!froca.getBranch(branchId));
 
     return clipboardBranchIds.length === 0;
 }
@@ -118,4 +114,4 @@ export default {
     cut,
     copy,
     isClipboardEmpty
-}
+};

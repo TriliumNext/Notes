@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS "tasks"
+(
+	"taskId"	TEXT NOT NULL PRIMARY KEY,
+	"parentNoteId"	TEXT NOT NULL,
+	"title"	TEXT NOT NULL DEFAULT "",
+	"dueDate"	INTEGER,
+	"isDone"	INTEGER NOT NULL DEFAULT 0,
+	"isDeleted"	INTEGER NOT NULL DEFAULT 0,
+	"utcDateModified"	TEXT NOT NULL
+);

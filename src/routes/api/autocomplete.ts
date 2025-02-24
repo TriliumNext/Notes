@@ -6,7 +6,7 @@ import log from "../../services/log.js";
 import utils from "../../services/utils.js";
 import cls from "../../services/cls.js";
 import becca from "../../becca/becca.js";
-import { Request } from 'express';
+import type { Request } from "express";
 import ValidationError from "../../errors/validation_error.js";
 
 function getAutocomplete(req: Request) {
@@ -16,7 +16,7 @@ function getAutocomplete(req: Request) {
     const query = (req.query.query || "").trim();
     const fastSearch = String(req.query.fastSearch).toLowerCase() === "false" ? false : true;
 
-    const activeNoteId = req.query.activeNoteId || 'none';
+    const activeNoteId = req.query.activeNoteId || "none";
 
     let results;
 
@@ -24,8 +24,7 @@ function getAutocomplete(req: Request) {
 
     if (query.length === 0 && typeof activeNoteId === "string") {
         results = getRecentNotes(activeNoteId);
-    }
-    else {
+    } else {
         results = searchService.searchNotesForAutocomplete(query, fastSearch);
     }
 
@@ -39,16 +38,17 @@ function getAutocomplete(req: Request) {
 }
 
 function getRecentNotes(activeNoteId: string) {
-    let extraCondition = '';
+    let extraCondition = "";
     const params = [activeNoteId];
 
     const hoistedNoteId = cls.getHoistedNoteId();
-    if (hoistedNoteId !== 'root') {
+    if (hoistedNoteId !== "root") {
         extraCondition = `AND recent_notes.notePath LIKE ?`;
         params.push(`%${hoistedNoteId}%`);
     }
 
-    const recentNotes = becca.getRecentNotesFromQuery(`
+    const recentNotes = becca.getRecentNotesFromQuery(
+        `
     SELECT
         recent_notes.*
     FROM
@@ -60,10 +60,12 @@ function getRecentNotes(activeNoteId: string) {
         ${extraCondition}
     ORDER BY
         utcDateCreated DESC
-    LIMIT 200`, params);
+    LIMIT 200`,
+        params
+    );
 
-    return recentNotes.map(rn => {
-        const notePathArray = rn.notePath.split('/');
+    return recentNotes.map((rn) => {
+        const notePathArray = rn.notePath.split("/");
 
         const noteTitle = beccaService.getNoteTitle(notePathArray[notePathArray.length - 1]);
         const notePathTitle = beccaService.getNoteTitleForPath(notePathArray);

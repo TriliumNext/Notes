@@ -35,9 +35,7 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
         super();
 
         /** @type {AttributeDetailWidget} */
-        this.attributeDetailWidget = new AttributeDetailWidget()
-            .contentSized()
-            .setParent(this);
+        this.attributeDetailWidget = new AttributeDetailWidget().contentSized().setParent(this);
 
         this.child(this.attributeDetailWidget);
     }
@@ -54,7 +52,7 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
         this.$widget = $(TPL);
         this.contentSized();
 
-        this.$container = this.$widget.find('.inherited-attributes-container');
+        this.$container = this.$widget.find(".inherited-attributes-container");
         this.$widget.append(this.attributeDetailWidget.render());
     }
 
@@ -69,9 +67,9 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
         }
 
         for (const attribute of inheritedAttributes) {
-            const $attr = (await attributeRenderer.renderAttribute(attribute, false))
-                .on('click', e => {
-                    setTimeout(() =>
+            const $attr = (await attributeRenderer.renderAttribute(attribute, false)).on("click", (e) => {
+                setTimeout(
+                    () =>
                         this.attributeDetailWidget.showAttributeDetail({
                             attribute: {
                                 noteId: attribute.noteId,
@@ -83,17 +81,17 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
                             isOwned: false,
                             x: e.pageX,
                             y: e.pageY
-                        }), 100);
-                });
+                        }),
+                    100
+                );
+            });
 
-            this.$container
-                .append($attr)
-                .append(" ");
+            this.$container.append($attr).append(" ");
         }
     }
 
     getInheritedAttributes(note) {
-        const attrs = note.getAttributes().filter(attr => attr.noteId !== this.noteId);
+        const attrs = note.getAttributes().filter((attr) => attr.noteId !== this.noteId);
 
         attrs.sort((a, b) => {
             if (a.noteId === b.noteId) {
@@ -107,8 +105,8 @@ export default class InheritedAttributesWidget extends NoteContextAwareWidget {
         return attrs;
     }
 
-    entitiesReloadedEvent({loadResults}) {
-        if (loadResults.getAttributeRows(this.componentId).find(attr => attributeService.isAffecting(attr, this.note))) {
+    entitiesReloadedEvent({ loadResults }) {
+        if (loadResults.getAttributeRows(this.componentId).find((attr) => attributeService.isAffecting(attr, this.note))) {
             this.refresh();
         }
     }

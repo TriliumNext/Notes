@@ -9,7 +9,7 @@ import SAttribute from "./entities/sattribute.js";
 import SAttachment from "./entities/sattachment.js";
 import shareRoot from "../share_root.js";
 import eventService from "../../services/events.js";
-import { SAttachmentRow, SAttributeRow, SBranchRow, SNoteRow } from './entities/rows.js';
+import type { SAttachmentRow, SAttributeRow, SBranchRow, SNoteRow } from "./entities/rows.js";
 
 function load() {
     const start = Date.now();
@@ -17,7 +17,8 @@ function load() {
 
     // using a raw query and passing arrays to avoid allocating new objects
 
-    const noteIds = sql.getColumn(`
+    const noteIds = sql.getColumn(
+        `
         WITH RECURSIVE
         tree(noteId) AS (
             SELECT ?
@@ -26,7 +27,9 @@ function load() {
             JOIN tree ON branches.parentNoteId = tree.noteId
             WHERE branches.isDeleted = 0
         )
-        SELECT noteId FROM tree`, [shareRoot.SHARE_ROOT_NOTE_ID]);
+        SELECT noteId FROM tree`,
+        [shareRoot.SHARE_ROOT_NOTE_ID]
+    );
 
     if (noteIds.length === 0) {
         shaca.loaded = true;
@@ -34,7 +37,7 @@ function load() {
         return;
     }
 
-    const noteIdStr = noteIds.map(noteId => `'${noteId}'`).join(",");
+    const noteIdStr = noteIds.map((noteId) => `'${noteId}'`).join(",");
 
     const rawNoteRows = sql.getRawRows<SNoteRow>(`
         SELECT noteId, title, type, mime, blobId, utcDateModified, isProtected
@@ -88,9 +91,12 @@ function ensureLoad() {
     }
 }
 
-eventService.subscribe([eventService.ENTITY_CREATED, eventService.ENTITY_CHANGED, eventService.ENTITY_DELETED, eventService.ENTITY_CHANGE_SYNCED, eventService.ENTITY_DELETE_SYNCED], ({ entityName, entity }) => {
-    shaca.reset();
-});
+eventService.subscribe(
+    [eventService.ENTITY_CREATED, eventService.ENTITY_CHANGED, eventService.ENTITY_DELETED, eventService.ENTITY_CHANGE_SYNCED, eventService.ENTITY_DELETE_SYNCED],
+    ({ entityName, entity }) => {
+        shaca.reset();
+    }
+);
 
 export default {
     load,

@@ -1,11 +1,11 @@
-import fs from 'fs';
-import sanitize from 'sanitize-filename';
-import sql from './sql.js';
-import decryptService from './decrypt.js';
-import dataKeyService from './data_key.js';
-import extensionService from './extension.js';
+import fs from "fs";
+import sanitize from "sanitize-filename";
+import sql from "./sql.js";
+import decryptService from "./decrypt.js";
+import dataKeyService from "./data_key.js";
+import extensionService from "./extension.js";
 
-function dumpDocument(documentPath: string, targetPath: string, options: { password: any; includeDeleted: any; }) {
+function dumpDocument(documentPath: string, targetPath: string, options: { password: any; includeDeleted: any }) {
     const stats = {
         succeeded: 0,
         failed: 0,
@@ -22,7 +22,7 @@ function dumpDocument(documentPath: string, targetPath: string, options: { passw
     const existingPaths: Record<string, any> = {};
     const noteIdToPath: Record<string, any> = {};
 
-    dumpNote(targetPath, 'root');
+    dumpNote(targetPath, "root");
 
     printDumpResults(stats, options);
 
@@ -56,10 +56,10 @@ function dumpDocument(documentPath: string, targetPath: string, options: { passw
                 safeTitle = safeTitle.substring(0, 20);
             }
 
-            childTargetPath = targetPath + '/' + safeTitle;
+            childTargetPath = targetPath + "/" + safeTitle;
 
             for (let i = 1; i < 100000 && childTargetPath in existingPaths; i++) {
-                childTargetPath = targetPath + '/' + safeTitle + '_' + i;
+                childTargetPath = targetPath + "/" + safeTitle + "_" + i;
             }
 
             existingPaths[childTargetPath] = true;
@@ -93,8 +93,7 @@ function dumpDocument(documentPath: string, targetPath: string, options: { passw
             }
 
             noteIdToPath[noteId] = childTargetPath;
-        }
-        catch (e: any) {
+        } catch (e: any) {
             console.error(`DUMPERROR: Writing '${noteId}' failed with error '${e.message}':\n${e.stack}`);
 
             stats.failed++;
@@ -104,13 +103,12 @@ function dumpDocument(documentPath: string, targetPath: string, options: { passw
 
         if (childNoteIds.length > 0) {
             if (childTargetPath === fileNameWithPath) {
-                childTargetPath += '_dir';
+                childTargetPath += "_dir";
             }
 
             try {
                 fs.mkdirSync(childTargetPath as string, { recursive: true });
-            }
-            catch (e: any) {
+            } catch (e: any) {
                 console.error(`DUMPERROR: Creating directory ${childTargetPath} failed with error '${e.message}'`);
             }
 
@@ -122,12 +120,12 @@ function dumpDocument(documentPath: string, targetPath: string, options: { passw
 }
 
 function printDumpResults(stats: any, options: any) {
-    console.log('\n----------------------- STATS -----------------------');
-    console.log('Successfully dumpted notes:   ', stats.succeeded.toString().padStart(5, ' '));
-    console.log('Protected notes:              ', stats.protected.toString().padStart(5, ' '), options.password ? '' : '(skipped)');
-    console.log('Failed notes:                 ', stats.failed.toString().padStart(5, ' '));
-    console.log('Deleted notes:                ', stats.deleted.toString().padStart(5, ' '), options.includeDeleted ? "(dumped)" : "(at least, skipped)");
-    console.log('-----------------------------------------------------');
+    console.log("\n----------------------- STATS -----------------------");
+    console.log("Successfully dumpted notes:   ", stats.succeeded.toString().padStart(5, " "));
+    console.log("Protected notes:              ", stats.protected.toString().padStart(5, " "), options.password ? "" : "(skipped)");
+    console.log("Failed notes:                 ", stats.failed.toString().padStart(5, " "));
+    console.log("Deleted notes:                ", stats.deleted.toString().padStart(5, " "), options.includeDeleted ? "(dumped)" : "(at least, skipped)");
+    console.log("-----------------------------------------------------");
 
     if (!options.password && stats.protected > 0) {
         console.log("\nWARNING: protected notes are present in the document but no password has been provided. Protected notes have not been dumped.");
@@ -140,12 +138,10 @@ function isContentEmpty(content: any) {
     }
 
     if (typeof content === "string") {
-        return !content.trim() || content.trim() === '<p></p>';
-    }
-    else if (Buffer.isBuffer(content)) {
+        return !content.trim() || content.trim() === "<p></p>";
+    } else if (Buffer.isBuffer(content)) {
         return content.length === 0;
-    }
-    else {
+    } else {
         return false;
     }
 }

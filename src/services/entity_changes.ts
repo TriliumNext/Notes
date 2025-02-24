@@ -2,35 +2,35 @@ import sql from "./sql.js";
 import dateUtils from "./date_utils.js";
 import log from "./log.js";
 import cls from "./cls.js";
-import utils from "./utils.js";
+import { randomString } from "./utils.js";
 import instanceId from "./instance_id.js";
 import becca from "../becca/becca.js";
 import blobService from "../services/blob.js";
-import { EntityChange } from './entity_changes_interface.js';
+import type { EntityChange } from "./entity_changes_interface.js";
 import type { Blob } from "./blob-interface.js";
 import eventService from "./events.js";
 
 let maxEntityChangeId = 0;
 
 function putEntityChangeWithInstanceId(origEntityChange: EntityChange, instanceId: string) {
-    const ec = {...origEntityChange, instanceId};
+    const ec = { ...origEntityChange, instanceId };
 
     putEntityChange(ec);
 }
 
 function putEntityChangeWithForcedChange(origEntityChange: EntityChange) {
-    const ec = {...origEntityChange, changeId: null};
+    const ec = { ...origEntityChange, changeId: null };
 
     putEntityChange(ec);
 }
 
 function putEntityChange(origEntityChange: EntityChange) {
-    const ec = {...origEntityChange};
+    const ec = { ...origEntityChange };
 
     delete ec.id;
 
     if (!ec.changeId) {
-        ec.changeId = utils.randomString(12);
+        ec.changeId = randomString(12);
     }
 
     ec.componentId = ec.componentId || cls.getComponentId() || "NA"; // NA = not available
@@ -50,7 +50,7 @@ function putNoteReorderingEntityChange(parentNoteId: string, componentId?: strin
     putEntityChange({
         entityName: "note_reordering",
         entityId: parentNoteId,
-        hash: 'N/A',
+        hash: "N/A",
         isErased: false,
         utcDateChanged: dateUtils.utcNowDateTime(),
         isSynced: true,
@@ -59,7 +59,7 @@ function putNoteReorderingEntityChange(parentNoteId: string, componentId?: strin
     });
 
     eventService.emit(eventService.ENTITY_CHANGED, {
-        entityName: 'note_reordering',
+        entityName: "note_reordering",
         entity: sql.getMap(`SELECT branchId, notePosition FROM branches WHERE isDeleted = 0 AND parentNoteId = ?`, [parentNoteId])
     });
 }
@@ -78,10 +78,10 @@ function addEntityChangesForSector(entityName: string, sector: string) {
     let entitiesInserted = entityChanges.length;
 
     sql.transactional(() => {
-        if (entityName === 'blobs') {
-            entitiesInserted += addEntityChangesForDependingEntity(sector, 'notes', 'noteId');
-            entitiesInserted += addEntityChangesForDependingEntity(sector, 'attachments', 'attachmentId');
-            entitiesInserted += addEntityChangesForDependingEntity(sector, 'revisions', 'revisionId');
+        if (entityName === "blobs") {
+            entitiesInserted += addEntityChangesForDependingEntity(sector, "notes", "noteId");
+            entitiesInserted += addEntityChangesForDependingEntity(sector, "attachments", "attachmentId");
+            entitiesInserted += addEntityChangesForDependingEntity(sector, "revisions", "revisionId");
         }
 
         for (const ec of entityChanges) {
@@ -94,12 +94,15 @@ function addEntityChangesForSector(entityName: string, sector: string) {
 
 function addEntityChangesForDependingEntity(sector: string, tableName: string, primaryKeyColumn: string) {
     // problem in blobs might be caused by problem in entity referencing the blob
-    const dependingEntityChanges = sql.getRows<EntityChange>(`
+    const dependingEntityChanges = sql.getRows<EntityChange>(
+        `
                 SELECT dep_change.*
                 FROM entity_changes orig_sector
                 JOIN ${tableName} ON ${tableName}.blobId = orig_sector.entityId
                 JOIN entity_changes dep_change ON dep_change.entityName = '${tableName}' AND dep_change.entityId = ${tableName}.${primaryKeyColumn}
-                WHERE orig_sector.entityName = 'blobs' AND SUBSTR(orig_sector.entityId, 1, 1) = ?`, [sector]);
+                WHERE orig_sector.entityName = 'blobs' AND SUBSTR(orig_sector.entityId, 1, 1) = ?`,
+        [sector]
+    );
 
     for (const ec of dependingEntityChanges) {
         putEntityChangeWithForcedChange(ec);
@@ -118,7 +121,7 @@ function cleanupEntityChangesForMissingEntities(entityName: string, entityPrimar
         AND entityId NOT IN (SELECT ${entityPrimaryKey} FROM ${entityName})`);
 }
 
-function fillEntityChanges(entityName: string, entityPrimaryKey: string, condition = '') {
+function fillEntityChanges(entityName: string, entityPrimaryKey: string, condition = "") {
     cleanupEntityChangesForMissingEntities(entityName, entityPrimaryKey);
 
     sql.transactional(() => {
@@ -142,7 +145,7 @@ function fillEntityChanges(entityName: string, entityPrimaryKey: string, conditi
                 isErased: false
             };
 
-            if (entityName === 'blobs') {
+            if (entityName === "blobs") {
                 const blob = sql.getRow<Blob>("SELECT blobId, content, utcDateModified FROM blobs WHERE blobId = ?", [entityId]);
                 ec.hash = blobService.calculateContentHash(blob);
                 ec.utcDateChanged = blob.utcDateModified;
@@ -153,7 +156,7 @@ function fillEntityChanges(entityName: string, entityPrimaryKey: string, conditi
                 if (entity) {
                     ec.hash = entity.generateHash();
                     ec.utcDateChanged = entity.getUtcDateChanged() || dateUtils.utcNowDateTime();
-                    ec.isSynced = entityName !== 'options' || !!entity.isSynced;
+                    ec.isSynced = entityName !== "options" || !!entity.isSynced;
                 } else {
                     // entity might be null (not present in becca) when it's deleted
                     // this will produce different hash value than when entity is being deleted since then
@@ -184,7 +187,7 @@ function fillAllEntityChanges() {
         fillEntityChanges("blobs", "blobId");
         fillEntityChanges("attributes", "attributeId");
         fillEntityChanges("etapi_tokens", "etapiTokenId");
-        fillEntityChanges("options", "name", 'WHERE isSynced = 1');
+        fillEntityChanges("options", "name", "WHERE isSynced = 1");
     });
 }
 

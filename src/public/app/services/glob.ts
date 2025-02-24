@@ -10,10 +10,10 @@ function setupGlobs() {
     window.glob.isDesktop = utils.isDesktop;
     window.glob.isMobile = utils.isMobile;
 
-    window.glob.getComponentByEl = el => appContext.getComponentByEl(el);
+    window.glob.getComponentByEl = (el) => appContext.getComponentByEl(el);
     window.glob.getHeaders = server.getHeaders;
-    window.glob.getReferenceLinkTitle = href => linkService.getReferenceLinkTitle(href);
-    window.glob.getReferenceLinkTitleSync = href => linkService.getReferenceLinkTitleSync(href);
+    window.glob.getReferenceLinkTitle = (href) => linkService.getReferenceLinkTitle(href);
+    window.glob.getReferenceLinkTitleSync = (href) => linkService.getReferenceLinkTitleSync(href);
 
     // required for ESLint plugin and CKEditor
     window.glob.getActiveContextNote = () => appContext.tabManager.getActiveContextNote();
@@ -32,16 +32,9 @@ function setupGlobs() {
         let message = "Uncaught error: ";
 
         if (string.includes("script error")) {
-            message += 'No details available';
+            message += "No details available";
         } else {
-            message += [
-                `Message: ${msg}`,
-                `URL: ${url}`,
-                `Line: ${lineNo}`,
-                `Column: ${columnNo}`,
-                `Error object: ${JSON.stringify(error)}`,
-                `Stack: ${error && error.stack}`
-            ].join(', ');
+            message += [`Message: ${msg}`, `URL: ${url}`, `Line: ${lineNo}`, `Column: ${columnNo}`, `Error object: ${JSON.stringify(error)}`, `Stack: ${error && error.stack}`].join(", ");
         }
 
         ws.logError(message);
@@ -55,7 +48,7 @@ function setupGlobs() {
         let message = "Uncaught error: ";
 
         if (string?.includes("script error")) {
-            message += 'No details available';
+            message += "No details available";
         } else {
             message += [
                 `Message: ${e.reason.message}`,
@@ -63,7 +56,7 @@ function setupGlobs() {
                 `Column: ${e.reason.columnNumber}`,
                 `Error object: ${JSON.stringify(e.reason)}`,
                 `Stack: ${e.reason && e.reason.stack}`
-            ].join(', ');
+            ].join(", ");
         }
 
         ws.logError(message);
@@ -78,7 +71,7 @@ function setupGlobs() {
     utils.initHelpButtons($(window));
 
     $("body").on("click", "a.external", function () {
-        window.open($(this).attr("href"), '_blank');
+        window.open($(this).attr("href"), "_blank");
 
         return false;
     });
@@ -86,4 +79,4 @@ function setupGlobs() {
 
 export default {
     setupGlobs
-}
+};

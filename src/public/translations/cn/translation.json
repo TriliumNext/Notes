@@ -1,6 +1,7 @@
 {
   "about": {
     "title": "关于 TriliumNext Notes",
+    "close": "关闭",
     "homepage": "项目主页：",
     "app_version": "应用版本：",
     "db_version": "数据库版本：",
@@ -32,7 +33,8 @@
     "search_note": "按名称搜索笔记",
     "link_title_mirrors": "链接标题跟随笔记标题变化",
     "link_title_arbitrary": "链接标题可随意修改",
-    "link_title": "链接标题"
+    "link_title": "链接标题",
+    "button_add_link": "添加链接 <kbd>回车</kbd>"
   },
   "branch_prefix": {
     "edit_branch_prefix": "编辑分支前缀",
@@ -59,6 +61,7 @@
   },
   "clone_to": {
     "clone_notes_to": "克隆笔记到...",
+    "close": "关闭",
     "help_on_links": "链接帮助",
     "notes_to_clone": "要克隆的笔记",
     "target_parent_note": "目标父笔记",
@@ -71,6 +74,7 @@
   },
   "confirm": {
     "confirmation": "确认",
+    "close": "关闭",
     "cancel": "取消",
     "ok": "确定",
     "are_you_sure_remove_note": "确定要从关系图中移除笔记 \"{{title}}\" ？",
@@ -79,6 +83,7 @@
   },
   "delete_notes": {
     "delete_notes_preview": "删除笔记预览",
+    "close": "关闭",
     "delete_all_clones_description": "同时删除所有克隆（可以在最近修改中撤消）",
     "erase_notes_description": "通常（软）删除仅标记笔记为已删除，可以在一段时间内通过最近修改对话框撤消。选中此选项将立即擦除笔记，不可撤销。",
     "erase_notes_warning": "永久擦除笔记（无法撤销），包括所有克隆。这将强制应用程序重新加载。",
@@ -109,17 +114,17 @@
     "fullDocumentation": "帮助（完整<a class=\"external\" href=\"https://triliumnext.github.io/Docs/\">在线文档</a>)",
     "close": "关闭",
     "noteNavigation": "笔记导航",
-    "goUpDown": "在笔记列表中向上/向下移动",
-    "collapseExpand": "折叠/展开节点",
+    "goUpDown": "<kbd>UP</kbd>, <kbd>DOWN</kbd> - 在笔记列表中向上/向下移动",
+    "collapseExpand": "<kbd>LEFT</kbd>, <kbd>RIGHT</kbd> - 折叠/展开节点",
     "notSet": "未设置",
     "goBackForwards": "在历史记录中前后移动",
     "showJumpToNoteDialog": "显示<a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">\"跳转到\" 对话框</a>",
     "scrollToActiveNote": "滚动到活动笔记",
-    "jumpToParentNote": "跳转到父笔记",
+    "jumpToParentNote": "<kbd>Backspace</kbd> - 跳转到父笔记",
     "collapseWholeTree": "折叠整个笔记树",
     "collapseSubTree": "折叠子树",
     "tabShortcuts": "标签快捷键",
-    "newTabNoteLink": "在笔记链接上使用CTRL+点击（或中键点击）在新标签中打开笔记",
+    "newTabNoteLink": "<kbd>CTRL+click</kbd> - 在笔记链接上使用CTRL+点击（或中键点击）在新标签中打开笔记",
     "onlyInDesktop": "仅在桌面版（电子构建）中",
     "openEmptyTab": "打开空白标签页",
     "closeActiveTab": "关闭活动标签页",
@@ -134,23 +139,23 @@
     "moveNoteUpHierarchy": "在层级结构中向上移动笔记",
     "multiSelectNote": "多选上/下笔记",
     "selectAllNotes": "选择当前级别的所有笔记",
-    "selectNote": "选择笔记",
+    "selectNote": "<kbd>Shift+click</kbd> - 选择笔记",
     "copyNotes": "将活动笔记（或当前选择）复制到剪贴板（用于<a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/cloning-notes.html#cloning-notes\">克隆</a>）",
     "cutNotes": "将当前笔记（或当前选择）剪切到剪贴板（用于移动笔记）",
     "pasteNotes": "将笔记粘贴为活动笔记的子笔记（根据是复制还是剪切到剪贴板来决定是移动还是克隆）",
     "deleteNotes": "删除笔记/子树",
     "editingNotes": "编辑笔记",
     "editNoteTitle": "在树形笔记树中，焦点会从笔记树切换到笔记标题。按下 Enter 键会将焦点从笔记标题切换到文本编辑器。按下 <kbd>Ctrl+.</kbd> 会将焦点从编辑器切换回笔记树。",
-    "createEditLink": "创建/编辑外部链接",
+    "createEditLink": "<kbd>Ctrl+K</kbd> - 创建/编辑外部链接",
     "createInternalLink": "创建内部链接",
     "followLink": "跟随光标下的链接",
     "insertDateTime": "在插入点插入当前日期和时间",
     "jumpToTreePane": "跳转到树面板并滚动到活动笔记",
     "markdownAutoformat": "类Markdown自动格式化",
-    "headings": " 等，后跟空格，自动转换为标题",
-    "bulletList": "<kbd>*</kbd> 或 <kbd>-</kbd> 后跟空格，自动转换为项目符号列表",
-    "numberedList": "<kbd>1.</kbd> or <kbd>1)</kbd> 后跟空格，自动转换为编号列表",
-    "blockQuote": "一行以 <kbd>></kbd> 开头并后跟空格，自动转换为块引用",
+    "headings": "<code>##</code>, <code>###</code>, <code>####</code>  等，后跟空格，自动转换为标题",
+    "bulletList": "<code>*</code> 或 <code>-</code> 后跟空格，自动转换为项目符号列表",
+    "numberedList": "<code>1.</code> or <code>1)</code> 后跟空格，自动转换为编号列表",
+    "blockQuote": "一行以 <code>></code> 开头并后跟空格，自动转换为块引用",
     "troubleshooting": "故障排除",
     "reloadFrontend": "重新加载Trilium前端",
     "showDevTools": "显示开发者工具",
@@ -175,7 +180,16 @@
     "codeImportedAsCode": "如果元数据不明确，将识别的代码文件（例如<code>.json</code>）导入为代码笔记",
     "replaceUnderscoresWithSpaces": "在导入的笔记名称中将下划线替换为空格",
     "import": "导入",
-    "failed": "导入失败: {{message}}."
+    "failed": "导入失败: {{message}}.",
+    "html_import_tags": {
+      "title": "HTML 导入标签",
+      "description": "配置在导入笔记时应保留的 HTML 标签。不在此列表中的标签将在导入过程中被移除。一些标签（例如 'script'）为了安全性会始终被移除。",
+      "placeholder": "输入 HTML 标签，每行一个",
+      "reset_button": "重置为默认列表"
+    },
+    "import-status": "导入状态",
+    "in-progress": "导入进行中：{{progress}}",
+    "successful": "导入成功完成。"
   },
   "include_note": {
     "dialog_title": "包含笔记",
@@ -185,7 +199,7 @@
     "box_size_small": "小型 (显示大约10行)",
     "box_size_medium": "中型 (显示大约30行)",
     "box_size_full": "完整显示（完整文本框）",
-    "button_include": "包含笔记"
+    "button_include": "包含笔记 <kbd>回车</kbd>"
   },
   "info": {
     "modalTitle": "信息消息",
@@ -223,6 +237,7 @@
   },
   "prompt": {
     "title": "提示",
+    "close": "关闭",
     "ok": "确定 <kbd>回车</kbd>",
     "defaultTitle": "提示"
   },
@@ -236,6 +251,7 @@
   "recent_changes": {
     "title": "最近修改",
     "erase_notes_button": "立即清理已删除的笔记",
+    "close": "关闭",
     "deleted_notes_message": "已删除的笔记已清理。",
     "no_changes_message": "暂无修改...",
     "undelete_link": "恢复删除",
@@ -246,6 +262,7 @@
     "delete_all_revisions": "删除此笔记的所有历史版本",
     "delete_all_button": "删除所有历史版本",
     "help_title": "关于笔记历史版本的帮助",
+    "close": "关闭",
     "revision_last_edited": "此历史版本上次编辑于 {{date}}",
     "confirm_delete_all": "您是否要删除此笔记的所有历史版本？此操作将擦除历史版本的标题和内容，但仍将保留历史版本的元数据。",
     "no_revisions": "此笔记暂无历史版本...",
@@ -267,6 +284,7 @@
   },
   "sort_child_notes": {
     "sort_children_by": "按...排序子笔记",
+    "close": "关闭",
     "sorting_criteria": "排序条件",
     "title": "标题",
     "date_created": "创建日期",
@@ -280,10 +298,11 @@
     "sort_with_respect_to_different_character_sorting": "根据不同语言或地区的字符排序和排序规则排序。",
     "natural_sort_language": "自然排序语言",
     "the_language_code_for_natural_sort": "自然排序的语言代码，例如中文的 \"zh-CN\"。",
-    "sort": "排序"
+    "sort": "排序 <kbd>Enter</kbd>"
   },
   "upload_attachments": {
     "upload_attachments_to_note": "上传附件到笔记",
+    "close": "关闭",
     "choose_files": "选择文件",
     "files_will_be_uploaded": "文件将作为附件上传到",
     "options": "选项",
@@ -816,8 +835,7 @@
     "debug": "调试",
     "debug_description": "调试将打印额外的调试信息到控制台，以帮助调试复杂查询",
     "action": "操作",
-    "search": "搜索",
-    "enter": "输入",
+    "search_button": "搜索 <kbd>回车</kbd>",
     "search_execute": "搜索并执行操作",
     "save_to_note": "保存到笔记",
     "search_parameters": "搜索参数",
@@ -970,9 +988,7 @@
   "web_view": {
     "web_view": "网页视图",
     "embed_websites": "网页视图类型的笔记允许您将网站嵌入到 Trilium 中。",
-    "create_label": "首先，请创建一个带有您要嵌入的 URL 地址的标签，例如 #webViewSrc=\"https://www.bing.com\"",
-    "disclaimer": "实验性功能免责声明",
-    "experimental_note": "网页视图是一种实验性的笔记类型，将来可能会被移除或大幅更改。网页视图只在桌面端有效。"
+    "create_label": "首先，请创建一个带有您要嵌入的 URL 地址的标签，例如 #webViewSrc=\"https://www.bing.com\""
   },
   "backend_log": {
     "refresh": "刷新"
@@ -1061,14 +1077,18 @@
     "title": "主题",
     "theme_label": "主题",
     "override_theme_fonts_label": "覆盖主题字体",
+    "auto_theme": "自动",
     "light_theme": "浅色",
     "dark_theme": "深色",
+    "triliumnext": "TriliumNext Beta（跟随系统颜色方案）",
+    "triliumnext-light": "TriliumNext Beta（浅色）",
+    "triliumnext-dark": "TriliumNext Beta（深色）",
     "layout": "布局",
     "layout-vertical-title": "垂直",
     "layout-horizontal-title": "水平",
     "layout-vertical-description": "启动栏位于左侧（默认）",
     "layout-horizontal-description": "启动栏位于标签栏下方，标签栏现在是全宽的。"
- },
+  },
   "zoom_factor": {
     "title": "缩放系数（仅桌面客户端有效）",
     "description": "缩放也可以通过 CTRL+- 和 CTRL+= 快捷键进行控制。"
@@ -1100,7 +1120,7 @@
   "attachment_erasure_timeout": {
     "attachment_erasure_timeout": "附件清理超时",
     "attachment_auto_deletion_description": "如果附件在一段时间后不再被笔记引用，它们将自动被删除（并被清理）。",
-    "erase_attachments_after_x_seconds": "在附件在笔记中未被使用 X 秒后清理",
+    "erase_attachments_after": "",
     "manual_erasing_description": "您还可以手动触发清理（而不考虑上述定义的超时时间）：",
     "erase_unused_attachments_now": "立即清理未使用的附件笔记",
     "unused_attachments_erased": "未使用的附件已被删除。"
@@ -1112,15 +1132,15 @@
   "note_erasure_timeout": {
     "note_erasure_timeout_title": "笔记清理超时",
     "note_erasure_description": "被删除的笔记（以及属性、历史版本等）最初仅被标记为“删除”，可以从“最近修改”对话框中恢复它们。经过一段时间后，已删除的笔记会被“清理”，这意味着它们的内容将无法恢复。此设置允许您配置从删除到清除笔记之间的时间长度。",
-    "erase_notes_after_x_seconds": "在笔记删除 X 秒后清理",
+    "erase_notes_after": "",
     "manual_erasing_description": "您还可以手动触发清理（不考虑上述定义的超时）：",
     "erase_deleted_notes_now": "立即清理已删除的笔记",
     "deleted_notes_erased": "已删除的笔记已被清理。"
   },
   "revisions_snapshot_interval": {
-    "note_revisions_snapshot_interval_title": "笔记修改快照间隔",
-    "note_revisions_snapshot_description": "笔记修改快照时间间隔是指经过多少秒后会为笔记创建新的修改历史。更多信息请参见<a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a>。",
-    "snapshot_time_interval_label": "笔记修改快照时间间隔（单位:秒）"
+    "note_revisions_snapshot_interval_title": "",
+    "note_revisions_snapshot_description": "",
+    "snapshot_time_interval_label": ""
   },
   "revisions_snapshot_limit": {
     "note_revisions_snapshot_limit_title": "笔记历史快照限制",
@@ -1195,7 +1215,7 @@
     "existing_backups": "现有备份",
     "date-and-time": "日期和时间",
     "path": "路径",
-    "database_backed_up_to": "数据库已备份到",
+    "database_backed_up_to": "数据库已备份到 {{backupFilePath}}",
     "no_backup_yet": "尚无备份"
   },
   "etapi": {
@@ -1239,7 +1259,7 @@
     "protected_session_timeout_description": "保护会话超时是一个时间段，超时后保护会话会从浏览器内存中清除。这是从最后一次与保护笔记的交互开始计时的。更多信息请见",
     "wiki": "维基",
     "for_more_info": "更多信息。",
-    "protected_session_timeout_label": "保护会话超时（秒）",
+    "protected_session_timeout_label": "",
     "reset_confirmation": "重置密码将永久丧失对所有现受保护笔记的访问。您真的要重置密码吗？",
     "reset_success_message": "密码已重置。请设置新密码",
     "change_password_heading": "更改密码",
@@ -1315,7 +1335,7 @@
     "button-tree-map": "树形地图"
   },
   "tree-context-menu": {
-    "open-in-a-new-tab": "在新标签页中打开",
+    "open-in-a-new-tab": "在新标签页中打开 <kbd>Ctrl+Click</kbd>",
     "open-in-a-new-split": "在新分栏中打开",
     "insert-note-after": "在后面插入笔记",
     "insert-child-note": "插入子笔记",
@@ -1510,11 +1530,11 @@
     "add-script-launcher": "添加脚本启动器",
     "add-custom-widget": "添加自定义小部件",
     "add-spacer": "添加间隔",
-    "delete": "删除",
+    "delete": "删除 <kbd data-command=\"deleteNotes\"></kbd>",
     "reset": "重置",
     "move-to-visible-launchers": "移动到可见启动器",
     "move-to-available-launchers": "移动到可用启动器",
-    "duplicate-launcher": "复制启动器"
+    "duplicate-launcher": "复制启动器 <kbd data-command=\"duplicateSubtree\">"
   },
   "editable-text": {
     "auto-detect-language": "自动检测"
@@ -1543,7 +1563,8 @@
       "fixed": {
         "title": "固定",
         "description": "编辑工具出现在 \"格式化\" 功能区标签中。"
-      }
+      },
+      "multiline-toolbar": "如果工具栏无法完全显示，则分多行显示。"
     }
   },
   "electron_context_menu": {
@@ -1563,5 +1584,22 @@
     "open_note_in_new_tab": "在新标签页中打开笔记",
     "open_note_in_new_split": "在新分屏中打开笔记",
     "open_note_in_new_window": "在新窗口中打开笔记"
+  },
+  "electron_integration": {
+    "desktop-application": "桌面应用程序",
+    "native-title-bar": "原生标题栏",
+    "native-title-bar-description": "对于 Windows 和 macOS，关闭原生标题栏可使应用程序看起来更紧凑。在 Linux 上，保留原生标题栏可以更好地与系统集成。",
+    "background-effects": "启用背景效果（仅适用于 Windows 11）",
+    "background-effects-description": "Mica 效果为应用窗口添加模糊且时尚的背景，营造出深度感和现代外观。",
+    "restart-app-button": "重启应用程序以查看更改",
+    "zoom-factor": "缩放系数"
+  },
+  "note_autocomplete": {
+    "search-for": "搜索 \"{{term}}\"",
+    "create-note": "创建并链接子笔记 \"{{term}}\"",
+    "insert-external-link": "插入指向 \"{{term}}\" 的外部链接",
+    "clear-text-field": "清除文本字段",
+    "show-recent-notes": "显示最近的笔记",
+    "full-text-search": "全文搜索"
   }
 }

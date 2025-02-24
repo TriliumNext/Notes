@@ -5,11 +5,10 @@
  */
 
 import fs from "fs";
-import themeNames from "./code_block_theme_names.json" with { type: "json" }
+import themeNames from "./code_block_theme_names.json" with { type: "json" };
 import { t } from "i18next";
 import { join } from "path";
-import utils from "./utils.js";
-import env from "./env.js";
+import { isDev, isElectron, getResourceDir } from "./utils.js";
 
 /**
  * Represents a color scheme for the code block syntax highlight.
@@ -31,7 +30,7 @@ interface ColorTheme {
  * @returns the supported themes, grouped.
  */
 export function listSyntaxHighlightingThemes() {
-    const path = join(utils.getResourceDir(), getStylesDirectory());
+    const path = join(getResourceDir(), getStylesDirectory());
     const systemThemes = readThemesFromFileSystem(path);
 
     return {
@@ -42,11 +41,11 @@ export function listSyntaxHighlightingThemes() {
             }
         ],
         ...groupThemesByLightOrDark(systemThemes)
-    }
+    };
 }
 
-function getStylesDirectory() {
-    if (utils.isElectron() && !env.isDev()) {
+export function getStylesDirectory() {
+    if (isElectron && !isDev) {
         return "styles";
     }
 
@@ -61,8 +60,9 @@ function getStylesDirectory() {
  * @param path the path to read from. Usually this is the highlight.js `styles` directory.
  * @returns the list of themes.
  */
-function readThemesFromFileSystem(path: string): ColorTheme[] {
-    return fs.readdirSync(path)
+export function readThemesFromFileSystem(path: string): ColorTheme[] {
+    return fs
+        .readdirSync(path)
         .filter((el) => el.endsWith(".min.css"))
         .map((name) => {
             const nameWithoutExtension = name.replace(".min.css", "");

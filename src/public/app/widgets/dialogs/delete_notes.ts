@@ -4,7 +4,7 @@ import linkService from "../../services/link.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
-import FAttribute, { FAttributeRow } from "../../entities/fattribute.js";
+import type { FAttributeRow } from "../../entities/fattribute.js";
 
 // TODO: Use common with server.
 interface Response {
@@ -14,7 +14,7 @@ interface Response {
 
 export interface ResolveOptions {
     proceed: boolean;
-    deleteAllClones?: boolean;    
+    deleteAllClones?: boolean;
     eraseNotes?: boolean;
 }
 
@@ -29,51 +29,54 @@ const TPL = `
     <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">${t('delete_notes.delete_notes_preview')}</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t('delete_notes.close')}"></button>
+                <h4 class="modal-title">${t("delete_notes.delete_notes_preview")}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${t("delete_notes.close")}"></button>
             </div>
             <div class="modal-body">
                 <div class="form-checkbox">
-                    <input id="delete-all-clones" class="delete-all-clones form-check-input" value="1" type="checkbox">
-                    <label for="delete-all-clones" class="form-check-label">${t('delete_notes.delete_all_clones_description')}</label>
+                    <label for="delete-all-clones" class="form-check-label tn-checkbox">
+                        <input id="delete-all-clones" class="delete-all-clones form-check-input" value="1" type="checkbox">
+                        ${t("delete_notes.delete_all_clones_description")}
+                    </label>
                 </div>
 
                 <div class="form-checkbox" style="margin-bottom: 1rem">
-                    <input id="erase-notes" class="erase-notes form-check-input" value="1" type="checkbox">
-                    <label for="erase-notes" class="form-check-label">${t('delete_notes.erase_notes_warning')}</label>
+                    <label for="erase-notes" class="form-check-label tn-checkbox">
+                        <input id="erase-notes" class="erase-notes form-check-input" value="1" type="checkbox">
+                        ${t("delete_notes.erase_notes_warning")}
+                    </label>
                 </div>
 
                 <div class="delete-notes-list-wrapper">
-                    <h4>${t('delete_notes.notes_to_be_deleted', { noteCount: '<span class="deleted-notes-count"></span>' })}</h4>
+                    <h4>${t("delete_notes.notes_to_be_deleted", { noteCount: '<span class="deleted-notes-count"></span>' })}</h4>
 
                     <ul class="delete-notes-list" style="max-height: 200px; overflow: auto;"></ul>
                 </div>
 
                 <div class="no-note-to-delete-wrapper alert alert-info">
-                    ${t('delete_notes.no_note_to_delete')}
+                    ${t("delete_notes.no_note_to_delete")}
                 </div>
 
                 <div class="broken-relations-wrapper">
                     <div class="alert alert-danger">
-                        <h4>${t('delete_notes.broken_relations_to_be_deleted', { relationCount: '<span class="broke-relations-count"></span>'})}</h4>
+                        <h4>${t("delete_notes.broken_relations_to_be_deleted", { relationCount: '<span class="broke-relations-count"></span>' })}</h4>
 
                         <ul class="broken-relations-list" style="max-height: 200px; overflow: auto;"></ul>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="delete-notes-dialog-cancel-button btn btn-sm">${t('delete_notes.cancel')}</button>
+                <button class="delete-notes-dialog-cancel-button btn btn-sm">${t("delete_notes.cancel")}</button>
 
                 &nbsp;
 
-                <button class="delete-notes-dialog-ok-button btn btn-primary btn-sm">${t('delete_notes.ok')}</button>
+                <button class="delete-notes-dialog-ok-button btn btn-primary btn-sm">${t("delete_notes.ok")}</button>
             </div>
         </div>
     </div>
 </div>`;
 
 export default class DeleteNotesDialog extends BasicWidget {
-
     private branchIds: string[] | null;
     private resolve!: (options: ResolveOptions) => void;
 
@@ -113,15 +116,15 @@ export default class DeleteNotesDialog extends BasicWidget {
         this.$deleteAllClones = this.$widget.find(".delete-all-clones");
         this.$eraseNotes = this.$widget.find(".erase-notes");
 
-        this.$widget.on('shown.bs.modal', () => this.$okButton.trigger("focus"));
+        this.$widget.on("shown.bs.modal", () => this.$okButton.trigger("focus"));
 
-        this.$cancelButton.on('click', () => {
+        this.$cancelButton.on("click", () => {
             utils.closeActiveDialog();
 
-            this.resolve({proceed: false});
+            this.resolve({ proceed: false });
         });
 
-        this.$okButton.on('click', () => {
+        this.$okButton.on("click", () => {
             utils.closeActiveDialog();
 
             this.resolve({
@@ -131,11 +134,11 @@ export default class DeleteNotesDialog extends BasicWidget {
             });
         });
 
-        this.$deleteAllClones.on('click', () => this.renderDeletePreview());
+        this.$deleteAllClones.on("click", () => this.renderDeletePreview());
     }
 
     async renderDeletePreview() {
-        const response = await server.post<Response>('delete-notes-preview', {
+        const response = await server.post<Response>("delete-notes-preview", {
             branchIdsToDelete: this.branchIds,
             deleteAllClones: this.forceDeleteAllClones || this.isDeleteAllClonesChecked()
         });
@@ -147,11 +150,7 @@ export default class DeleteNotesDialog extends BasicWidget {
         this.$noNoteToDeleteWrapper.toggle(response.noteIdsToBeDeleted.length === 0);
 
         for (const note of await froca.getNotes(response.noteIdsToBeDeleted)) {
-            this.$deleteNotesList.append(
-                $("<li>").append(
-                    await linkService.createLink(note.noteId, {showNotePath: true})
-                )
-            );
+            this.$deleteNotesList.append($("<li>").append(await linkService.createLink(note.noteId, { showNotePath: true })));
         }
 
         this.$deletedNotesCount.text(response.noteIdsToBeDeleted.length);
@@ -159,20 +158,22 @@ export default class DeleteNotesDialog extends BasicWidget {
         this.$brokenRelationsListWrapper.toggle(response.brokenRelations.length > 0);
         this.$brokenRelationsCount.text(response.brokenRelations.length);
 
-        await froca.getNotes(response.brokenRelations.map(br => br.noteId));
+        await froca.getNotes(response.brokenRelations.map((br) => br.noteId));
 
         for (const attr of response.brokenRelations) {
             this.$brokenRelationsList.append(
-                $("<li>").html(t("delete_notes.deleted_relation_text", {
-                    note: (await linkService.createLink(attr.value)).html(),
-                    relation: `<code>${attr.name}</code>`,
-                    source: (await linkService.createLink(attr.noteId)).html()
-                }))
+                $("<li>").html(
+                    t("delete_notes.deleted_relation_text", {
+                        note: (await linkService.createLink(attr.value)).html(),
+                        relation: `<code>${attr.name}</code>`,
+                        source: (await linkService.createLink(attr.noteId)).html()
+                    })
+                )
             );
         }
     }
 
-    async showDeleteNotesDialogEvent({branchIdsToDelete, callback, forceDeleteAllClones}: ShowDeleteNotesDialogOpts) {
+    async showDeleteNotesDialogEvent({ branchIdsToDelete, callback, forceDeleteAllClones }: ShowDeleteNotesDialogOpts) {
         this.branchIds = branchIdsToDelete;
         this.forceDeleteAllClones = forceDeleteAllClones;
 
@@ -180,9 +181,7 @@ export default class DeleteNotesDialog extends BasicWidget {
 
         utils.openDialog(this.$widget);
 
-        this.$deleteAllClones
-            .prop("checked", !!forceDeleteAllClones)
-            .prop("disabled", !!forceDeleteAllClones);
+        this.$deleteAllClones.prop("checked", !!forceDeleteAllClones).prop("disabled", !!forceDeleteAllClones);
 
         this.$eraseNotes.prop("checked", false);
 

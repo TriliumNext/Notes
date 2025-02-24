@@ -2,7 +2,7 @@
 
 import sql from "../../services/sql.js";
 import becca from "../../becca/becca.js";
-import { Request } from 'express';
+import type { Request } from "express";
 import ValidationError from "../../errors/validation_error.js";
 
 function getSchema() {
@@ -35,9 +35,9 @@ function execute(req: Request) {
         for (let query of queries) {
             query = query.trim();
 
-            while (query.startsWith('-- ')) {
+            while (query.startsWith("-- ")) {
                 // Query starts with one or more SQL comments, discard these before we execute.
-                const pivot = query.indexOf('\n');
+                const pivot = query.indexOf("\n");
                 query = pivot > 0 ? query.substr(pivot + 1).trim() : "";
             }
 
@@ -45,10 +45,9 @@ function execute(req: Request) {
                 continue;
             }
 
-            if (query.toLowerCase().startsWith('select') || query.toLowerCase().startsWith('with')) {
+            if (query.toLowerCase().startsWith("select") || query.toLowerCase().startsWith("with")) {
                 results.push(sql.getRows(query));
-            }
-            else {
+            } else {
                 results.push(sql.execute(query));
             }
         }
@@ -57,8 +56,7 @@ function execute(req: Request) {
             success: true,
             results
         };
-    }
-    catch (e: any) {
+    } catch (e: any) {
         return {
             success: false,
             error: e.message

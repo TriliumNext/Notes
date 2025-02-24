@@ -9,41 +9,54 @@ import syncMutexService from "./sync_mutex.js";
 import cls from "./cls.js";
 import sql from "./sql.js";
 import path from "path";
+import type { OptionNames } from "./options_interface.js";
 
-type BackupType = ("daily" | "weekly" | "monthly");
+type BackupType = "daily" | "weekly" | "monthly";
 
 function getExistingBackups() {
     if (!fs.existsSync(dataDir.BACKUP_DIR)) {
         return [];
     }
 
-    return fs.readdirSync(dataDir.BACKUP_DIR)
-        .filter(fileName => fileName.includes("backup"))
-        .map(fileName => {
+    return fs
+        .readdirSync(dataDir.BACKUP_DIR)
+        .filter((fileName) => fileName.includes("backup"))
+        .map((fileName) => {
             const filePath = path.resolve(dataDir.BACKUP_DIR, fileName);
-            const stat = fs.statSync(filePath)
+            const stat = fs.statSync(filePath);
 
-            return {fileName, filePath, mtime: stat.mtime};
+            return { fileName, filePath, mtime: stat.mtime };
         });
 }
 
 function regularBackup() {
     cls.init(() => {
-        periodBackup('lastDailyBackupDate', 'daily', 24 * 3600);
+        periodBackup("lastDailyBackupDate", "daily", 24 * 3600);
 
-        periodBackup('lastWeeklyBackupDate', 'weekly', 7 * 24 * 3600);
+        periodBackup("lastWeeklyBackupDate", "weekly", 7 * 24 * 3600);
 
-        periodBackup('lastMonthlyBackupDate', 'monthly', 30 * 24 * 3600);
+        periodBackup("lastMonthlyBackupDate", "monthly", 30 * 24 * 3600);
     });
 }
 
 function isBackupEnabled(backupType: BackupType) {
-    const optionName = `${backupType}BackupEnabled`;
+    let optionName: OptionNames;
+    switch (backupType) {
+        case "daily":
+            optionName = "dailyBackupEnabled";
+            break;
+        case "weekly":
+            optionName = "weeklyBackupEnabled";
+            break;
+        case "monthly":
+            optionName = "monthlyBackupEnabled";
+            break;
+    }
 
     return optionService.getOptionBool(optionName);
 }
 
-function periodBackup(optionName: string, backupType: BackupType, periodInSeconds: number) {
+function periodBackup(optionName: "lastDailyBackupDate" | "lastWeeklyBackupDate" | "lastMonthlyBackupDate", backupType: BackupType, periodInSeconds: number) {
     if (!isBackupEnabled(backupType)) {
         return;
     }

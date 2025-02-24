@@ -44,26 +44,26 @@ const TPL = `
 
 export default class TitleBarButtonsWidget extends BasicWidget {
     doRender() {
-        if (!utils.isElectron() || options.is('nativeTitleBarVisible')) {
-            return this.$widget = $('<div>');
+        if (!utils.isElectron() || options.is("nativeTitleBarVisible")) {
+            return (this.$widget = $("<div>"));
         }
 
         this.$widget = $(TPL);
         this.contentSized();
-        
+
         const $minimizeBtn = this.$widget.find(".minimize-btn");
         const $maximizeBtn = this.$widget.find(".maximize-btn");
         const $closeBtn = this.$widget.find(".close-btn");
 
-        $minimizeBtn.on('click', () => {
-            $minimizeBtn.trigger('blur');
-            const remote = utils.dynamicRequire('@electron/remote');
+        $minimizeBtn.on("click", () => {
+            $minimizeBtn.trigger("blur");
+            const remote = utils.dynamicRequire("@electron/remote");
             remote.BrowserWindow.getFocusedWindow().minimize();
         });
 
-        $maximizeBtn.on('click', () => {
-            $maximizeBtn.trigger('blur');
-            const remote = utils.dynamicRequire('@electron/remote');
+        $maximizeBtn.on("click", () => {
+            $maximizeBtn.trigger("blur");
+            const remote = utils.dynamicRequire("@electron/remote");
             const focusedWindow = remote.BrowserWindow.getFocusedWindow();
 
             if (focusedWindow.isMaximized()) {
@@ -73,9 +73,9 @@ export default class TitleBarButtonsWidget extends BasicWidget {
             }
         });
 
-        $closeBtn.on('click', () => {
-            $closeBtn.trigger('blur');
-            const remote = utils.dynamicRequire('@electron/remote');
+        $closeBtn.on("click", () => {
+            $closeBtn.trigger("blur");
+            const remote = utils.dynamicRequire("@electron/remote");
             remote.BrowserWindow.getFocusedWindow().close();
         });
     }

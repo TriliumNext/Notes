@@ -1,4 +1,4 @@
-interface AttachmentMeta {
+export default interface AttachmentMeta {
     attachmentId?: string;
     title: string;
     role: string;
@@ -6,5 +6,3 @@ interface AttachmentMeta {
     position?: number;
     dataFileName: string;
 }
-
-export default AttachmentMeta;

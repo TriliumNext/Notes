@@ -3,7 +3,7 @@
 import log from "./log.js";
 import sql from "./sql.js";
 import optionService from "./options.js";
-import utils from "./utils.js";
+import { hmac, randomString, timeLimit } from "./utils.js";
 import instanceId from "./instance_id.js";
 import dateUtils from "./date_utils.js";
 import syncUpdateService from "./sync_update.js";
@@ -17,8 +17,8 @@ import ws from "./ws.js";
 import entityChangesService from "./entity_changes.js";
 import entityConstructor from "../becca/entity_constructor.js";
 import becca from "../becca/becca.js";
-import { EntityChange, EntityChangeRecord, EntityRow } from './entity_changes_interface.js';
-import { CookieJar, ExecOpts } from './request_interface.js';
+import type { EntityChange, EntityChangeRecord, EntityRow } from "./entity_changes_interface.js";
+import type { CookieJar, ExecOpts } from "./request_interface.js";
 import setupService from "./setup.js";
 import consistency_checks from "./consistency_checks.js";
 import becca_loader from "../becca/becca_loader.js";
@@ -29,7 +29,7 @@ let outstandingPullCount = 0;
 
 interface CheckResponse {
     maxEntityChangeId: number;
-    entityHashes: Record<string, Record<string, string>>
+    entityHashes: Record<string, Record<string, string>>;
 }
 
 interface SyncResponse {
@@ -52,7 +52,7 @@ async function sync() {
     try {
         return await syncMutexService.doExclusively(async () => {
             if (!syncOptions.isSyncSetup()) {
-                return { success: false, errorCode: 'NOT_CONFIGURED', message: 'Sync not configured' };
+                return { success: false, errorCode: "NOT_CONFIGURED", message: "Sync not configured" };
             }
 
             let continueSync = false;
@@ -69,8 +69,7 @@ async function sync() {
                 await syncFinished(syncContext);
 
                 continueSync = await checkContentHash(syncContext);
-            }
-            while (continueSync);
+            } while (continueSync);
 
             ws.syncFinished();
 
@@ -78,15 +77,15 @@ async function sync() {
                 success: true
             };
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         // we're dynamically switching whether we're using proxy or not based on whether we encountered error with the current method
         proxyToggle = !proxyToggle;
 
-        if (e.message?.includes('ECONNREFUSED') ||
-            e.message?.includes('ERR_') || // node network errors
-            e.message?.includes('Bad Gateway')) {
-
+        if (
+            e.message?.includes("ECONNREFUSED") ||
+            e.message?.includes("ERR_") || // node network errors
+            e.message?.includes("Bad Gateway")
+        ) {
             ws.syncFailed();
 
             log.info("No connection to sync server.");
@@ -95,8 +94,7 @@ async function sync() {
                 success: false,
                 message: "No connection to sync server."
             };
-        }
-        else {
+        } else {
             log.info(`Sync failed: '${e.message}', stack: ${e.stack}`);
 
             ws.syncFailed();
@@ -104,13 +102,13 @@ async function sync() {
             return {
                 success: false,
                 message: e.message
-            }
+            };
         }
     }
 }
 
 async function login() {
-    if (!await setupService.hasSyncServerSchemaAndSeed()) {
+    if (!(await setupService.hasSyncServerSchemaAndSeed())) {
         await setupService.sendSeedToSyncServer();
     }
 
@@ -120,11 +118,11 @@ async function login() {
 async function doLogin(): Promise<SyncContext> {
     const timestamp = dateUtils.utcNowDateTime();
 
-    const documentSecret = optionService.getOption('documentSecret');
-    const hash = utils.hmac(documentSecret, timestamp);
+    const documentSecret = optionService.getOption("documentSecret");
+    const hash = hmac(documentSecret, timestamp);
 
     const syncContext: SyncContext = { cookieJar: {} };
-    const resp = await syncRequest<SyncResponse>(syncContext, 'POST', '/api/login/sync', {
+    const resp = await syncRequest<SyncResponse>(syncContext, "POST", "/api/login/sync", {
         timestamp: timestamp,
         syncVersion: appInfo.syncVersion,
         hash: hash
@@ -135,7 +133,9 @@ async function doLogin(): Promise<SyncContext> {
     }
 
     if (resp.instanceId === instanceId) {
-        throw new Error(`Sync server has instance ID '${resp.instanceId}' which is also local. This usually happens when the sync client is (mis)configured to sync with itself (URL points back to client) instead of the correct sync server.`);
+        throw new Error(
+            `Sync server has instance ID '${resp.instanceId}' which is also local. This usually happens when the sync client is (mis)configured to sync with itself (URL points back to client) instead of the correct sync server.`
+        );
     }
 
     syncContext.instanceId = resp.instanceId;
@@ -156,16 +156,16 @@ async function doLogin(): Promise<SyncContext> {
 async function pullChanges(syncContext: SyncContext) {
     while (true) {
         const lastSyncedPull = getLastSyncedPull();
-        const logMarkerId = utils.randomString(10); // to easily pair sync events between client and server logs
+        const logMarkerId = randomString(10); // to easily pair sync events between client and server logs
         const changesUri = `/api/sync/changed?instanceId=${instanceId}&lastEntityChangeId=${lastSyncedPull}&logMarkerId=${logMarkerId}`;
 
         const startDate = Date.now();
 
-        const resp = await syncRequest<ChangesResponse>(syncContext, 'GET', changesUri);
+        const resp = await syncRequest<ChangesResponse>(syncContext, "GET", changesUri);
         if (!resp) {
             throw new Error("Request failed.");
         }
-        const {entityChanges, lastEntityChangeId} = resp;
+        const { entityChanges, lastEntityChangeId } = resp;
 
         outstandingPullCount = resp.outstandingPullCount;
 
@@ -184,12 +184,14 @@ async function pullChanges(syncContext: SyncContext) {
         if (entityChanges.length === 0) {
             break;
         } else {
-            try { // https://github.com/zadam/trilium/issues/4310
+            try {
+                // https://github.com/zadam/trilium/issues/4310
                 const sizeInKb = Math.round(JSON.stringify(resp).length / 1024);
 
-                log.info(`Sync ${logMarkerId}: Pulled ${entityChanges.length} changes in ${sizeInKb} KB, starting at entityChangeId=${lastSyncedPull} in ${pulledDate - startDate}ms and applied them in ${Date.now() - pulledDate}ms, ${outstandingPullCount} outstanding pulls`);
-            }
-            catch (e: any) {
+                log.info(
+                    `Sync ${logMarkerId}: Pulled ${entityChanges.length} changes in ${sizeInKb} KB, starting at entityChangeId=${lastSyncedPull} in ${pulledDate - startDate}ms and applied them in ${Date.now() - pulledDate}ms, ${outstandingPullCount} outstanding pulls`
+                );
+            } catch (e: any) {
                 log.error(`Error occurred ${e.message} ${e.stack}`);
             }
         }
@@ -202,7 +204,7 @@ async function pushChanges(syncContext: SyncContext) {
     let lastSyncedPush: number | null | undefined = getLastSyncedPush();
 
     while (true) {
-        const entityChanges = sql.getRows<EntityChange>('SELECT * FROM entity_changes WHERE isSynced = 1 AND id > ? LIMIT 1000', [lastSyncedPush]);
+        const entityChanges = sql.getRows<EntityChange>("SELECT * FROM entity_changes WHERE isSynced = 1 AND id > ? LIMIT 1000", [lastSyncedPush]);
 
         if (entityChanges.length === 0) {
             log.info("Nothing to push");
@@ -210,15 +212,14 @@ async function pushChanges(syncContext: SyncContext) {
             break;
         }
 
-        const filteredEntityChanges = entityChanges.filter(entityChange => {
+        const filteredEntityChanges = entityChanges.filter((entityChange) => {
             if (entityChange.instanceId === syncContext.instanceId) {
                 // this may set lastSyncedPush beyond what's actually sent (because of size limit)
                 // so this is applied to the database only if there's no actual update
                 lastSyncedPush = entityChange.id;
 
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
         });
@@ -234,9 +235,9 @@ async function pushChanges(syncContext: SyncContext) {
         const entityChangesRecords = getEntityChangeRecords(filteredEntityChanges);
         const startDate = new Date();
 
-        const logMarkerId = utils.randomString(10); // to easily pair sync events between client and server logs
+        const logMarkerId = randomString(10); // to easily pair sync events between client and server logs
 
-        await syncRequest(syncContext, 'PUT', `/api/sync/update?logMarkerId=${logMarkerId}`, {
+        await syncRequest(syncContext, "PUT", `/api/sync/update?logMarkerId=${logMarkerId}`, {
             entities: entityChangesRecords,
             instanceId
         });
@@ -254,11 +255,11 @@ async function pushChanges(syncContext: SyncContext) {
 }
 
 async function syncFinished(syncContext: SyncContext) {
-    await syncRequest(syncContext, 'POST', '/api/sync/finished');
+    await syncRequest(syncContext, "POST", "/api/sync/finished");
 }
 
 async function checkContentHash(syncContext: SyncContext) {
-    const resp = await syncRequest<CheckResponse>(syncContext, 'GET', '/api/sync/check');
+    const resp = await syncRequest<CheckResponse>(syncContext, "GET", "/api/sync/check");
     if (!resp) {
         throw new Error("Got no response.");
     }
@@ -285,13 +286,13 @@ async function checkContentHash(syncContext: SyncContext) {
         // before re-queuing sectors, make sure the entity changes are correct
         consistency_checks.runEntityChangesChecks();
 
-        await syncRequest(syncContext, 'POST', `/api/sync/check-entity-changes`);
+        await syncRequest(syncContext, "POST", `/api/sync/check-entity-changes`);
     }
 
-    for (const {entityName, sector} of failedChecks) {
+    for (const { entityName, sector } of failedChecks) {
         entityChangesService.addEntityChangesForSector(entityName, sector);
 
-        await syncRequest(syncContext, 'POST', `/api/sync/queue-sector/${entityName}/${sector}`);
+        await syncRequest(syncContext, "POST", `/api/sync/queue-sector/${entityName}/${sector}`);
     }
 
     return failedChecks.length > 0;
@@ -300,17 +301,17 @@ async function checkContentHash(syncContext: SyncContext) {
 const PAGE_SIZE = 1000000;
 
 interface SyncContext {
-    cookieJar: CookieJar
+    cookieJar: CookieJar;
 }
 
 async function syncRequest<T extends {}>(syncContext: SyncContext, method: string, requestPath: string, _body?: {}) {
-    const body = _body ? JSON.stringify(_body) : '';
+    const body = _body ? JSON.stringify(_body) : "";
 
     const timeout = syncOptions.getSyncTimeout();
 
     let response;
 
-    const requestId = utils.randomString(10);
+    const requestId = randomString(10);
     const pageCount = Math.max(1, Math.ceil(body.length / PAGE_SIZE));
 
     for (let pageIndex = 0; pageIndex < pageCount; pageIndex++) {
@@ -328,19 +329,18 @@ async function syncRequest<T extends {}>(syncContext: SyncContext, method: strin
             proxy: proxyToggle ? syncOptions.getSyncProxy() : null
         };
 
-        response = await utils.timeLimit(request.exec(opts), timeout) as T;
+        response = (await timeLimit(request.exec(opts), timeout)) as T;
     }
 
     return response;
 }
 
 function getEntityChangeRow(entityChange: EntityChange) {
-    const {entityName, entityId} = entityChange;
+    const { entityName, entityId } = entityChange;
 
-    if (entityName === 'note_reordering') {
+    if (entityName === "note_reordering") {
         return sql.getMap("SELECT branchId, notePosition FROM branches WHERE parentNoteId = ? AND isDeleted = 0", [entityId]);
-    }
-    else {
+    } else {
         const primaryKey = entityConstructor.getEntityFromEntityName(entityName).primaryKeyName;
 
         if (!primaryKey) {
@@ -354,9 +354,9 @@ function getEntityChangeRow(entityChange: EntityChange) {
             return null;
         }
 
-        if (entityName === 'blobs' && entityRow.content !== null) {
-            if (typeof entityRow.content === 'string') {
-                entityRow.content = Buffer.from(entityRow.content, 'utf-8');
+        if (entityName === "blobs" && entityRow.content !== null) {
+            if (typeof entityRow.content === "string") {
+                entityRow.content = Buffer.from(entityRow.content, "utf-8");
             }
 
             if (entityRow.content) {
@@ -374,7 +374,7 @@ function getEntityChangeRecords(entityChanges: EntityChange[]) {
 
     for (const entityChange of entityChanges) {
         if (entityChange.isErased) {
-            records.push({entityChange});
+            records.push({ entityChange });
 
             continue;
         }
@@ -400,22 +400,23 @@ function getEntityChangeRecords(entityChanges: EntityChange[]) {
 }
 
 function getLastSyncedPull() {
-    return parseInt(optionService.getOption('lastSyncedPull'));
+    return parseInt(optionService.getOption("lastSyncedPull"));
 }
 
 function setLastSyncedPull(entityChangeId: number) {
-    const lastSyncedPullOption = becca.getOption('lastSyncedPull');
+    const lastSyncedPullOption = becca.getOption("lastSyncedPull");
 
-    if (lastSyncedPullOption) { // might be null in initial sync when becca is not loaded
+    if (lastSyncedPullOption) {
+        // might be null in initial sync when becca is not loaded
         lastSyncedPullOption.value = `${entityChangeId}`;
     }
 
     // this way we avoid updating entity_changes which otherwise means that we've never pushed all entity_changes
-    sql.execute("UPDATE options SET value = ? WHERE name = ?", [entityChangeId, 'lastSyncedPull']);
+    sql.execute("UPDATE options SET value = ? WHERE name = ?", [entityChangeId, "lastSyncedPull"]);
 }
 
 function getLastSyncedPush() {
-    const lastSyncedPush = parseInt(optionService.getOption('lastSyncedPush'));
+    const lastSyncedPush = parseInt(optionService.getOption("lastSyncedPush"));
 
     ws.setLastSyncedPush(lastSyncedPush);
 
@@ -425,18 +426,19 @@ function getLastSyncedPush() {
 function setLastSyncedPush(entityChangeId: number) {
     ws.setLastSyncedPush(entityChangeId);
 
-    const lastSyncedPushOption = becca.getOption('lastSyncedPush');
+    const lastSyncedPushOption = becca.getOption("lastSyncedPush");
 
-    if (lastSyncedPushOption) { // might be null in initial sync when becca is not loaded
+    if (lastSyncedPushOption) {
+        // might be null in initial sync when becca is not loaded
         lastSyncedPushOption.value = `${entityChangeId}`;
     }
 
     // this way we avoid updating entity_changes which otherwise means that we've never pushed all entity_changes
-    sql.execute("UPDATE options SET value = ? WHERE name = ?", [entityChangeId, 'lastSyncedPush']);
+    sql.execute("UPDATE options SET value = ? WHERE name = ?", [entityChangeId, "lastSyncedPush"]);
 }
 
 function getMaxEntityChangeId() {
-    return sql.getValue('SELECT COALESCE(MAX(id), 0) FROM entity_changes');
+    return sql.getValue("SELECT COALESCE(MAX(id), 0) FROM entity_changes");
 }
 
 function getOutstandingPullCount() {

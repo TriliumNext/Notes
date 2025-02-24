@@ -28,11 +28,9 @@ export default class TabManager extends Component {
                 return;
             }
 
-            const openNoteContexts = this.noteContexts
-                .map(nc => nc.getPojoState())
-                .filter(t => !!t);
+            const openNoteContexts = this.noteContexts.map((nc) => nc.getPojoState()).filter((t) => !!t);
 
-            await server.put('options', {
+            await server.put("options", {
                 openNoteContexts: JSON.stringify(openNoteContexts)
             });
         });
@@ -47,25 +45,17 @@ export default class TabManager extends Component {
 
     /** @type {NoteContext[]} */
     get mainNoteContexts() {
-        return this.noteContexts.filter(nc => !nc.mainNtxId)
+        return this.noteContexts.filter((nc) => !nc.mainNtxId);
     }
 
     async loadTabs() {
         try {
-            const noteContextsToOpen = (appContext.isMainWindow && options.getJson('openNoteContexts')) || [];
+            const noteContextsToOpen = (appContext.isMainWindow && options.getJson("openNoteContexts")) || [];
 
             // preload all notes at once
-            await froca.getNotes([
-                    ...noteContextsToOpen.flatMap(tab =>
-                        [ treeService.getNoteIdFromUrl(tab.notePath), tab.hoistedNoteId]
-                    ),
-            ], true);
+            await froca.getNotes([...noteContextsToOpen.flatMap((tab) => [treeService.getNoteIdFromUrl(tab.notePath), tab.hoistedNoteId])], true);
 
-            const filteredNoteContexts = noteContextsToOpen.filter(openTab => {
-                if (utils.isMobile()) { // mobile frontend doesn't have tabs so show only the active tab
-                    return !!openTab.active;
-                }
-
+            const filteredNoteContexts = noteContextsToOpen.filter((openTab) => {
                 const noteId = treeService.getNoteIdFromUrl(openTab.notePath);
                 if (!(noteId in froca.notes)) {
                     // note doesn't exist so don't try to open tab for it
@@ -73,7 +63,7 @@ export default class TabManager extends Component {
                 }
 
                 if (!(openTab.hoistedNoteId in froca.notes)) {
-                    openTab.hoistedNoteId = 'root';
+                    openTab.hoistedNoteId = "root";
                 }
 
                 return true;
@@ -86,13 +76,13 @@ export default class TabManager extends Component {
                 parsedFromUrl.ntxId = parsedFromUrl.ntxId || NoteContext.generateNtxId(); // generate already here, so that we later know which one to activate
 
                 filteredNoteContexts.push({
-                    notePath: parsedFromUrl.notePath || 'root',
+                    notePath: parsedFromUrl.notePath || "root",
                     ntxId: parsedFromUrl.ntxId,
                     active: true,
-                    hoistedNoteId: parsedFromUrl.hoistedNoteId || 'root',
+                    hoistedNoteId: parsedFromUrl.hoistedNoteId || "root",
                     viewScope: parsedFromUrl.viewScope || {}
                 });
-            } else if (!filteredNoteContexts.find(tab => tab.active)) {
+            } else if (!filteredNoteContexts.find((tab) => tab.active)) {
                 filteredNoteContexts[0].active = true;
             }
 
@@ -111,27 +101,21 @@ export default class TabManager extends Component {
             // if there's a notePath in the URL, make sure it's open and active
             // (useful, for e.g., opening clipped notes from clipper or opening link in an extra window)
             if (parsedFromUrl.notePath) {
-                await appContext.tabManager.switchToNoteContext(
-                    parsedFromUrl.ntxId,
-                    parsedFromUrl.notePath,
-                    parsedFromUrl.viewScope,
-                    parsedFromUrl.hoistedNoteId
-                );
+                await appContext.tabManager.switchToNoteContext(parsedFromUrl.ntxId, parsedFromUrl.notePath, parsedFromUrl.viewScope, parsedFromUrl.hoistedNoteId);
             } else if (parsedFromUrl.searchString) {
-                await appContext.triggerCommand('searchNotes', {
+                await appContext.triggerCommand("searchNotes", {
                     searchString: parsedFromUrl.searchString
                 });
             }
-        }
-        catch (e) {
-            logError(`Loading note contexts '${options.get('openNoteContexts')}' failed: ${e.message} ${e.stack}`);
+        } catch (e) {
+            logError(`Loading note contexts '${options.get("openNoteContexts")}' failed: ${e.message} ${e.stack}`);
 
             // try to recover
             await this.openEmptyTab();
         }
     }
 
-    noteSwitchedEvent({noteContext}) {
+    noteSwitchedEvent({ noteContext }) {
         if (noteContext.isActive()) {
             this.setCurrentNavigationStateToHash();
         }
@@ -151,7 +135,7 @@ export default class TabManager extends Component {
         const activeNoteContext = this.getActiveContext();
         this.updateDocumentTitle(activeNoteContext);
 
-        this.triggerEvent('activeNoteChanged'); // trigger this even in on popstate event
+        this.triggerEvent("activeNoteChanged"); // trigger this even in on popstate event
     }
 
     calculateHash() {
@@ -178,12 +162,12 @@ export default class TabManager extends Component {
      * @returns {NoteContext[]}
      */
     getMainNoteContexts() {
-        return this.noteContexts.filter(nc => nc.isMainContext());
+        return this.noteContexts.filter((nc) => nc.isMainContext());
     }
 
     /** @returns {NoteContext} */
     getNoteContextById(ntxId) {
-        const noteContext = this.noteContexts.find(nc => nc.ntxId === ntxId);
+        const noteContext = this.noteContexts.find((nc) => nc.ntxId === ntxId);
 
         if (!noteContext) {
             throw new Error(`Cannot find noteContext id='${ntxId}'`);
@@ -198,9 +182,7 @@ export default class TabManager extends Component {
      * @returns {NoteContext}
      */
     getActiveContext() {
-        return this.activeNtxId
-            ? this.getNoteContextById(this.activeNtxId)
-            : null;
+        return this.activeNtxId ? this.getNoteContextById(this.activeNtxId) : null;
     }
 
     /**
@@ -209,9 +191,7 @@ export default class TabManager extends Component {
      * @returns {NoteContext}
      */
     getActiveMainContext() {
-        return this.activeNtxId
-            ? this.getNoteContextById(this.activeNtxId).getMainContext()
-            : null;
+        return this.activeNtxId ? this.getNoteContextById(this.activeNtxId).getMainContext() : null;
     }
 
     /** @returns {string|null} */
@@ -247,8 +227,7 @@ export default class TabManager extends Component {
     }
 
     async switchToNoteContext(ntxId, notePath, viewScope = {}, hoistedNoteId = null) {
-        const noteContext = this.noteContexts.find(nc => nc.ntxId === ntxId)
-            || await this.openEmptyTab();
+        const noteContext = this.noteContexts.find((nc) => nc.ntxId === ntxId) || (await this.openEmptyTab());
 
         await this.activateNoteContext(noteContext.ntxId);
 
@@ -269,18 +248,10 @@ export default class TabManager extends Component {
         await noteContext.setEmpty();
     }
 
-    async openEmptyTab(ntxId = null, hoistedNoteId = 'root', mainNtxId = null) {
+    async openEmptyTab(ntxId = null, hoistedNoteId = "root", mainNtxId = null) {
         const noteContext = new NoteContext(ntxId, hoistedNoteId, mainNtxId);
 
-        let existingNoteContext;
-
-        if (utils.isMobile()) {
-            // kind of hacky way to enforce a single tab on mobile interface - all requests to create a new one
-            // are forced to reuse the existing ab instead
-            existingNoteContext = this.getActiveContext();
-        } else {
-            existingNoteContext = this.children.find(nc => nc.ntxId === noteContext.ntxId);
-        }
+        const existingNoteContext = this.children.find((nc) => nc.ntxId === noteContext.ntxId);
 
         if (existingNoteContext) {
             await existingNoteContext.setHoistedNoteId(hoistedNoteId);
@@ -290,7 +261,7 @@ export default class TabManager extends Component {
 
         this.child(noteContext);
 
-        await this.triggerEvent('newNoteContextCreated', {noteContext});
+        await this.triggerEvent("newNoteContextCreated", { noteContext });
 
         return noteContext;
     }
@@ -312,12 +283,12 @@ export default class TabManager extends Component {
      */
     async openTabWithNoteWithHoisting(notePath, opts = {}) {
         const noteContext = this.getActiveContext();
-        let hoistedNoteId = 'root';
+        let hoistedNoteId = "root";
 
         if (noteContext) {
             const resolvedNotePath = await treeService.resolveNotePath(notePath, noteContext.hoistedNoteId);
 
-            if (resolvedNotePath.includes(noteContext.hoistedNoteId) || resolvedNotePath.includes('_hidden')) {
+            if (resolvedNotePath.includes(noteContext.hoistedNoteId) || resolvedNotePath.includes("_hidden")) {
                 hoistedNoteId = noteContext.hoistedNoteId;
             }
         }
@@ -331,7 +302,7 @@ export default class TabManager extends Component {
         const activate = !!opts.activate;
         const ntxId = opts.ntxId || null;
         const mainNtxId = opts.mainNtxId || null;
-        const hoistedNoteId = opts.hoistedNoteId || 'root';
+        const hoistedNoteId = opts.hoistedNoteId || "root";
         const viewScope = opts.viewScope || { viewMode: "default" };
 
         const noteContext = await this.openEmptyTab(ntxId, hoistedNoteId, mainNtxId);
@@ -347,7 +318,7 @@ export default class TabManager extends Component {
         if (activate) {
             this.activateNoteContext(noteContext.ntxId, false);
 
-            await this.triggerEvent('noteSwitchedAndActivated', {
+            await this.triggerEvent("noteSwitchedAndActivated", {
                 noteContext,
                 notePath: noteContext.notePath // resolved note path
             });
@@ -378,7 +349,7 @@ export default class TabManager extends Component {
         this.activeNtxId = ntxId;
 
         if (triggerEvent) {
-            await this.triggerEvent('activeContextChanged', {
+            await this.triggerEvent("activeContextChanged", {
                 noteContext: this.getNoteContextById(ntxId)
             });
         }
@@ -400,14 +371,13 @@ export default class TabManager extends Component {
 
             try {
                 noteContextToRemove = this.getNoteContextById(ntxId);
-            }
-            catch {
+            } catch {
                 // note context not found
                 return false;
             }
 
             if (noteContextToRemove.isMainContext()) {
-                const mainNoteContexts = this.getNoteContexts().filter(nc => nc.isMainContext());
+                const mainNoteContexts = this.getNoteContexts().filter((nc) => nc.isMainContext());
 
                 if (mainNoteContexts.length === 1) {
                     if (noteContextToRemove.isEmpty()) {
@@ -421,31 +391,31 @@ export default class TabManager extends Component {
             }
 
             // close dangling autocompletes after closing the tab
-            $(".aa-input").autocomplete("close");
+            const $autocompleteEl = $(".aa-input");
+            if ("autocomplete" in $autocompleteEl) {
+                $autocompleteEl.autocomplete("close");
+            }
 
             const noteContextsToRemove = noteContextToRemove.getSubContexts();
-            const ntxIdsToRemove = noteContextsToRemove.map(nc => nc.ntxId);
+            const ntxIdsToRemove = noteContextsToRemove.map((nc) => nc.ntxId);
 
-            await this.triggerEvent('beforeNoteContextRemove', { ntxIds: ntxIdsToRemove });
+            await this.triggerEvent("beforeNoteContextRemove", { ntxIds: ntxIdsToRemove });
 
             if (!noteContextToRemove.isMainContext()) {
                 const siblings = noteContextToRemove.getMainContext().getSubContexts();
-                const idx = siblings.findIndex(nc => nc.ntxId === noteContextToRemove.ntxId);
+                const idx = siblings.findIndex((nc) => nc.ntxId === noteContextToRemove.ntxId);
                 const contextToActivateIdx = idx === siblings.length - 1 ? idx - 1 : idx + 1;
                 const contextToActivate = siblings[contextToActivateIdx];
 
                 await this.activateNoteContext(contextToActivate.ntxId);
-            }
-            else if (this.mainNoteContexts.length <= 1) {
+            } else if (this.mainNoteContexts.length <= 1) {
                 await this.openAndActivateEmptyTab();
-            }
-            else if (ntxIdsToRemove.includes(this.activeNtxId)) {
-                const idx = this.mainNoteContexts.findIndex(nc => nc.ntxId === noteContextToRemove.ntxId);
+            } else if (ntxIdsToRemove.includes(this.activeNtxId)) {
+                const idx = this.mainNoteContexts.findIndex((nc) => nc.ntxId === noteContextToRemove.ntxId);
 
                 if (idx === this.mainNoteContexts.length - 1) {
                     await this.activatePreviousTabCommand();
-                }
-                else {
+                } else {
                     await this.activateNextTabCommand();
                 }
             }
@@ -457,15 +427,15 @@ export default class TabManager extends Component {
     }
 
     removeNoteContexts(noteContextsToRemove) {
-        const ntxIdsToRemove = noteContextsToRemove.map(nc => nc.ntxId);
+        const ntxIdsToRemove = noteContextsToRemove.map((nc) => nc.ntxId);
 
-        const position = this.noteContexts.findIndex(nc => ntxIdsToRemove.includes(nc.ntxId));
+        const position = this.noteContexts.findIndex((nc) => ntxIdsToRemove.includes(nc.ntxId));
 
-        this.children = this.children.filter(nc => !ntxIdsToRemove.includes(nc.ntxId));
+        this.children = this.children.filter((nc) => !ntxIdsToRemove.includes(nc.ntxId));
 
         this.addToRecentlyClosedTabs(noteContextsToRemove, position);
 
-        this.triggerEvent('noteContextRemoved', {ntxIds: ntxIdsToRemove});
+        this.triggerEvent("noteContextRemoved", { ntxIds: ntxIdsToRemove });
 
         this.tabsUpdate.scheduleUpdate();
     }
@@ -475,10 +445,10 @@ export default class TabManager extends Component {
             return;
         }
 
-        this.recentlyClosedTabs.push({contexts: noteContexts, position: position});
+        this.recentlyClosedTabs.push({ contexts: noteContexts, position: position });
     }
 
-    tabReorderEvent({ntxIdsInOrder}) {
+    tabReorderEvent({ ntxIdsInOrder }) {
         const order = {};
 
         let i = 0;
@@ -489,18 +459,18 @@ export default class TabManager extends Component {
             }
         }
 
-        this.children.sort((a, b) => order[a.ntxId] < order[b.ntxId] ? -1 : 1);
+        this.children.sort((a, b) => (order[a.ntxId] < order[b.ntxId] ? -1 : 1));
 
         this.tabsUpdate.scheduleUpdate();
     }
 
-    noteContextReorderEvent({ntxIdsInOrder, oldMainNtxId, newMainNtxId}) {
+    noteContextReorderEvent({ ntxIdsInOrder, oldMainNtxId, newMainNtxId }) {
         const order = Object.fromEntries(ntxIdsInOrder.map((v, i) => [v, i]));
 
-        this.children.sort((a, b) => order[a.ntxId] < order[b.ntxId] ? -1 : 1);
+        this.children.sort((a, b) => (order[a.ntxId] < order[b.ntxId] ? -1 : 1));
 
         if (oldMainNtxId && newMainNtxId) {
-            this.children.forEach(c => {
+            this.children.forEach((c) => {
                 if (c.ntxId === newMainNtxId) {
                     // new main context has null mainNtxId
                     c.mainNtxId = null;
@@ -517,7 +487,7 @@ export default class TabManager extends Component {
     async activateNextTabCommand() {
         const activeMainNtxId = this.getActiveMainContext().ntxId;
 
-        const oldIdx = this.mainNoteContexts.findIndex(nc => nc.ntxId === activeMainNtxId);
+        const oldIdx = this.mainNoteContexts.findIndex((nc) => nc.ntxId === activeMainNtxId);
         const newActiveNtxId = this.mainNoteContexts[oldIdx === this.mainNoteContexts.length - 1 ? 0 : oldIdx + 1].ntxId;
 
         await this.activateNoteContext(newActiveNtxId);
@@ -526,7 +496,7 @@ export default class TabManager extends Component {
     async activatePreviousTabCommand() {
         const activeMainNtxId = this.getActiveMainContext().ntxId;
 
-        const oldIdx = this.mainNoteContexts.findIndex(nc => nc.ntxId === activeMainNtxId);
+        const oldIdx = this.mainNoteContexts.findIndex((nc) => nc.ntxId === activeMainNtxId);
         const newActiveNtxId = this.mainNoteContexts[oldIdx === 0 ? this.mainNoteContexts.length - 1 : oldIdx - 1].ntxId;
 
         await this.activateNoteContext(newActiveNtxId);
@@ -547,21 +517,21 @@ export default class TabManager extends Component {
     }
 
     async closeAllTabsCommand() {
-        for (const ntxIdToRemove of this.mainNoteContexts.map(nc => nc.ntxId)) {
+        for (const ntxIdToRemove of this.mainNoteContexts.map((nc) => nc.ntxId)) {
             await this.removeNoteContext(ntxIdToRemove);
         }
     }
-    
-    async closeOtherTabsCommand({ntxId}) {
-        for (const ntxIdToRemove of this.mainNoteContexts.map(nc => nc.ntxId)) {
+
+    async closeOtherTabsCommand({ ntxId }) {
+        for (const ntxIdToRemove of this.mainNoteContexts.map((nc) => nc.ntxId)) {
             if (ntxIdToRemove !== ntxId) {
                 await this.removeNoteContext(ntxIdToRemove);
             }
         }
     }
 
-    async closeRightTabsCommand({ntxId}) {
-        const ntxIds = this.mainNoteContexts.map(nc => nc.ntxId);
+    async closeRightTabsCommand({ ntxId }) {
+        const ntxIds = this.mainNoteContexts.map((nc) => nc.ntxId);
         const index = ntxIds.indexOf(ntxId);
 
         if (index !== -1) {
@@ -572,24 +542,24 @@ export default class TabManager extends Component {
         }
     }
 
-    async closeTabCommand({ntxId}) {
+    async closeTabCommand({ ntxId }) {
         await this.removeNoteContext(ntxId);
     }
 
-    async moveTabToNewWindowCommand({ntxId}) {
-        const {notePath, hoistedNoteId} = this.getNoteContextById(ntxId);
+    async moveTabToNewWindowCommand({ ntxId }) {
+        const { notePath, hoistedNoteId } = this.getNoteContextById(ntxId);
 
         const removed = await this.removeNoteContext(ntxId);
 
         if (removed) {
-            this.triggerCommand('openInWindow', {notePath, hoistedNoteId});
+            this.triggerCommand("openInWindow", { notePath, hoistedNoteId });
         }
     }
 
-    async copyTabToNewWindowCommand({ntxId}) {
-        const {notePath, hoistedNoteId} = this.getNoteContextById(ntxId);
-        this.triggerCommand('openInWindow', {notePath, hoistedNoteId});
-    } 
+    async copyTabToNewWindowCommand({ ntxId }) {
+        const { notePath, hoistedNoteId } = this.getNoteContextById(ntxId);
+        this.triggerCommand("openInWindow", { notePath, hoistedNoteId });
+    }
 
     async reopenLastTabCommand() {
         let closeLastEmptyTab = null;
@@ -610,40 +580,38 @@ export default class TabManager extends Component {
             for (const noteContext of noteContexts) {
                 this.child(noteContext);
 
-                await this.triggerEvent('newNoteContextCreated', {noteContext});
+                await this.triggerEvent("newNoteContextCreated", { noteContext });
             }
 
             //  restore last position of contexts stored in tab manager
             const ntxsInOrder = [
                 ...this.noteContexts.slice(0, lastClosedTab.position),
                 ...this.noteContexts.slice(-noteContexts.length),
-                ...this.noteContexts.slice(lastClosedTab.position, -noteContexts.length),
-            ]
-            await this.noteContextReorderEvent({ntxIdsInOrder: ntxsInOrder.map(nc => nc.ntxId)});
+                ...this.noteContexts.slice(lastClosedTab.position, -noteContexts.length)
+            ];
+            await this.noteContextReorderEvent({ ntxIdsInOrder: ntxsInOrder.map((nc) => nc.ntxId) });
 
-            let mainNtx = noteContexts.find(nc => nc.isMainContext());
+            let mainNtx = noteContexts.find((nc) => nc.isMainContext());
             if (mainNtx) {
                 // reopened a tab, need to reorder new tab widget in tab row
-                await this.triggerEvent('contextsReopened', {
+                await this.triggerEvent("contextsReopened", {
                     mainNtxId: mainNtx.ntxId,
-                    tabPosition: ntxsInOrder.filter(nc => nc.isMainContext()).findIndex(nc => nc.ntxId === mainNtx.ntxId)
+                    tabPosition: ntxsInOrder.filter((nc) => nc.isMainContext()).findIndex((nc) => nc.ntxId === mainNtx.ntxId)
                 });
             } else {
                 // reopened a single split, need to reorder the pane widget in split note container
-                await this.triggerEvent('contextsReopened', {
+                await this.triggerEvent("contextsReopened", {
                     ntxId: ntxsInOrder[lastClosedTab.position].ntxId,
                     // this is safe since lastClosedTab.position can never be 0 in this case
                     afterNtxId: ntxsInOrder[lastClosedTab.position - 1].ntxId
                 });
             }
 
-            const noteContextToActivate = noteContexts.length === 1
-                ? noteContexts[0]
-                : noteContexts.find(nc => nc.isMainContext());
+            const noteContextToActivate = noteContexts.length === 1 ? noteContexts[0] : noteContexts.find((nc) => nc.isMainContext());
 
             await this.activateNoteContext(noteContextToActivate.ntxId);
 
-            await this.triggerEvent('noteSwitched', {
+            await this.triggerEvent("noteSwitched", {
                 noteContext: noteContextToActivate,
                 notePath: noteContextToActivate.notePath
             });
@@ -668,7 +636,7 @@ export default class TabManager extends Component {
         document.title = titleFragments.join(" - ");
     }
 
-    async entitiesReloadedEvent({loadResults}) {
+    async entitiesReloadedEvent({ loadResults }) {
         const activeContext = this.getActiveContext();
 
         if (activeContext && loadResults.isNoteReloaded(activeContext.noteId)) {

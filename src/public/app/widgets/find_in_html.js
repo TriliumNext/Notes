@@ -24,7 +24,7 @@ export default class FindInHtml {
         const wholeWordChar = wholeWord ? "\\b" : "";
         const regExp = new RegExp(wholeWordChar + utils.escapeRegExp(searchTerm) + wholeWordChar, matchCase ? "g" : "gi");
 
-        return new Promise(res => {
+        return new Promise((res) => {
             $content.unmark({
                 done: () => {
                     $content.markRegExp(regExp, {
@@ -82,7 +82,7 @@ export default class FindInHtml {
                 const $content = await this.parent.noteContext.getContentElement();
                 const $contentWiget = appContext.getComponentByEl($content);
 
-                $contentWiget.triggerCommand("scrollContainerTo", {position});
+                $contentWiget.triggerCommand("scrollContainerTo", { position });
             }
         }
     }

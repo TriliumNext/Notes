@@ -4,15 +4,15 @@ import sql from "../../services/sql.js";
 import protectedSessionService from "../../services/protected_session.js";
 import noteService from "../../services/notes.js";
 import becca from "../../becca/becca.js";
-import { Request } from 'express';
-import { RevisionRow } from '../../becca/entities/rows.js';
+import type { Request } from "express";
+import type { RevisionRow } from "../../becca/entities/rows.js";
 
 interface RecentChangeRow {
     noteId: string;
     current_isDeleted: boolean;
     current_deleteId: string;
     current_title: string;
-    current_isProtected: boolean,
+    current_isProtected: boolean;
     title: string;
     utcDate: string;
     date: string;
@@ -20,7 +20,7 @@ interface RecentChangeRow {
 }
 
 function getRecentChanges(req: Request) {
-    const {ancestorNoteId} = req.params;
+    const { ancestorNoteId } = req.params;
 
     let recentChanges = [];
 
@@ -42,7 +42,7 @@ function getRecentChanges(req: Request) {
         const note = becca.getNote(revisionRow.noteId);
 
         // for deleted notes, the becca note is null, and it's not possible to (easily) determine if it belongs to a subtree
-        if (ancestorNoteId === 'root' || note?.hasAncestor(ancestorNoteId)) {
+        if (ancestorNoteId === "root" || note?.hasAncestor(ancestorNoteId)) {
             recentChanges.push(revisionRow);
         }
     }
@@ -78,12 +78,12 @@ function getRecentChanges(req: Request) {
         const note = becca.getNote(noteRow.noteId);
 
         // for deleted notes, the becca note is null, and it's not possible to (easily) determine if it belongs to a subtree
-        if (ancestorNoteId === 'root' || note?.hasAncestor(ancestorNoteId)) {
+        if (ancestorNoteId === "root" || note?.hasAncestor(ancestorNoteId)) {
             recentChanges.push(noteRow);
         }
     }
 
-    recentChanges.sort((a, b) => a.utcDate > b.utcDate ? -1 : 1);
+    recentChanges.sort((a, b) => (a.utcDate > b.utcDate ? -1 : 1));
 
     recentChanges = recentChanges.slice(0, Math.min(500, recentChanges.length));
 
@@ -92,8 +92,7 @@ function getRecentChanges(req: Request) {
             if (protectedSessionService.isProtectedSessionAvailable()) {
                 change.title = protectedSessionService.decryptString(change.title) || "[protected]";
                 change.current_title = protectedSessionService.decryptString(change.current_title) || "[protected]";
-            }
-            else {
+            } else {
                 change.title = change.current_title = "[protected]";
             }
         }

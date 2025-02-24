@@ -9,7 +9,7 @@ let dbConnection!: Database.Database;
 sql_init.dbReady.then(() => {
     dbConnection = new Database(dataDir.DOCUMENT_PATH, { readonly: true });
 
-    [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach(eventType => {
+    [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach((eventType) => {
         process.on(eventType, () => {
             if (dbConnection) {
                 // closing connection is especially important to fold -wal file into the main DB file

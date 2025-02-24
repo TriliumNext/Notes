@@ -16,7 +16,7 @@ const fileModificationStatus: Record<string, Record<string, Message>> = {
 };
 
 function checkType(type: string) {
-    if (type !== 'notes' && type !== 'attachments') {
+    if (type !== "notes" && type !== "attachments") {
         throw new Error(`Unrecognized type '${type}', should be 'notes' or 'attachments'`);
     }
 }
@@ -40,7 +40,7 @@ function ignoreModification(entityType: string, entityId: string) {
 }
 
 ws.subscribeToMessages(async (message: Message) => {
-    if (message.type !== 'openedFileUpdated') {
+    if (message.type !== "openedFileUpdated") {
         return;
     }
 
@@ -48,7 +48,7 @@ ws.subscribeToMessages(async (message: Message) => {
 
     fileModificationStatus[message.entityType][message.entityId] = message;
 
-    appContext.triggerEvent('openedFileUpdated', {
+    appContext.triggerEvent("openedFileUpdated", {
         entityType: message.entityType,
         entityId: message.entityId,
         lastModifiedMs: message.lastModifiedMs,
@@ -60,4 +60,4 @@ export default {
     getFileModificationStatus,
     fileModificationUploaded,
     ignoreModification
-}
+};

@@ -6,11 +6,17 @@
     <title><%= t("login.title") %></title>
     <link rel="apple-touch-icon" sizes="180x180" href="<%= assetPath %>/images/app-icons/ios/apple-touch-icon.png">
     <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="<%= assetPath %>/stylesheets/theme-light.css">
+    <link rel="stylesheet" href="<%= assetPath %>/stylesheets/theme-next.css">
+    <link rel="stylesheet" href="<%= assetPath %>/stylesheets/style.css">
+    <% // TriliumNextTODO: move the css file to ${assetPath}/stylesheets/  %>
+    <link rel="stylesheet" href="<%= appPath %>/login.css">
 </head>
 <body>
 <div class="container">
-    <div class="col-xs-12 col-sm-10 col-md-6 col-lg-4 col-xl-4 mx-auto" style="padding-top: 25px;">
-        <h1><%= t("login.heading") %></h1>
+    <div class="col-xs-12 col-sm-10 col-md-6 col-lg-4 col-xl-4 mx-auto pt-4">
+        <img class="img-fluid d-block mx-auto" style="height: 8rem;" src="<%= assetPath %>/images/icon-color.svg" aria-hidden="true">
+        <h1 class="text-center"><%= t("login.heading") %></h1>
 
         <% if (failedAuth) { %>
             <div class="alert alert-warning">
@@ -22,13 +28,14 @@
             <div class="form-group">
                 <label for="password"><%= t("login.password") %></label>
                 <div class="controls">
-                    <input id="password" name="password" placeholder="" class="form-control" type="password">
+                    <input id="password" name="password" placeholder="" class="form-control" type="password" autofocus>
                 </div>
             </div>
             <div class="form-group">
                 <div class="checkbox">
-                    <label>
-                        <input id="remember-me" name="rememberMe" value="1" type="checkbox"> <%= t("login.remember-me") %>
+                    <label class="tn-checkbox">
+                        <input id="remember-me" name="rememberMe" value="1" type="checkbox">
+                        <%= t("login.remember-me") %>
                     </label>
                 </div>
             </div>
@@ -38,49 +45,8 @@
         </form>
     </div>
 </div>
+<script src="<%= appPath %>/login.js" crossorigin type="module"></script>
 
-<script>
-    // Required for correct loading of scripts in Electron
-    if (typeof module === 'object') {window.module = module; module = undefined;}
 
-    let device;
-
-    if (window.location.search === '?desktop') {
-        device = "desktop";
-    }
-    else if (window.location.search === '?mobile') {
-        device = "mobile";
-    }
-    else {
-        device = isMobile() ? "mobile" : "desktop";
-    }
-
-    console.log("Setting device cookie to:", device);
-
-    setCookie("trilium-device", device);
-
-    function setCookie(name, value) {
-        const date = new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000);
-        const expires = "; expires=" + date.toUTCString();
-
-        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-    }
-
-    // https://stackoverflow.com/a/73731646/944162
-    function isMobile() {
-        const mQ = matchMedia?.('(pointer:coarse)');
-        if (mQ?.media === '(pointer:coarse)') return !!mQ.matches;
-
-        if ('orientation' in window) return true;
-
-        return /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(navigator.userAgent) ||
-            /\b(Android|Windows Phone|iPad|iPod)\b/i.test(navigator.userAgent);
-    }
-</script>
-
-<link href="<%= assetPath %>/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="<%= assetPath %>/stylesheets/theme-light.css" rel="stylesheet" />
-<link href="<%= assetPath %>/stylesheets/theme-next.css" rel="stylesheet" />
-<link href="<%= assetPath %>/stylesheets/style.css" rel="stylesheet">
 </body>
 </html>

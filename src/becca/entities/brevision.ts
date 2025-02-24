@@ -7,7 +7,7 @@ import becca from "../becca.js";
 import AbstractBeccaEntity from "./abstract_becca_entity.js";
 import sql from "../../services/sql.js";
 import BAttachment from "./battachment.js";
-import { AttachmentRow, RevisionRow } from './rows.js';
+import type { AttachmentRow, RevisionRow } from "./rows.js";
 import eraseService from "../../services/erase.js";
 
 interface ContentOpts {
@@ -24,10 +24,15 @@ interface GetByIdOpts {
  * It's used for seamless note versioning.
  */
 class BRevision extends AbstractBeccaEntity<BRevision> {
-    static get entityName() { return "revisions"; }
-    static get primaryKeyName() { return "revisionId"; }
-    static get hashedProperties() { return ["revisionId", "noteId", "title", "isProtected", "dateLastEdited", "dateCreated",
-                                            "utcDateLastEdited", "utcDateCreated", "utcDateModified", "blobId"]; }
+    static get entityName() {
+        return "revisions";
+    }
+    static get primaryKeyName() {
+        return "revisionId";
+    }
+    static get hashedProperties() {
+        return ["revisionId", "noteId", "title", "isProtected", "dateLastEdited", "dateCreated", "utcDateLastEdited", "utcDateCreated", "utcDateModified", "blobId"];
+    }
 
     revisionId?: string;
     noteId!: string;
@@ -75,25 +80,27 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     }
 
     isContentAvailable() {
-        return !this.revisionId // new note which was not encrypted yet
-            || !this.isProtected
-            || protectedSessionService.isProtectedSessionAvailable()
+        return (
+            !this.revisionId || // new note which was not encrypted yet
+            !this.isProtected ||
+            protectedSessionService.isProtectedSessionAvailable()
+        );
     }
 
     /*
-    * Note revision content has quite special handling - it's not a separate entity, but a lazily loaded
-    * part of Revision entity with its own sync. The reason behind this hybrid design is that
-    * content can be quite large, and it's not necessary to load it / fill memory for any note access even
-    * if we don't need a content, especially for bulk operations like search.
-    *
-    * This is the same approach as is used for Note's content.
-    */
+     * Note revision content has quite special handling - it's not a separate entity, but a lazily loaded
+     * part of Revision entity with its own sync. The reason behind this hybrid design is that
+     * content can be quite large, and it's not necessary to load it / fill memory for any note access even
+     * if we don't need a content, especially for bulk operations like search.
+     *
+     * This is the same approach as is used for Note's content.
+     */
     getContent(): string | Buffer {
         return this._getContent();
     }
 
     /**
-    * @throws Error in case of invalid JSON */
+     * @throws Error in case of invalid JSON */
     getJsonContent(): {} | null {
         const content = this.getContent();
 
@@ -108,8 +115,7 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     getJsonContentSafely(): {} | null {
         try {
             return this.getJsonContent();
-        }
-        catch (e) {
+        } catch (e) {
             return null;
         }
     }
@@ -119,12 +125,16 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     }
 
     getAttachments(): BAttachment[] {
-        return sql.getRows<AttachmentRow>(`
+        return sql
+            .getRows<AttachmentRow>(
+                `
                 SELECT attachments.*
                 FROM attachments
                 WHERE ownerId = ?
-                AND isDeleted = 0`, [this.revisionId])
-            .map(row => new BAttachment(row));
+                AND isDeleted = 0`,
+                [this.revisionId]
+            )
+            .map((row) => new BAttachment(row));
     }
 
     getAttachmentById(attachmentId: String, opts: GetByIdOpts = {}): BAttachment | null {
@@ -137,29 +147,32 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
                 WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
             : `SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
 
-        return sql.getRows<AttachmentRow>(query, [this.revisionId, attachmentId])
-            .map(row => new BAttachment(row))[0];
+        return sql.getRows<AttachmentRow>(query, [this.revisionId, attachmentId]).map((row) => new BAttachment(row))[0];
     }
 
     getAttachmentsByRole(role: string): BAttachment[] {
-        return sql.getRows<AttachmentRow>(`
+        return sql
+            .getRows<AttachmentRow>(
+                `
                 SELECT attachments.*
                 FROM attachments
                 WHERE ownerId = ?
                 AND role = ?
                 AND isDeleted = 0
-                ORDER BY position`, [this.revisionId, role])
-            .map(row => new BAttachment(row));
+                ORDER BY position`,
+                [this.revisionId, role]
+            )
+            .map((row) => new BAttachment(row));
     }
 
     getAttachmentByTitle(title: string): BAttachment {
         // cannot use SQL to filter by title since it can be encrypted
-        return this.getAttachments().filter(attachment => attachment.title === title)[0];
+        return this.getAttachments().filter((attachment) => attachment.title === title)[0];
     }
 
     /**
-    * Revisions are not soft-deletable, they are immediately hard-deleted (erased).
-    */
+     * Revisions are not soft-deletable, they are immediately hard-deleted (erased).
+     */
     eraseRevision() {
         if (this.revisionId) {
             eraseService.eraseRevisions([this.revisionId]);
@@ -199,8 +212,7 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
         if (pojo.isProtected) {
             if (protectedSessionService.isProtectedSessionAvailable()) {
                 pojo.title = protectedSessionService.encrypt(this.title) || undefined;
-            }
-            else {
+            } else {
                 // updating protected note outside of protected session means we will keep original ciphertexts
                 delete pojo.title;
             }

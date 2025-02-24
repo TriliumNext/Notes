@@ -5,7 +5,7 @@ import attributeService from "../../services/attributes.js";
 import becca from "../../becca/becca.js";
 import syncService from "../../services/sync.js";
 import sql from "../../services/sql.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 interface ScriptBody {
     script: string;
@@ -22,28 +22,18 @@ interface ScriptBody {
 // this and does result.then().
 async function exec(req: Request) {
     try {
-        const body = (req.body as ScriptBody);
+        const body = req.body as ScriptBody;
 
-        const execute = (body: ScriptBody) => scriptService.executeScript(
-            body.script,
-            body.params,
-            body.startNoteId,
-            body.currentNoteId,
-            body.originEntityName,
-            body.originEntityId
-        );
+        const execute = (body: ScriptBody) => scriptService.executeScript(body.script, body.params, body.startNoteId, body.currentNoteId, body.originEntityName, body.originEntityId);
 
-        const result = body.transactional
-            ? sql.transactional(() => execute(body))
-            : await execute(body);
+        const result = body.transactional ? sql.transactional(() => execute(body)) : await execute(body);
 
         return {
             success: true,
             executionResult: result,
             maxEntityChangeId: syncService.getMaxEntityChangeId()
         };
-    }
-    catch (e: any) {
+    } catch (e: any) {
         return { success: false, error: e.message };
     }
 }
@@ -76,12 +66,10 @@ function getStartupBundles(req: Request) {
     if (!process.env.TRILIUM_SAFE_MODE) {
         if (req.query.mobile === "true") {
             return getBundlesWithLabel("run", "mobileStartup");
-        }
-        else {
+        } else {
             return getBundlesWithLabel("run", "frontendStartup");
         }
-    }
-    else {
+    } else {
         return [];
     }
 }
@@ -89,8 +77,7 @@ function getStartupBundles(req: Request) {
 function getWidgetBundles() {
     if (!process.env.TRILIUM_SAFE_MODE) {
         return getBundlesWithLabel("widget");
-    }
-    else {
+    } else {
         return [];
     }
 }
@@ -101,8 +88,8 @@ function getRelationBundles(req: Request) {
     const relationName = req.params.relationName;
 
     const attributes = note.getAttributes();
-    const filtered = attributes.filter(attr => attr.type === 'relation' && attr.name === relationName);
-    const targetNoteIds = filtered.map(relation => relation.value);
+    const filtered = attributes.filter((attr) => attr.type === "relation" && attr.name === relationName);
+    const targetNoteIds = filtered.map((relation) => relation.value);
     const uniqueNoteIds = Array.from(new Set(targetNoteIds));
 
     const bundles = [];
@@ -110,7 +97,7 @@ function getRelationBundles(req: Request) {
     for (const noteId of uniqueNoteIds) {
         const note = becca.getNoteOrThrow(noteId);
 
-        if (!note.isJavaScript() || note.getScriptEnv() !== 'frontend') {
+        if (!note.isJavaScript() || note.getScriptEnv() !== "frontend") {
             continue;
         }
 

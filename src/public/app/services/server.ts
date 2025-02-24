@@ -1,4 +1,4 @@
-import utils from './utils.js';
+import utils from "./utils.js";
 import ValidationError from "./validation_error.js";
 
 type Headers = Record<string, string | null | undefined>;
@@ -28,16 +28,16 @@ export interface StandardResponse {
 }
 
 async function getHeaders(headers?: Headers) {
-    const appContext = (await import('../components/app_context.js')).default;
+    const appContext = (await import("../components/app_context.js")).default;
     const activeNoteContext = appContext.tabManager ? appContext.tabManager.getActiveContext() : null;
 
     // headers need to be lowercase because node.js automatically converts them to lower case
     // also avoiding using underscores instead of dashes since nginx filters them out by default
     const allHeaders: Headers = {
-        'trilium-component-id': glob.componentId,
-        'trilium-local-now-datetime': utils.localNowDateTime(),
-        'trilium-hoisted-note-id': activeNoteContext ? activeNoteContext.hoistedNoteId : null,
-        'x-csrf-token': glob.csrfToken
+        "trilium-component-id": glob.componentId,
+        "trilium-local-now-datetime": utils.localNowDateTime(),
+        "trilium-hoisted-note-id": activeNoteContext ? activeNoteContext.hoistedNoteId : null,
+        "x-csrf-token": glob.csrfToken
     };
 
     for (const headerName in headers) {
@@ -55,41 +55,41 @@ async function getHeaders(headers?: Headers) {
 }
 
 async function getWithSilentNotFound<T>(url: string, componentId?: string) {
-    return await call<T>('GET', url, componentId, { silentNotFound: true });
+    return await call<T>("GET", url, componentId, { silentNotFound: true });
 }
 
 async function get<T>(url: string, componentId?: string) {
-    return await call<T>('GET', url, componentId);
+    return await call<T>("GET", url, componentId);
 }
 
 async function post<T>(url: string, data?: unknown, componentId?: string) {
-    return await call<T>('POST', url, componentId, { data });
+    return await call<T>("POST", url, componentId, { data });
 }
 
 async function put<T>(url: string, data?: unknown, componentId?: string) {
-    return await call<T>('PUT', url, componentId, { data });
+    return await call<T>("PUT", url, componentId, { data });
 }
 
 async function patch<T>(url: string, data: unknown, componentId?: string) {
-    return await call<T>('PATCH', url, componentId, { data });
+    return await call<T>("PATCH", url, componentId, { data });
 }
 
 async function remove<T>(url: string, componentId?: string) {
-    return await call<T>('DELETE', url, componentId);
+    return await call<T>("DELETE", url, componentId);
 }
 
 async function upload(url: string, fileToUpload: File) {
     const formData = new FormData();
-    formData.append('upload', fileToUpload);
+    formData.append("upload", fileToUpload);
 
     return await $.ajax({
         url: window.glob.baseApiUrl + url,
         headers: await getHeaders(),
         data: formData,
-        type: 'PUT',
+        type: "PUT",
         timeout: 60 * 60 * 1000,
         contentType: false, // NEEDED, DON'T REMOVE THIS
-        processData: false, // NEEDED, DON'T REMOVE THIS
+        processData: false // NEEDED, DON'T REMOVE THIS
     });
 }
 
@@ -108,35 +108,34 @@ async function call<T>(method: string, url: string, componentId?: string, option
     let resp;
 
     const headers = await getHeaders({
-        'trilium-component-id': componentId
+        "trilium-component-id": componentId
     });
-    const {data} = options;
+    const { data } = options;
 
     if (utils.isElectron()) {
-        const ipc = utils.dynamicRequire('electron').ipcRenderer;
+        const ipc = utils.dynamicRequire("electron").ipcRenderer;
         const requestId = idCounter++;
 
-        resp = await new Promise((resolve, reject) => {
+        resp = (await new Promise((resolve, reject) => {
             idToRequestMap[requestId] = {
                 resolve,
                 reject,
                 silentNotFound: !!options.silentNotFound
             };
 
-            ipc.send('server-request', {
+            ipc.send("server-request", {
                 requestId: requestId,
                 headers: headers,
                 method: method,
                 url: `/${window.glob.baseApiUrl}${url}`,
                 data: data
             });
-        }) as any;
-    }
-    else {
+        })) as any;
+    } else {
         resp = await ajax(url, method, data, headers, !!options.silentNotFound);
     }
 
-    const maxEntityChangeIdStr = resp.headers['trilium-max-entity-change-id'];
+    const maxEntityChangeIdStr = resp.headers["trilium-max-entity-change-id"];
 
     if (maxEntityChangeIdStr && maxEntityChangeIdStr.trim()) {
         maxKnownEntityChangeId = Math.max(maxKnownEntityChangeId, parseInt(maxEntityChangeIdStr));
@@ -155,20 +154,24 @@ function ajax(url: string, method: string, data: unknown, headers: Headers, sile
             success: (body, textStatus, jqXhr) => {
                 const respHeaders: Headers = {};
 
-                jqXhr.getAllResponseHeaders().trim().split(/[\r\n]+/).forEach(line => {
-                    const parts = line.split(': ');
-                    const header = parts.shift();
-                    if (header) {
-                        respHeaders[header] = parts.join(': ');
-                    }
-                });
+                jqXhr
+                    .getAllResponseHeaders()
+                    .trim()
+                    .split(/[\r\n]+/)
+                    .forEach((line) => {
+                        const parts = line.split(": ");
+                        const header = parts.shift();
+                        if (header) {
+                            respHeaders[header] = parts.join(": ");
+                        }
+                    });
 
                 res({
                     body,
                     headers: respHeaders
                 });
             },
-            error: async jqXhr => {
+            error: async (jqXhr) => {
                 if (jqXhr.status === 0) {
                     // don't report requests that are rejected by the browser, usually when the user is refreshing or going to a different page.
                     rej("rejected by browser");
@@ -187,7 +190,7 @@ function ajax(url: string, method: string, data: unknown, headers: Headers, sile
             try {
                 options.data = JSON.stringify(data);
             } catch (e) {
-                console.log("Can't stringify data: ", data, " because of error: ", e)
+                console.log("Can't stringify data: ", data, " because of error: ", e);
             }
             options.contentType = "application/json";
         }
@@ -197,13 +200,12 @@ function ajax(url: string, method: string, data: unknown, headers: Headers, sile
 }
 
 if (utils.isElectron()) {
-    const ipc = utils.dynamicRequire('electron').ipcRenderer;
+    const ipc = utils.dynamicRequire("electron").ipcRenderer;
 
-    ipc.on('server-response', async (event: string, arg: Arg) => {
+    ipc.on("server-response", async (event: string, arg: Arg) => {
         if (arg.statusCode >= 200 && arg.statusCode < 300) {
             handleSuccessfulResponse(arg);
-        }
-        else {
+        } else {
             if (arg.statusCode === 404 && idToRequestMap[arg.requestId]?.silentNotFound) {
                 // report nothing
             } else {
@@ -217,7 +219,7 @@ if (utils.isElectron()) {
     });
 
     function handleSuccessfulResponse(arg: Arg) {
-        if (arg.headers['Content-Type'] === 'application/json' && typeof arg.body === "string") {
+        if (arg.headers["Content-Type"] === "application/json" && typeof arg.body === "string") {
             arg.body = JSON.parse(arg.body);
         }
 
@@ -236,19 +238,18 @@ if (utils.isElectron()) {
 async function reportError(method: string, url: string, statusCode: number, response: unknown) {
     let message = response;
 
-    if (typeof response === 'string') {
+    if (typeof response === "string") {
         try {
             response = JSON.parse(response);
             message = (response as any).message;
-        }
-        catch (e) {}
+        } catch (e) {}
     }
 
     const toastService = (await import("./toast.js")).default;
 
-    const messageStr = (typeof message === "string" ? message : JSON.stringify(message));
+    const messageStr = typeof message === "string" ? message : JSON.stringify(message);
 
-    if ([400, 404].includes(statusCode) && response && typeof response === 'object') {
+    if ([400, 404].includes(statusCode) && response && typeof response === "object") {
         toastService.showError(messageStr);
         throw new ValidationError({
             requestUrl: url,

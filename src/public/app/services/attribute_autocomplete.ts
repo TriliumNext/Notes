@@ -1,4 +1,4 @@
-import { AttributeType } from "../entities/fattribute.js";
+import type { AttributeType } from "../entities/fattribute.js";
 import server from "./server.js";
 
 interface InitOptions {
@@ -15,29 +15,34 @@ interface InitOptions {
  */
 function initAttributeNameAutocomplete({ $el, attributeType, open }: InitOptions) {
     if (!$el.hasClass("aa-input")) {
-        $el.autocomplete({
-            appendTo: document.querySelector('body'),
-            hint: false,
-            openOnFocus: true,
-            minLength: 0,
-            tabAutocomplete: false
-        }, [{
-            displayKey: 'name',
-            // disabling cache is important here because otherwise cache can stay intact when switching between attribute type which will lead to autocomplete displaying attribute names for incorrect attribute type
-            cache: false,
-            source: async (term, cb) => {
-                const type = typeof attributeType === "function" ? attributeType() : attributeType;
+        $el.autocomplete(
+            {
+                appendTo: document.querySelector("body"),
+                hint: false,
+                openOnFocus: true,
+                minLength: 0,
+                tabAutocomplete: false
+            },
+            [
+                {
+                    displayKey: "name",
+                    // disabling cache is important here because otherwise cache can stay intact when switching between attribute type which will lead to autocomplete displaying attribute names for incorrect attribute type
+                    cache: false,
+                    source: async (term, cb) => {
+                        const type = typeof attributeType === "function" ? attributeType() : attributeType;
 
-                const names = await server.get<string[]>(`attribute-names/?type=${type}&query=${encodeURIComponent(term)}`);
-                const result = names.map(name => ({name}));
+                        const names = await server.get<string[]>(`attribute-names/?type=${type}&query=${encodeURIComponent(term)}`);
+                        const result = names.map((name) => ({ name }));
 
-                cb(result);
-            }
-        }]);
+                        cb(result);
+                    }
+                }
+            ]
+        );
 
-        $el.on('autocomplete:opened', () => {
+        $el.on("autocomplete:opened", () => {
             if ($el.attr("readonly")) {
-                $el.autocomplete('close');
+                $el.autocomplete("close");
             }
         });
     }
@@ -51,7 +56,7 @@ async function initLabelValueAutocomplete({ $el, open, nameCallback }: InitOptio
     if ($el.hasClass("aa-input")) {
         // we reinit every time because autocomplete seems to have a bug where it retains state from last
         // open even though the value was reset
-        $el.autocomplete('destroy');
+        $el.autocomplete("destroy");
     }
 
     let attributeName = "";
@@ -63,34 +68,38 @@ async function initLabelValueAutocomplete({ $el, open, nameCallback }: InitOptio
         return;
     }
 
-    const attributeValues = (await server.get<string[]>(`attribute-values/${encodeURIComponent(attributeName)}`))
-        .map(attribute => ({ value: attribute }));
+    const attributeValues = (await server.get<string[]>(`attribute-values/${encodeURIComponent(attributeName)}`)).map((attribute) => ({ value: attribute }));
 
     if (attributeValues.length === 0) {
         return;
     }
 
-    $el.autocomplete({
-        appendTo: document.querySelector('body'),
-        hint: false,
-        openOnFocus: false, // handled manually
-        minLength: 0,
-        tabAutocomplete: false
-    }, [{
-        displayKey: 'value',
-        cache: false,
-        source: async function (term, cb) {
-            term = term.toLowerCase();
+    $el.autocomplete(
+        {
+            appendTo: document.querySelector("body"),
+            hint: false,
+            openOnFocus: false, // handled manually
+            minLength: 0,
+            tabAutocomplete: false
+        },
+        [
+            {
+                displayKey: "value",
+                cache: false,
+                source: async function (term, cb) {
+                    term = term.toLowerCase();
 
-            const filtered = attributeValues.filter(attr => attr.value.toLowerCase().includes(term));
+                    const filtered = attributeValues.filter((attr) => attr.value.toLowerCase().includes(term));
 
-            cb(filtered);
-        }
-    }]);
+                    cb(filtered);
+                }
+            }
+        ]
+    );
 
-    $el.on('autocomplete:opened', () => {
+    $el.on("autocomplete:opened", () => {
         if ($el.attr("readonly")) {
-            $el.autocomplete('close');
+            $el.autocomplete("close");
         }
     });
 
@@ -102,4 +111,4 @@ async function initLabelValueAutocomplete({ $el, open, nameCallback }: InitOptio
 export default {
     initAttributeNameAutocomplete,
     initLabelValueAutocomplete
-}
+};

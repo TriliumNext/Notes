@@ -1,5 +1,5 @@
 import { ipcMain } from "electron";
-import { Application } from "express";
+import type { Application } from "express";
 
 interface Response {
     statusCode: number;
@@ -11,7 +11,7 @@ interface Response {
 }
 
 function init(app: Application) {
-    ipcMain.on('server-request', (event, arg) => {
+    ipcMain.on("server-request", (event, arg) => {
         const req = {
             url: arg.url,
             method: arg.method,
@@ -26,7 +26,7 @@ function init(app: Application) {
 
         const res: Response = {
             statusCode: 200,
-            getHeader: name => respHeaders[name],
+            getHeader: (name) => respHeaders[name],
             setHeader: (name, value) => {
                 respHeaders[name] = value.toString();
                 return res;
@@ -35,12 +35,12 @@ function init(app: Application) {
                 respHeaders[name] = value.toString();
                 return res;
             },
-            status: statusCode => {
+            status: (statusCode) => {
                 res.statusCode = statusCode;
                 return res;
             },
-            send: obj => {
-                event.sender.send('server-response', {
+            send: (obj) => {
+                event.sender.send("server-response", {
                     url: arg.url,
                     method: arg.method,
                     requestId: arg.requestId,

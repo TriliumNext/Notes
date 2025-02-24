@@ -1,27 +1,13 @@
-import ws from './ws.js';
-import utils from './utils.js';
-import froca from './froca.js';
-import hoistedNoteService from '../services/hoisted_note.js';
+import ws from "./ws.js";
+import utils from "./utils.js";
+import froca from "./froca.js";
+import hoistedNoteService from "../services/hoisted_note.js";
 import appContext from "../components/app_context.js";
-
-export interface Node {
-    title: string;
-    getParent(): Node;
-    getChildren(): Node[];
-    folder: boolean;
-    renderTitle(): void,
-    data: {
-        noteId?: string;
-        isProtected?: boolean;
-        branchId: string;
-        noteType: string;
-    }
-}
 
 /**
  * @returns {string|null}
  */
-async function resolveNotePath(notePath: string, hoistedNoteId = 'root') {
+async function resolveNotePath(notePath: string, hoistedNoteId = "root") {
     const runPath = await resolveNotePathToSegments(notePath, hoistedNoteId);
 
     return runPath ? runPath.join("/") : null;
@@ -32,7 +18,7 @@ async function resolveNotePath(notePath: string, hoistedNoteId = 'root') {
  * notePath as possible. Part of the path might not be valid because of note moving (which causes
  * path change) or other corruption, in that case, this will try to get some other valid path to the correct note.
  */
-async function resolveNotePathToSegments(notePath: string, hoistedNoteId = 'root', logErrors = true) {
+async function resolveNotePathToSegments(notePath: string, hoistedNoteId = "root", logErrors = true) {
     utils.assertArguments(notePath);
 
     // we might get notePath with the params suffix, remove it if present
@@ -45,7 +31,7 @@ async function resolveNotePathToSegments(notePath: string, hoistedNoteId = 'root
     const path = notePath.split("/").reverse();
 
     if (!path.includes("root")) {
-        path.push('root');
+        path.push("root");
     }
 
     const effectivePathSegments = [];
@@ -82,13 +68,16 @@ async function resolveNotePathToSegments(notePath: string, hoistedNoteId = 'root
                 return null;
             }
 
-            if (!parents.some(p => p.noteId === parentNoteId)) {
+            if (!parents.some((p) => p.noteId === parentNoteId)) {
                 if (logErrors) {
                     const parent = froca.getNoteFromCache(parentNoteId);
 
-                    console.debug(utils.now(), `Did not find parent ${parentNoteId} (${parent ? parent.title : 'n/a'})
-                        for child ${childNoteId} (${child.title}), available parents: ${parents.map(p => `${p.noteId} (${p.title})`)}.
-                        You can ignore this message as it is mostly harmless.`);
+                    console.debug(
+                        utils.now(),
+                        `Did not find parent ${parentNoteId} (${parent ? parent.title : "n/a"})
+                        for child ${childNoteId} (${child.title}), available parents: ${parents.map((p) => `${p.noteId} (${p.title})`)}.
+                        You can ignore this message as it is mostly harmless.`
+                    );
                 }
 
                 const bestNotePath = child.getBestNotePath(hoistedNoteId);
@@ -113,8 +102,7 @@ async function resolveNotePathToSegments(notePath: string, hoistedNoteId = 'root
 
     if (effectivePathSegments.includes(hoistedNoteId)) {
         return effectivePathSegments;
-    }
-    else {
+    } else {
         const noteId = getNoteIdFromUrl(notePath);
         if (!noteId) {
             throw new Error(`Unable to find note with ID: ${noteId}.`);
@@ -134,19 +122,19 @@ async function resolveNotePathToSegments(notePath: string, hoistedNoteId = 'root
     }
 }
 
-ws.subscribeToMessages(message => {
-   if (message.type === 'openNote') {
-       appContext.tabManager.activateOrOpenNote(message.noteId);
+ws.subscribeToMessages((message) => {
+    if (message.type === "openNote") {
+        appContext.tabManager.activateOrOpenNote(message.noteId);
 
-       if (utils.isElectron()) {
-           const currentWindow = utils.dynamicRequire('@electron/remote').getCurrentWindow();
+        if (utils.isElectron()) {
+            const currentWindow = utils.dynamicRequire("@electron/remote").getCurrentWindow();
 
-           currentWindow.show();
-       }
-   }
+            currentWindow.show();
+        }
+    }
 });
 
-function getParentProtectedStatus(node: Node) {
+function getParentProtectedStatus(node: Fancytree.FancytreeNode) {
     return hoistedNoteService.isHoistedNode(node) ? false : node.getParent().data.isProtected;
 }
 
@@ -162,7 +150,7 @@ function getNoteIdFromUrl(urlOrNotePath: string | undefined) {
 }
 
 async function getBranchIdFromUrl(urlOrNotePath: string) {
-    const {noteId, parentNoteId} = getNoteIdAndParentIdFromUrl(urlOrNotePath);
+    const { noteId, parentNoteId } = getNoteIdAndParentIdFromUrl(urlOrNotePath);
     if (!parentNoteId) {
         return null;
     }
@@ -177,15 +165,15 @@ function getNoteIdAndParentIdFromUrl(urlOrNotePath: string) {
 
     const [notePath] = urlOrNotePath.split("?");
 
-    if (notePath === 'root') {
+    if (notePath === "root") {
         return {
-            noteId: 'root',
-            parentNoteId: 'none'
+            noteId: "root",
+            parentNoteId: "none"
         };
     }
 
-    let parentNoteId = 'root';
-    let noteId = '';
+    let parentNoteId = "root";
+    let noteId = "";
 
     if (notePath) {
         const segments = notePath.split("/");
@@ -203,7 +191,7 @@ function getNoteIdAndParentIdFromUrl(urlOrNotePath: string) {
     };
 }
 
-function getNotePath(node: Node) {
+function getNotePath(node: Fancytree.FancytreeNode) {
     if (!node) {
         logError("Node is null");
         return "";
@@ -230,7 +218,7 @@ async function getNoteTitle(noteId: string, parentNoteId: string | null = null) 
         return "[not found]";
     }
 
-    let {title} = note;
+    let { title } = note;
 
     if (parentNoteId !== null) {
         const branchId = note.parentToBranch[parentNoteId];
@@ -250,17 +238,17 @@ async function getNoteTitle(noteId: string, parentNoteId: string | null = null) 
 async function getNotePathTitleComponents(notePath: string) {
     const titleComponents = [];
 
-    if (notePath.startsWith('root/')) {
+    if (notePath.startsWith("root/")) {
         notePath = notePath.substr(5);
     }
 
     // special case when we want just root's title
-    if (notePath === 'root') {
+    if (notePath === "root") {
         titleComponents.push(await getNoteTitle(notePath));
     } else {
-        let parentNoteId = 'root';
+        let parentNoteId = "root";
 
-        for (const noteId of notePath.split('/')) {
+        for (const noteId of notePath.split("/")) {
             titleComponents.push(await getNoteTitle(noteId, parentNoteId));
 
             parentNoteId = noteId;
@@ -275,7 +263,7 @@ async function getNotePathTitle(notePath: string) {
 
     const titlePath = await getNotePathTitleComponents(notePath);
 
-    return titlePath.join(' / ');
+    return titlePath.join(" / ");
 }
 
 async function getNoteTitleWithPathAsSuffix(notePath: string) {
@@ -290,9 +278,7 @@ async function getNoteTitleWithPathAsSuffix(notePath: string) {
     const title = titleComponents[titleComponents.length - 1];
     const path = titleComponents.slice(0, titleComponents.length - 1);
 
-    const $titleWithPath = $('<span class="note-title-with-path">')
-        .append($('<span class="note-title">').text(title));
-
+    const $titleWithPath = $('<span class="note-title-with-path">').append($('<span class="note-title">').text(title));
 
     $titleWithPath.append(formatNotePath(path));
 
@@ -303,7 +289,6 @@ function formatNotePath(path: string[]) {
     const $notePath = $('<span class="note-path">');
 
     if (path.length > 0) {
-
         $notePath.append($(`<span class="path-bracket"> (</span>)`));
 
         for (let segmentIndex = 0; segmentIndex < path.length; segmentIndex++) {
@@ -323,8 +308,6 @@ function formatNotePath(path: string[]) {
 function isNotePathInHiddenSubtree(notePath: string) {
     return notePath?.includes("root/_hidden");
 }
-
-
 
 export default {
     resolveNotePath,

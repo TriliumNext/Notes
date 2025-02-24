@@ -1,5 +1,5 @@
-import { MenuCommandItem } from "../menus/context_menu.js";
-import { CommandNames } from "./app_context.js";
+import type { MenuCommandItem } from "../menus/context_menu.js";
+import type { CommandNames } from "./app_context.js";
 
 type ListenerReturnType = void | Promise<void>;
 

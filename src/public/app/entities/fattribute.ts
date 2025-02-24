@@ -1,5 +1,5 @@
-import { Froca } from '../services/froca-interface.js';
-import promotedAttributeDefinitionParser from '../services/promoted_attribute_definition_parser.js';
+import type { Froca } from "../services/froca-interface.js";
+import promotedAttributeDefinitionParser from "../services/promoted_attribute_definition_parser.js";
 
 /**
  * There are currently only two types of attributes, labels or relations.
@@ -15,7 +15,6 @@ export interface FAttributeRow {
     position: number;
     isInheritable: boolean;
 }
-
 
 /**
  * Attribute is an abstract concept which has two real uses - label (key - value pair)
@@ -57,8 +56,9 @@ class FAttribute {
         return await this.froca.getNote(targetNoteId, true);
     }
 
-    get targetNoteId() { // alias
-        if (this.type !== 'relation') {
+    get targetNoteId() {
+        // alias
+        if (this.type !== "relation") {
             throw new Error(`Attribute ${this.attributeId} is not a relation`);
         }
 
@@ -66,7 +66,7 @@ class FAttribute {
     }
 
     get isAutoLink() {
-        return this.type === 'relation' && ['internalLink', 'imageLink', 'relationMapLink', 'includeNoteLink'].includes(this.name);
+        return this.type === "relation" && ["internalLink", "imageLink", "relationMapLink", "includeNoteLink"].includes(this.name);
     }
 
     get toString() {
@@ -74,7 +74,7 @@ class FAttribute {
     }
 
     isDefinition() {
-        return this.type === 'label' && (this.name.startsWith('label:') || this.name.startsWith('relation:'));
+        return this.type === "label" && (this.name.startsWith("label:") || this.name.startsWith("relation:"));
     }
 
     getDefinition() {
@@ -82,7 +82,7 @@ class FAttribute {
     }
 
     isDefinitionFor(attr: FAttribute) {
-        return this.type === 'label' && this.name === `${attr.type}:${attr.name}`;
+        return this.type === "label" && this.name === `${attr.type}:${attr.name}`;
     }
 
     get dto(): Omit<FAttribute, "froca"> {

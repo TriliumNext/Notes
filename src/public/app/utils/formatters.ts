@@ -16,20 +16,19 @@ export function formatDateTime(date: string | Date | number, dateStyle: DateTime
     } else {
         // Invalid type
         throw new TypeError(`Invalid type for the "date" argument.`);
-    };
+    }
 
     if (timeStyle !== "none" && dateStyle !== "none") {
         // Format the date and time
-        const formatter = new Intl.DateTimeFormat(navigator.language, {dateStyle, timeStyle});
+        const formatter = new Intl.DateTimeFormat(navigator.language, { dateStyle, timeStyle });
         return formatter.format(parsedDate);
     } else if (timeStyle === "none" && dateStyle !== "none") {
         // Format only the date
-        return parsedDate.toLocaleDateString(locale, {dateStyle});
+        return parsedDate.toLocaleDateString(locale, { dateStyle });
     } else if (dateStyle === "none" && timeStyle !== "none") {
         // Format only the time
-        return parsedDate.toLocaleTimeString(locale, {timeStyle});
+        return parsedDate.toLocaleTimeString(locale, { timeStyle });
     }
 
     throw new Error("Incorrect state.");
 }
-

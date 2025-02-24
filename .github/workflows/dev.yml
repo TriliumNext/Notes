@@ -16,27 +16,6 @@ env:
   TEST_TAG: ${{ github.repository_owner }}/notes:test
 
 jobs:
-  build_docker:
-    name: Build Docker image
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up node & dependencies
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-      - run: npm ci    
-      - name: Run the TypeScript build
-        run: npx tsc
-      - name: Create server-package.json
-        run: cat package.json | grep -v electron > server-package.json
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
   test_dev:
     name: Test development
     runs-on: ubuntu-latest
@@ -54,9 +33,34 @@ jobs:
 
       - name: Run the TypeScript build
         run: npx tsc
+  build_docker:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    needs:
+      - test_dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up node & dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci    
+      - name: Run the TypeScript build
+        run: npx tsc
+      - name: Create server-package.json
+        run: cat package.json | grep -v electron > server-package.json
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max  
   test_docker:
     name: Check Docker build
     runs-on: ubuntu-latest
+    needs:
+      - build_docker
     strategy:
       matrix:
         include:

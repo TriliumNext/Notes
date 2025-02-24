@@ -1,11 +1,11 @@
 "use strict";
 
-import sql from './sql.js';
-import eventChangesService from './entity_changes.js';
-import treeService from './tree.js';
-import BBranch from '../becca/entities/bbranch.js';
-import becca from '../becca/becca.js';
-import log from './log.js';
+import sql from "./sql.js";
+import eventChangesService from "./entity_changes.js";
+import treeService from "./tree.js";
+import BBranch from "../becca/entities/bbranch.js";
+import becca from "../becca/becca.js";
+import log from "./log.js";
 
 export interface CloneResponse {
     success: boolean;
@@ -16,15 +16,15 @@ export interface CloneResponse {
 
 function cloneNoteToParentNote(noteId: string, parentNoteId: string, prefix: string | null = null): CloneResponse {
     if (!(noteId in becca.notes) || !(parentNoteId in becca.notes)) {
-        return { success: false, message: 'Note cannot be cloned because either the cloned note or the intended parent is deleted.' };
+        return { success: false, message: "Note cannot be cloned because either the cloned note or the intended parent is deleted." };
     }
 
     const parentNote = becca.getNote(parentNoteId);
     if (!parentNote) {
-        return { success: false, message: 'Note cannot be cloned because the parent note could not be found.' };
+        return { success: false, message: "Note cannot be cloned because the parent note could not be found." };
     }
 
-    if (parentNote.type === 'search') {
+    if (parentNote.type === "search") {
         return {
             success: false,
             message: "Can't clone into a search note"
@@ -80,7 +80,7 @@ function ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefi
     if (!parentNote) {
         return { branch: null, success: false, message: "Can't find parent note." };
     }
-    if (parentNote.type === 'search') {
+    if (parentNote.type === "search") {
         return { branch: null, success: false, message: "Can't clone into a search note" };
     }
 
@@ -125,14 +125,13 @@ function ensureNoteIsAbsentFromParent(noteId: string, parentNoteId: string) {
 function toggleNoteInParent(present: boolean, noteId: string, parentNoteId: string, prefix?: string) {
     if (present) {
         return ensureNoteIsPresentInParent(noteId, parentNoteId, prefix);
-    }
-    else {
+    } else {
         return ensureNoteIsAbsentFromParent(noteId, parentNoteId);
     }
 }
 
 function cloneNoteAfter(noteId: string, afterBranchId: string) {
-    if (['_hidden', 'root'].includes(noteId)) {
+    if (["_hidden", "root"].includes(noteId)) {
         return { success: false, message: `Cloning the note '${noteId}' is forbidden.` };
     }
 
@@ -142,8 +141,8 @@ function cloneNoteAfter(noteId: string, afterBranchId: string) {
         return { success: false, message: `Branch '${afterBranchId}' does not exist.` };
     }
 
-    if (afterBranch.noteId === '_hidden') {
-        return { success: false, message: 'Cannot clone after the hidden branch.' };
+    if (afterBranch.noteId === "_hidden") {
+        return { success: false, message: "Cannot clone after the hidden branch." };
     }
 
     const afterNote = becca.getBranch(afterBranchId);
@@ -156,7 +155,7 @@ function cloneNoteAfter(noteId: string, afterBranchId: string) {
 
     const parentNote = becca.getNote(afterNote.parentNoteId);
 
-    if (!parentNote || parentNote.type === 'search') {
+    if (!parentNote || parentNote.type === "search") {
         return {
             success: false,
             message: "Can't clone into a search note"
@@ -171,8 +170,7 @@ function cloneNoteAfter(noteId: string, afterBranchId: string) {
 
     // we don't change utcDateModified, so other changes are prioritized in case of conflict
     // also we would have to sync all those modified branches otherwise hash checks would fail
-    sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition > ? AND isDeleted = 0",
-        [afterNote.parentNoteId, afterNote.notePosition]);
+    sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition > ? AND isDeleted = 0", [afterNote.parentNoteId, afterNote.notePosition]);
 
     eventChangesService.putNoteReorderingEntityChange(afterNote.parentNoteId);
 

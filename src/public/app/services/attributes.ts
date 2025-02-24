@@ -1,11 +1,11 @@
-import server from './server.js';
-import froca from './froca.js';
-import FNote from '../entities/fnote.js';
-import { AttributeRow } from './load_results.js';
+import server from "./server.js";
+import froca from "./froca.js";
+import type FNote from "../entities/fnote.js";
+import type { AttributeRow } from "./load_results.js";
 
 async function addLabel(noteId: string, name: string, value: string = "") {
     await server.put(`notes/${noteId}/attribute`, {
-        type: 'label',
+        type: "label",
         name: name,
         value: value
     });
@@ -13,7 +13,7 @@ async function addLabel(noteId: string, name: string, value: string = "") {
 
 async function setLabel(noteId: string, name: string, value: string = "") {
     await server.put(`notes/${noteId}/set-attribute`, {
-        type: 'label',
+        type: "label",
         name: name,
         value: value
     });
@@ -30,7 +30,7 @@ async function removeAttributeById(noteId: string, attributeId: string) {
  *         2. attribute is owned by the template of the note
  *         3. attribute is owned by some note's ancestor and is inheritable
  */
-function isAffecting(attrRow: AttributeRow, affectedNote: FNote) {
+function isAffecting(attrRow: AttributeRow, affectedNote: FNote | null | undefined) {
     if (!affectedNote || !attrRow) {
         return false;
     }
@@ -68,4 +68,4 @@ export default {
     setLabel,
     removeAttributeById,
     isAffecting
-}
+};

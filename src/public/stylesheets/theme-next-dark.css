@@ -8,33 +8,64 @@
     --theme-style: dark;
     --native-titlebar-background: #00000000;
 
-    --main-background-color: #333;
+    --main-background-color: #272727;
     --main-text-color: #ccc;
     --main-border-color: #454545;
     --subtle-border-color: #313131;
     --dropdown-border-color: #292929;
-    --dropdown-shadow-opacity: .6;
+    --dropdown-shadow-opacity: 0.6;
     --dropdown-item-icon-destructive-color: #de6e5b;
     --disabled-tooltip-icon-color: #7fd2ef;
 
-
     --accented-background-color: #555;
 
-    --button-background-color: transparent;
-    --button-border-color: #ccc;
-    --button-text-color: currentColor;
-    --button-border-radius: 5px;
-    --button-disabled-background-color: transparent;
-    --button-disabled-text-color: #999;
+    --tool-dialog-background-color: #262626;
+    --tool-dialog-shadow-color: black;
 
-    --primary-button-background-color: #888;
-    --primary-button-text-color: white;
-    --primary-button-border-color: #999;
+    --button-text-color: currentColor;
+
+    --cmd-button-background-color: #ffffff28;
+    --cmd-button-text-color: #ffffffc2;
+    --cmd-button-hover-background-color: #ffffff37;
+    --cmd-button-hover-text-color: white;
+    --cmd-button-shadow-color: #00000080;
+    --cmd-button-icon-color: white;
+    --cmd-button-keyboard-shortcut-background: #0000004d;
+    --cmd-button-keyboard-shortcut-color: white;
+    --cmd-button-disabled-opacity: .5;
+
+    --icon-button-color: currentColor;
+    --icon-button-hover-background: var(--hover-item-background-color);
+    --icon-button-hover-color: var(--hover-item-text-color);
 
     --muted-text-color: #bbb;
 
-    --input-text-color: #ccc;
-    --input-background-color: #333;
+    --input-background-color: #ffffff12;
+    --input-text-color:  #ffffffc7;
+    --input-placeholder-color: #b7b7b782;
+    --input-selection-background: gray;
+    --input-selection-text-color: white;
+    --input-hover-background: #ffffff1f;
+    --input-hover-color: var(--input-text-color);
+    --input-focus-outline-color: #ffffff57;
+    --input-focus-background: #ffffff1f;
+    --input-focus-color: white;
+
+    --input-action-button-color: #c6c6c6;
+    --input-action-button-hover: white;
+
+    --radio-checkbox-background: #ffffff30;
+    --radio-checkbox-hover-background: #ffffff61;
+    --radio-checkbox-indicator-color: white;
+
+    --select-focus-background: #333;
+    --select-focus-text-color: var(--input-text-color);
+    --select-dropdown-text-color: var(--input-text-color);
+    --select-arrow-svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='transparent' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
+    --select-group-heading-text-color: gray;
+
+    --link-hover-background: #ffffff26;
+    --link-hover-color: white;
 
     --hover-item-text-color: #efefef;
     --hover-item-background-color: #ffffff24;
@@ -46,18 +77,18 @@
 
     --new-tab-button-background: #fff0;
     --new-tab-button-color: #ffffff96;
-    --new-tab-button-shadow: 2px 2px 4px rgba(0, 0, 0, .4);
+    --new-tab-button-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
     --new-tab-button-hover-background: #fff3;
     --new-tab-button-hover-color: white;
 
     --menu-text-color: #e3e3e3;
     --menu-background-color: #222222d9;
     --menu-item-icon-color: #8c8c8c;
-    --menu-item-disabled-opacity: .5;
+    --menu-item-disabled-opacity: 0.5;
     --menu-item-keyboard-shortcut-color: #ffffff8f;
     --menu-item-arrow-color: #ffffffa3;
     --menu-item-delimiter-color: #ffffff1c;
-
+    --menu-item-group-header-color: #ffffff91;
 
     --modal-background-color: #333;
     --modal-backdrop-color: #444;
@@ -71,16 +102,16 @@
 
     --left-pane-collapsed-border-color: #0009;
     --left-pane-background-color: #1f1f1f;
-    --left-pane-text-color: #AAAAAA;
+    --left-pane-text-color: #aaaaaa;
     --left-pane-item-hover-background: #ffffff0d;
     --left-pane-item-selected-background: #ffffff25;
     --left-pane-item-selected-color: #dfdfdf;
-    --left-pane-item-selected-shadow: 1px 1px 2px rgba(0, 0, 0, .6);
+    --left-pane-item-selected-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
     --left-pane-item-action-button-background: #ffffff73;
     --left-pane-item-action-button-color: black;
     --left-pane-item-action-button-hover-background: #ffffffad;
-    --left-pane-item-action-button-hover-shadow: 2px 2px 3px rgba(0, 0, 0, .15);
-    --left-pane-item-selected-action-button-hover-shadow: 2px 2px 10px rgba(0, 0, 0, .25);
+    --left-pane-item-action-button-hover-shadow: 2px 2px 3px rgba(0, 0, 0, 0.15);
+    --left-pane-item-selected-action-button-hover-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
 
     --launcher-pane-background-color: #1a1a1a;
     --launcher-pane-horizontal-background-color: #282828;
@@ -88,7 +119,7 @@
     --launcher-pane-text-color: #909090;
     --launcher-pane-button-hover-color: #ffffff;
     --launcher-pane-button-hover-background: #ffffff1c;
-    --launcher-pane-button-hover-shadow: 4px 4px 4px rgba(0, 0, 0, .2);
+    --launcher-pane-button-hover-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
 
     --protected-session-active-icon-color: #8edd8e;
     --sync-status-error-pulse-color: #f47871;
@@ -104,12 +135,17 @@
     --active-tab-background-color: #ffffff1c;
     --active-tab-hover-background-color: var(--active-tab-background-color);
     --active-tab-text-color: #ffffffcd;
-    --active-tab-shadow: 3px 3px 6px rgba(0, 0, 0, .2), -1px -1px 3px rgba(0, 0, 0, .4);
-    --active-tab-dragging-shadow: var(--active-tab-shadow), 0 0 20px rgba(0, 0, 0, .4);
+    --active-tab-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(0, 0, 0, 0.4);
+    --active-tab-dragging-shadow: var(--active-tab-shadow), 0 0 20px rgba(0, 0, 0, 0.4);
 
     --inactive-tab-background-color: transparent;
     --inactive-tab-hover-background-color: #ffffff0f;
     --inactive-tab-text-color: #7c7c7c;
+
+    --alert-bar-background: #6b6b6b3b;
+
+    --promoted-attribute-card-background-color: var(--card-background-color);
+    --promoted-attribute-card-shadow-color: #000000b3;
 
     --right-pane-item-hover-background: #ffffff26;
     --right-pane-item-hover-color: white;
@@ -122,7 +158,7 @@
 
     --code-block-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 
-    --card-background-color: #363636;
+    --card-background-color: #ffffff12;
     --card-background-hover-color: #3c3c3c;
     --card-background-press-color: #464646;
     --card-border-color: #222222;
@@ -143,6 +179,16 @@
     --tooltip-background-color: rgba(67, 67, 67, 0.86);
     --tooltip-foreground-color: #ffffffeb;
     --tooltip-shadow-color: rgba(0, 0, 0, 0.4);
+
+    --help-background-color: var(--menu-background-color);
+    --help-card-background: var(--card-background-color);
+    --help-card-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    --help-card-heading-color: #959595;
+    --help-kbd-shortcut-color: white;
+    --help-kbd-shortcut-background: #676767;
+    --help-kbd-shortcut-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    --help-code-color: inherit;
+    --help-code-background: #565656;
 }
 
 /*

@@ -1,4 +1,8 @@
-import { EntityRowNames } from "./services/load_results.js";
+import type { EntityRowNames } from "./services/load_results.js";
+
+interface Entity {
+    isDeleted?: boolean;
+}
 
 // TODO: Deduplicate with src/services/entity_changes_interface.ts
 export interface EntityChange {
@@ -6,7 +10,7 @@ export interface EntityChange {
     noteId?: string;
     entityName: EntityRowNames;
     entityId: string;
-    entity?: any;
+    entity?: Entity;
     positions?: Record<string, number>;
     hash: string;
     utcDateChanged?: string;

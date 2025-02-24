@@ -6,9 +6,9 @@ import froca from "./froca.js";
 import treeService from "./tree.js";
 import toastService from "./toast.js";
 import { t } from "./i18n.js";
-import FNote from "../entities/fnote.js";
-import FBranch from "../entities/fbranch.js";
-import { ChooseNoteTypeResponse } from "../widgets/dialogs/note_type_chooser.js";
+import type FNote from "../entities/fnote.js";
+import type FBranch from "../entities/fbranch.js";
+import type { ChooseNoteTypeResponse } from "../widgets/dialogs/note_type_chooser.js";
 
 interface CreateNoteOpts {
     isProtected?: boolean;
@@ -22,11 +22,7 @@ interface CreateNoteOpts {
     focus?: "title" | "content";
     target?: string;
     targetBranchId?: string;
-    textEditor?: {
-        // TODO: Replace with interface once note_context.js is converted.
-        getSelectedHtml(): string;
-        removeSelection(): void;
-    }
+    textEditor?: TextEditor;
 }
 
 interface Response {
@@ -41,11 +37,14 @@ interface DuplicateResponse {
 }
 
 async function createNote(parentNotePath: string | undefined, options: CreateNoteOpts = {}) {
-    options = Object.assign({
-        activate: true,
-        focus: 'title',
-        target: 'into'
-    }, options);
+    options = Object.assign(
+        {
+            activate: true,
+            focus: "title",
+            target: "into"
+        },
+        options
+    );
 
     // if isProtected isn't available (user didn't enter password yet), then note is created as unencrypted,
     // but this is quite weird since the user doesn't see WHERE the note is being created, so it shouldn't occur often
@@ -53,25 +52,25 @@ async function createNote(parentNotePath: string | undefined, options: CreateNot
         options.isProtected = false;
     }
 
-    if (appContext.tabManager.getActiveContextNoteType() !== 'text') {
+    if (appContext.tabManager.getActiveContextNoteType() !== "text") {
         options.saveSelection = false;
     }
 
-    if (options.saveSelection && options.textEditor) {        
+    if (options.saveSelection && options.textEditor) {
         [options.title, options.content] = parseSelectedHtml(options.textEditor.getSelectedHtml());
     }
 
     const parentNoteId = treeService.getNoteIdFromUrl(parentNotePath);
 
-    if (options.type === 'mermaid' && !options.content) {
+    if (options.type === "mermaid" && !options.content) {
         options.content = `graph TD;
     A-->B;
     A-->C;
     B-->D;
-    C-->D;`
+    C-->D;`;
     }
 
-    const {note, branch} = await server.post<Response>(`notes/${parentNoteId}/children?target=${options.target}&targetBranchId=${options.targetBranchId || ""}`, {
+    const { note, branch } = await server.post<Response>(`notes/${parentNoteId}/children?target=${options.target}&targetBranchId=${options.targetBranchId || ""}`, {
         title: options.title,
         content: options.content || "",
         isProtected: options.isProtected,
@@ -91,11 +90,10 @@ async function createNote(parentNotePath: string | undefined, options: CreateNot
         const activeNoteContext = appContext.tabManager.getActiveContext();
         await activeNoteContext.setNote(`${parentNotePath}/${note.noteId}`);
 
-        if (options.focus === 'title') {
-            appContext.triggerEvent('focusAndSelectTitle', {isNewNote: true});
-        }
-        else if (options.focus === 'content') {
-            appContext.triggerEvent('focusOnDetail', {ntxId: activeNoteContext.ntxId});
+        if (options.focus === "title") {
+            appContext.triggerEvent("focusAndSelectTitle", { isNewNote: true });
+        } else if (options.focus === "content") {
+            appContext.triggerEvent("focusOnDetail", { ntxId: activeNoteContext.ntxId });
         }
     }
 
@@ -109,15 +107,15 @@ async function createNote(parentNotePath: string | undefined, options: CreateNot
 }
 
 async function chooseNoteType() {
-    return new Promise<ChooseNoteTypeResponse>(res => {
+    return new Promise<ChooseNoteTypeResponse>((res) => {
         // TODO: Remove ignore after callback for chooseNoteType is defined in app_context.ts
         //@ts-ignore
-        appContext.triggerCommand("chooseNoteType", {callback: res});
+        appContext.triggerCommand("chooseNoteType", { callback: res });
     });
 }
 
 async function createNoteWithTypePrompt(parentNotePath: string, options: CreateNoteOpts = {}) {
-    const {success, noteType, templateNoteId} = await chooseNoteType();
+    const { success, noteType, templateNoteId } = await chooseNoteType();
 
     if (!success) {
         return;
@@ -143,15 +141,14 @@ function parseSelectedHtml(selectedHtml: string) {
         const content = selectedHtml.replace(dom[0].outerHTML, "");
 
         return [title, content];
-    }
-    else {
+    } else {
         return [null, selectedHtml];
     }
 }
 
 async function duplicateSubtree(noteId: string, parentNotePath: string) {
     const parentNoteId = treeService.getNoteIdFromUrl(parentNotePath);
-    const {note} = await server.post<DuplicateResponse>(`notes/${noteId}/duplicate/${parentNoteId}`);
+    const { note } = await server.post<DuplicateResponse>(`notes/${noteId}/duplicate/${parentNoteId}`);
 
     await ws.waitForMaxKnownEntityChangeId();
 

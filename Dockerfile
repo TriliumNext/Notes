@@ -1,5 +1,5 @@
 # Build stage
-FROM node:22.12.0-bullseye-slim AS builder
+FROM node:22.14.0-bullseye-slim AS builder
 
 # Configure build dependencies in a single layer
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -22,20 +22,21 @@ COPY server-package.json package.json
 
 # Build and cleanup in a single layer
 RUN cp -R build/src/* src/. && \
-    cp build/docker_healthcheck.js . && \
-    rm -r build && \
+    cp build/docker_healthcheck.js . && \    
     rm docker_healthcheck.ts && \
     npm install && \
-    npm run webpack && \
+    npm run build:webpack && \
     npm prune --omit=dev && \
     npm cache clean --force && \
-    cp src/public/app/share.js src/public/app-dist/. && \
     cp -r src/public/app/doc_notes src/public/app-dist/. && \
-    rm -rf src/public/app && \
-    rm src/services/asset_path.ts
+    rm -rf src/public/app/* && \
+    mkdir -p src/public/app/services && \
+    cp -r build/src/public/app/services/mime_type_definitions.js src/public/app/services/mime_type_definitions.js && \
+    rm src/services/asset_path.ts && \
+    rm -r build
 
 # Runtime stage
-FROM node:22.12.0-bullseye-slim
+FROM node:22.14.0-bullseye-slim
 
 # Install only runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
