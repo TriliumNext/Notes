@@ -125,7 +125,7 @@ export default class ContentWidgetTypeWidget extends TypeWidget {
         }
     }
 
-    async optionsLoaded(options) {
+    async optionsLoaded(options: Record<string, string>) {
         console.log('LLM options loading', options);
         // ... rest of code
     }
