@@ -1,3 +1,5 @@
+import type { EventData } from "../../components/app_context.js";
+import type FNote from "../../entities/fnote.js";
 import AbstractCodeTypeWidget from "./abstract_code_type_widget.js";
 
 const TPL = `
@@ -7,7 +9,7 @@ const TPL = `
         min-height: 50px;
         position: relative;
     }
-    
+
     .note-detail-readonly-code-content {
         padding: 10px;
     }
@@ -17,6 +19,8 @@ const TPL = `
 </div>`;
 
 export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
+    $editor!: JQuery<HTMLElement>;
+
     static getType() {
         return "readOnlyCode";
     }
@@ -29,12 +33,12 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
         super.doRender();
     }
 
-    async doRefresh(note) {
-        let { content } = await this.note.getBlob();
+    async doRefresh(note: FNote | null | undefined) {
+        const blob = await this.note?.getBlob();
+        if (!blob || !note) return false;
 
-        if (note.type === "text" && this.noteContext?.viewScope?.viewMode === "source") {
-            content = this.format(content);
-        }
+        const isFormattable = note.type === "text" && this.noteContext?.viewScope?.viewMode === "source";
+        const content = isFormattable ? this.format(blob.content) : blob.content;
 
         this._update(note, content);
         this.show();
@@ -46,7 +50,7 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
         };
     }
 
-    async executeWithContentElementEvent({ resolve, ntxId }) {
+    async executeWithContentElementEvent({ resolve, ntxId }: EventData<"executeWithContentElement">) {
         if (!this.isNoteContext(ntxId)) {
             return;
         }
@@ -56,11 +60,11 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
         resolve(this.$editor);
     }
 
-    format(html) {
+    format(html: string) {
         let indent = "\n";
         const tab = "\t";
         let i = 0;
-        let pre = [];
+        let pre: { indent: string; tag: string }[] = [];
 
         html = html
             .replace(new RegExp("<pre>((.|\\t|\\n|\\r)+)?</pre>"), function (x) {
@@ -69,11 +73,13 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
             })
             .replace(new RegExp("<[^<>]+>[^<]?", "g"), function (x) {
                 let ret;
-                let tag = /<\/?([^\s/>]+)/.exec(x)[1];
+                const tagRegEx = /<\/?([^\s/>]+)/.exec(x);
+                let tag = tagRegEx ? tagRegEx[1] : "";
                 let p = new RegExp("<--TEMPPRE(\\d+)/-->").exec(x);
 
                 if (p) {
-                    pre[p[1]].indent = indent;
+                    const pInd = parseInt(p[1]);
+                    pre[pInd].indent = indent;
                 }
 
                 if (["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"].indexOf(tag) >= 0) {
