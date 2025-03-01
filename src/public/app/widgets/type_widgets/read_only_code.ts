@@ -66,6 +66,8 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
         let i = 0;
         let pre: { indent: string; tag: string }[] = [];
 
+        const selfClosingTags = new Set(["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"]);
+
         html = html
             // match everything, including whitespace/newline characters
             .replace(/<pre>((.)+)?<\/pre>/s, (match) => {
@@ -83,7 +85,7 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
                     pre[pInd].indent = indent;
                 }
 
-                if (["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"].indexOf(tag) >= 0) {
+                if (selfClosingTags.has(tag)) {
                     // self closing tag
                     ret = indent + x;
                 } else {
