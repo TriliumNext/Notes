@@ -105,7 +105,11 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
             });
 
         for (i = pre.length; i--; ) {
-            html = html.replace("<--TEMPPRE" + i + "/-->", pre[i].tag.replace("<pre>", "<pre>\n").replace("</pre>", pre[i].indent + "</pre>"));
+            const formattedPreTag = pre[i].tag
+                .replace("<pre>", "<pre>\n")
+                .replace("</pre>", pre[i].indent + "</pre>");
+
+            html = html.replace(`<--TEMPPRE${i}/-->`, formattedPreTag);
         }
 
         return html.charAt(0) === "\n" ? html.substr(1, html.length - 1) : html;
