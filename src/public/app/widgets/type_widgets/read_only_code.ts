@@ -67,9 +67,10 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
         let pre: { indent: string; tag: string }[] = [];
 
         html = html
-            .replace(new RegExp("<pre>((.|\\t|\\n|\\r)+)?</pre>"), function (x) {
-                pre.push({ indent: "", tag: x });
-                return "<--TEMPPRE" + i++ + "/-->";
+            // match everything, including whitespace/newline characters
+            .replace(/<pre>((.)+)?<\/pre>/s, (match) => {
+                pre.push({ indent: "", tag: match });
+                return `<--TEMPPRE${i++}/-->`;
             })
             .replace(new RegExp("<[^<>]+>[^<]?", "g"), function (x) {
                 let ret;
