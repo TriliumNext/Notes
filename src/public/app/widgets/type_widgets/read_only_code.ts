@@ -70,6 +70,13 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
 
         html = html
             // match everything, including whitespace/newline characters
+            // TriliumNextTODO: this only seems to replace the very first occurence of a "pre" tag.
+            //  => the i++ makes it look like this isn't on purpose though.
+            // The "dot" is also matching too greedy, i.e. it matches everything in between the first and last pre tag,
+            // even if there other pre-tags nested (which is valid HTML apparently). The fix would be:
+            // a) add the g flag for matching more than one ocurrence
+            // b) add "?" as lazy quantifier after the "+" like so
+            // /<pre>((.)+?)<\/pre>/g
             .replace(/<pre>((.)+)?<\/pre>/s, (match) => {
                 pre.push({ indent: "", tag: match });
                 return `<--TEMPPRE${i++}/-->`;
