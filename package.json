@@ -224,7 +224,6 @@
     "mini-css-extract-plugin": "2.9.2",
     "nodemon": "3.1.9",
     "postcss-loader": "8.1.1",
-    "prettier": "3.5.2",
     "rcedit": "4.0.1",
     "rimraf": "6.0.1",
     "sass": "1.85.1",
