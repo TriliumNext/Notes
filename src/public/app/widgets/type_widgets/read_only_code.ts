@@ -81,34 +81,36 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
                 pre.push({ indent: "", tag: match });
                 return `<--TEMPPRE${i++}/-->`;
             })
-            .replace(new RegExp("<[^<>]+>[^<]?", "g"), function (x) {
-                let ret;
-                const tagRegEx = /<\/?([^\s/>]+)/.exec(x);
-                let tag = tagRegEx ? tagRegEx[1] : "";
-                let p = new RegExp("<--TEMPPRE(\\d+)/-->").exec(x);
+            .replace(new RegExp("<[^<>]+>[^<]?", "g"), (x) => {
+                const tagMatch = /<\/?([^\s/>]+)/.exec(x);
+                let tag = tagMatch ? tagMatch[1] : "";
+                let tempPreIdxMatch = new RegExp("<--TEMPPRE(\\d+)/-->").exec(x);
 
-                if (p) {
-                    const pInd = parseInt(p[1]);
-                    pre[pInd].indent = indent;
+                if (tempPreIdxMatch) {
+                    const tempPreIdx = parseInt(tempPreIdxMatch[1]);
+                    pre[tempPreIdx].indent = indent;
                 }
 
                 if (selfClosingTags.has(tag)) {
-                    // self closing tag
-                    ret = indent + x;
-                } else {
-                    if (x.indexOf("</") < 0) {
-                        //open tag
-                        if (x.charAt(x.length - 1) !== ">") ret = indent + x.substr(0, x.length - 1) + indent + tab + x.substr(x.length - 1, x.length);
-                        else ret = indent + x;
-                        !p && (indent += tab);
-                    } else {
-                        //close tag
-                        indent = indent.substr(0, indent.length - 1);
-                        if (x.charAt(x.length - 1) !== ">") ret = indent + x.substr(0, x.length - 1) + indent + x.substr(x.length - 1, x.length);
-                        else ret = indent + x;
-                    }
+                    return indent + x;
                 }
-                return ret;
+
+                //close tag
+                if (x.includes("</")) {
+                    indent = indent.slice(0, -1);
+                    return (!x.endsWith(">"))
+                        ? indent + x.slice(0, -1) + indent + x.slice(-1)
+                        : indent + x;
+                }
+
+                // open tag
+                if (!tempPreIdxMatch) {
+                    indent += tab;
+                }
+
+                return (!x.endsWith(">"))
+                    ? indent + x.slice(0, -1) + indent + tab + x.slice(-1)
+                    : indent + x;
             });
 
         for (i = pre.length; i--; ) {
