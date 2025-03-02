@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "note_embeddings" (
 CREATE INDEX IF NOT EXISTS IDX_note_embeddings_noteId ON note_embeddings (noteId);
 CREATE INDEX IF NOT EXISTS IDX_note_embeddings_model ON note_embeddings (model);
 
-INSERT INTO options (name, value, isSynced, utcDateModified)
+INSERT OR IGNORE INTO options (name, value, isSynced, utcDateModified)
 VALUES 
 ('llmEnabled', 'false', 1, datetime('now')),
 ('llmProvider', 'ollama', 1, datetime('now')),

@@ -31,7 +31,7 @@ function findAndFixConsistencyIssues() {
 }
 
 async function rebuildIntegrationTestDatabase() {
-    sql.rebuildIntegrationTestDatabase();
+    sql.rebuildIntegrationTestDatabase("test.db");
     sql_init.initializeDb();
     becca_loader.load();
 }
