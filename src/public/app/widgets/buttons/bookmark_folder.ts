@@ -1,6 +1,7 @@
 import RightDropdownButtonWidget from "./right_dropdown_button.js";
 import linkService from "../../services/link.js";
 import utils from "../../services/utils.js";
+import type FNote from "../../entities/fnote.js";
 
 const DROPDOWN_TPL = `
 <div class="bookmark-folder-widget">
@@ -43,25 +44,35 @@ const DROPDOWN_TPL = `
     <ul class="children-notes"></ul>
 </div>`;
 
+interface LinkOptions {
+    showTooltip: boolean;
+    showNoteIcon: boolean;
+}
+
 export default class BookmarkFolderWidget extends RightDropdownButtonWidget {
-    constructor(note) {
+    private note: FNote;
+    private $parentNote!: JQuery<HTMLElement>;
+    private $childrenNotes!: JQuery<HTMLElement>;
+    declare $dropdownContent: JQuery<HTMLElement>;
+
+    constructor(note: FNote) {
         super(utils.escapeHtml(note.title), note.getIcon(), DROPDOWN_TPL);
 
         this.note = note;
     }
 
-    doRender() {
+    doRender(): void {
         super.doRender();
 
         this.$parentNote = this.$dropdownContent.find(".parent-note");
         this.$childrenNotes = this.$dropdownContent.find(".children-notes");
     }
 
-    async dropdownShown() {
+    async dropdownShown(): Promise<void> {
         this.$parentNote.empty();
         this.$childrenNotes.empty();
 
-        const linkOptions = {
+        const linkOptions: LinkOptions = {
             showTooltip: false,
             showNoteIcon: true
         };
@@ -73,5 +84,5 @@ export default class BookmarkFolderWidget extends RightDropdownButtonWidget {
         }
     }
 
-    refreshIcon() {}
+    refreshIcon(): void {}
 }

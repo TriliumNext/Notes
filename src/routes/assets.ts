@@ -61,8 +61,6 @@ async function register(app: express.Application) {
     app.use(`/node_modules/katex/dist/`, express.static(path.join(srcRoot, "..", "node_modules/katex/dist/")));
     app.use(`/${assetPath}/node_modules/katex/dist/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/katex/dist/")));
 
-    app.use(`/${assetPath}/node_modules/dayjs/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/dayjs/")));
-
     app.use(`/${assetPath}/node_modules/boxicons/css/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/boxicons/css/")));
     app.use(`/${assetPath}/node_modules/boxicons/fonts/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/boxicons/fonts/")));
 
@@ -72,13 +70,9 @@ async function register(app: express.Application) {
 
     app.use(`/${assetPath}/node_modules/jquery-hotkeys/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/jquery-hotkeys/")));
 
-    app.use(`/${assetPath}/node_modules/split.js/dist/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/split.js/dist/")));
-
     app.use(`/${assetPath}/node_modules/panzoom/dist/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/panzoom/dist/")));
 
     // i18n
-    app.use(`/${assetPath}/node_modules/i18next/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/i18next/")));
-    app.use(`/${assetPath}/node_modules/i18next-http-backend/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/i18next-http-backend/")));
     app.use(`/${assetPath}/translations/`, persistentCacheStatic(path.join(srcRoot, "public", "translations/")));
 
     app.use(`/${assetPath}/node_modules/eslint/bin/`, persistentCacheStatic(path.join(srcRoot, "..", "node_modules/eslint/bin/")));

@@ -1,11 +1,24 @@
-module.exports = () => {
-    const sql = require("../../src/services/sql");
-    const utils = require("../../src/services/utils");
+import sql from "../../src/services/sql";
+import utils from "../../src/services/utils";
 
+interface NoteContentsRow {
+    noteId: string;
+    content: string | Buffer;
+    dateModified: string;
+    utcDateModified: string;
+}
+
+interface NoteRevisionContents {
+    noteRevisionId: string;
+    content: string | Buffer;
+    utcDateModified: string;
+}
+
+export default () => {
     const existingBlobIds = new Set();
 
-    for (const noteId of sql.getColumn(`SELECT noteId FROM note_contents`)) {
-        const row = sql.getRow(`SELECT noteId, content, dateModified, utcDateModified FROM note_contents WHERE noteId = ?`, [noteId]);
+    for (const noteId of sql.getColumn<string>(`SELECT noteId FROM note_contents`)) {
+        const row = sql.getRow<NoteContentsRow>(`SELECT noteId, content, dateModified, utcDateModified FROM note_contents WHERE noteId = ?`, [noteId]);
         const blobId = utils.hashedBlobId(row.content);
 
         if (!existingBlobIds.has(blobId)) {
@@ -28,7 +41,7 @@ module.exports = () => {
     }
 
     for (const noteRevisionId of sql.getColumn(`SELECT noteRevisionId FROM note_revision_contents`)) {
-        const row = sql.getRow(`SELECT noteRevisionId, content, utcDateModified FROM note_revision_contents WHERE noteRevisionId = ?`, [noteRevisionId]);
+        const row = sql.getRow<NoteRevisionContents>(`SELECT noteRevisionId, content, utcDateModified FROM note_revision_contents WHERE noteRevisionId = ?`, [noteRevisionId]);
         const blobId = utils.hashedBlobId(row.content);
 
         if (!existingBlobIds.has(blobId)) {
@@ -44,7 +57,7 @@ module.exports = () => {
             sql.execute("UPDATE entity_changes SET entityName = 'blobs', entityId = ? WHERE entityName = 'note_revision_contents' AND entityId = ?", [blobId, row.noteRevisionId]);
         } else {
             // duplicates
-            sql.execute("DELETE FROM entity_changes WHERE entityName = 'note_revision_contents' AND entityId = ?", [row.noteId]);
+            sql.execute("DELETE FROM entity_changes WHERE entityName = 'note_revision_contents' AND entityId = ?", [row.noteRevisionId]);
         }
 
         sql.execute("UPDATE note_revisions SET blobId = ? WHERE noteRevisionId = ?", [blobId, row.noteRevisionId]);

@@ -30,6 +30,12 @@ const TPL = `
 </div>`;
 
 export default class RelationMapButtons extends NoteContextAwareWidget {
+
+    private $createChildNote!: JQuery<HTMLElement>;
+    private $zoomInButton!: JQuery<HTMLElement>;
+    private $zoomOutButton!: JQuery<HTMLElement>;
+    private $resetPanZoomButton!: JQuery<HTMLElement>;
+
     isEnabled() {
         return super.isEnabled() && this.note?.type === "relationMap";
     }

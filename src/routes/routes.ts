@@ -294,6 +294,7 @@ function register(app: express.Application) {
     apiRoute(GET, "/api/tasks/:parentNoteId", tasksRoute.getTasks);
     apiRoute(PST, "/api/tasks", tasksRoute.createNewTask);
     apiRoute(PST, "/api/tasks/:taskId/toggle", tasksRoute.toggleTaskDone);
+    apiRoute(PATCH, "/api/tasks/:taskId", tasksRoute.updateTask);
 
     // in case of local electron, local calls are allowed unauthenticated, for server they need auth
     const clipperMiddleware = isElectron ? [] : [auth.checkEtapiToken];

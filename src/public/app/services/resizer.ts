@@ -1,4 +1,5 @@
 import options from "./options.js";
+import Split from "split.js"
 
 let leftInstance: ReturnType<typeof Split> | null;
 let rightInstance: ReturnType<typeof Split> | null;

@@ -57,7 +57,8 @@ export function hashedBlobId(content: string | Buffer) {
 }
 
 export function toBase64(plainText: string | Buffer) {
-    return Buffer.from(plainText).toString("base64");
+    const buffer = (Buffer.isBuffer(plainText) ? plainText : Buffer.from(plainText));
+    return buffer.toString("base64");
 }
 
 export function fromBase64(encodedText: string) {

@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -37,6 +37,13 @@ async function testImport(fileName: string) {
 
 describe("processNoteContent", () => {
     beforeAll(async () => {
+        // Prevent download of images.
+        vi.mock("../image.js", () => {
+            return {
+                default: { saveImageToAttachment: () => {} }
+            };
+        });
+
         initializeTranslations();
         sql_init.initializeDb();
         await sql_init.dbReady;

@@ -20,6 +20,10 @@ const TPL = `
     .note-list-widget.full-height .note-list-widget-content {
         height: 100%;
     }
+
+    .note-list-widget video {
+        height: 100%;
+    }
     </style>
 
     <div class="note-list-widget-content">

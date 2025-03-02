@@ -72,10 +72,6 @@ const MARKJS: Library = {
     js: ["node_modules/mark.js/dist/jquery.mark.es6.min.js"]
 };
 
-const I18NEXT: Library = {
-    js: ["node_modules/i18next/i18next.min.js", "node_modules/i18next-http-backend/i18nextHttpBackend.min.js"]
-};
-
 const HIGHLIGHT_JS: Library = {
     js: () => {
         const mimeTypes = mimeTypesService.getMimeTypes();
@@ -194,7 +190,6 @@ export default {
     WHEEL_ZOOM,
     MERMAID,
     MARKJS,
-    I18NEXT,
     HIGHLIGHT_JS,
     LEAFLET
 };

@@ -33,6 +33,10 @@ jobs:
 
       - name: Run the TypeScript build
         run: npx tsc
+
+      - name: Run the unit tests
+        run: npm run test
+
   build_docker:
     name: Build Docker image
     runs-on: ubuntu-latest
@@ -45,7 +49,7 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - run: npm ci    
+      - run: npm ci
       - name: Run the TypeScript build
         run: npx tsc
       - name: Create server-package.json
@@ -55,7 +59,7 @@ jobs:
         with:
           context: .
           cache-from: type=gha
-          cache-to: type=gha,mode=max  
+          cache-to: type=gha,mode=max
   test_docker:
     name: Check Docker build
     runs-on: ubuntu-latest
@@ -69,7 +73,7 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-        
+
       - name: Set IMAGE_NAME to lowercase
         run: echo "IMAGE_NAME=${IMAGE_NAME,,}" >> $GITHUB_ENV
       - name: Set TEST_TAG to lowercase
@@ -83,12 +87,12 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      
+
       - run: npm ci
-      
+
       - name: Run the TypeScript build
         run: npx tsc
-      
+
       - name: Create server-package.json
         run: cat package.json | grep -v electron > server-package.json
 
@@ -101,12 +105,12 @@ jobs:
           tags: ${{ env.TEST_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+
       - name: Validate container run output
         run: |
           CONTAINER_ID=$(docker run -d --log-driver=journald --rm --name trilium_local ${{ env.TEST_TAG }})
           echo "Container ID: $CONTAINER_ID"
-      
+
       - name: Wait for the healthchecks to pass
         uses: stringbean/docker-healthcheck-action@v3
         with:

@@ -10,6 +10,10 @@ export function createNewTask(req: Request) {
     return tasksService.createNewTask(req.body);
 }
 
+export function updateTask(req: Request) {
+    return tasksService.updateTask(req.params.taskId, req.body);
+}
+
 export function toggleTaskDone(req: Request) {
     const { taskId } = req.params;
     if (!taskId) {

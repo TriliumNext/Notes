@@ -1560,6 +1560,10 @@ div.bookmark-folder-widget .note-link .bx {
     border-bottom-color: var(--card-border-color);
 }
 
+.note-list-wrapper .note-book-card footer.file-footer {
+    border: 1px solid var(--card-border-color);
+}
+
 .note-list-wrapper .note-book-card .note-book-header .note-icon {
     font-size: 17px;
     vertical-align: text-bottom;
@@ -1610,7 +1614,8 @@ div.bookmark-folder-widget .note-link .bx {
 
 .note-list-wrapper .note-book-card .note-book-content.type-canvas .rendered-content,
 .note-list-wrapper .note-book-card .note-book-content.type-mindMap .rendered-content,
-.note-list-wrapper .note-book-card .note-book-content.type-code .rendered-content {
+.note-list-wrapper .note-book-card .note-book-content.type-code .rendered-content,
+.note-list-wrapper .note-book-card .note-book-content.type-video .rendered-content {
     padding: 0;
 }
 

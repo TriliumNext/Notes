@@ -329,7 +329,7 @@ export default class TocWidget extends RightPanelWidget {
         appContext.triggerEvent("reEvaluateTocWidgetVisibility", { noteId: this.noteId });
     }
 
-    async showTocWidgetEvent({ noteId }: EventData<"showToc">) {
+    async showTocWidgetEvent({ noteId }: EventData<"showTocWidget">) {
         if (this.noteId === noteId) {
             await this.refresh();
             this.triggerCommand("reEvaluateRightPaneVisibility");

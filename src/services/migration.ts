@@ -12,7 +12,13 @@ interface MigrationInfo {
     dbVersion: number;
     name: string;
     file: string;
-    type: string;
+    type: "sql" | "js" | "ts" | string;
+    /**
+     * Contains the JavaScript/TypeScript migration as a callback method that must be called to trigger the migration.
+     * The method cannot be async since it runs in an SQL transaction.
+     * For SQL migrations, this value is falsy.
+     */
+    module?: () => void;
 }
 
 async function migrate() {
@@ -29,35 +35,7 @@ async function migrate() {
         currentDbVersion === 214 ? `before-migration-v060` : "before-migration"
     );
 
-    const migrationFiles = fs.readdirSync(resourceDir.MIGRATIONS_DIR);
-    if (migrationFiles == null) {
-        return;
-    }
-
-    const migrations = migrationFiles
-        .map((file) => {
-            const match = file.match(/^([0-9]{4})__([a-zA-Z0-9_ ]+)\.(sql|js)$/);
-            if (!match) {
-                return null;
-            }
-
-            const dbVersion = parseInt(match[1]);
-            if (dbVersion > currentDbVersion) {
-                const name = match[2];
-                const type = match[3];
-
-                return {
-                    dbVersion: dbVersion,
-                    name: name,
-                    file: file,
-                    type: type
-                };
-            } else {
-                return null;
-            }
-        })
-        .filter((el): el is MigrationInfo => !!el);
-
+    const migrations = await prepareMigrations(currentDbVersion);
     migrations.sort((a, b) => a.dbVersion - b.dbVersion);
 
     // all migrations are executed in one transaction - upgrade either succeeds, or the user can stay at the old version
@@ -66,12 +44,12 @@ async function migrate() {
 
     cls.setMigrationRunning(true);
 
-    sql.transactional(async () => {
+    sql.transactional(() => {
         for (const mig of migrations) {
             try {
                 log.info(`Attempting migration to version ${mig.dbVersion}`);
 
-                await executeMigration(mig);
+                executeMigration(mig);
 
                 sql.execute(
                     `UPDATE options
@@ -82,6 +60,7 @@ async function migrate() {
 
                 log.info(`Migration to version ${mig.dbVersion} has been successful.`);
             } catch (e: any) {
+                console.error(e);
                 crash(t("migration.error_message", { version: mig.dbVersion, stack: e.stack }));
                 break; // crash() is sometimes async
             }
@@ -95,18 +74,49 @@ async function migrate() {
     }
 }
 
-async function executeMigration(mig: MigrationInfo) {
-    if (mig.type === "sql") {
+async function prepareMigrations(currentDbVersion: number): Promise<MigrationInfo[]> {
+    const migrationFiles = fs.readdirSync(resourceDir.MIGRATIONS_DIR) ?? [];
+    const migrations: MigrationInfo[] = [];
+    for (const file of migrationFiles) {
+        const match = file.match(/^([0-9]{4})__([a-zA-Z0-9_ ]+)\.(sql|js|ts)$/);
+        if (!match) {
+            continue;
+        }
+
+        const dbVersion = parseInt(match[1]);
+        if (dbVersion > currentDbVersion) {
+            const name = match[2];
+            const type = match[3];
+
+            const migration: MigrationInfo = {
+                dbVersion: dbVersion,
+                name: name,
+                file: file,
+                type: type
+            };
+
+            if (type === "js" || type === "ts") {
+                // Due to ESM imports, the migration file needs to be imported asynchronously and thus cannot be loaded at migration time (since migration is not asynchronous).
+                // As such we have to preload the ESM.
+                migration.module = (await import(`file://${resourceDir.MIGRATIONS_DIR}/${file}`)).default;
+            }
+
+            migrations.push(migration);
+        }
+    }
+    return migrations;
+}
+
+function executeMigration(mig: MigrationInfo) {
+    if (mig.module) {
+        console.log("Migration with JS module");
+        mig.module();
+    } else if (mig.type === "sql") {
         const migrationSql = fs.readFileSync(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`).toString("utf8");
 
         console.log(`Migration with SQL script: ${migrationSql}`);
 
         sql.executeScript(migrationSql);
-    } else if (mig.type === "js") {
-        console.log("Migration with JS module");
-
-        const migrationModule = await import(`${resourceDir.MIGRATIONS_DIR}/${mig.file}`);
-        migrationModule();
     } else {
         throw new Error(`Unknown migration type '${mig.type}'`);
     }

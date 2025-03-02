@@ -5,21 +5,25 @@ import AbstractCodeTypeWidget from "../abstract_code_type_widget.js";
 const TPL = `<div style="height: 100%; display: flex; flex-direction: column;">
     <style>
         .backend-log-editor {
-            flex-grow: 1; 
+            flex-grow: 1;
             width: 100%;
             border: none;
             resize: none;
-        }   
+        }
     </style>
 
     <pre class="backend-log-editor"></pre>
-    
+
     <div style="display: flex; justify-content: space-around; margin-top: 10px;">
         <button class="refresh-backend-log-button btn btn-primary">${t("backend_log.refresh")}</button>
     </div>
 </div>`;
 
 export default class BackendLogWidget extends AbstractCodeTypeWidget {
+
+    private $editor!: JQuery<HTMLElement>;
+    private $refreshBackendLog!: JQuery<HTMLElement>;
+
     doRender() {
         super.doRender();
         this.$widget = $(TPL);

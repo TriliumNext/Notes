@@ -92,7 +92,8 @@
     "toggle-book-properties": "Alternar propiedades del libro",
     "toggle-classic-editor-toolbar": "Alternar la pestaña de formato por el editor con barra de herramientas fija",
     "export-as-pdf": "Exporta la nota actual como un PDF",
-    "show-cheatsheet": "Muestra un modal con operaciones de teclado comunes"
+    "show-cheatsheet": "Muestra un modal con operaciones de teclado comunes",
+    "toggle-zen-mode": "Habilita/Deshabilita el modo Zen (IU mínima para edición sin distracciones)"
   },
   "login": {
     "title": "Iniciar sesión",
@@ -227,7 +228,7 @@
     "open-today-journal-note-title": "Abrir nota del diario de hoy",
     "quick-search-title": "Búsqueda rápida",
     "protected-session-title": "Sesión protegida",
-    "sync-status-title": "Sincrnozar estado",
+    "sync-status-title": "Sincronizar estado",
     "settings-title": "Ajustes",
     "options-title": "Opciones",
     "appearance-title": "Apariencia",
@@ -271,5 +272,13 @@
     "today": "Abrir nota del diario de hoy",
     "new-note": "Nueva nota",
     "show-windows": "Mostrar ventanas"
+  },
+  "migration": {
+    "old_version": "La migración directa desde tu versión actual no está soportada. Por favor actualice a v0.60.4 primero y solo después a esta versión.",
+    "error_message": "Error durante la migración a la versión {{version}}: {{stack}}",
+    "wrong_db_version": "La versión de la DB {{version}} es más nueva que la versión de la DB actual {{targetVersion}}, lo que significa que fue creada por una versión más reciente e incompatible de Trilium. Actualice a la última versión de Trilium para resolver este problema."
+  },
+  "modals": {
+    "error_title": "Error"
   }
 }

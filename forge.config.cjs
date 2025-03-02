@@ -17,33 +17,39 @@ module.exports = {
         overwrite: true,
         asar: true,
         icon: "./images/app-icons/icon",
+        osxSign: {},
+        osxNotarize: {
+            appleId: process.env.APPLE_ID,
+            appleIdPassword: process.env.APPLE_ID_PASSWORD,
+            teamId: process.env.APPLE_TEAM_ID
+        },
         extraResource: [
-            // Moved to root
-            ...extraResourcesForPlatform,
+            // All resources should stay in Resources directory for macOS
+            ...(process.platform === "darwin" ? [] : extraResourcesForPlatform),
 
-            // Moved to resources (TriliumNext Notes.app/Contents/Resources on macOS)
+            // These always go in Resources
             "translations/",
             "node_modules/@highlightjs/cdn-assets/styles"
         ],
         afterComplete: [
             (buildPath, _electronVersion, platform, _arch, callback) => {
-                for (const resource of extraResourcesForPlatform) {
-                    const baseName = path.basename(resource);
+                // Only move resources on non-macOS platforms
+                if (platform !== "darwin") {
+                    for (const resource of extraResourcesForPlatform) {
+                        const baseName = path.basename(resource);
+                        const sourcePath = path.join(buildPath, "resources", baseName);
 
-                    // prettier-ignore
-                    const sourcePath = (platform === "darwin")
-                        ? path.join(buildPath, `${APP_NAME}.app`, "Contents", "Resources", baseName)
-                        : path.join(buildPath, "resources", baseName);
+                        // prettier-ignore
+                        const destPath = (baseName !== "256x256.png")
+                            ? path.join(buildPath, baseName)
+                            : path.join(buildPath, "icon.png");
 
-                    // prettier-ignore
-                    const destPath = (baseName !== "256x256.png")
-                        ? path.join(buildPath, baseName)
-                        : path.join(buildPath, "icon.png");
-
-                    // Copy files from resources folder to root
-                    fs.move(sourcePath, destPath)
-                        .then(() => callback())
-                        .catch((err) => callback(err));
+                        fs.move(sourcePath, destPath)
+                            .then(() => callback())
+                            .catch((err) => callback(err));
+                    }
+                } else {
+                    callback();
                 }
             }
         ]

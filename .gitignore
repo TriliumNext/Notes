@@ -11,6 +11,7 @@ po-*/
 .flatpak-builder/
 
 *.db
+!test/**/*.db
 !integration-tests/db/document.db
 !integration-tests/db/config.ini
 integration-tests/db/log

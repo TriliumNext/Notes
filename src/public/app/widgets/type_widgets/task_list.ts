@@ -4,6 +4,10 @@ import froca from "../../services/froca.js";
 import TypeWidget from "./type_widget.js";
 import * as taskService from "../../services/tasks.js";
 import type { EventData } from "../../components/app_context.js";
+import dayjs from "dayjs";
+import calendarTime from "dayjs/plugin/calendar.js";
+import { t } from "../../services/i18n.js";
+dayjs.extend(calendarTime);
 
 const TPL = `
 <div class="note-detail-task-list note-detail-printable">
@@ -22,7 +26,7 @@ const TPL = `
             padding: 10px;
         }
 
-        .note-detail-task-list header {
+        .note-detail-task-list > header {
             position: sticky;
             top: 0;
             z-index: 100;
@@ -48,10 +52,35 @@ const TPL = `
             background: var(--input-background-color);
             border-bottom: 1px solid var(--main-background-color);
             padding: 0.5em 1em;
+            cursor: pointer;
+        }
+
+        .note-detail-task-list .task-container li:hover {
+            background: var(--input-hover-background);
+            transition: background 250ms ease-in-out;
+        }
+
+        .note-detail-task-list .task-container li > header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
         }
 
         .note-detail-task-list .task-container li .check {
             margin-right: 0.5em;
+        }
+
+        .note-detail-task-list .task-container li .title {
+            flex-grow: 1;
+        }
+
+        .note-detail-task-list .task-container li .due-date {
+            font-size: 0.9rem;
+        }
+
+        .note-detail-task-list .task-container li.overdue .due-date {
+            color: #fd8282;
         }
     </style>
 </div>
@@ -60,11 +89,47 @@ const TPL = `
 function buildTasks(tasks: FTask[]) {
     let html = '';
 
+    const now = dayjs();
+    const dateFormat = "DD-MM-YYYY";
     for (const task of tasks) {
-        html += `<li class="task"><input type="checkbox" class="check" data-task-id="${task.taskId}" ${task.isDone ? "checked" : ""} />${task.title}</li>`;
+        const classes = ["task"];
+
+        if (task.dueDate && dayjs(task.dueDate).isBefore(now, "days")) {
+            classes.push("overdue");
+        }
+
+        html += `<li class="${classes.join(" ")}" data-task-id="${task.taskId}">`;
+        html += "<header>";
+        html += '<span class="title">';
+        html += `<input type="checkbox" class="check" ${task.isDone ? "checked" : ""} />`;
+        html += `${task.title}</span>`;
+        html += '</span>';
+        if (task.dueDate) {
+            html += `<span class="due-date">`;
+            html += `<span class="bx bx-calendar"></span> `;
+            html += dayjs(task.dueDate).calendar(null, {
+                sameDay: `[${t("tasks.due.today")}]`,
+                nextDay: `[${t("tasks.due.tomorrow")}]`,
+                nextWeek: "dddd",
+                lastDay: `[${t("tasks.due.yesterday")}]`,
+                lastWeek: dateFormat,
+                sameElse: dateFormat
+            });
+            html += "</span>";
+        }
+        html += "</header>";
+        html += `<div class="edit-container"></div>`;
+        html += `</li>`;
     }
 
     return html;
+}
+
+function buildEditContainer(task: FTask) {
+    return `\
+        <label>Due date:</label>
+        <input type="date" data-tasks-role="due-date" value="${task.dueDate ?? ""}" />
+    `;
 }
 
 export default class TaskListWidget extends TypeWidget {
@@ -86,9 +151,9 @@ export default class TaskListWidget extends TypeWidget {
             }
         });
 
-        this.$taskContainer.on("change", "input", (e) => {
-            const target = e.target as HTMLInputElement;
-            const taskId = target.dataset.taskId;
+        this.$taskContainer.on("change", "input.check", (e) => {
+            const $target = $(e.target);
+            const taskId = $target.closest("li")[0].dataset.taskId;
 
             if (!taskId) {
                 return;
@@ -96,6 +161,58 @@ export default class TaskListWidget extends TypeWidget {
 
             taskService.toggleTaskDone(taskId);
         });
+
+        this.$taskContainer.on("click", "li", (e) => {
+            if ((e.target as HTMLElement).tagName === "INPUT") {
+                return;
+            }
+
+            const $target = $(e.target);
+
+            // Clear existing edit containers.
+            const $existingContainers = this.$taskContainer.find(".edit-container");
+
+            $existingContainers.html("");
+
+            // Add the new edit container.
+            const $editContainer = $target.closest("li").find(".edit-container");
+            const task = this.#getCorrespondingTask($target);
+            if (task) {
+                $editContainer.html(buildEditContainer(task));
+            }
+        });
+
+        this.$taskContainer.on("change", "input:not(.check)", async (e) => {
+            const $target = $(e.target);
+            const task = this.#getCorrespondingTask($target);
+            if (!task) {
+                return;
+            }
+
+            const role = $target.data("tasks-role");
+            const value = String($target.val());
+
+            switch (role) {
+                case "due-date":
+                    task.dueDate = value;
+                    break;
+            }
+
+            await taskService.updateTask(task);
+        });
+    }
+
+    #getCorrespondingTask($target: JQuery<HTMLElement>) {
+        const $parentEl = $target.closest("li");
+        if (!$parentEl.length) {
+            return;
+        }
+        const taskId = $parentEl[0].dataset.taskId;
+        if (!taskId) {
+            return;
+        }
+
+        return froca.getTask(taskId);
     }
 
     async #createNewTask(title: string) {
@@ -109,6 +226,26 @@ export default class TaskListWidget extends TypeWidget {
         });
     }
 
+    async #getTasks() {
+        if (!this.noteId) {
+            return [];
+        }
+
+        return (await froca.getTasks(this.noteId))
+            .toSorted((a, b) => {
+                // Sort by due date, closest date first.
+                if (!a.dueDate) {
+                    return 1;
+                }
+
+                if (!b.dueDate) {
+                    return -1;
+                }
+
+                return a.dueDate.localeCompare(b.dueDate, "en");
+            });
+    }
+
     async doRefresh(note: FNote) {
         this.$widget.show();
 
@@ -116,7 +253,7 @@ export default class TaskListWidget extends TypeWidget {
             return;
         }
 
-        const tasks = await froca.getTasks(this.noteId);
+        const tasks = await this.#getTasks();
         const tasksHtml = buildTasks(tasks);
         this.$taskContainer.html(tasksHtml);
     }

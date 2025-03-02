@@ -1,7 +1,6 @@
-import library_loader from "./library_loader.js";
 import options from "./options.js";
-
-await library_loader.requireLibrary(library_loader.I18NEXT);
+import i18next from "i18next";
+import i18nextHttpBackend from "i18next-http-backend";
 
 export async function initLocale() {
     const locale = (options.get("locale") as string) || "en";
@@ -17,3 +16,4 @@ export async function initLocale() {
 }
 
 export const t = i18next.t;
+export const getCurrentLanguage = () => i18next.language;

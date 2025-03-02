@@ -13,16 +13,16 @@ import type { Request, Response } from "express";
 function loginPage(req: Request, res: Response) {
     res.render("login", {
         failedAuth: false,
-        assetPath: assetPath,
-        appPath: appPath
+        assetPath,
+        appPath
     });
 }
 
 function setPasswordPage(req: Request, res: Response) {
     res.render("set_password", {
         error: false,
-        assetPath: assetPath,
-        appPath: appPath
+        assetPath,
+        appPath
     });
 }
 
@@ -46,7 +46,8 @@ function setPassword(req: Request, res: Response) {
     if (error) {
         res.render("set_password", {
             error,
-            assetPath: assetPath
+            assetPath,
+            appPath
         });
         return;
     }
@@ -65,7 +66,8 @@ function login(req: Request, res: Response) {
 
         return res.status(401).render("login", {
             failedAuth: true,
-            assetPath: assetPath
+            assetPath,
+            appPath
         });
     }
 

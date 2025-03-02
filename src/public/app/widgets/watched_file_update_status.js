@@ -2,6 +2,7 @@ import { t } from "../services/i18n.js";
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import server from "../services/server.js";
 import fileWatcher from "../services/file_watcher.js";
+import dayjs from "dayjs";
 
 const TPL = `
 <div class="dropdown watched-file-update-status-widget alert alert-warning">

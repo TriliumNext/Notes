@@ -24,7 +24,7 @@ const TPL = `
             <option value="targetRelationCount">${t("order_by.target_relation_count")}</option>
             <option value="random">${t("order_by.random")}</option>
         </select>
-        
+
         <select name="orderDirection" class="form-control w-auto d-inline">
             <option value="asc">${t("order_by.asc")}</option>
             <option value="desc">${t("order_by.desc")}</option>
@@ -36,6 +36,7 @@ const TPL = `
 </tr>`;
 
 export default class OrderBy extends AbstractSearchOption {
+
     static get optionName() {
         return "orderBy";
     }
@@ -43,7 +44,7 @@ export default class OrderBy extends AbstractSearchOption {
         return "label";
     }
 
-    static async create(noteId) {
+    static async create(noteId: string) {
         await AbstractSearchOption.setAttribute(noteId, "label", "orderBy", "relevancy");
         await AbstractSearchOption.setAttribute(noteId, "label", "orderDirection", "asc");
     }
@@ -53,15 +54,15 @@ export default class OrderBy extends AbstractSearchOption {
 
         const $orderBy = $option.find("select[name=orderBy]");
         $orderBy.on("change", async () => {
-            const orderBy = $orderBy.val();
+            const orderBy = String($orderBy.val());
 
             await this.setAttribute("label", "orderBy", orderBy);
         });
-        $orderBy.val(this.note.getLabelValue("orderBy"));
+        $orderBy.val(this.note.getLabelValue("orderBy") ?? "");
 
         const $orderDirection = $option.find("select[name=orderDirection]");
         $orderDirection.on("change", async () => {
-            const orderDirection = $orderDirection.val();
+            const orderDirection = String($orderDirection.val());
 
             await this.setAttribute("label", "orderDirection", orderDirection);
         });

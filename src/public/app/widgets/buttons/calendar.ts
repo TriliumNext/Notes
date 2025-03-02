@@ -8,6 +8,7 @@ import RightDropdownButtonWidget from "./right_dropdown_button.js";
 import toastService from "../../services/toast.js";
 import options from "../../services/options.js";
 import { Dropdown } from "bootstrap";
+import type { EventData } from "../../components/app_context.js";
 
 const MONTHS = [
     t("calendar.january"),
@@ -66,8 +67,26 @@ const DROPDOWN_TPL = `
 
 const DAYS_OF_WEEK = [t("calendar.sun"), t("calendar.mon"), t("calendar.tue"), t("calendar.wed"), t("calendar.thu"), t("calendar.fri"), t("calendar.sat")];
 
+interface DateNotesForMonth {
+    [date: string]: string;
+}
+
 export default class CalendarWidget extends RightDropdownButtonWidget {
-    constructor(title, icon) {
+    private $month!: JQuery<HTMLElement>;
+    private $weekHeader!: JQuery<HTMLElement>;
+    private $monthSelect!: JQuery<HTMLElement>;
+    private $yearSelect!: JQuery<HTMLElement>;
+    private $next!: JQuery<HTMLElement>;
+    private $previous!: JQuery<HTMLElement>;
+    private $nextYear!: JQuery<HTMLElement>;
+    private $previousYear!: JQuery<HTMLElement>;
+    private monthDropdown!: Dropdown;
+    private firstDayOfWeek!: number;
+    private activeDate: Date | null = null;
+    private todaysDate!: Date;
+    private date!: Date;
+
+    constructor(title: string = "", icon: string = "") {
         super(title, icon, DROPDOWN_TPL);
     }
 
@@ -85,11 +104,14 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
             // Don't trigger dropdownShown() at widget level when the month selection dropdown is shown, since it would cause a redundant refresh.
             e.stopPropagation();
         });
-        this.monthDropdown = Dropdown.getOrCreateInstance(this.$monthSelect);
+        this.monthDropdown = Dropdown.getOrCreateInstance(this.$monthSelect[0]);
         this.$dropdownContent.find('[data-calendar-input="month-list"] button').on("click", (e) => {
-            this.date.setMonth(e.target.dataset.value);
-            this.createMonth();
-            this.monthDropdown.hide();
+            const target = e.target as HTMLElement;
+            const value = target.dataset.value;
+            if (value) {
+                this.date.setMonth(parseInt(value));
+                this.createMonth();
+            }
         });
         this.$next = this.$dropdownContent.find('[data-calendar-toggle="next"]');
         this.$next.on("click", () => {
@@ -97,7 +119,7 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
             this.createMonth();
         });
         this.$previous = this.$dropdownContent.find('[data-calendar-toggle="previous"]');
-        this.$previous.on("click", (e) => {
+        this.$previous.on("click", () => {
             this.date.setMonth(this.date.getMonth() - 1);
             this.createMonth();
         });
@@ -105,7 +127,8 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         // Year navigation
         this.$yearSelect = this.$dropdownContent.find('[data-calendar-input="year"]');
         this.$yearSelect.on("input", (e) => {
-            this.date.setFullYear(e.target.value);
+            const target = e.target as HTMLInputElement;
+            this.date.setFullYear(parseInt(target.value));
             this.createMonth();
         });
         this.$nextYear = this.$dropdownContent.find('[data-calendar-toggle="nextYear"]');
@@ -114,40 +137,54 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
             this.createMonth();
         });
         this.$previousYear = this.$dropdownContent.find('[data-calendar-toggle="previousYear"]');
-        this.$previousYear.on("click", (e) => {
+        this.$previousYear.on("click", () => {
             this.date.setFullYear(this.date.getFullYear() - 1);
             this.createMonth();
         });
 
-        this.$dropdownContent.find(".calendar-header").on("click", (e) => e.stopPropagation());
-
         this.$dropdownContent.on("click", ".calendar-date", async (ev) => {
             const date = $(ev.target).closest(".calendar-date").attr("data-calendar-date");
 
-            const note = await dateNoteService.getDayNote(date);
+            if (date) {
+                const note = await dateNoteService.getDayNote(date);
 
-            if (note) {
-                appContext.tabManager.getActiveContext().setNote(note.noteId);
-                this.dropdown.hide();
-            } else {
-                toastService.showError(t("calendar.cannot_find_day_note"));
+                if (note) {
+                    appContext.tabManager.getActiveContext().setNote(note.noteId);
+                    this.dropdown?.hide();
+                } else {
+                    toastService.showError(t("calendar.cannot_find_day_note"));
+                }
             }
 
             ev.stopPropagation();
         });
 
-        // Prevent dismissing the calendar popup by clicking on an empty space inside it.
-        this.$dropdownContent.on("click", (e) => e.stopPropagation());
+        // Handle click events for the entire calendar widget
+        this.$dropdownContent.on("click", (e) => {
+            const $target = $(e.target);
+
+            // Keep dropdown open when clicking on month select button or year selector area
+            if ($target.closest('.btn.dropdown-toggle.select-button').length ||
+                $target.closest('.calendar-year-selector').length) {
+                e.stopPropagation();
+                return;
+            }
+
+            // Hide dropdown for all other cases
+            this.monthDropdown.hide();
+            // Prevent dismissing the calendar popup by clicking on an empty space inside it.
+            e.stopPropagation();
+        });
     }
 
     manageFirstDayOfWeek() {
-        this.firstDayOfWeek = options.getInt("firstDayOfWeek");
+        this.firstDayOfWeek = options.getInt("firstDayOfWeek") || 0;
 
         // Generate the list of days of the week taking into consideration the user's selected first day of week.
         let localeDaysOfWeek = [...DAYS_OF_WEEK];
         const daysToBeAddedAtEnd = localeDaysOfWeek.splice(0, this.firstDayOfWeek);
         localeDaysOfWeek = [...localeDaysOfWeek, ...daysToBeAddedAtEnd];
-        this.$weekHeader.html(localeDaysOfWeek.map((el) => `<span>${el}</span>`));
+        this.$weekHeader.html(localeDaysOfWeek.map((el) => `<span>${el}</span>`).join(''));
     }
 
     async dropdownShown() {
@@ -158,7 +195,7 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         this.init(activeNote?.getOwnedLabelValue("dateNote"));
     }
 
-    init(activeDate) {
+    init(activeDate: string | null) {
         // attaching time fixes local timezone handling
         this.activeDate = activeDate ? new Date(`${activeDate}T12:00:00`) : null;
         this.todaysDate = new Date();
@@ -168,9 +205,9 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         this.createMonth();
     }
 
-    createDay(dateNotesForMonth, num, day) {
+    createDay(dateNotesForMonth: DateNotesForMonth, num: number, day: number) {
         const $newDay = $("<a>").addClass("calendar-date").attr("data-calendar-date", utils.formatDateISO(this.date));
-        const $date = $("<span>").html(num);
+        const $date = $("<span>").html(String(num));
 
         // if it's the first day of the month
         if (num === 1) {
@@ -202,23 +239,25 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         return $newDay;
     }
 
-    isEqual(a, b) {
+    isEqual(a: Date, b: Date | null) {
         if ((!a && b) || (a && !b)) {
             return false;
         }
+
+        if (!b) return false;
 
         return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
     }
 
     async createMonth() {
         const month = utils.formatDateISO(this.date).substr(0, 7);
-        const dateNotesForMonth = await server.get(`special-notes/notes-for-month/${month}`);
+        const dateNotesForMonth: DateNotesForMonth = await server.get(`special-notes/notes-for-month/${month}`);
 
         this.$month.empty();
 
         const currentMonth = this.date.getMonth();
         while (this.date.getMonth() === currentMonth) {
-            const $day = this.createDay(dateNotesForMonth, this.date.getDate(), this.date.getDay(), this.date.getFullYear());
+            const $day = this.createDay(dateNotesForMonth, this.date.getDate(), this.date.getDay());
 
             this.$month.append($day);
 
@@ -232,7 +271,7 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
         this.$yearSelect.val(this.date.getFullYear());
     }
 
-    async entitiesReloadedEvent({ loadResults }) {
+    async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
         if (!loadResults.getOptionNames().includes("firstDayOfWeek")) {
             return;
         }

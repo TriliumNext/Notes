@@ -1,15 +1,15 @@
-module.exports = () => {
-    const beccaLoader = require("../../src/becca/becca_loader");
-    const becca = require("../../src/becca/becca");
-    const cls = require("../../src/services/cls");
-    const log = require("../../src/services/log");
-    const sql = require("../../src/services/sql");
+import becca from "../../src/becca/becca";
+import becca_loader from "../../src/becca/becca_loader";
+import cls from "../../src/services/cls";
+import log from "../../src/services/log";
+import sql from "../../src/services/sql";
 
+export default () => {
     cls.init(() => {
         // emergency disabling of image compression since it appears to make problems in migration to 0.61
         sql.execute(`UPDATE options SET value = 'false' WHERE name = 'compressImages'`);
 
-        beccaLoader.load();
+        becca_loader.load();
 
         for (const note of Object.values(becca.notes)) {
             try {

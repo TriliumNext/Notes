@@ -6,13 +6,13 @@ const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center;">
-            <div style="margin-right: 10px">${t("ancestor.label")}:</div> 
+            <div style="margin-right: 10px">${t("ancestor.label")}:</div>
             <div class="input-group" style="flex-shrink: 2">
                 <input class="ancestor form-control" placeholder="${t("ancestor.placeholder")}">
             </div>
-            
+
             <div style="margin-left: 10px; margin-right: 10px">${t("ancestor.depth_label")}:</div>
-            
+
             <select name="depth" class="form-select d-inline ancestor-depth" style="flex-shrink: 3">
                 <option value="">${t("ancestor.depth_doesnt_matter")}</option>
                 <option value="eq1">${t("ancestor.depth_eq", { count: 1 })} (${t("ancestor.direct_children")})</option>
@@ -58,7 +58,7 @@ export default class Ancestor extends AbstractSearchOption {
         return "relation";
     }
 
-    static async create(noteId) {
+    static async create(noteId: string) {
         await AbstractSearchOption.setAttribute(noteId, "relation", "ancestor", "root");
     }
 
@@ -77,7 +77,7 @@ export default class Ancestor extends AbstractSearchOption {
         });
 
         $ancestorDepth.on("change", async () => {
-            const ancestorDepth = $ancestorDepth.val();
+            const ancestorDepth = String($ancestorDepth.val());
 
             if (ancestorDepth) {
                 await this.setAttribute("label", "ancestorDepth", ancestorDepth);
@@ -88,7 +88,7 @@ export default class Ancestor extends AbstractSearchOption {
 
         const ancestorNoteId = this.note.getRelationValue("ancestor");
 
-        if (ancestorNoteId !== "root") {
+        if (ancestorNoteId && ancestorNoteId !== "root") {
             $ancestor.setNote(ancestorNoteId);
         }
 

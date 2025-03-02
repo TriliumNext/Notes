@@ -1199,10 +1199,10 @@
   "etapi": {
     "title": "ETAPI",
     "description": "ETAPI 是一個 REST API，用於以編程方式訪問 Trilium 實例，而無需 UI。",
-    "see_more": "更多詳情見",
+    "see_more": "",
     "wiki": "維基",
-    "and": "和",
     "openapi_spec": "ETAPI OpenAPI 規範",
+    "swagger_ui": "",
     "create_token": "新增新的 ETAPI 令牌",
     "existing_tokens": "現有令牌",
     "no_tokens_yet": "目前還沒有令牌。點擊上面的按鈕新增一個。",

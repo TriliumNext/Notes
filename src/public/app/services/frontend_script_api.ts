@@ -17,6 +17,7 @@ import shortcutService from "./shortcuts.js";
 import dialogService from "./dialog.js";
 import type FNote from "../entities/fnote.js";
 import { t } from "./i18n.js";
+import dayjs from "dayjs";
 import type NoteContext from "../components/note_context.js";
 import type NoteDetailWidget from "../widgets/note_detail.js";
 import type Component from "../components/component.js";
@@ -84,7 +85,7 @@ interface Api {
      * See {@link https://day.js.org} for documentation
      * @see https://day.js.org
      */
-    dayjs: typeof window.dayjs;
+    dayjs: typeof dayjs;
 
     RightPanelWidget: typeof RightPanelWidget;
     NoteContextAwareWidget: typeof NoteContextAwareWidget;

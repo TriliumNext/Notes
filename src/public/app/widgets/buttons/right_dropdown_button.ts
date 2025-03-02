@@ -1,12 +1,13 @@
 import BasicWidget from "../basic_widget.js";
 import { Tooltip, Dropdown } from "bootstrap";
+type PopoverPlacement = Tooltip.PopoverPlacement;
 
 const TPL = `
 <div class="dropdown right-dropdown-widget dropend">
     <button type="button" data-bs-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" 
+            aria-haspopup="true" aria-expanded="false"
             class="bx right-dropdown-button launcher-button"></button>
-    
+
     <div class="tooltip-trigger"></div>
 
     <div class="dropdown-menu dropdown-menu-right"></div>
@@ -14,7 +15,17 @@ const TPL = `
 `;
 
 export default class RightDropdownButtonWidget extends BasicWidget {
-    constructor(title, iconClass, dropdownTpl) {
+    protected iconClass: string;
+    protected title: string;
+    protected dropdownTpl: string;
+    protected settings: { titlePlacement: PopoverPlacement };
+    protected $dropdownMenu!: JQuery<HTMLElement>;
+    protected dropdown!: Dropdown;
+    protected $tooltip!: JQuery<HTMLElement>;
+    protected tooltip!: Tooltip;
+    public $dropdownContent!: JQuery<HTMLElement>;
+
+    constructor(title: string, iconClass: string, dropdownTpl: string) {
         super();
 
         this.iconClass = iconClass;
@@ -29,10 +40,10 @@ export default class RightDropdownButtonWidget extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
         this.$dropdownMenu = this.$widget.find(".dropdown-menu");
-        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"));
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']")[0]);
 
         this.$tooltip = this.$widget.find(".tooltip-trigger").attr("title", this.title);
-        this.tooltip = new Tooltip(this.$tooltip, {
+        this.tooltip = new Tooltip(this.$tooltip[0], {
             placement: this.settings.titlePlacement,
             fallbackPlacements: [this.settings.titlePlacement]
         });
@@ -48,7 +59,8 @@ export default class RightDropdownButtonWidget extends BasicWidget {
             await this.dropdownShown();
 
             const rect = this.$dropdownMenu[0].getBoundingClientRect();
-            const pixelsToBottom = $(window).height() - rect.bottom;
+            const windowHeight = $(window).height() || 0;
+            const pixelsToBottom = windowHeight - rect.bottom;
 
             if (pixelsToBottom < 0) {
                 this.$dropdownMenu.css("top", pixelsToBottom);
@@ -60,5 +72,5 @@ export default class RightDropdownButtonWidget extends BasicWidget {
     }
 
     // to be overridden
-    async dropdownShow() {}
+    async dropdownShown(): Promise<void> {}
 }

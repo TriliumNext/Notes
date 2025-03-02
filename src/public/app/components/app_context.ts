@@ -246,8 +246,9 @@ export type CommandMappings = {
     saveAttributes: CommandData;
     reloadAttributes: CommandData;
     refreshNoteList: CommandData & { noteId: string; };
-    refreshResults: CommandData;
-    refreshSearchDefinition: CommandData;
+
+    refreshResults: {};
+    refreshSearchDefinition: {};
 };
 
 type EventMappings = {
@@ -311,6 +312,9 @@ type EventMappings = {
     showHighlightsListWidget: {
         noteId: string;
     };
+    showTocWidget: {
+        noteId: string;
+    };
     showSearchError: {
         error: string;
     };
@@ -349,11 +353,12 @@ type EventMappings = {
     refreshNoteList: {
         noteId: string;
     };
-    showToc: {
-        noteId: string;
-    };
     noteTypeMimeChanged: { noteId: string };
     zenModeChanged: { isEnabled: boolean };
+    relationMapCreateChildNote: { ntxId: string | null | undefined };
+    relationMapResetPanZoom: { ntxId: string | null | undefined };
+    relationMapResetZoomIn: { ntxId: string | null | undefined };
+    relationMapResetZoomOut: { ntxId: string | null | undefined };
 };
 
 export type EventListener<T extends EventNames> = {

@@ -63,7 +63,7 @@ export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
             return true;
         }
 
-        if (note.type === "file" && note.mime === "application/pdf") {
+        if (note.type === "file" && (note.mime === "application/pdf" || note.mime.startsWith("video/"))) {
             return true;
         }
 

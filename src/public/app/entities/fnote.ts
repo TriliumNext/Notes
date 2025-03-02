@@ -330,6 +330,7 @@ class FNote {
         // notes/clones cannot form tree cycles, it is possible to create attribute inheritance cycle via templates
         // when template instance is a parent of template itself
         if (path.includes(this.noteId)) {
+            console.log("Forming a path");
             return [];
         }
 

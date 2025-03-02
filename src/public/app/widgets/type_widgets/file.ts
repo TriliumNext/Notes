@@ -22,12 +22,21 @@ const TPL = `
             padding: 0;
         }
 
+        .note-split.full-content-width .note-detail-file[data-preview-type="video"] {
+            overflow: hidden;
+        }
+
         .file-preview-content {
             background-color: var(--accented-background-color);
             padding: 15px;
             height: 100%;
             overflow: auto;
             margin: 10px;
+        }
+
+        .note-detail-file > .video-preview {
+            width: 100%;
+            height: 100%;
         }
     </style>
 
@@ -85,6 +94,8 @@ export default class FileTypeWidget extends TypeWidget {
         this.$videoPreview.hide();
         this.$audioPreview.hide();
 
+        let previewType: string;
+
         if (blob?.content) {
             this.$previewContent.show().scrollTop(0);
             const trimmedContent = blob.content.substring(0, TEXT_MAX_NUM_CHARS);
@@ -92,23 +103,30 @@ export default class FileTypeWidget extends TypeWidget {
                 this.$previewTooBig.removeClass("hidden-ext");
             }
             this.$previewContent.text(trimmedContent);
+            previewType = "text";
         } else if (note.mime === "application/pdf") {
             this.$pdfPreview.show().attr("src", openService.getUrlForDownload(`api/notes/${this.noteId}/open`));
+            previewType = "pdf";
         } else if (note.mime.startsWith("video/")) {
             this.$videoPreview
                 .show()
                 .attr("src", openService.getUrlForDownload(`api/notes/${this.noteId}/open-partial`))
                 .attr("type", this.note?.mime ?? "")
                 .css("width", this.$widget.width() ?? 0);
+            previewType = "video";
         } else if (note.mime.startsWith("audio/")) {
             this.$audioPreview
                 .show()
                 .attr("src", openService.getUrlForDownload(`api/notes/${this.noteId}/open-partial`))
                 .attr("type", this.note?.mime ?? "")
                 .css("width", this.$widget.width() ?? 0);
+            previewType = "audio";
         } else {
             this.$previewNotAvailable.show();
+            previewType = "not-available";
         }
+
+        this.$widget.attr("data-preview-type", previewType ?? "");
     }
 
     async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {

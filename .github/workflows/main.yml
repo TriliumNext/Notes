@@ -43,6 +43,21 @@ jobs:
           os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
           extension: ${{ matrix.os.extension }}
+        env:
+          APPLE_APP_CERTIFICATE_BASE64: ${{ secrets.APPLE_APP_CERTIFICATE_BASE64 }}
+          APPLE_APP_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_CERTIFICATE_PASSWORD }}
+          APPLE_INSTALLER_CERTIFICATE_BASE64: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_BASE64 }}
+          APPLE_INSTALLER_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+
+      # Clean up keychain after build
+      - name: Clean up keychain
+        if: matrix.os.name == 'macos' && always()
+        run: |
+          security delete-keychain build.keychain
+
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
         with:

@@ -1252,10 +1252,10 @@
   "etapi": {
     "title": "ETAPI",
     "description": "ETAPI is a REST API used to access Trilium instance programmatically, without UI.",
-    "see_more": "See more details on",
+    "see_more": "See more details in the {{- link_to_wiki}} and the {{- link_to_openapi_spec}} or the {{- link_to_swagger_ui }}.",
     "wiki": "wiki",
-    "and": "and",
     "openapi_spec": "ETAPI OpenAPI spec",
+    "swagger_ui": "ETAPI Swagger UI",
     "create_token": "Create new ETAPI token",
     "existing_tokens": "Existing tokens",
     "no_tokens_yet": "There are no tokens yet. Click on the button above to create one.",
@@ -1685,10 +1685,17 @@
     "check_share_root": "Check Share Root Status",
     "share_root_found": "Share root note '{{noteTitle}}' is ready",
     "share_root_not_found": "No note with #shareRoot label found",
-    "share_root_not_shared": "Note '{{noteTitle}}' has #shareRoot label but is not Shared"
+    "share_root_not_shared": "Note '{{noteTitle}}' has #shareRoot label but is not shared"
   },
   "time_selector": {
     "invalid_input": "The entered time value is not a valid number.",
     "minimum_input": "The entered time value needs to be at least {{minimumSeconds}} seconds."
+  },
+  "tasks": {
+    "due": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday"
+    }
   }
 }

@@ -67,6 +67,9 @@ export default class ThemeOptions extends OptionsWidget {
             utils.reloadFrontendApp("layout orientation change");
         });
 
+        const $layoutOrientationSection = $(this.$widget[0]);
+        $layoutOrientationSection.toggleClass("hidden-ext", utils.isMobile());
+
         this.$themeSelect.on("change", async () => {
             const newTheme = this.$themeSelect.val();
 

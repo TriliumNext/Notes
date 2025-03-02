@@ -65,8 +65,15 @@ function load() {
             new BEtapiToken(row);
         }
 
-        for (const row of sql.getRows<TaskRow>(`SELECT taskId, parentNoteId, title, dueDate, isDone, isDeleted FROM tasks WHERE isDeleted = 0`)) {
-            new BTask(row);
+        try {
+            for (const row of sql.getRows<TaskRow>(`SELECT taskId, parentNoteId, title, dueDate, isDone, isDeleted FROM tasks WHERE isDeleted = 0`)) {
+                new BTask(row);
+            }
+        } catch (e: any) {
+            // Some older migrations trigger becca which would fail since the "tasks" table is not yet defined (didn't reach the right migration).
+            if (!(e.message.includes("no such table"))) {
+                throw e;
+            }
         }
     });
 

@@ -92,7 +92,8 @@
     "zoom-out": "Micșorează zoom-ul",
     "toggle-classic-editor-toolbar": "Comută tab-ul „Formatare” pentru editorul cu bară fixă",
     "export-as-pdf": "Exportă notița curentă ca PDF",
-    "show-cheatsheet": "Afișează o fereastră cu scurtături de la tastatură comune"
+    "show-cheatsheet": "Afișează o fereastră cu scurtături de la tastatură comune",
+    "toggle-zen-mode": "Activează/dezactivează modul zen (o interfață minimală, fără distrageri)"
   },
   "login": {
     "button": "Autentifică",

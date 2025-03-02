@@ -3,10 +3,13 @@ import appContext from "../../components/app_context.js";
 import attributeService from "../../services/attributes.js";
 import protectedSessionHolder from "../../services/protected_session_holder.js";
 import { t } from "../../services/i18n.js";
+import LoadResults from "../../services/load_results.js";
+import type { AttributeRow } from "../../services/load_results.js";
+import FNote from "../../entities/fnote.js";
 
 export default class EditButton extends OnClickButtonWidget {
-    isEnabled() {
-        return super.isEnabled() && this.note && this.noteContext.viewScope.viewMode === "default";
+    isEnabled(): boolean {
+        return Boolean(super.isEnabled() && this.note && this.noteContext?.viewScope?.viewMode === "default");
     }
 
     constructor() {
@@ -16,15 +19,15 @@ export default class EditButton extends OnClickButtonWidget {
             .title(t("edit_button.edit_this_note"))
             .titlePlacement("bottom")
             .onClick((widget) => {
-                this.noteContext.viewScope.readOnlyTemporarilyDisabled = true;
-
-                appContext.triggerEvent("readOnlyTemporarilyDisabled", { noteContext: this.noteContext });
-
+                if (this.noteContext?.viewScope) {
+                    this.noteContext.viewScope.readOnlyTemporarilyDisabled = true;
+                    appContext.triggerEvent("readOnlyTemporarilyDisabled", { noteContext: this.noteContext });
+                }
                 this.refresh();
             });
     }
 
-    async refreshWithNote(note) {
+    async refreshWithNote(note: FNote): Promise<void> {
         if (note.isProtected && !protectedSessionHolder.isProtectedSessionAvailable()) {
             this.toggleInt(false);
         } else {
@@ -34,15 +37,16 @@ export default class EditButton extends OnClickButtonWidget {
             const wasVisible = this.isVisible();
 
             // can't do this in isEnabled() since isReadOnly is async
-            this.toggleInt(await this.noteContext.isReadOnly());
+            const isReadOnly = await this.noteContext?.isReadOnly();
+            this.toggleInt(Boolean(isReadOnly));
 
             // make the edit button stand out on the first display, otherwise
             // it's difficult to notice that the note is readonly
-            if (this.isVisible() && !wasVisible) {
+            if (this.isVisible() && !wasVisible && this.$widget) {
                 this.$widget.addClass("bx-tada bx-lg");
 
                 setTimeout(() => {
-                    this.$widget.removeClass("bx-tada bx-lg");
+                    this.$widget?.removeClass("bx-tada bx-lg");
                 }, 1700);
             }
         }
@@ -50,15 +54,21 @@ export default class EditButton extends OnClickButtonWidget {
         await super.refreshWithNote(note);
     }
 
-    entitiesReloadedEvent({ loadResults }) {
-        if (loadResults.getAttributeRows().find((attr) => attr.type === "label" && attr.name.toLowerCase().includes("readonly") && attributeService.isAffecting(attr, this.note))) {
-            this.noteContext.viewScope.readOnlyTemporarilyDisabled = false;
-
+    entitiesReloadedEvent({ loadResults }: { loadResults: LoadResults }): void {
+        if (loadResults.getAttributeRows().find((attr: AttributeRow) =>
+            attr.type === "label" &&
+            attr.name?.toLowerCase().includes("readonly") &&
+            this.note &&
+            attributeService.isAffecting(attr, this.note)
+        )) {
+            if (this.noteContext?.viewScope) {
+                this.noteContext.viewScope.readOnlyTemporarilyDisabled = false;
+            }
             this.refresh();
         }
     }
 
-    async noteTypeMimeChangedEvent({ noteId }) {
+    async noteTypeMimeChangedEvent({ noteId }: { noteId: string }): Promise<void> {
         if (this.isNote(noteId)) {
             await this.refresh();
         }

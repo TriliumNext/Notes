@@ -17,17 +17,17 @@ const TPL = `
           <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
           <div class="dropdown-menu dropdown-menu-right p-4">
             <p>${t("search_script.description1")}</p>
-            
+
             <p>${t("search_script.description2")}</p>
-            
+
             <p>${t("search_script.example_title")}</p>
-            
+
             <pre>${t("search_script.example_code")}</pre>
 
             ${t("search_script.note")}
           </div>
         </div>
-        
+
         <span class="bx bx-x icon-action search-option-del"></span>
     </td>
 </tr>`;
@@ -40,7 +40,7 @@ export default class SearchScript extends AbstractSearchOption {
         return "relation";
     }
 
-    static async create(noteId) {
+    static async create(noteId: string) {
         await AbstractSearchOption.setAttribute(noteId, "relation", "searchScript", "root");
     }
 
@@ -59,7 +59,7 @@ export default class SearchScript extends AbstractSearchOption {
 
         const searchScriptNoteId = this.note.getRelationValue("searchScript");
 
-        if (searchScriptNoteId !== "root") {
+        if (searchScriptNoteId && searchScriptNoteId !== "root") {
             $searchScript.setNote(searchScriptNoteId);
         }
 

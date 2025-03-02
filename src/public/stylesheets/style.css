@@ -1685,3 +1685,14 @@ body.zen .note-title-widget input {
     font-size: 1rem !important;
     background: transparent !important;
 }
+
+/* Content renderer */
+
+footer.file-footer {
+    display: flex;
+    justify-content: center;
+}
+
+footer.file-footer button {
+    margin: 5px;
+}

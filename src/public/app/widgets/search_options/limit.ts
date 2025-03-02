@@ -15,14 +15,17 @@ const TPL = `
             <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
                 ${t("limit.take_first_x_results")}
-            </div> 
+            </div>
         </div>
-    
+
         <span class="bx bx-x icon-action search-option-del"></span>
     </td>
 </tr>`;
 
 export default class Limit extends AbstractSearchOption {
+
+    private $limit!: JQuery<HTMLElement>;
+
     static get optionName() {
         return "limit";
     }
@@ -30,7 +33,7 @@ export default class Limit extends AbstractSearchOption {
         return "label";
     }
 
-    static async create(noteId) {
+    static async create(noteId: string) {
         await AbstractSearchOption.setAttribute(noteId, "label", "limit", "10");
     }
 
@@ -40,13 +43,13 @@ export default class Limit extends AbstractSearchOption {
         this.$limit = $option.find("input[name=limit]");
         this.$limit.on("change", () => this.update());
         this.$limit.on("input", () => this.update());
-        this.$limit.val(this.note.getLabelValue("limit"));
+        this.$limit.val(this.note.getLabelValue("limit") ?? "");
 
         return $option;
     }
 
     async update() {
-        const limit = this.$limit.val();
+        const limit = String(this.$limit.val());
 
         await this.setAttribute("label", "limit", limit);
     }

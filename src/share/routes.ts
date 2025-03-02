@@ -87,7 +87,6 @@ function checkNoteAccess(noteId: string, req: Request, res: Response) {
     const header = req.header("Authorization");
 
     if (!header?.startsWith("Basic ")) {
-        requestCredentials(res);
         return false;
     }
 
