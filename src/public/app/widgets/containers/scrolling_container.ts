@@ -24,7 +24,7 @@ export default class ScrollingContainer extends Container<BasicWidget> {
         this.$widget.scrollTop(0);
     }
 
-    async noteSwitchedAndActivatedEvent({ noteContext, notePath }: EventData<"noteSwitchedAndActivatedEvent">) {
+    async noteSwitchedAndActivatedEvent({ noteContext, notePath }: EventData<"noteSwitchedAndActivated">) {
         this.noteContext = noteContext;
 
         this.$widget.scrollTop(0);

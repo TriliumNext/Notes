@@ -295,7 +295,7 @@ type EventMappings = {
         noteContext: NoteContext;
         notePath?: string | null;
     };
-    noteSwitchedAndActivatedEvent: {
+    noteSwitchedAndActivated: {
         noteContext: NoteContext;
         notePath: string;
     };
@@ -325,7 +325,7 @@ type EventMappings = {
         noteId: string;
         ntxId: string | null;
     };
-    contextsReopenedEvent: {
+    contextsReopened: {
         mainNtxId: string | null;
         tabPosition: number;
     };
@@ -361,7 +361,7 @@ type EventMappings = {
     relationMapResetPanZoom: { ntxId: string | null | undefined };
     relationMapResetZoomIn: { ntxId: string | null | undefined };
     relationMapResetZoomOut: { ntxId: string | null | undefined };
-    activeNoteChangedEvent: {};
+    activeNoteChanged: {};
     showAddLinkDialog: {
         textTypeWidget: EditableTextTypeWidget;
         text: string;

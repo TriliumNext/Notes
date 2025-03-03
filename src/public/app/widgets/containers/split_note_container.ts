@@ -199,7 +199,7 @@ export default class SplitNoteContainer extends FlexContainer<SplitNoteWidget> {
                 return Promise.resolve();
             }
 
-            if (widget.hasBeenAlreadyShown || name === "noteSwitchedAndActivatedEvent" || appContext.tabManager.getActiveMainContext() === noteContext.getMainContext()) {
+            if (widget.hasBeenAlreadyShown || name === "noteSwitchedAndActivated" || appContext.tabManager.getActiveMainContext() === noteContext.getMainContext()) {
                 widget.hasBeenAlreadyShown = true;
 
                 return Promise.all([

@@ -105,7 +105,7 @@ class NoteContextAwareWidget extends BasicWidget {
     }
 
     // when note is both switched and activated, this should not produce a double refresh
-    async noteSwitchedAndActivatedEvent({ noteContext, notePath }: EventData<"noteSwitchedAndActivatedEvent">) {
+    async noteSwitchedAndActivatedEvent({ noteContext, notePath }: EventData<"noteSwitchedAndActivated">) {
         this.noteContext = noteContext;
 
         // if notePath does not match, then the noteContext has been switched to another note in the meantime
