@@ -1,10 +1,10 @@
-import Draggabilly, { type DraggabillyCallback, type MoveVector } from "draggabilly";
+import Draggabilly, { type MoveVector } from "draggabilly";
 import { t } from "../services/i18n.js";
 import BasicWidget from "./basic_widget.js";
 import contextMenu from "../menus/context_menu.js";
 import utils from "../services/utils.js";
 import keyboardActionService from "../services/keyboard_actions.js";
-import appContext, { type CommandData, type CommandListenerData, type EventData } from "../components/app_context.js";
+import appContext, { type CommandListenerData, type EventData } from "../components/app_context.js";
 import froca from "../services/froca.js";
 import attributeService from "../services/attributes.js";
 import type NoteContext from "../components/note_context.js";
@@ -419,13 +419,13 @@ export default class TabRowWidget extends BasicWidget {
     closeActiveTabCommand({ $el }: CommandListenerData<"closeActiveTab">) {
         const ntxId = $el.closest(".note-tab").attr("data-ntx-id");
 
-        appContext.tabManager.removeNoteContext(ntxId);
+        appContext.tabManager.removeNoteContext(ntxId ?? null);
     }
 
     setTabCloseEvent($tab: JQuery<HTMLElement>) {
         $tab.on("mousedown", (e) => {
             if (e.which === 2) {
-                appContext.tabManager.removeNoteContext($tab.attr("data-ntx-id"));
+                appContext.tabManager.removeNoteContext($tab.attr("data-ntx-id") ?? null);
 
                 return true; // event has been handled
             }
@@ -494,7 +494,7 @@ export default class TabRowWidget extends BasicWidget {
         return $tab.attr("data-ntx-id");
     }
 
-    noteContextRemovedEvent({ ntxIds }: EventData<"noteContextRemovedEvent">) {
+    noteContextRemovedEvent({ ntxIds }: EventData<"noteContextRemoved">) {
         for (const ntxId of ntxIds) {
             this.removeTab(ntxId);
         }
@@ -516,7 +516,7 @@ export default class TabRowWidget extends BasicWidget {
             this.draggabillyDragging.element.style.transform = "";
             this.draggabillyDragging.dragEnd();
             this.draggabillyDragging.isDragging = false;
-            this.draggabillyDragging.positionDrag = () => {}; // Prevent Draggabilly from updating tabEl.style.transform in later frames
+            this.draggabillyDragging.positionDrag = () => { }; // Prevent Draggabilly from updating tabEl.style.transform in later frames
             this.draggabillyDragging.destroy();
             this.draggabillyDragging = null;
         }
@@ -650,7 +650,7 @@ export default class TabRowWidget extends BasicWidget {
     }
 
     contextsReopenedEvent({ mainNtxId, tabPosition }: EventData<"contextsReopenedEvent">) {
-        if (mainNtxId === undefined || tabPosition === undefined) {
+        if (!mainNtxId || !tabPosition) {
             // no tab reopened
             return;
         }
@@ -748,7 +748,7 @@ export default class TabRowWidget extends BasicWidget {
     hoistedNoteChangedEvent({ ntxId }: EventData<"hoistedNoteChanged">) {
         const $tab = this.getTabById(ntxId);
 
-        if ($tab) {
+        if ($tab && ntxId) {
             const noteContext = appContext.tabManager.getNoteContextById(ntxId);
 
             this.updateTab($tab, noteContext);
