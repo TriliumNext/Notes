@@ -163,7 +163,7 @@ export default class TabManager extends Component {
         const activeNoteContext = this.getActiveContext();
         this.updateDocumentTitle(activeNoteContext);
 
-        this.triggerEvent("activeNoteChangedEvent", {}); // trigger this even in on popstate event
+        this.triggerEvent("activeNoteChanged", {}); // trigger this even in on popstate event
     }
 
     calculateHash(): string {
@@ -338,7 +338,6 @@ export default class TabManager extends Component {
         const viewScope = opts.viewScope || { viewMode: "default" };
 
         const noteContext = await this.openEmptyTab(ntxId, hoistedNoteId, mainNtxId);
-
         if (notePath) {
             await noteContext.setNote(notePath, {
                 // if activate is false, then send normal noteSwitched event
@@ -350,7 +349,7 @@ export default class TabManager extends Component {
         if (activate && noteContext.notePath) {
             this.activateNoteContext(noteContext.ntxId, false);
 
-            await this.triggerEvent("noteSwitchedAndActivatedEvent", {
+            await this.triggerEvent("noteSwitchedAndActivated", {
                 noteContext,
                 notePath: noteContext.notePath // resolved note path
             });
@@ -647,13 +646,13 @@ export default class TabManager extends Component {
             let mainNtx = noteContexts.find((nc) => nc.isMainContext());
             if (mainNtx) {
                 // reopened a tab, need to reorder new tab widget in tab row
-                await this.triggerEvent("contextsReopenedEvent", {
+                await this.triggerEvent("contextsReopened", {
                     mainNtxId: mainNtx.ntxId,
                     tabPosition: ntxsInOrder.filter((nc) => nc.isMainContext()).findIndex((nc) => nc.ntxId === mainNtx.ntxId)
                 });
             } else {
                 // reopened a single split, need to reorder the pane widget in split note container
-                await this.triggerEvent("contextsReopenedEvent", {
+                await this.triggerEvent("contextsReopened", {
                     mainNtxId: ntxsInOrder[lastClosedTab.position].ntxId,
                     // this is safe since lastClosedTab.position can never be 0 in this case
                     tabPosition: lastClosedTab.position - 1

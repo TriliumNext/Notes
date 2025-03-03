@@ -628,7 +628,7 @@ export default class TabRowWidget extends BasicWidget {
         return closestIndex;
     }
 
-    noteSwitchedAndActivatedEvent({ noteContext }: EventData<"noteSwitchedAndActivatedEvent">) {
+    noteSwitchedAndActivatedEvent({ noteContext }: EventData<"noteSwitchedAndActivated">) {
         this.activeContextChangedEvent();
 
         this.updateTabById(noteContext.mainNtxId || noteContext.ntxId);
@@ -649,7 +649,7 @@ export default class TabRowWidget extends BasicWidget {
         this.updateTabById(newMainNtxId);
     }
 
-    contextsReopenedEvent({ mainNtxId, tabPosition }: EventData<"contextsReopenedEvent">) {
+    contextsReopenedEvent({ mainNtxId, tabPosition }: EventData<"contextsReopened">) {
         if (!mainNtxId || !tabPosition) {
             // no tab reopened
             return;
