@@ -638,7 +638,7 @@ export default class TabRowWidget extends BasicWidget {
         this.updateTabById(noteContext.mainNtxId || noteContext.ntxId);
     }
 
-    noteContextReorderEvent({ oldMainNtxId, newMainNtxId }: EventData<"noteContextReorderEvent">) {
+    noteContextReorderEvent({ oldMainNtxId, newMainNtxId }: EventData<"noteContextReorder">) {
         if (!oldMainNtxId || !newMainNtxId) {
             // no need to update tab row
             return;

@@ -119,7 +119,7 @@ class NoteContextAwareWidget extends BasicWidget {
         this.noteContext = noteContext;
     }
 
-    async noteTypeMimeChangedEvent({ noteId }: EventData<"noteTypeMimeChangedEvent">) {
+    async noteTypeMimeChangedEvent({ noteId }: EventData<"noteTypeMimeChanged">) {
         if (this.isNote(noteId)) {
             await this.refresh();
         }
