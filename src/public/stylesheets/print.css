@@ -165,6 +165,11 @@ span[style] {
     overflow: unset !important;
 }
 
+/* TODO: This will break once we translate the language */
+.ck-content pre[data-language="Auto-detected"]:after {
+    display: none !important;
+}
+
 /*
  * Code note specific fixes.
  */
@@ -300,6 +305,8 @@ blockquote {
 pre > code {
     widows: 6;
     orphans: 6;
+    overflow: auto;
+    white-space: pre-wrap !important;
 }
 
 h1,

@@ -80,6 +80,35 @@ div.editability-dropdown a.dropdown-item {
     font-size: 0.8em;
 }
 
+/* Narrow width layout */
+.note-info-widget {
+    container: note-info / inline-size;
+}
+
+@container note-info (max-width: 800px) {
+    table, tbody, tr, td, th {
+        display: block;
+        padding: 0 !important;
+    }
+
+    tbody {
+        display: flex;
+        gap: 10px;
+    }
+
+    tr {
+        flex-grow: 1;
+    }
+
+    th {
+        font-size: .85em;
+    }
+
+    td {
+        margin-bottom: .5em;
+    }
+}
+
 /*
  * Attribute detail dialog
  */

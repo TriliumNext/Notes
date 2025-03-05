@@ -201,6 +201,22 @@ body.layout-horizontal > .horizontal {
     top: 3px;
 }
 
+@keyframes sync-icon-animation {
+    from {
+        transform: rotate(360deg);
+    } to {
+        transform: rotate(0deg);
+    }
+}
+
+/* Sync in progres / unknown sync status icon */
+#launcher-pane .sync-status-icon.sync-status-in-progress::before,
+#launcher-pane .sync-status-icon.sync-status-unknown::before {
+    display: block;
+    content: "\ec37";
+    animation: sync-icon-animation 2s linear infinite;
+}
+
 #launcher-pane .sync-status-icon:not(.sync-status-in-progress):hover {
     background: unset;
 }
@@ -876,7 +892,6 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
  */
 
 #center-pane {
-    padding-top: 2px;
     background: var(--main-background-color);
 }
 
@@ -897,6 +912,24 @@ body.mobile .note-title {
 
 .ribbon-container {
     margin-bottom: 0 !important;
+}
+
+.note-split:not(.hidden-ext) + .note-split:not(.hidden-ext) {
+    border-left: 4px solid var(--root-background);
+}
+
+@keyframes note-entrance {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}
+
+.note-split {
+    padding-top: 2px;
+    animation: note-entrance 100ms linear;
+    /* will-change: opacity; -- causes some weird artifacts to the note menu in split view */
 }
 
 /*
@@ -1674,7 +1707,9 @@ div.bookmark-folder-widget .note-link .bx {
     transform: translateY(4%);
 }
 
-/* Search */
+/* 
+ * Search
+ */
 
 .search-result-widget-content .note-path .path-bracket {
     display: inline;
@@ -1685,7 +1720,51 @@ div.bookmark-folder-widget .note-link .bx {
     font-weight: normal;
 }
 
-/* Help */
+/*
+ * SQL Console
+ */
+
+/* Table buttons */
+
+.sql-table-schemas-widget .sql-table-schemas button {
+    --color: var(--main-text-color);
+    --background: var(--card-background-color);
+
+    display: inline-block;
+    box-shadow: 2px 2px 2px var(--card-shadow-color);
+    margin-top: 4px;
+    vertical-align: baseline;
+    border: unset;
+    border-radius: 12px;
+    padding: 2px 12px;
+    background: var(--background) !important;
+    color: var(--color) !important;
+    line-height: unset;
+    cursor: help;
+}
+
+.sql-table-schemas-widget .sql-table-schemas button:hover,
+.sql-table-schemas-widget .sql-table-schemas button:active,
+.sql-table-schemas-widget .sql-table-schemas button:focus-visible {
+    --background: var(--card-background-press-color);
+    --color: var(--main-text-color);
+}
+
+/* Tooltip */
+
+.tooltip .table-schema {
+    font-family: var(--monospace-font-family);
+    font-size: .85em;
+}
+
+/* Data type */
+.tooltip .table-schema td:nth-child(2) {
+    color: var(--muted-text-color);
+}
+
+/*
+ * Help
+ */
 
 .help-dialog .modal-content {
     --modal-background-color: var(--help-background-color);

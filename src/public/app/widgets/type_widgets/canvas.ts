@@ -541,10 +541,6 @@ export default class ExcalidrawTypeWidget extends TypeWidget {
                     excalidrawAPI: (api: ExcalidrawImperativeAPI) => {
                         this.excalidrawApi = api;
                     },
-                    onPaste: (data: unknown, event: unknown) => {
-                        console.log("Verbose: excalidraw internal paste. No trilium action implemented.", data, event);
-                        return false;
-                    },
                     onLibraryChange: () => {
                         this.libraryChanged = true;
 
