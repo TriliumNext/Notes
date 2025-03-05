@@ -393,17 +393,17 @@ export default class TabManager extends Component {
         this.setCurrentNavigationStateToHash();
     }
 
-    async removeNoteContext(ntxId: string | null) {
+    async removeNoteContext(ntxId: string | null): Promise<boolean> {
         // removing note context is an async process which can take some time, if users presses CTRL-W quickly, two
         // close events could interleave which would then lead to attempting to activate already removed context.
-        return await this.mutex.runExclusively(async () => {
+        return await this.mutex.runExclusively(async (): Promise<boolean> => {
             let noteContextToRemove;
 
             try {
                 noteContextToRemove = this.getNoteContextById(ntxId);
             } catch {
                 // note context not found
-                return;
+                return false;
             }
 
             if (noteContextToRemove.isMainContext()) {
@@ -413,7 +413,7 @@ export default class TabManager extends Component {
                     if (noteContextToRemove.isEmpty()) {
                         // this is already the empty note context, no point in closing it and replacing with another
                         // empty tab
-                        return;
+                        return false;
                     }
 
                     await this.openEmptyTab();
@@ -451,6 +451,7 @@ export default class TabManager extends Component {
             }
 
             this.removeNoteContexts(noteContextsToRemove);
+            return true;
         });
     }
 
