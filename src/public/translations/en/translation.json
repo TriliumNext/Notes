@@ -744,7 +744,8 @@
   "basic_properties": {
     "note_type": "Note type",
     "editable": "Editable",
-    "basic_properties": "Basic Properties"
+    "basic_properties": "Basic Properties",
+    "language": "Language"
   },
   "book_properties": {
     "view_type": "View type",
@@ -1421,8 +1422,7 @@
     "widget": "Widget",
     "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?",
     "geo-map": "Geo Map",
-    "beta-feature": "Beta",
-    "task-list": "To-Do List"
+    "beta-feature": "Beta"
   },
   "protect_note": {
     "toggle-on": "Protect the note",
@@ -1682,5 +1682,16 @@
       "tomorrow": "Tomorrow",
       "yesterday": "Yesterday"
     }
+  },
+  "content_widget": {
+    "unknown_widget": "Unknown widget for \"{{id}}\"."
+  },
+  "note_language": {
+    "not_set": "Not set",
+    "configure-languages": "Configure languages..."
+  },
+  "content_language": {
+    "title": "Content languages",
+    "description": "Select one or more languages that should appear in the language selection in the Basic Properties section of a read-only or editable text note. This will allow features such as spell-checking or right-to-left support."
   }
 }

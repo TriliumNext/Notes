@@ -5,8 +5,8 @@
     {
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "name": "nodemon server:start",
-      "program": "${workspaceFolder}/src/main",
+      "name": "nodemon start-server",
+      "program": "${workspaceFolder}/src/www",
       "request": "launch",
       "restart": true,
       "runtimeExecutable": "nodemon",

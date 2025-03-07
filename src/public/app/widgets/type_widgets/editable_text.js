@@ -140,8 +140,6 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         const isClassicEditor = utils.isMobile() || options.get("textNoteEditorType") === "ckeditor-classic";
         const editorClass = isClassicEditor ? CKEditor.DecoupledEditor : CKEditor.BalloonEditor;
 
-        const codeBlockLanguages = buildListOfLanguages();
-
         // CKEditor since version 12 needs the element to be visible before initialization. At the same time,
         // we want to avoid flicker - i.e., show editor only once everything is ready. That's why we have separate
         // display of $widget in both branches.
@@ -185,7 +183,7 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         this.watchdog.setCreator(async (elementOrData, editorConfig) => {
             logInfo("Creating new CKEditor");
 
-            const editor = await editorClass.create(elementOrData, {
+            const finalConfig = {
                 ...editorConfig,
                 ...buildConfig(),
                 ...buildToolbarConfig(isClassicEditor),
@@ -195,7 +193,20 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
                     classes: true,
                     attributes: true
                 }
-            });
+            };
+
+            const contentLanguage = this.note.getLabelValue("language");
+            if (contentLanguage) {
+                finalConfig.language = {
+                    ui: (typeof finalConfig.language === "string" ? finalConfig.language : "en"),
+                    content: contentLanguage
+                }
+                this.contentLanguage = contentLanguage;
+            } else {
+                this.contentLanguage = null;
+            }
+
+            const editor = await editorClass.create(elementOrData, finalConfig);
 
             const notificationsPlugin = editor.plugins.get("Notification");
             notificationsPlugin.on("show:warning", (evt, data) => {
@@ -242,11 +253,15 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
             return editor;
         });
 
+        await this.createEditor();
+    }
+
+    async createEditor() {
         await this.watchdog.create(this.$editor[0], {
             placeholder: t("editable_text.placeholder"),
             mention: mentionSetup,
             codeBlock: {
-                languages: codeBlockLanguages
+                languages: buildListOfLanguages()
             },
             math: {
                 engine: "katex",
@@ -265,7 +280,15 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
     async doRefresh(note) {
         const blob = await note.getBlob();
 
-        await this.spacedUpdate.allowUpdateWithoutChange(() => this.watchdog.editor.setData(blob.content || ""));
+        await this.spacedUpdate.allowUpdateWithoutChange(async () => {
+            const data = blob.content || "";
+            const newContentLanguage = this.note.getLabelValue("language");
+            if (this.contentLanguage !== newContentLanguage) {
+                await this.reinitialize(data);
+            } else {
+                this.watchdog.editor.setData(data);
+            }
+        });
     }
 
     getData() {
@@ -468,4 +491,20 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
     async refreshIncludedNoteEvent({ noteId }) {
         this.refreshIncludedNote(this.$editor, noteId);
     }
+
+    async reinitialize(data) {
+        if (!this.watchdog) {
+            return;
+        }
+
+        this.watchdog.destroy();
+        await this.createEditor();
+        this.watchdog.editor.setData(data);
+    }
+
+    async onLanguageChanged() {
+        const data = this.watchdog.editor.getData();
+        await this.reinitialize(data);
+    }
+
 }

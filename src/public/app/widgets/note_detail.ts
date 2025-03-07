@@ -35,7 +35,6 @@ import GeoMapTypeWidget from "./type_widgets/geo_map.js";
 import utils from "../services/utils.js";
 import type { NoteType } from "../entities/fnote.js";
 import type TypeWidget from "./type_widgets/type_widget.js";
-import TaskListWidget from "./type_widgets/task_list.js";
 
 const TPL = `
 <div class="note-detail">
@@ -73,8 +72,7 @@ const typeWidgetClasses = {
     attachmentDetail: AttachmentDetailTypeWidget,
     attachmentList: AttachmentListTypeWidget,
     mindMap: MindMapWidget,
-    geoMap: GeoMapTypeWidget,
-    taskList: TaskListWidget
+    geoMap: GeoMapTypeWidget
 };
 
 /**
@@ -157,6 +155,9 @@ export default class NoteDetailWidget extends NoteContextAwareWidget {
             typeWidget.spacedUpdate = this.spacedUpdate;
             typeWidget.setParent(this);
 
+            if (this.noteContext) {
+                typeWidget.setNoteContextEvent({ noteContext: this.noteContext });
+            }
             const $renderedWidget = typeWidget.render();
             keyboardActionsService.updateDisplayedShortcuts($renderedWidget);
 

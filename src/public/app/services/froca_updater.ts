@@ -8,8 +8,6 @@ import FAttribute, { type FAttributeRow } from "../entities/fattribute.js";
 import FAttachment, { type FAttachmentRow } from "../entities/fattachment.js";
 import type { default as FNote, FNoteRow } from "../entities/fnote.js";
 import type { EntityChange } from "../server_types.js";
-import type { FTaskRow } from "../entities/ftask.js";
-import FTask from "../entities/ftask.js";
 
 async function processEntityChanges(entityChanges: EntityChange[]) {
     const loadResults = new LoadResults(entityChanges);
@@ -39,8 +37,6 @@ async function processEntityChanges(entityChanges: EntityChange[]) {
                 processAttachment(loadResults, ec);
             } else if (ec.entityName === "blobs" || ec.entityName === "etapi_tokens") {
                 // NOOP
-            } else if (ec.entityName === "tasks") {
-                processTaskChange(loadResults, ec);
             } else {
                 throw new Error(`Unknown entityName '${ec.entityName}'`);
             }
@@ -308,35 +304,6 @@ function processAttachment(loadResults: LoadResults, ec: EntityChange) {
     }
 
     loadResults.addAttachmentRow(attachmentEntity);
-}
-
-function processTaskChange(loadResults: LoadResults, ec: EntityChange) {
-    if (ec.isErased && ec.entityId in froca.tasks) {
-        utils.reloadFrontendApp(`${ec.entityName} '${ec.entityId}' is erased, need to do complete reload.`);
-        return;
-    }
-
-    let task = froca.tasks[ec.entityId];
-    const taskEntity = ec.entity as FTaskRow;
-
-    if (ec.isErased || (ec.entity as any)?.isDeleted) {
-        if (task) {
-            delete froca.tasks[ec.entityId];
-        }
-
-        return;
-    }
-
-    if (ec.entity) {
-        if (task) {
-            task.update(ec.entity as FTaskRow);
-        } else {
-            task = new FTask(froca, ec.entity as FTaskRow);
-            froca.tasks[task.taskId] = task;
-        }
-    }
-
-    loadResults.addTaskRow(taskEntity);
 }
 
 export default {

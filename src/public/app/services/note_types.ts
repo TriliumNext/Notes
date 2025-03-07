@@ -18,7 +18,6 @@ async function getNoteTypeItems(command?: TreeCommandNames) {
         { title: t("note_types.web-view"), command, type: "webView", uiIcon: "bx bx-globe-alt" },
         { title: t("note_types.mind-map"), command, type: "mindMap", uiIcon: "bx bx-sitemap" },
         { title: t("note_types.geo-map"), command, type: "geoMap", uiIcon: "bx bx-map-alt" },
-        { title: t("note_types.task-list"), command, type: "taskList", uiIcon: "bx bx-list-check" }
     ];
 
     const templateNoteIds = await server.get<string[]>("search-templates");

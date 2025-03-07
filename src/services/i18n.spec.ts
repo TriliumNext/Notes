@@ -7,6 +7,10 @@ function checkTranslations(translationDir: string, translationFileName: string) 
     const locales = i18n.getLocales();
 
     for (const locale of locales) {
+        if (locale.contentOnly) {
+            continue;
+        }
+
         const translationPath = path.join(translationDir, locale.id, translationFileName);
         const translationFile = fs.readFileSync(translationPath, { encoding: "utf-8" });
         expect(() => {

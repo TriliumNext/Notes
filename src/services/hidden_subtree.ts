@@ -275,6 +275,7 @@ function buildHiddenSubtreeDefinition(helpSubtree: HiddenSubtreeItem[]): HiddenS
                     { id: "_optionsBackup", title: t("hidden-subtree.backup-title"), type: "contentWidget", icon: "bx-data" },
                     { id: "_optionsSync", title: t("hidden-subtree.sync-title"), type: "contentWidget", icon: "bx-wifi" },
                     { id: "_optionsOther", title: t("hidden-subtree.other"), type: "contentWidget", icon: "bx-dots-horizontal" },
+                    { id: "_optionsLocalization", title: t("hidden-subtree.localization"), type: "contentWidget", icon: "bx-world" },
                     { id: "_optionsAdvanced", title: t("hidden-subtree.advanced-title"), type: "contentWidget" }
                 ]
             },

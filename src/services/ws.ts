@@ -188,12 +188,6 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
                                                 WHERE attachmentId = ?`,
             [entityChange.entityId]
         );
-    } else if (entityChange.entityName === "tasks") {
-        entityChange.entity = becca.getTask(entityChange.entity);
-
-        if (!entityChange.entity) {
-            entityChange.entity = sql.getRow(`SELECT * FROM tasks WHERE taskId = ?`, [entityChange.entityId]);
-        }
     }
 
     if (entityChange.entity instanceof AbstractBeccaEntity) {

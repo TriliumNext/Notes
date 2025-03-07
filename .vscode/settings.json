@@ -19,5 +19,12 @@
   "[css]": {
     "editor.defaultFormatter": "vscode.css-language-features"
   },
-  "npm.exclude": ["**/build", "**/dist", "**/out/**"]
+  "npm.exclude": [
+    "**/build",
+    "**/dist",
+    "**/out/**"
+  ],
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }

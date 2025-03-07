@@ -229,8 +229,8 @@ export default class CalendarView extends ViewMode {
             return;
         }
 
-        CalendarView.#setAttribute(note, "label", "startDate", startDate);
-        CalendarView.#setAttribute(note, "label", "endDate", endDate);
+        attributes.setAttribute(note, "label", "startDate", startDate);
+        attributes.setAttribute(note, "label", "endDate", endDate);
     }
 
     onEntitiesReloaded({ loadResults }: EventData<"entitiesReloaded">) {
@@ -433,20 +433,6 @@ export default class CalendarView extends ViewMode {
         }
 
         return [note.title];
-    }
-
-    static async #setAttribute(note: FNote, type: "label" | "relation", name: string, value: string | null | undefined) {
-        if (value) {
-            // Create or update the attribute.
-            await server.put(`notes/${note.noteId}/set-attribute`, { type, name, value });
-        } else {
-            // Remove the attribute if it exists on the server but we don't define a value for it.
-            const attributeId = note.getAttribute(type, name)?.attributeId;
-            if (attributeId) {
-                await server.remove(`notes/${note.noteId}/attributes/${attributeId}`);
-            }
-        }
-        await ws.waitForMaxKnownEntityChangeId();
     }
 
     static #formatDateToLocalISO(date: Date | null | undefined) {

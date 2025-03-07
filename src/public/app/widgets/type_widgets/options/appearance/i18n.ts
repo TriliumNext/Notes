@@ -1,7 +1,7 @@
 import OptionsWidget from "../options_widget.js";
 import server from "../../../../services/server.js";
 import utils from "../../../../services/utils.js";
-import { t } from "../../../../services/i18n.js";
+import { getAvailableLocales, t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
 const TPL = `
@@ -25,12 +25,6 @@ const TPL = `
 </div>
 `;
 
-// TODO: Deduplicate with server.
-interface Locale {
-    id: string;
-    name: string;
-}
-
 export default class LocalizationOptions extends OptionsWidget {
 
     private $localeSelect!: JQuery<HTMLElement>;
@@ -53,7 +47,7 @@ export default class LocalizationOptions extends OptionsWidget {
     }
 
     async optionsLoaded(options: OptionMap) {
-        const availableLocales = await server.get<Locale[]>("options/locales");
+        const availableLocales = getAvailableLocales().filter(l => !l.contentOnly);
         this.$localeSelect.empty();
 
         for (const locale of availableLocales) {

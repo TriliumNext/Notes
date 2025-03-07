@@ -39,6 +39,8 @@ import EditorOptions from "./options/text_notes/editor.js";
 import ShareSettingsOptions from "./options/other/share_settings.js";
 import type FNote from "../../entities/fnote.js";
 import type NoteContextAwareWidget from "../note_context_aware_widget.js";
+import { t } from "i18next";
+import LanguageOptions from "./options/i18n/language.js";
 
 const TPL = `<div class="note-detail-content-widget note-detail-printable">
     <style>
@@ -81,6 +83,7 @@ const CONTENT_WIDGETS: Record<string, (typeof NoteContextAwareWidget)[]> = {
         HtmlImportTagsOptions,
         ShareSettingsOptions
     ],
+    _optionsLocalization: [ LanguageOptions ],
     _optionsAdvanced: [DatabaseIntegrityCheckOptions, DatabaseAnonymizationOptions, AdvancedSyncOptions, VacuumDatabaseOptions],
     _backendLog: [BackendLogWidget]
 };
@@ -119,7 +122,7 @@ export default class ContentWidgetTypeWidget extends TypeWidget {
                 await widget.refresh();
             }
         } else {
-            this.$content.append(`Unknown widget for "${note.noteId}"`);
+            this.$content.append(t("content_widget.unknown_widget", { id: note.noteId }));
         }
     }
 }

@@ -71,6 +71,7 @@ const ALLOWED_OPTIONS = new Set([
     "editedNotesOpenInRibbon",
     "locale",
     "firstDayOfWeek",
+    "languages",
     "textNoteEditorType",
     "textNoteEditorMultilineToolbar",
     "layoutOrientation",

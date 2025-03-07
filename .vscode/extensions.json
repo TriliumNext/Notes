@@ -1,3 +1,7 @@
 {
-  "recommendations": ["lokalise.i18n-ally", "editorconfig.editorconfig"]
+  "recommendations": [
+    "lokalise.i18n-ally",
+    "editorconfig.editorconfig",
+    "vitest.explorer"
+  ]
 }

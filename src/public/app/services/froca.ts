@@ -6,8 +6,6 @@ import appContext from "../components/app_context.js";
 import FBlob, { type FBlobRow } from "../entities/fblob.js";
 import FAttachment, { type FAttachmentRow } from "../entities/fattachment.js";
 import type { Froca } from "./froca-interface.js";
-import FTask from "../entities/ftask.js";
-import type { FTaskRow } from "../entities/ftask.js";
 
 interface SubtreeResponse {
     notes: FNoteRow[];
@@ -39,7 +37,6 @@ class FrocaImpl implements Froca {
     attributes!: Record<string, FAttribute>;
     attachments!: Record<string, FAttachment>;
     blobPromises!: Record<string, Promise<void | FBlob> | null>;
-    tasks!: Record<string, FTask>;
 
     constructor() {
         this.initializedPromise = this.loadInitialTree();
@@ -55,7 +52,6 @@ class FrocaImpl implements Froca {
         this.attributes = {};
         this.attachments = {};
         this.blobPromises = {};
-        this.tasks = {};
 
         this.addResp(resp);
     }
@@ -369,24 +365,6 @@ class FrocaImpl implements Froca {
             }
 
             return attachment;
-        });
-    }
-
-    getTask(taskId: string) {
-        return this.tasks[taskId];
-    }
-
-    async getTasks(parentNoteId: string) {
-        const taskRows = await server.get<FTaskRow[]>(`tasks/${parentNoteId}`);
-        return this.processTaskRow(taskRows);
-    }
-
-    processTaskRow(taskRows: FTaskRow[]): FTask[] {
-        return taskRows.map((taskRow) => {
-            const task = new FTask(this, taskRow);
-            this.tasks[task.taskId] = task;
-
-            return task;
         });
     }
 

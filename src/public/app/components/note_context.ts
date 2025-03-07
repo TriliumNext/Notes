@@ -369,7 +369,8 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
 
         const { note, viewScope } = this;
 
-        let title = viewScope?.viewMode === "default" ? note.title : `${note.title}: ${viewScope?.viewMode}`;
+        const isNormalView = (viewScope?.viewMode === "default" || viewScope?.viewMode === "contextual-help");
+        let title = (isNormalView ? note.title : `${note.title}: ${viewScope?.viewMode}`);
 
         if (viewScope?.attachmentId) {
             // assuming the attachment has been already loaded

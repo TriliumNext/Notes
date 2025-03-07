@@ -118,6 +118,12 @@
                 <td>When present (regardless of value), it will show the number of the week
                   on the calendar.</td>
               </tr>
+              <tr>
+                <td><code>~child:template</code>
+                </td>
+                <td>Defines the template for newly created notes in the calendar (via dragging
+                  or clicking).</td>
+              </tr>
             </tbody>
           </table>
         </figure>
@@ -174,6 +180,36 @@
                 <td>Changes the title of an event to point to an attribute of the note other
                   than the title, either a label (e.g. <code>#assignee</code>) or a relation
                   (e.g. <code>~for</code>). See <i>Advanced use-cases</i> for more information.</td>
+              </tr>
+              <tr>
+                <td><code>#calendar:promotedAttributes</code>
+                </td>
+                <td>
+                  <p>Allows displaying the value of one or more promoted attributes in the
+                    calendar like this:
+                    <img src="19_Calendar View_image.png" width="131" height="113">
+                  </p><pre><code class="language-text-x-trilium-auto">#label:weight="promoted,number,single,precision=1"
+#label:mood="promoted,alias=Mood,single,text"
+#calendar:promotedAttributes="label:weight,label:mood" </code></pre>
+                  <p>It can also be used with relations, case in which it will display the
+                    title of the target note:</p><pre><code class="language-text-x-trilium-auto">#relation:assignee="promoted,alias=Assignee,single,text"
+#calendar:promotedAttributes="relation:assignee" 
+~assignee=@My assignee </code></pre>
+                </td>
+              </tr>
+              <tr>
+                <td><code>#calendar:startDate</code>
+                </td>
+                <td>Allows using a different label to represent the start date, other than <code>#startDate</code> (e.g. <code>#expiryDate</code>).
+                  The label name must be prefixed with <code>#</code>. If the label is not
+                  defined for a note, the default will be used instead.</td>
+              </tr>
+              <tr>
+                <td><code>#calendar:endDate</code>
+                </td>
+                <td>Allows using a different label to represent the start date, other than <code>#endDate</code>.
+                  The label name must be prefixed with <code>#</code>. If the label is not
+                  defined for a note, the default will be used instead.</td>
               </tr>
             </tbody>
           </table>

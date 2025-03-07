@@ -11,7 +11,7 @@ import FNote from "../entities/fnote.js";
 import FAttachment from "../entities/fattachment.js";
 import imageContextMenuService from "../menus/image_context_menu.js";
 import { applySingleBlockSyntaxHighlight, applySyntaxHighlight } from "./syntax_highlight.js";
-import { loadElkIfNeeded } from "./mermaid.js";
+import { loadElkIfNeeded, postprocessMermaidSvg } from "./mermaid.js";
 import { normalizeMimeTypeForCKEditor } from "./mime_type_definitions.js";
 
 let idCounter = 1;
@@ -226,7 +226,7 @@ async function renderMermaid(note: FNote | FAttachment, $renderedContent: JQuery
         await loadElkIfNeeded(content);
         const { svg } = await mermaid.mermaidAPI.render("in-mermaid-graph-" + idCounter++, content);
 
-        $renderedContent.append($(svg));
+        $renderedContent.append($(postprocessMermaidSvg(svg)));
     } catch (e) {
         const $error = $("<p>The diagram could not displayed.</p>");
 

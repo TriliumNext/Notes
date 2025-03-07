@@ -1685,5 +1685,8 @@
       "tomorrow": "Mâine",
       "yesterday": "Ieri"
     }
+  },
+  "content_widget": {
+    "unknown_widget": "Nu s-a putut găsi widget-ul corespunzător pentru „{{id}}”."
   }
 }

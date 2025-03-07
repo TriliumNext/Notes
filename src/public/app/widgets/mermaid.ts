@@ -3,7 +3,7 @@ import libraryLoader from "../services/library_loader.js";
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import server from "../services/server.js";
 import utils from "../services/utils.js";
-import { loadElkIfNeeded } from "../services/mermaid.js";
+import { loadElkIfNeeded, postprocessMermaidSvg } from "../services/mermaid.js";
 import type FNote from "../entities/fnote.js";
 import type { EventData } from "../components/app_context.js";
 
@@ -122,7 +122,7 @@ export default class MermaidWidget extends NoteContextAwareWidget {
 
         await loadElkIfNeeded(content);
         const { svg } = await mermaid.mermaidAPI.render(`mermaid-graph-${idCounter}`, content);
-        return svg;
+        return postprocessMermaidSvg(svg);
     }
 
     async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
@@ -143,7 +143,7 @@ export default class MermaidWidget extends NoteContextAwareWidget {
     }
 }
 
-export function getMermaidConfig() {
+export function getMermaidConfig(): MermaidConfig {
     const documentStyle = window.getComputedStyle(document.documentElement);
     const mermaidTheme = documentStyle.getPropertyValue("--mermaid-theme");
 

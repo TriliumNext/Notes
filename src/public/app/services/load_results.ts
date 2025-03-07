@@ -1,4 +1,4 @@
-import type { TaskRow, AttachmentRow } from "../../../becca/entities/rows.js";
+import type { AttachmentRow } from "../../../becca/entities/rows.js";
 import type { AttributeType } from "../entities/fattribute.js";
 import type { EntityChange } from "../server_types.js";
 
@@ -71,7 +71,6 @@ export default class LoadResults {
     private contentNoteIdToComponentId: ContentNoteIdToComponentIdRow[];
     private optionNames: string[];
     private attachmentRows: AttachmentRow[];
-    private taskRows: TaskRow[];
 
     constructor(entityChanges: EntityChange[]) {
         const entities: Record<string, Record<string, any>> = {};
@@ -100,8 +99,6 @@ export default class LoadResults {
         this.optionNames = [];
 
         this.attachmentRows = [];
-
-        this.taskRows = [];
     }
 
     getEntityRow<T extends EntityRowNames>(entityName: T, entityId: string): EntityRowMappings[T] {
@@ -184,14 +181,6 @@ export default class LoadResults {
         return this.contentNoteIdToComponentId.find((l) => l.noteId === noteId && l.componentId !== componentId);
     }
 
-    isTaskListReloaded(parentNoteId: string) {
-        if (!parentNoteId) {
-            return false;
-        }
-
-        return !!this.taskRows.find((tr) => tr.parentNoteId === parentNoteId);
-    }
-
     addOption(name: string) {
         this.optionNames.push(name);
     }
@@ -212,14 +201,6 @@ export default class LoadResults {
         return this.attachmentRows;
     }
 
-    addTaskRow(task: TaskRow) {
-        this.taskRows.push(task);
-    }
-
-    getTaskRows() {
-        return this.taskRows;
-    }
-
     /**
      * @returns {boolean} true if there are changes which could affect the attributes (including inherited ones)
      *          notably changes in note itself should not have any effect on attributes
@@ -237,8 +218,7 @@ export default class LoadResults {
             this.revisionRows.length === 0 &&
             this.contentNoteIdToComponentId.length === 0 &&
             this.optionNames.length === 0 &&
-            this.attachmentRows.length === 0 &&
-            this.taskRows.length === 0
+            this.attachmentRows.length === 0
         );
     }
 

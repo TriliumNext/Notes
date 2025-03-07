@@ -139,13 +139,3 @@ export interface NoteRow {
     utcDateModified: string;
     content?: string | Buffer;
 }
-
-export interface TaskRow {
-    taskId?: string;
-    parentNoteId: string;
-    title: string;
-    dueDate?: string;
-    isDone?: boolean;
-    isDeleted?: boolean;
-    utcDateModified?: string;
-}

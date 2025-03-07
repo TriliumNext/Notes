@@ -552,7 +552,8 @@ optgroup {
 
 /* Switches */
 
-.switch-widget.component {
+.switch-widget.component,
+.note-language-container {
     --icon-button-size: 28px;
 }
 

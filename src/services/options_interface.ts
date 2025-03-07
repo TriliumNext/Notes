@@ -71,6 +71,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     eraseUnusedAttachmentsAfterSeconds: number;
     eraseUnusedAttachmentsAfterTimeScale: number;
     firstDayOfWeek: number;
+    languages: string;
 
     initialized: boolean;
     isPasswordSet: boolean;

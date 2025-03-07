@@ -49,8 +49,7 @@ const NOTE_TYPES: NoteTypeMapping[] = [
     { type: "image", title: t("note_types.image"), selectable: false },
     { type: "launcher", mime: "", title: t("note_types.launcher"), selectable: false },
     { type: "noteMap", mime: "", title: t("note_types.note-map"), selectable: false },
-    { type: "search", title: t("note_types.saved-search"), selectable: false },
-    { type: "taskList", title: t("note_types.task-list"), selectable: false }
+    { type: "search", title: t("note_types.saved-search"), selectable: false }
 ];
 
 const NOT_SELECTABLE_NOTE_TYPES = NOTE_TYPES.filter((nt) => !nt.selectable).map((nt) => nt.type);

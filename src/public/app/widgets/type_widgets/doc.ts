@@ -18,7 +18,7 @@ const TPL = `<div class="note-detail-doc note-detail-printable">
         }
 
         .note-detail-doc.contextual-help {
-            padding-bottom: 15vh;
+            padding-bottom: 0;
         }
 
         .note-detail-doc.contextual-help h2,
@@ -36,7 +36,7 @@ const TPL = `<div class="note-detail-doc note-detail-printable">
         }
 
         img {
-            max-width: 90vw;
+            max-width: 100%;
             height: auto;
         }
 

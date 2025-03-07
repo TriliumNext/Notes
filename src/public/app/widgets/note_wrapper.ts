@@ -5,6 +5,7 @@ import type BasicWidget from "./basic_widget.js";
 import type { EventData } from "../components/app_context.js";
 import type NoteContext from "../components/note_context.js";
 import type FNote from "../entities/fnote.js";
+import { getLocaleById } from "../services/i18n.js";
 
 export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
 
@@ -56,6 +57,10 @@ export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
         this.$widget.addClass(utils.getMimeTypeClass(note.mime));
 
         this.$widget.toggleClass("protected", note.isProtected);
+
+        const noteLanguage = note?.getLabelValue("language");
+        const locale = getLocaleById(noteLanguage);
+        this.$widget.toggleClass("rtl", !!locale?.rtl);
     }
 
     #isFullWidthNote(note: FNote) {
@@ -76,7 +81,7 @@ export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
         const noteId = this.noteContext?.noteId;
         if (
             loadResults.isNoteReloaded(noteId) ||
-            loadResults.getAttributeRows().find((attr) => attr.type === "label" && attr.name === "cssClass" && attributeService.isAffecting(attr, this.noteContext?.note))
+            loadResults.getAttributeRows().find((attr) => attr.type === "label" && ["cssClass", "language"].includes(attr.name ?? "") && attributeService.isAffecting(attr, this.noteContext?.note))
         ) {
             this.refresh();
         }

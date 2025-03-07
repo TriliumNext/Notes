@@ -198,7 +198,7 @@ function calculateHash({ notePath, ntxId, hoistedNoteId, viewScope = {} }: NoteC
     return hash;
 }
 
-function parseNavigationStateFromUrl(url: string | undefined) {
+export function parseNavigationStateFromUrl(url: string | undefined) {
     if (!url) {
         return {};
     }
@@ -209,11 +209,7 @@ function parseNavigationStateFromUrl(url: string | undefined) {
     }
 
     const hash = url.substr(hashIdx + 1); // strip also the initial '#'
-    const [notePath, paramString] = hash.split("?");
-
-    if (!notePath.match(/^[_a-z0-9]{4,}(\/[_a-z0-9]{4,})*$/i)) {
-        return {};
-    }
+    let [notePath, paramString] = hash.split("?");
 
     const viewScope: ViewScope = {
         viewMode: "default"
@@ -240,6 +236,10 @@ function parseNavigationStateFromUrl(url: string | undefined) {
                 console.warn(`Unrecognized hash parameter '${name}'.`);
             }
         }
+    }
+
+    if (!notePath.match(/^[_a-z0-9]{4,}(\/[_a-z0-9]{4,})*$/i)) {
+        return { searchString }
     }
 
     return {

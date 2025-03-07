@@ -10,13 +10,29 @@ const TPL = `
             position: relative;
         }
 
-        .floating-buttons-children,.show-floating-buttons {
+        .floating-buttons-children,
+        .show-floating-buttons {
             position: absolute;
             top: 10px;
             right: 10px;
             display: flex;
             flex-direction: row;
             z-index: 100;
+        }
+
+        .note-split.rtl .floating-buttons-children,
+        .note-split.rtl .show-floating-buttons {
+            right: unset;
+            left: 10px;
+        }
+
+        .note-split.rtl .close-floating-buttons {
+            order: -1;
+        }
+
+        .note-split.rtl .close-floating-buttons,
+        .note-split.rtl .show-floating-buttons {
+            transform: rotate(180deg);
         }
 
         .type-canvas .floating-buttons-children {

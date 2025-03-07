@@ -90,8 +90,18 @@
     --menu-item-delimiter-color: #ffffff1c;
     --menu-item-group-header-color: #ffffff91;
 
-    --modal-background-color: #333;
-    --modal-backdrop-color: #444;
+    --modal-backdrop-color: #000;
+    --modal-shadow-color: rgba(0, 0, 0, .5);
+    --modal-border-color: #ffffff23;
+    --modal-background-color: #262626;
+    --modal-title-color: gray;
+    --modal-control-button-background: #ffffff2b;
+    --modal-control-button-color: #cbcbcb;
+    --modal-control-button-hover-color: white;
+    --modal-control-button-hover-background: #ffffff45;
+    --modal-close-button-hover-background: var(--tab-close-button-hover-background);
+    --modal-footer-background: #ffffff08;
+    --modal-footer-color: #ffffff7a;
 
     --quick-search-background: #ffffff12;
     --quick-search-color: #ffffff52;
@@ -209,8 +219,4 @@ body .CodeMirror {
 
 body .todo-list input[type="checkbox"]:not(:checked):before {
     border-color: var(--muted-text-color) !important;
-}
-
-.btn-close {
-    filter: invert(1);
 }

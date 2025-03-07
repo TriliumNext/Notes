@@ -134,6 +134,7 @@ const defaultOptions: DefaultOption[] = [
     // Internationalization
     { name: "locale", value: "en", isSynced: true },
     { name: "firstDayOfWeek", value: "1", isSynced: true },
+    { name: "languages", value: "[]", isSynced: true },
 
     // Code block configuration
     {

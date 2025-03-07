@@ -84,8 +84,18 @@
     --menu-item-delimiter-color: #00000030;
     --menu-item-group-header-color: #00000061;
 
+    --modal-backdrop-color: #7c7c7c;
+    --modal-shadow-color: #00000033;
+    --modal-border-color: #797979;
     --modal-background-color: white;
-    --modal-backdrop-color: black;
+    --modal-title-color: gray;
+    --modal-control-button-background: #0000001a;
+    --modal-control-button-color: #737373;
+    --modal-control-button-hover-color: white;
+    --modal-control-button-hover-background: gray;
+    --modal-close-button-hover-background: var(--tab-close-button-hover-background);
+    --modal-footer-background: #00000008;
+    --modal-footer-color: #00000085;
 
     --quick-search-background: #00000012;
     --quick-search-color: #06060682;

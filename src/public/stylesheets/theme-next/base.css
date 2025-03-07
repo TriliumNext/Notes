@@ -63,6 +63,8 @@
     --icon-button-size: 32px;
     --icon-button-icon-ratio: 0.65;
 
+    --modal-control-button-size: 22px;
+
     /* Theme capabilities */
     --tab-note-icons: true;
 }

@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { Modal } from "bootstrap";
+import type { ViewScope } from "./link.js";
 
 function reloadFrontendApp(reason?: string) {
     if (reason) {
@@ -388,6 +389,10 @@ function initHelpDropdown($el: JQuery<HTMLElement>) {
 const wikiBaseUrl = "https://triliumnext.github.io/Docs/Wiki/";
 
 function openHelp($button: JQuery<HTMLElement>) {
+    if ($button.length === 0) {
+        return;
+    }
+
     const helpPage = $button.attr("data-help-page");
 
     if (helpPage) {
@@ -397,12 +402,44 @@ function openHelp($button: JQuery<HTMLElement>) {
     }
 }
 
+async function openInAppHelp($button: JQuery<HTMLElement>) {
+    if ($button.length === 0) {
+        return;
+    }
+
+    const inAppHelpPage = $button.attr("data-in-app-help");
+    if (inAppHelpPage) {
+        // Dynamic import to avoid import issues in tests.
+        const appContext = (await import("../components/app_context.js")).default;
+        const subContexts = appContext.tabManager.getActiveContext().getSubContexts();
+        const targetNote = `_help_${inAppHelpPage}`;
+        const helpSubcontext = subContexts.find((s) => s.viewScope?.viewMode === "contextual-help");
+        const viewScope: ViewScope = {
+            viewMode: "contextual-help",
+        };
+        if (!helpSubcontext) {
+            // The help is not already open, open a new split with it.
+            const { ntxId } = subContexts[subContexts.length - 1];
+            appContext.triggerCommand("openNewNoteSplit", {
+                ntxId,
+                notePath: targetNote,
+                hoistedNoteId: "_help",
+                viewScope
+            })
+        } else {
+            // There is already a help window open, make sure it opens on the right note.
+            helpSubcontext.setNote(targetNote, { viewScope });
+        }
+        return;
+    }
+}
+
 function initHelpButtons($el: JQuery<HTMLElement> | JQuery<Window>) {
     // for some reason, the .on(event, listener, handler) does not work here (e.g. Options -> Sync -> Help button)
     // so we do it manually
     $el.on("click", (e) => {
-        const $helpButton = $(e.target).closest("[data-help-page]");
-        openHelp($helpButton);
+        openHelp($(e.target).closest("[data-help-page]"));
+        openInAppHelp($(e.target).closest("[data-in-app-help]"));
     });
 }
 

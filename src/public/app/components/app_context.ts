@@ -546,10 +546,12 @@ $(window).on("beforeunload", () => {
 });
 
 $(window).on("hashchange", function () {
-    const { notePath, ntxId, viewScope } = linkService.parseNavigationStateFromUrl(window.location.href);
+    const { notePath, ntxId, viewScope, searchString } = linkService.parseNavigationStateFromUrl(window.location.href);
 
     if (notePath || ntxId) {
         appContext.tabManager.switchToNoteContext(ntxId, notePath, viewScope);
+    } else if (searchString) {
+        appContext.triggerCommand("searchNotes", { searchString });
     }
 });
 

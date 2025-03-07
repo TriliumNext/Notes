@@ -72,7 +72,6 @@ import etapiSpecRoute from "../etapi/spec.js";
 import etapiBackupRoute from "../etapi/backup.js";
 
 import apiDocsRoute from "./api_docs.js";
-import * as tasksRoute from "./api/tasks.js";
 
 const MAX_ALLOWED_FILE_SIZE_MB = 250;
 const GET = "get",
@@ -279,11 +278,6 @@ function register(app: express.Application) {
     apiRoute(PST, "/api/etapi-tokens", etapiTokensApiRoutes.createToken);
     apiRoute(PATCH, "/api/etapi-tokens/:etapiTokenId", etapiTokensApiRoutes.patchToken);
     apiRoute(DEL, "/api/etapi-tokens/:etapiTokenId", etapiTokensApiRoutes.deleteToken);
-
-    apiRoute(GET, "/api/tasks/:parentNoteId", tasksRoute.getTasks);
-    apiRoute(PST, "/api/tasks", tasksRoute.createNewTask);
-    apiRoute(PST, "/api/tasks/:taskId/toggle", tasksRoute.toggleTaskDone);
-    apiRoute(PATCH, "/api/tasks/:taskId", tasksRoute.updateTask);
 
     // in case of local electron, local calls are allowed unauthenticated, for server they need auth
     const clipperMiddleware = isElectron ? [] : [auth.checkEtapiToken];

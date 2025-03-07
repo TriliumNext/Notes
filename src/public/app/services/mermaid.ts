@@ -23,3 +23,16 @@ export async function loadElkIfNeeded(mermaidContent: string) {
         mermaid.registerLayoutLoaders((await import("@mermaid-js/layout-elk")).default);
     }
 }
+
+/**
+ * Processes the output of a Mermaid SVG render before it should be delivered to the user.
+ *
+ * <p>
+ * Currently this fixes <br> to <br/> which would otherwise cause an invalid XML.
+ *
+ * @param svg the Mermaid SVG to process.
+ * @returns the processed SVG.
+ */
+export function postprocessMermaidSvg(svg: string) {
+    return svg.replaceAll(/<br\s*>/ig, "<br/>");
+}

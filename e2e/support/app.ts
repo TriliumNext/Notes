@@ -42,7 +42,7 @@ export default class App {
             url = "/";
         }
 
-        await this.page.goto(url, { waitUntil: "networkidle" });
+        await this.page.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
 
         // Wait for the page to load.
         if (url === "/") {

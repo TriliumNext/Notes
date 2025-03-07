@@ -42,14 +42,16 @@ test("User can change language from settings", async ({ page, context }) => {
 
     // Check that the default value (English) is set.
     await expect(app.currentNoteSplit).toContainText("Theme");
-    const languageCombobox = await app.currentNoteSplit.getByRole("combobox").first();
+    const languageCombobox = app.currentNoteSplit.getByRole("combobox").first();
     await expect(languageCombobox).toHaveValue("en");
 
     // Select Chinese and ensure the translation is set.
     await languageCombobox.selectOption("cn");
     await expect(app.currentNoteSplit).toContainText("主题", { timeout: 15000 });
+    await expect(languageCombobox).toHaveValue("cn");
 
     // Select English again.
     await languageCombobox.selectOption("en");
     await expect(app.currentNoteSplit).toContainText("Language", { timeout: 15000 });
+    await expect(languageCombobox).toHaveValue("en");
 });
