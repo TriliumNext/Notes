@@ -22,7 +22,6 @@ import type LoadResults from "../services/load_results.js";
 import type { Attribute } from "../services/attribute_parser.js";
 import type NoteTreeWidget from "../widgets/note_tree.js";
 import type { default as NoteContext, GetTextEditorCallback } from "./note_context.js";
-import type { ContextMenuEvent } from "../menus/context_menu.js";
 import type TypeWidget from "../widgets/type_widgets/type_widget.js";
 import type EditableTextTypeWidget from "../widgets/type_widgets/editable_text.js";
 
@@ -57,8 +56,8 @@ export interface ContextMenuCommandData extends CommandData {
 }
 
 export interface NoteCommandData extends CommandData {
-    notePath?: string;
-    hoistedNoteId?: string;
+    notePath?: string | null;
+    hoistedNoteId?: string | null;
     viewScope?: ViewScope;
 }
 
@@ -173,9 +172,9 @@ export type CommandMappings = {
         callback: (value: NoteDetailWidget | PromiseLike<NoteDetailWidget>) => void;
     };
     executeWithTextEditor: CommandData &
-        ExecuteCommandData<TextEditor> & {
-            callback?: GetTextEditorCallback;
-        };
+    ExecuteCommandData<TextEditor> & {
+        callback?: GetTextEditorCallback;
+    };
     executeWithCodeEditor: CommandData & ExecuteCommandData<null>;
     /**
      * Called upon when attempting to retrieve the content element of a {@link NoteContext}.
@@ -296,15 +295,12 @@ type EventMappings = {
         noteContext: NoteContext;
         notePath?: string | null;
     };
-    noteSwitchedAndActivatedEvent: {
+    noteSwitchedAndActivated: {
         noteContext: NoteContext;
         notePath: string;
     };
     setNoteContext: {
         noteContext: NoteContext;
-    };
-    noteTypeMimeChangedEvent: {
-        noteId: string;
     };
     reEvaluateHighlightsListWidgetVisibility: {
         noteId: string | undefined;
@@ -326,14 +322,14 @@ type EventMappings = {
         noteId: string;
         ntxId: string | null;
     };
-    contextsReopenedEvent: {
-        mainNtxId: string;
+    contextsReopened: {
+        mainNtxId: string | null;
         tabPosition: number;
     };
     noteDetailRefreshed: {
         ntxId?: string | null;
     };
-    noteContextReorderEvent: {
+    noteContextReorder: {
         oldMainNtxId: string;
         newMainNtxId: string;
         ntxIdsInOrder: string[];
@@ -341,7 +337,7 @@ type EventMappings = {
     newNoteContextCreated: {
         noteContext: NoteContext;
     };
-    noteContextRemovedEvent: {
+    noteContextRemoved: {
         ntxIds: string[];
     };
     exportSvg: {
@@ -362,12 +358,11 @@ type EventMappings = {
     relationMapResetPanZoom: { ntxId: string | null | undefined };
     relationMapResetZoomIn: { ntxId: string | null | undefined };
     relationMapResetZoomOut: { ntxId: string | null | undefined };
-    activeNoteChangedEvent: {};
+    activeNoteChanged: {};
     showAddLinkDialog: {
         textTypeWidget: EditableTextTypeWidget;
         text: string;
     };
-
 };
 
 export type EventListener<T extends EventNames> = {
