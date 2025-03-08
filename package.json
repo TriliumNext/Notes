@@ -218,7 +218,7 @@
     "bootstrap": "5.3.3",
     "cross-env": "7.0.3",
     "css-loader": "7.1.2",
-    "electron": "34.3.1",
+    "electron": "35.0.0",
     "eslint": "9.22.0",
     "esm": "3.2.25",
     "globals": "16.0.0",
