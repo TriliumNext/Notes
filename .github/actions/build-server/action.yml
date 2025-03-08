@@ -28,4 +28,4 @@ runs:
       run: |
         mkdir -p upload
         file=$(find dist -name '*.tar.xz' -print -quit)
-        cp "$file" "upload/TriliumNextNotes-Server-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.tar.xz"
+        cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-server-${{ inputs.os }}-${{ inputs.arch }}.tar.xz"
