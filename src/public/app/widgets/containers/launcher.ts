@@ -123,6 +123,8 @@ export default class LauncherWidget extends BasicWidget {
                 return new TodayLauncher(note);
             case "quickSearch":
                 return new QuickSearchLauncherWidget(this.isHorizontalLayout);
+            case "llmChatLauncher":
+                return new ScriptLauncher(note);
             default:
                 throw new Error(`Unrecognized builtin widget ${builtinWidget} for launcher ${note.noteId} "${note.title}"`);
         }

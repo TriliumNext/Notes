@@ -60,6 +60,9 @@ import etapiTokensApiRoutes from "./api/etapi_tokens.js";
 import relationMapApiRoute from "./api/relation-map.js";
 import otherRoute from "./api/other.js";
 import shareRoutes from "../share/routes.js";
+import embeddingsRoute from "./api/embeddings.js";
+import ollamaRoute from "./api/ollama.js";
+import llmRoute from "./api/llm.js";
 
 import etapiAuthRoutes from "../etapi/auth.js";
 import etapiAppInfoRoutes from "../etapi/app_info.js";
@@ -368,6 +371,25 @@ function register(app: express.Application) {
     etapiSpecialNoteRoutes.register(router);
     etapiSpecRoute.register(router);
     etapiBackupRoute.register(router);
+
+    // Embeddings API endpoints
+    apiRoute(GET, "/api/embeddings/similar/:noteId", embeddingsRoute.findSimilarNotes);
+    apiRoute(PST, "/api/embeddings/search", embeddingsRoute.searchByText);
+    apiRoute(GET, "/api/embeddings/providers", embeddingsRoute.getProviders);
+    apiRoute(PATCH, "/api/embeddings/providers/:providerId", embeddingsRoute.updateProvider);
+    apiRoute(PST, "/api/embeddings/reprocess", embeddingsRoute.reprocessAllNotes);
+    apiRoute(GET, "/api/embeddings/queue-status", embeddingsRoute.getQueueStatus);
+    apiRoute(GET, "/api/embeddings/stats", embeddingsRoute.getEmbeddingStats);
+
+    apiRoute(PST, "/api/llm/sessions", llmRoute.createSession);
+    apiRoute(GET, "/api/llm/sessions", llmRoute.listSessions);
+    apiRoute(GET, "/api/llm/sessions/:sessionId", llmRoute.getSession);
+    apiRoute(PATCH, "/api/llm/sessions/:sessionId", llmRoute.updateSession);
+    apiRoute(DEL, "/api/llm/sessions/:sessionId", llmRoute.deleteSession);
+    apiRoute(PST, "/api/llm/sessions/:sessionId/messages", llmRoute.sendMessage);
+
+    // Ollama API endpoints
+    route(PST, "/api/ollama/list-models", [auth.checkApiAuth, csrfMiddleware], ollamaRoute.listModels, apiResultHandler);
 
     // API Documentation
     apiDocsRoute.register(app);

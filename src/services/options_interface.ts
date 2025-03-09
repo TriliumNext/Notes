@@ -46,6 +46,30 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     passwordDerivedKeySalt: string;
     encryptedDataKey: string;
 
+    // AI/LLM integration options
+    aiEnabled: boolean;
+    openaiApiKey: string;
+    openaiDefaultModel: string;
+    openaiBaseUrl: string;
+    anthropicApiKey: string;
+    anthropicDefaultModel: string;
+    anthropicBaseUrl: string;
+    ollamaEnabled: boolean;
+    ollamaBaseUrl: string;
+    ollamaDefaultModel: string;
+    ollamaEmbeddingModel: string;
+    aiProviderPrecedence: string;
+    aiTemperature: string;
+    aiSystemPrompt: string;
+
+    // Embedding-related options
+    embeddingAutoUpdateEnabled: boolean;
+    embeddingUpdateInterval: number;
+    embeddingBatchSize: number;
+    embeddingDefaultDimension: number;
+    embeddingAutoUpdate: boolean;
+    embeddingsDefaultProvider: string;
+
     lastSyncedPull: number;
     lastSyncedPush: number;
     revisionSnapshotTimeInterval: number;

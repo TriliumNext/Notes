@@ -11,6 +11,7 @@ import options from "./services/options.js";
 import type ElectronRemote from "@electron/remote";
 import type Electron from "electron";
 import "../stylesheets/bootstrap.scss";
+import rightPaneTabManager from "./services/right_pane_tab_manager.js";
 
 await appContext.earlyInit();
 
@@ -27,6 +28,16 @@ bundleService.getWidgetBundlesByParent().then(async (widgetBundles) => {
         });
         console.error("Critical error occured", e);
     });
+
+    // Initialize right pane tab manager after layout is loaded
+    setTimeout(() => {
+        const $tabContainer = $("#right-pane-tab-container");
+        const $contentContainer = $("#right-pane-content-container");
+
+        if ($tabContainer.length && $contentContainer.length) {
+            rightPaneTabManager.init($tabContainer, $contentContainer);
+        }
+    }, 1000);
 });
 
 glob.setupGlobs();
