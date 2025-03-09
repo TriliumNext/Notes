@@ -10,8 +10,8 @@ COPY . .
 RUN npm ci && \
     npm run build:prepare-dist && \
     npm cache clean --force && \
-    rm -rf dist/node_modules && \
-    mv dist/* \
+    rm -rf build/node_modules && \
+    mv build/* \
       start-docker.sh \
       /usr/src/app/ && \
     rm -rf \

@@ -3,7 +3,7 @@
     "module": "NodeNext",
     "declaration": false,
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "./build",
     "strict": true,
     "noImplicitAny": true,
     "resolveJsonModule": true,

@@ -19,7 +19,7 @@ const config: Configuration = {
     },
     output: {
         publicPath: `${assetPath}/app-dist/`,
-        path: path.resolve(rootDir, "dist/src/public/app-dist"),
+        path: path.resolve(rootDir, "build/src/public/app-dist"),
         filename: "[name].js"
     },
     plugins: [

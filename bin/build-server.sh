@@ -22,53 +22,42 @@ echo "Selected Arch: $ARCH"
 
 # Set Node.js version and architecture-specific filename
 NODE_VERSION=20.15.1
-NODE_ARCH=$ARCH
 
-# Debug output
-echo "Node arch: $NODE_ARCH"
+BUILD_DIR="./build"
+DIST_DIR="./dist"
 
-# Special case for x64 in Node.js downloads
-if [ "$NODE_ARCH" = "x64" ]; then
-    NODE_FILENAME="x64"
-elif [ "$NODE_ARCH" = "arm64" ]; then
-    NODE_FILENAME="arm64"
-fi
+./bin/copy-trilium.sh
 
-# Debug output
-echo "Node filename: $NODE_FILENAME"
+NODE_FILENAME=node-v${NODE_VERSION}-linux-${ARCH}
 
-PKG_DIR=dist/trilium-linux-${ARCH}-server
-echo "Package directory: $PKG_DIR"
-
-if [ "$1" != "DONTCOPY" ]
-then
-    # Need to modify copy-trilium.sh to accept the target directory
-    ./bin/copy-trilium.sh "$PKG_DIR"
-fi
-
-cd dist
-wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODE_FILENAME}.tar.xz
-tar xfJ node-v${NODE_VERSION}-linux-${NODE_FILENAME}.tar.xz
-rm node-v${NODE_VERSION}-linux-${NODE_FILENAME}.tar.xz
+echo "Downloading Node.js runtime $NODE_FILENAME..."
+cd $BUILD_DIR
+wget -qO- https://nodejs.org/dist/v${NODE_VERSION}/${NODE_FILENAME}.tar.xz | tar xfJ -
+mv $NODE_FILENAME node
 cd ..
 
-mv dist/node-v${NODE_VERSION}-linux-${NODE_FILENAME} $PKG_DIR/node
 
-rm -r $PKG_DIR/node/lib/node_modules/npm
-rm -r $PKG_DIR/node/include/node
+rm -r $BUILD_DIR/node/lib/node_modules/npm \
+    $BUILD_DIR/node/include/node \
+    $BUILD_DIR/node_modules/electron* \
+    $BUILD_DIR/electron*.{js,map}
 
-rm -r $PKG_DIR/node_modules/electron*
-rm -r $PKG_DIR/electron*.js
+printf "#!/bin/sh\n./node/bin/node src/main" > $BUILD_DIR/trilium.sh
+chmod 755 $BUILD_DIR/trilium.sh
 
-printf "#!/bin/sh\n./node/bin/node src/main" > $PKG_DIR/trilium.sh
-chmod 755 $PKG_DIR/trilium.sh
-
-cp bin/tpl/anonymize-database.sql $PKG_DIR/
-
-cp -r translations $PKG_DIR/
+# TriliumNextTODO: is this still required? If yes → move to copy-dist/copy-trilium
+cp bin/tpl/anonymize-database.sql $BUILD_DIR/
 
 VERSION=`jq -r ".version" package.json`
 
-cd dist
 
-tar cJf trilium-linux-${ARCH}-server-${VERSION}.tar.xz trilium-linux-${ARCH}-server
+ARCHIVE_NAME="TriliumNextNotes-Server-${VERSION}-linux-${ARCH}"
+echo "Creating Archive $ARCHIVE_NAME..."
+
+mkdir $DIST_DIR
+cp -r "$BUILD_DIR" "$DIST_DIR/$ARCHIVE_NAME"
+cd $DIST_DIR
+tar cJf "$ARCHIVE_NAME.tar.xz" "$ARCHIVE_NAME"
+rm -rf "$ARCHIVE_NAME"
+
+echo "Server Build Completed!"

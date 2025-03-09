@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 
-const DEST_DIR = "./dist";
+const DEST_DIR = "./build";
 
 const VERBOSE = process.env.VERBOSE;
 
@@ -28,6 +28,8 @@ try {
         "./config-sample.ini",
         "./package-lock.json",
         "./package.json",
+        "./LICENSE",
+        "./README.md",
         "./src/views/",
         "./src/etapi/etapi.openapi.yaml",
         "./src/routes/api/openapi.json",
