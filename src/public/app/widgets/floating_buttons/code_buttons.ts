@@ -85,7 +85,7 @@ export default class CodeButtonsWidget extends NoteContextAwareWidget {
         this.$openTriliumApiDocsButton.toggle(note.mime.startsWith("application/javascript;env="));
     }
 
-    async noteTypeMimeChangedEvent({ noteId }: EventData<"noteTypeMimeChangedEvent">) {
+    async noteTypeMimeChangedEvent({ noteId }: EventData<"noteTypeMimeChanged">) {
         if (this.isNote(noteId)) {
             await this.refresh();
         }

@@ -138,7 +138,7 @@ function getParentProtectedStatus(node: Fancytree.FancytreeNode) {
     return hoistedNoteService.isHoistedNode(node) ? false : node.getParent().data.isProtected;
 }
 
-function getNoteIdFromUrl(urlOrNotePath: string | undefined) {
+function getNoteIdFromUrl(urlOrNotePath: string | null | undefined) {
     if (!urlOrNotePath) {
         return null;
     }

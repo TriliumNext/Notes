@@ -63,7 +63,7 @@ export default class SplitNoteContainer extends FlexContainer<SplitNoteWidget> {
         hoistedNoteId?: string;
         viewScope?: any;
     }) {
-        const mainNtxId = appContext.tabManager.getActiveMainContext().ntxId;
+        const mainNtxId = appContext.tabManager.getActiveMainContext()?.ntxId;
 
         if (!mainNtxId) {
             logError("empty mainNtxId!");
@@ -76,7 +76,7 @@ export default class SplitNoteContainer extends FlexContainer<SplitNoteWidget> {
             ntxId = mainNtxId;
         }
 
-        hoistedNoteId = hoistedNoteId || appContext.tabManager.getActiveContext().hoistedNoteId;
+        hoistedNoteId = hoistedNoteId || appContext.tabManager.getActiveContext()?.hoistedNoteId;
 
         const noteContext = await appContext.tabManager.openEmptyTab(null, hoistedNoteId, mainNtxId);
 
@@ -199,7 +199,7 @@ export default class SplitNoteContainer extends FlexContainer<SplitNoteWidget> {
                 return Promise.resolve();
             }
 
-            if (widget.hasBeenAlreadyShown || name === "noteSwitchedAndActivatedEvent" || appContext.tabManager.getActiveMainContext() === noteContext.getMainContext()) {
+            if (widget.hasBeenAlreadyShown || name === "noteSwitchedAndActivated" || appContext.tabManager.getActiveMainContext() === noteContext.getMainContext()) {
                 widget.hasBeenAlreadyShown = true;
 
                 return Promise.all([
