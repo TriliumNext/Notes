@@ -115,7 +115,14 @@ function renderImageAttachment(image: SNote, res: Response, attachmentName: stri
         svgString = content;
     } else {
         // backwards compatibility, before attachments, the SVG was stored in the main note content as a separate key
-        const contentSvg = image.getJsonContentSafely()?.svg;
+        const possibleSvgContent = image.getJsonContentSafely();
+
+        const contentSvg = (typeof possibleSvgContent === "object"
+            && possibleSvgContent !== null
+            && "svg" in possibleSvgContent
+            && typeof possibleSvgContent.svg === "string")
+                ? possibleSvgContent.svg
+                : null;
 
         if (contentSvg) {
             svgString = contentSvg;
