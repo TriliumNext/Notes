@@ -1893,6 +1893,46 @@ div.bookmark-folder-widget .note-link .bx {
     margin: 1px 0;
 }
 
+/* 
+    CKEditor's Dropdowns
+*/
+
+/* Dropdown body */
+:root .ck.ck-dropdown__panel,
+:root .ck.ck-balloon-rotator {
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
+    border: 1px solid var(--dropdown-border-color);
+    border-radius: var(--dropdown-border-radius);
+    background: var(--menu-background-color);
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    padding: var(--menu-padding-size);
+}
+
+:root ul.ck.ck-list,
+:root div.ck.ck-balloon-panel {
+    border: none;
+    background: transparent;
+}
+
+/* Dropdown list item */
+:root ul.ck.ck-list button.ck-button {
+    padding: 2px 16px;
+    background: transparent;
+    border: unset;
+    border-radius: 6px !important;
+    box-shadow: unset;
+}
+
+/* Checked list item */
+:root ul.ck.ck-list button.ck-button.ck-on:not(:hover) {
+    background: transparent !important;
+}
+
+:root ul.ck.ck-list button.ck-button:hover,
+:root ul.ck.ck-list button.ck-button.ck-on:hover {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-color);
+
 /* Delete notes preview dialog */
 
 .delete-notes-list .note-path {
