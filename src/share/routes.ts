@@ -15,7 +15,7 @@ import log from "../services/log.js";
 import type SNote from "./shaca/entities/snote.js";
 import type SBranch from "./shaca/entities/sbranch.js";
 import type SAttachment from "./shaca/entities/sattachment.js";
-import utils from "../services/utils.js";
+import utils, { safeExtractMessageAndStackFromError } from "../services/utils.js";
 import options from "../services/options.js";
 
 function getSharedSubTreeRoot(note: SNote): { note?: SNote; branch?: SBranch } {
@@ -115,7 +115,14 @@ function renderImageAttachment(image: SNote, res: Response, attachmentName: stri
         svgString = content;
     } else {
         // backwards compatibility, before attachments, the SVG was stored in the main note content as a separate key
-        const contentSvg = image.getJsonContentSafely()?.svg;
+        const possibleSvgContent = image.getJsonContentSafely();
+
+        const contentSvg = (typeof possibleSvgContent === "object"
+            && possibleSvgContent !== null
+            && "svg" in possibleSvgContent
+            && typeof possibleSvgContent.svg === "string")
+                ? possibleSvgContent.svg
+                : null;
 
         if (contentSvg) {
             svgString = contentSvg;
@@ -183,8 +190,9 @@ function register(router: Router) {
                         res.send(ejsResult);
                         useDefaultView = false; // Rendering went okay, don't use default view
                     }
-                } catch (e: any) {
-                    log.error(`Rendering user provided share template (${templateId}) threw exception ${e.message} with stacktrace: ${e.stack}`);
+                } catch (e: unknown) {
+                    const [errMessage, errStack] = safeExtractMessageAndStackFromError(e);
+                    log.error(`Rendering user provided share template (${templateId}) threw exception ${errMessage} with stacktrace: ${errStack}`);
                 }
             }
         }
@@ -194,7 +202,7 @@ function register(router: Router) {
         }
     }
 
-    router.get("/share/", (req, res, next) => {
+    router.get("/share/", (req, res, _next) => {
         if (req.path.substr(-1) !== "/") {
             res.redirect("../share/");
             return;
@@ -210,7 +218,7 @@ function register(router: Router) {
         renderNote(shaca.shareRootNote, req, res);
     });
 
-    router.get("/share/:shareId", (req, res, next) => {
+    router.get("/share/:shareId", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         const { shareId } = req.params;
@@ -220,7 +228,7 @@ function register(router: Router) {
         renderNote(note, req, res);
     });
 
-    router.get("/share/api/notes/:noteId", (req, res, next) => {
+    router.get("/share/api/notes/:noteId", (req, res, _next) => {
         shacaLoader.ensureLoad();
         let note: SNote | boolean;
 
@@ -233,7 +241,7 @@ function register(router: Router) {
         res.json(note.getPojo());
     });
 
-    router.get("/share/api/notes/:noteId/download", (req, res, next) => {
+    router.get("/share/api/notes/:noteId/download", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         let note: SNote | boolean;
@@ -255,7 +263,7 @@ function register(router: Router) {
     });
 
     // :filename is not used by trilium, but instead used for "save as" to assign a human-readable filename
-    router.get("/share/api/images/:noteId/:filename", (req, res, next) => {
+    router.get("/share/api/images/:noteId/:filename", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         let image: SNote | boolean;
@@ -281,7 +289,7 @@ function register(router: Router) {
     });
 
     // :filename is not used by trilium, but instead used for "save as" to assign a human-readable filename
-    router.get("/share/api/attachments/:attachmentId/image/:filename", (req, res, next) => {
+    router.get("/share/api/attachments/:attachmentId/image/:filename", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         let attachment: SAttachment | boolean;
@@ -299,7 +307,7 @@ function register(router: Router) {
         }
     });
 
-    router.get("/share/api/attachments/:attachmentId/download", (req, res, next) => {
+    router.get("/share/api/attachments/:attachmentId/download", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         let attachment: SAttachment | boolean;
@@ -321,7 +329,7 @@ function register(router: Router) {
     });
 
     // used for PDF viewing
-    router.get("/share/api/notes/:noteId/view", (req, res, next) => {
+    router.get("/share/api/notes/:noteId/view", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         let note: SNote | boolean;
@@ -339,11 +347,10 @@ function register(router: Router) {
     });
 
     // Used for searching, require noteId so we know the subTreeRoot
-    router.get("/share/api/notes", (req, res, next) => {
+    router.get("/share/api/notes", (req, res, _next) => {
         shacaLoader.ensureLoad();
 
         const ancestorNoteId = req.query.ancestorNoteId ?? "_share";
-        let note;
 
         if (typeof ancestorNoteId !== "string") {
             res.status(400).json({ message: "'ancestorNoteId' parameter is mandatory." });
@@ -351,7 +358,7 @@ function register(router: Router) {
         }
 
         // This will automatically return if no ancestorNoteId is provided and there is no shareIndex
-        if (!(note = checkNoteAccess(ancestorNoteId, req, res))) {
+        if (!checkNoteAccess(ancestorNoteId, req, res)) {
             return;
         }
 
