@@ -344,7 +344,6 @@ function register(router: Router) {
         shacaLoader.ensureLoad();
 
         const ancestorNoteId = req.query.ancestorNoteId ?? "_share";
-        let note;
 
         if (typeof ancestorNoteId !== "string") {
             res.status(400).json({ message: "'ancestorNoteId' parameter is mandatory." });
@@ -352,7 +351,7 @@ function register(router: Router) {
         }
 
         // This will automatically return if no ancestorNoteId is provided and there is no shareIndex
-        if (!(note = checkNoteAccess(ancestorNoteId, req, res))) {
+        if (!checkNoteAccess(ancestorNoteId, req, res)) {
             return;
         }
 
