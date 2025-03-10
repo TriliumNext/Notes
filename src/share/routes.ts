@@ -15,7 +15,7 @@ import log from "../services/log.js";
 import type SNote from "./shaca/entities/snote.js";
 import type SBranch from "./shaca/entities/sbranch.js";
 import type SAttachment from "./shaca/entities/sattachment.js";
-import utils from "../services/utils.js";
+import utils, { safeExtractMessageAndStackFromError } from "../services/utils.js";
 import options from "../services/options.js";
 
 function getSharedSubTreeRoot(note: SNote): { note?: SNote; branch?: SBranch } {
@@ -183,8 +183,9 @@ function register(router: Router) {
                         res.send(ejsResult);
                         useDefaultView = false; // Rendering went okay, don't use default view
                     }
-                } catch (e: any) {
-                    log.error(`Rendering user provided share template (${templateId}) threw exception ${e.message} with stacktrace: ${e.stack}`);
+                } catch (e: unknown) {
+                    const [errMessage, errStack] = safeExtractMessageAndStackFromError(e);
+                    log.error(`Rendering user provided share template (${templateId}) threw exception ${errMessage} with stacktrace: ${errStack}`);
                 }
             }
         }
