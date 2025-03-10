@@ -130,7 +130,7 @@ module.exports = {
 };
 
 function getExtraResourcesForPlatform() {
-    const resources = ["dump-db/", "./bin/tpl/anonymize-database.sql"];
+    const resources = ["./bin/tpl/anonymize-database.sql"];
 
     const getScriptRessources = () => {
         const scripts = ["trilium-portable", "trilium-safe-mode", "trilium-no-cert-check"];
