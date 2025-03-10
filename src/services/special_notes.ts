@@ -9,7 +9,7 @@ import searchService from "./search/services/search.js";
 import SearchContext from "./search/search_context.js";
 import hiddenSubtree from "./hidden_subtree.js";
 import { t } from "i18next";
-const { LBTPL_NOTE_LAUNCHER, LBTPL_CUSTOM_WIDGET, LBTPL_SPACER, LBTPL_SCRIPT } = hiddenSubtree;
+const { LBTPL_NOTE, LBTPL_CUSTOM_WIDGET, LBTPL_SPACER, LBTPL_SCRIPT } = hiddenSubtree;
 
 function getInboxNote(date: string) {
     const workspaceNote = hoistedNoteService.getWorkspaceNote();
@@ -176,7 +176,7 @@ function createLauncher({ parentNoteId, launcherType, noteId }: LauncherConfig) 
             parentNoteId: parentNoteId
         }).note;
 
-        note.addRelation("template", LBTPL_NOTE_LAUNCHER);
+        note.addRelation("template", LBTPL_NOTE);
     } else if (launcherType === "script") {
         note = createScriptLauncher(parentNoteId, noteId);
     } else if (launcherType === "customWidget") {

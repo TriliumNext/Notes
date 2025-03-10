@@ -26,6 +26,10 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 // Initialize DB
 sql_init.initializeDb();
 
+// Initialize embedding providers
+const { initializeEmbeddings } = await import("./services/llm/embeddings/init.js");
+await initializeEmbeddings();
+
 // view engine setup
 app.set("views", path.join(scriptDir, "views"));
 app.set("view engine", "ejs");

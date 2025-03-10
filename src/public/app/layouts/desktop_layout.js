@@ -88,6 +88,7 @@ import utils from "../services/utils.js";
 import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
 import ContextualHelpButton from "../widgets/floating_buttons/help_button.js";
 import CloseZenButton from "../widgets/close_zen_button.js";
+import rightPaneTabManager from "../services/right_pane_tab_manager.js";
 
 export default class DesktopLayout {
     constructor(customWidgets) {
@@ -96,6 +97,16 @@ export default class DesktopLayout {
 
     getRootWidget(appContext) {
         appContext.noteTreeWidget = new NoteTreeWidget();
+
+        // Initialize the right pane tab manager after widget render
+        setTimeout(() => {
+            const $tabContainer = $("#right-pane-tab-container");
+            const $contentContainer = $("#right-pane-content-container");
+
+            if ($tabContainer.length && $contentContainer.length) {
+                rightPaneTabManager.init($tabContainer, $contentContainer);
+            }
+        }, 500);
 
         const launcherPaneIsHorizontal = options.get("layoutOrientation") === "horizontal";
         const launcherPane = this.#buildLauncherPane(launcherPaneIsHorizontal);
@@ -234,9 +245,24 @@ export default class DesktopLayout {
                                     )
                                     .child(
                                         new RightPaneContainer()
-                                            .child(new TocWidget())
-                                            .child(new HighlightsListWidget())
-                                            .child(...this.customWidgets.get("right-pane"))
+                                            .id("right-pane-container")
+                                            .child(
+                                                new FlexContainer("row")
+                                                    .id("right-pane-tab-container")
+                                                    .css("height", "40px")
+                                                    .css("padding", "5px 10px")
+                                                    .css("border-bottom", "1px solid var(--main-border-color)")
+                                                    .css("background-color", "var(--accented-background-color)")
+                                            )
+                                            .child(
+                                                new FlexContainer("column")
+                                                    .id("right-pane-content-container")
+                                                    .css("flex-grow", "1")
+                                                    .css("overflow", "hidden")
+                                                    .child(new TocWidget())
+                                                    .child(new HighlightsListWidget())
+                                                    .child(...this.customWidgets.get("right-pane"))
+                                            )
                                     )
                             )
                     )

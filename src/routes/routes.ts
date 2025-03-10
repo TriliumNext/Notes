@@ -60,6 +60,9 @@ import etapiTokensApiRoutes from "./api/etapi_tokens.js";
 import relationMapApiRoute from "./api/relation-map.js";
 import otherRoute from "./api/other.js";
 import shareRoutes from "../share/routes.js";
+import embeddingsRoute from "./api/embeddings.js";
+import ollamaRoute from "./api/ollama.js";
+import llmRoute from "./api/llm.js";
 
 import etapiAuthRoutes from "../etapi/auth.js";
 import etapiAppInfoRoutes from "../etapi/app_info.js";
@@ -369,6 +372,26 @@ function register(app: express.Application) {
     etapiSpecRoute.register(router);
     etapiBackupRoute.register(router);
 
+    // Embeddings API endpoints
+    apiRoute(GET, "/api/embeddings/similar/:noteId", embeddingsRoute.findSimilarNotes);
+    apiRoute(PST, "/api/embeddings/search", embeddingsRoute.searchByText);
+    apiRoute(GET, "/api/embeddings/providers", embeddingsRoute.getProviders);
+    apiRoute(PATCH, "/api/embeddings/providers/:providerId", embeddingsRoute.updateProvider);
+    apiRoute(PST, "/api/embeddings/reprocess", embeddingsRoute.reprocessAllNotes);
+    apiRoute(GET, "/api/embeddings/queue-status", embeddingsRoute.getQueueStatus);
+    apiRoute(GET, "/api/embeddings/stats", embeddingsRoute.getEmbeddingStats);
+
+    apiRoute(PST, "/api/llm/sessions", llmRoute.createSession);
+    apiRoute(GET, "/api/llm/sessions", llmRoute.listSessions);
+    apiRoute(GET, "/api/llm/sessions/:sessionId", llmRoute.getSession);
+    apiRoute(PATCH, "/api/llm/sessions/:sessionId", llmRoute.updateSession);
+    apiRoute(DEL, "/api/llm/sessions/:sessionId", llmRoute.deleteSession);
+    apiRoute(PST, "/api/llm/sessions/:sessionId/messages", llmRoute.sendMessage);
+    route(GET, "/api/llm/sessions/:sessionId/messages", [auth.checkApiAuth, csrfMiddleware], llmRoute.sendMessage, apiResultHandler);
+
+    // Ollama API endpoints
+    route(PST, "/api/ollama/list-models", [auth.checkApiAuth, csrfMiddleware], ollamaRoute.listModels, apiResultHandler);
+
     // API Documentation
     apiDocsRoute.register(app);
 
@@ -482,8 +505,14 @@ function route(method: HttpMethod, path: string, middleware: express.Handler[], 
 }
 
 function handleResponse(resultHandler: ApiResultHandler, req: express.Request, res: express.Response, result: unknown, start: number) {
-    const responseLength = resultHandler(req, res, result);
+    // Skip result handling if the response has already been handled
+    if ((res as any).triliumResponseHandled) {
+        // Just log the request without additional processing
+        log.request(req, res, Date.now() - start, 0);
+        return;
+    }
 
+    const responseLength = resultHandler(req, res, result);
     log.request(req, res, Date.now() - start, responseLength);
 }
 
