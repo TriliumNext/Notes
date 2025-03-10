@@ -222,7 +222,7 @@
     "eslint": "9.22.0",
     "esm": "3.2.25",
     "globals": "16.0.0",
-    "happy-dom": "17.4.2",
+    "happy-dom": "17.4.3",
     "i18next-http-backend": "3.0.2",
     "jsdoc": "4.0.4",
     "knockout": "3.5.1",
