@@ -93,7 +93,7 @@ function ensureLoad() {
 
 eventService.subscribe(
     [eventService.ENTITY_CREATED, eventService.ENTITY_CHANGED, eventService.ENTITY_DELETED, eventService.ENTITY_CHANGE_SYNCED, eventService.ENTITY_DELETE_SYNCED],
-    ({ entityName, entity }) => {
+    ({ _entityName, _entity }) => {
         shaca.reset();
     }
 );
