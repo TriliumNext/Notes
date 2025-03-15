@@ -11,13 +11,6 @@ function log(...args: any[]) {
     }
 }
 
-function copyNodeModuleFileOrFolder(source: string) {
-    const destination = path.join(DEST_DIR, source);
-    log(`Copying ${source} to ${destination}`);
-    fs.ensureDirSync(path.dirname(destination));
-    fs.copySync(source, destination);
-}
-
 try {
 
     const assetsToCopy = new Set([
@@ -58,52 +51,6 @@ try {
         fs.copySync(dir, path.join(PUBLIC_DIR, path.basename(dir)));
     }
 
-    const nodeModulesFile = new Set([
-        "node_modules/react/umd/react.production.min.js",
-        "node_modules/react/umd/react.development.js",
-        "node_modules/react-dom/umd/react-dom.production.min.js",
-        "node_modules/react-dom/umd/react-dom.development.js",
-        "node_modules/katex/dist/katex.min.js",
-        "node_modules/katex/dist/contrib/mhchem.min.js",
-        "node_modules/katex/dist/contrib/auto-render.min.js",
-        "node_modules/@highlightjs/cdn-assets/highlight.min.js",
-        "node_modules/@mind-elixir/node-menu/dist/node-menu.umd.cjs"
-    ]);
-
-    const nodeModulesFolder = new Set([
-        "node_modules/@excalidraw/excalidraw/dist/prod/fonts/",
-        "node_modules/katex/dist/",
-        "node_modules/dayjs/",
-        "node_modules/boxicons/css/",
-        "node_modules/boxicons/fonts/",
-        "node_modules/mermaid/dist/",
-        "node_modules/jquery/dist/",
-        "node_modules/jquery-hotkeys/",
-        "node_modules/split.js/dist/",
-        "node_modules/panzoom/dist/",
-        "node_modules/i18next/",
-        "node_modules/i18next-http-backend/",
-        "node_modules/jsplumb/dist/",
-        "node_modules/vanilla-js-wheel-zoom/dist/",
-        "node_modules/mark.js/dist/",
-        "node_modules/normalize.css/",
-        "node_modules/jquery.fancytree/dist/",
-        "node_modules/autocomplete.js/dist/",
-        "node_modules/codemirror/lib/",
-        "node_modules/codemirror/addon/",
-        "node_modules/codemirror/mode/",
-        "node_modules/codemirror/keymap/",
-        "node_modules/mind-elixir/dist/",
-        "node_modules/@highlightjs/cdn-assets/languages",
-        "node_modules/@highlightjs/cdn-assets/styles",
-        "node_modules/leaflet/dist"
-    ]);
-
-
-
-    for (const nodeModuleItem of [...nodeModulesFile, ...nodeModulesFolder]) {
-        copyNodeModuleFileOrFolder(nodeModuleItem);
-    }
     console.log("Copying complete!")
 
 } catch(err) {
