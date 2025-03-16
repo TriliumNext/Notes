@@ -85,5 +85,18 @@ function cleanupNodeModules() {
         .map(el => path.join(DEST_DIR, el.parentPath, el.name))
         .forEach(dir => fs.removeSync(dir));
 
+
+    // Delete unnecessary files based on file extension
+    const filterableFileExt = new Set([
+        "ts",
+        "map"
+    ])
+
+    nodeDir
+        // TriliumNextTODO: check if we can improve this naive file ext matching
+        .filter(el => el.isFile() && filterableFileExt.has(el.name.split(".").at(-1) || ""))
+        .map(file => path.join(DEST_DIR, file.parentPath, file.name))
+        .forEach(file => fs.removeSync(file));
+
 }
 

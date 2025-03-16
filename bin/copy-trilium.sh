@@ -22,7 +22,5 @@ if [[ -d "$BUILD_DIR"/node_modules ]]; then
 fi
 
 find $BUILD_DIR/libraries -name "*.map" -type f -delete
-find $BUILD_DIR/node_modules -name "*.map" -type f -delete
-find $BUILD_DIR -name "*.ts" -type f -delete
 
 unset f d BUILD_DIR
