@@ -10,11 +10,6 @@ if ! [[ $(which npm) ]]; then
     exit 1
 fi
 
-# Trigger the build
-echo Build start
-npm run build:prepare-dist
-echo Build finished
-
 # Patch package.json main
 sed -i 's|./dist/electron-main.js|electron-main.js|g' "$BUILD_DIR/package.json"
 
