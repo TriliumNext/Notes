@@ -59,7 +59,30 @@ try {
     // TriliumNextTODO: for Docker this needs to run separately *after* build-stage
     console.log("Pruning npm packages...")
     execSync(`npm ci --omit=dev --prefix ${DEST_DIR}`);
+
+    cleanupNodeModules();
+
 } catch(err) {
     console.error("Error during copy:", err)
     process.exit(1)
 }
+function cleanupNodeModules() {
+    const nodeDir = fs.readdirSync(path.join(DEST_DIR, "./node_modules"), { recursive: true, withFileTypes: true });
+
+    const filterableDirs = new Set([
+        "test",
+        "docs",
+        "demo",
+        "example",
+    ]);
+
+    const filteredDirs = nodeDir
+        .filter(el => el.isDirectory() && filterableDirs.has(el.name))
+        .map(el => path.join(DEST_DIR, el.parentPath, el.name));
+
+    filteredDirs.forEach(dir => {
+        fs.removeSync(dir);
+    })
+
+}
+

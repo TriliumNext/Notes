@@ -19,11 +19,6 @@ if [[ -d "$BUILD_DIR"/node_modules ]]; then
         '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts'; do
         [[ -e "$BUILD_DIR"/node_modules/"$d" ]] && rm -r "$BUILD_DIR"/node_modules/"$d"
     done
-
-    # delete all tests (there are often large images as test file for jimp etc.)
-    for d in 'test' 'docs' 'demo' 'example'; do
-        find "$BUILD_DIR"/node_modules -name "$d" -exec rm -rf {} +
-    done
 fi
 
 find $BUILD_DIR/libraries -name "*.map" -type f -delete
