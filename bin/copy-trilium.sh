@@ -10,9 +10,6 @@ if ! [[ $(which npm) ]]; then
     exit 1
 fi
 
-# Patch package.json main
-sed -i 's|./dist/electron-main.js|electron-main.js|g' "$BUILD_DIR/package.json"
-
 if [[ -d "$BUILD_DIR"/node_modules ]]; then
     # cleanup of useless files in dependencies
     for d in 'image-q/demo' \
