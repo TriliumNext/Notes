@@ -12,11 +12,11 @@ fi
 
 if [[ -d "$BUILD_DIR"/node_modules ]]; then
     # cleanup of useless files in dependencies
-    for d in 'image-q/demo' \
-        '@excalidraw/excalidraw/dist/excalidraw-assets-dev' '@excalidraw/excalidraw/dist/excalidraw.development.js' '@excalidraw/excalidraw/dist/excalidraw-with-preact.development.js' \
+    for d in \
+        '@excalidraw/excalidraw/dist/dev' \
         'mermaid/dist/mermaid.js' \
-        'boxicons/svg' 'boxicons/node_modules/react'/* \
-        '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts'; do
+        'boxicons/svg' 'boxicons/node_modules' 'boxicons/src' 'boxicons/iconjar' \
+        '@jimp/plugin-print/fonts' 'jimp/dist/browser'; do
         [[ -e "$BUILD_DIR"/node_modules/"$d" ]] && rm -r "$BUILD_DIR"/node_modules/"$d"
     done
 fi
