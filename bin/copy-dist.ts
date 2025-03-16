@@ -70,10 +70,14 @@ function cleanupNodeModules() {
     const nodeDir = fs.readdirSync(path.join(DEST_DIR, "./node_modules"), { recursive: true, withFileTypes: true });
 
     const filterableDirs = new Set([
-        "test",
-        "docs",
         "demo",
+        "demos",
+        "doc",
+        "docs",
         "example",
+        "examples",
+        "test",
+        "tests"
     ]);
 
     const filteredDirs = nodeDir
