@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+/* TriliumNextTODO: port to Vitest 
 etapi.describeEtapi("import", () => {
     // temporarily skip this test since test-export.zip is missing
     xit("import", async () => {
@@ -22,3 +23,4 @@ etapi.describeEtapi("import", () => {
         expect(content).toContain("test export content");
     });
 });
+*/

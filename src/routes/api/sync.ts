@@ -9,7 +9,7 @@ import optionService from "../../services/options.js";
 import contentHashService from "../../services/content_hash.js";
 import log from "../../services/log.js";
 import syncOptions from "../../services/sync_options.js";
-import utils from "../../services/utils.js";
+import utils, { safeExtractMessageAndStackFromError } from "../../services/utils.js";
 import ws from "../../services/ws.js";
 import type { Request } from "express";
 import type { EntityChange } from "../../services/entity_changes_interface.js";
@@ -30,10 +30,11 @@ async function testSync() {
         syncService.sync();
 
         return { success: true, message: t("test_sync.successful") };
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const [errMessage] = safeExtractMessageAndStackFromError(e);
         return {
             success: false,
-            message: e.message
+            error: errMessage
         };
     }
 }
@@ -86,6 +87,58 @@ function forceFullSync() {
     syncService.sync();
 }
 
+/**
+ * @swagger
+ * /api/sync/changed:
+ *   get:
+ *     summary: Pull sync changes
+ *     operationId: sync-changed
+ *     externalDocs:
+ *       description: Server implementation
+ *       url: https://github.com/TriliumNext/Notes/blob/v0.91.6/src/routes/api/sync.ts
+ *     parameters:
+ *       - in: query
+ *         name: instanceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Local instance ID
+ *       - in: query
+ *         name: lastEntityChangeId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Last locally present change ID
+ *       - in: query
+ *         name: logMarkerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Marker to identify this request in server log
+ *     responses:
+ *       '200':
+ *         description: Sync changes, limited to approximately one megabyte.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 entityChanges:
+ *                   type: list
+ *                   items:
+ *                     $ref: '#/components/schemas/EntityChange'
+ *                 lastEntityChangeId:
+ *                   type: integer
+ *                   description: If `outstandingPullCount > 0`, pass this as parameter in your next request to continue.
+ *                 outstandingPullCount:
+ *                   type: int
+ *                   example: 42
+ *                   description: Number of changes not yet returned by the remote.
+ *     security:
+ *       - session: []
+ *     tags:
+ *       - sync
+ */
 function getChanged(req: Request) {
     const startTime = Date.now();
 
@@ -151,6 +204,60 @@ const partialRequests: Record<
     }
 > = {};
 
+/**
+ * @swagger
+ * /api/sync/update:
+ *   put:
+ *     summary: Push sync changes
+ *     description:
+ *       "Basic usage: set `pageCount = 1`, `pageIndex = 0`, and omit `requestId`. Supply your entity changes in the request body."
+ *     operationId: sync-update
+ *     externalDocs:
+ *       description: Server implementation
+ *       url: https://github.com/TriliumNext/Notes/blob/v0.91.6/src/routes/api/sync.ts
+ *     parameters:
+ *       - in: header
+ *         name: pageCount
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: pageIndex
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: requestId
+ *         schema:
+ *           type: string
+ *           description: ID to identify paginated requests
+ *       - in: query
+ *         name: logMarkerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Marker to identify this request in server log
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               instanceId:
+ *                 type: string
+ *                 description: Local instance ID
+ *               entities:
+ *                 type: list
+ *                 items:
+ *                   $ref: '#/components/schemas/EntityChange'
+ *     responses:
+ *       '200':
+ *         description: Changes processed successfully
+ *     security:
+ *       - session: []
+ *     tags:
+ *       - sync
+ */
 function update(req: Request) {
     let { body } = req;
 

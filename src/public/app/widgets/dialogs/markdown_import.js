@@ -5,6 +5,7 @@ import appContext from "../../components/app_context.js";
 import BasicWidget from "../basic_widget.js";
 import shortcutService from "../../services/shortcuts.js";
 import server from "../../services/server.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="markdown-import-dialog modal fade mx-auto" tabindex="-1" role="dialog">
@@ -35,7 +36,7 @@ export default class MarkdownImportDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget);
         this.$importTextarea = this.$widget.find(".markdown-import-textarea");
         this.$importButton = this.$widget.find(".markdown-import-button");
 

@@ -94,6 +94,10 @@ export default class RootCommandExecutor extends Component {
         await appContext.tabManager.openTabWithNoteWithHoisting("_backendLog", { activate: true });
     }
 
+    async showHelpCommand() {
+        await this.showAndHoistSubtree("_help");
+    }
+
     async showLaunchBarSubtreeCommand() {
         const rootNote = utils.isMobile() ? "_lbMobileRoot" : "_lbRoot";
         await this.showAndHoistSubtree(rootNote);
@@ -176,6 +180,13 @@ export default class RootCommandExecutor extends Component {
         const isVisible = windows.every((w) => w.isVisible());
         const action = isVisible ? "hide" : "show";
         for (const window of windows) window[action]();
+    }
+
+    toggleZenModeCommand() {
+        const $body = $("body");
+        $body.toggleClass("zen");
+        const isEnabled = $body.hasClass("zen");
+        appContext.triggerEvent("zenModeChanged", { isEnabled });
     }
 
     firstTabCommand() {

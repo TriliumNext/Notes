@@ -1,4 +1,5 @@
 import type { OptionNames } from "../../../services/options_interface.js";
+import type { AttachmentRow } from "../../../becca/entities/rows.js";
 import type { AttributeType } from "../entities/fattribute.js";
 import type { EntityChange } from "../server_types.js";
 
@@ -8,11 +9,14 @@ interface NoteRow {
     isDeleted?: boolean;
 }
 
-interface BranchRow {
+// TODO: Deduplicate with BranchRow from `rows.ts`/
+export interface BranchRow {
     noteId?: string;
     branchId: string;
     componentId: string;
     parentNoteId?: string;
+    isDeleted?: boolean;
+    isExpanded?: boolean;
 }
 
 export interface AttributeRow {
@@ -36,8 +40,6 @@ interface ContentNoteIdToComponentIdRow {
     noteId: string;
     componentId: string;
 }
-
-interface AttachmentRow {}
 
 interface OptionRow {}
 
@@ -159,7 +161,7 @@ export default class LoadResults {
         return Object.keys(this.noteIdToComponentId);
     }
 
-    isNoteReloaded(noteId: string, componentId = null) {
+    isNoteReloaded(noteId: string | undefined | null, componentId: string | null = null) {
         if (!noteId) {
             return false;
         }

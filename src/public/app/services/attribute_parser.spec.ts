@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import attributeParser from "./attribute_parser.js";
 
-
 describe("Lexing", () => {
     it("simple label", () => {
         expect(attributeParser.lex("#label").map((t: any) => t.text)).toEqual(["#label"]);
@@ -41,7 +40,7 @@ describe("Lexing", () => {
 });
 
 describe.todo("Parser", () => {
-  /* #TODO
+    /* #TODO
     it("simple label", () => {
 
         const attrs = attributeParser.parse(["#token"].map((t: any) => ({ text: t })));

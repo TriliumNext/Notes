@@ -6,7 +6,7 @@ const TPL = `
 <div class="options-section">
     <h4>${t("text_auto_read_only_size.title")}</h4>
 
-    <p>${t("text_auto_read_only_size.description")}</p>
+    <p class="form-text">${t("text_auto_read_only_size.description")}</p>
 
     <div class="form-group">
         <label for="auto-readonly-size-text">${t("text_auto_read_only_size.label")}</label>

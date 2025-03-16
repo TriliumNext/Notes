@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import { Modal } from "bootstrap";
+import type { ViewScope } from "./link.js";
 
 function reloadFrontendApp(reason?: string) {
     if (reason) {
@@ -8,12 +10,47 @@ function reloadFrontendApp(reason?: string) {
     window.location.reload();
 }
 
+/**
+ * Triggers the system tray to update its menu items, i.e. after a change in dynamic content such as bookmarks or recent notes.
+ *
+ * On any other platform than Electron, nothing happens.
+ */
+function reloadTray() {
+    if (!isElectron()) {
+        return;
+    }
+
+    const { ipcRenderer } = dynamicRequire("electron");
+    ipcRenderer.send("reload-tray");
+}
+
 function parseDate(str: string) {
     try {
         return new Date(Date.parse(str));
     } catch (e: any) {
         throw new Error(`Can't parse date from '${str}': ${e.message} ${e.stack}`);
     }
+}
+
+// Source: https://stackoverflow.com/a/30465299/4898894
+function getMonthsInDateRange(startDate: string, endDate: string) {
+    const start = startDate.split("-");
+    const end = endDate.split("-");
+    const startYear = parseInt(start[0]);
+    const endYear = parseInt(end[0]);
+    const dates = [];
+
+    for (let i = startYear; i <= endYear; i++) {
+        const endMonth = i != endYear ? 11 : parseInt(end[1]) - 1;
+        const startMon = i === startYear ? parseInt(start[1]) - 1 : 0;
+
+        for (let j = startMon; j <= endMonth; j = j > 12 ? j % 12 || 11 : j + 1) {
+            const month = j + 1;
+            const displayMonth = month < 10 ? "0" + month : month;
+            dates.push([i, displayMonth].join("-"));
+        }
+    }
+    return dates;
 }
 
 function padNum(num: number) {
@@ -101,7 +138,7 @@ function isCtrlKey(evt: KeyboardEvent | MouseEvent | JQuery.ClickEvent | JQuery.
     return (!isMac() && evt.ctrlKey) || (isMac() && evt.metaKey);
 }
 
-function assertArguments(...args: string[]) {
+function assertArguments<T>(...args: T[]) {
     for (const i in args) {
         if (!args[i]) {
             console.trace(`Argument idx#${i} should not be falsy: ${args[i]}`);
@@ -122,6 +159,10 @@ const entityMap: Record<string, string> = {
 
 function escapeHtml(str: string) {
     return str.replace(/[&<>"'`=\/]/g, (s) => entityMap[s]);
+}
+
+export function escapeQuotes(value: string) {
+    return value.replaceAll('"', "&quot;");
 }
 
 function formatSize(size: number) {
@@ -205,9 +246,7 @@ function getMimeTypeClass(mime: string) {
 
 function closeActiveDialog() {
     if (glob.activeDialog) {
-        // TODO: Fix once we use proper ES imports.
-        //@ts-ignore
-        bootstrap.Modal.getOrCreateInstance(glob.activeDialog[0]).hide();
+        Modal.getOrCreateInstance(glob.activeDialog[0]).hide();
         glob.activeDialog = null;
     }
 }
@@ -249,9 +288,7 @@ async function openDialog($dialog: JQuery<HTMLElement>, closeActDialog = true) {
     }
 
     saveFocusedElement();
-    // TODO: Fix once we use proper ES imports.
-    //@ts-ignore
-    bootstrap.Modal.getOrCreateInstance($dialog[0]).show();
+    Modal.getOrCreateInstance($dialog[0]).show();
 
     $dialog.on("hidden.bs.modal", () => {
         const $autocompleteEl = $(".aa-input");
@@ -352,6 +389,10 @@ function initHelpDropdown($el: JQuery<HTMLElement>) {
 const wikiBaseUrl = "https://triliumnext.github.io/Docs/Wiki/";
 
 function openHelp($button: JQuery<HTMLElement>) {
+    if ($button.length === 0) {
+        return;
+    }
+
     const helpPage = $button.attr("data-help-page");
 
     if (helpPage) {
@@ -361,12 +402,44 @@ function openHelp($button: JQuery<HTMLElement>) {
     }
 }
 
+async function openInAppHelp($button: JQuery<HTMLElement>) {
+    if ($button.length === 0) {
+        return;
+    }
+
+    const inAppHelpPage = $button.attr("data-in-app-help");
+    if (inAppHelpPage) {
+        // Dynamic import to avoid import issues in tests.
+        const appContext = (await import("../components/app_context.js")).default;
+        const subContexts = appContext.tabManager.getActiveContext().getSubContexts();
+        const targetNote = `_help_${inAppHelpPage}`;
+        const helpSubcontext = subContexts.find((s) => s.viewScope?.viewMode === "contextual-help");
+        const viewScope: ViewScope = {
+            viewMode: "contextual-help",
+        };
+        if (!helpSubcontext) {
+            // The help is not already open, open a new split with it.
+            const { ntxId } = subContexts[subContexts.length - 1];
+            appContext.triggerCommand("openNewNoteSplit", {
+                ntxId,
+                notePath: targetNote,
+                hoistedNoteId: "_help",
+                viewScope
+            })
+        } else {
+            // There is already a help window open, make sure it opens on the right note.
+            helpSubcontext.setNote(targetNote, { viewScope });
+        }
+        return;
+    }
+}
+
 function initHelpButtons($el: JQuery<HTMLElement> | JQuery<Window>) {
     // for some reason, the .on(event, listener, handler) does not work here (e.g. Options -> Sync -> Help button)
     // so we do it manually
     $el.on("click", (e) => {
-        const $helpButton = $(e.target).closest("[data-help-page]");
-        openHelp($helpButton);
+        openHelp($(e.target).closest("[data-help-page]"));
+        openInAppHelp($(e.target).closest("[data-in-app-help]"));
     });
 }
 
@@ -588,7 +661,10 @@ function compareVersions(v1: string, v2: string): number {
 /**
  * Compares two semantic version strings and returns `true` if the latest version is greater than the current version.
  */
-function isUpdateAvailable(latestVersion: string, currentVersion: string): boolean {
+function isUpdateAvailable(latestVersion: string | null | undefined, currentVersion: string): boolean {
+    if (!latestVersion) {
+        return false;
+    }
     return compareVersions(latestVersion, currentVersion) > 0;
 }
 
@@ -598,7 +674,9 @@ function isLaunchBarConfig(noteId: string) {
 
 export default {
     reloadFrontendApp,
+    reloadTray,
     parseDate,
+    getMonthsInDateRange,
     formatDateISO,
     formatDateTime,
     formatTimeInterval,

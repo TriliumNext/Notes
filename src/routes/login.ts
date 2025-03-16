@@ -13,16 +13,16 @@ import type { Request, Response } from "express";
 function loginPage(req: Request, res: Response) {
     res.render("login", {
         failedAuth: false,
-        assetPath: assetPath,
-        appPath: appPath
+        assetPath,
+        appPath
     });
 }
 
 function setPasswordPage(req: Request, res: Response) {
     res.render("set_password", {
         error: false,
-        assetPath: assetPath,
-        appPath: appPath
+        assetPath,
+        appPath
     });
 }
 
@@ -46,7 +46,8 @@ function setPassword(req: Request, res: Response) {
     if (error) {
         res.render("set_password", {
             error,
-            assetPath: assetPath
+            assetPath,
+            appPath
         });
         return;
     }
@@ -57,30 +58,30 @@ function setPassword(req: Request, res: Response) {
 }
 
 function login(req: Request, res: Response) {
-    const guessedPassword = req.body.password;
+    const { password, rememberMe } = req.body;
 
-    if (verifyPassword(guessedPassword)) {
-        const rememberMe = req.body.rememberMe;
-
-        req.session.regenerate(() => {
-            if (rememberMe) {
-                req.session.cookie.maxAge = 21 * 24 * 3600000; // 3 weeks
-            } else {
-                req.session.cookie.expires = null;
-            }
-
-            req.session.loggedIn = true;
-            res.redirect(".");
-        });
-    } else {
+    if (!verifyPassword(password)) {
         // note that logged IP address is usually meaningless since the traffic should come from a reverse proxy
         log.info(`WARNING: Wrong password from ${req.ip}, rejecting.`);
 
-        res.status(401).render("login", {
+        return res.status(401).render("login", {
             failedAuth: true,
-            assetPath: assetPath
+            assetPath,
+            appPath
         });
     }
+
+    req.session.regenerate(() => {
+        if (!rememberMe) {
+            // unset default maxAge set by sessionParser
+            // Cookie becomes non-persistent and expires after current browser session (e.g. when browser is closed)
+            req.session.cookie.maxAge = undefined;
+        }
+
+        req.session.loggedIn = true;
+
+        res.redirect(".");
+    });
 }
 
 function verifyPassword(guessedPassword: string) {

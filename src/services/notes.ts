@@ -6,7 +6,7 @@ import eventService from "./events.js";
 import cls from "../services/cls.js";
 import protectedSessionService from "../services/protected_session.js";
 import log from "../services/log.js";
-import { newEntityId, isString, unescapeHtml, quoteRegex, toMap } from "../services/utils.js";
+import { newEntityId, unescapeHtml, quoteRegex, toMap } from "../services/utils.js";
 import revisionService from "./revisions.js";
 import request from "./request.js";
 import path from "path";
@@ -146,7 +146,10 @@ function getAndValidateParent(params: GetValidateParams) {
     }
 
     if (!params.ignoreForbiddenParents) {
-        if (["_lbRoot", "_hidden"].includes(parentNote.noteId) || parentNote.noteId.startsWith("_lbTpl") || parentNote.isOptions()) {
+        if (["_lbRoot", "_hidden"].includes(parentNote.noteId)
+                || parentNote.noteId.startsWith("_lbTpl")
+                || parentNote.noteId.startsWith("_help")
+                || parentNote.isOptions()) {
             throw new ValidationError(`Creating child notes into '${parentNote.noteId}' is not allowed.`);
         }
     }
@@ -734,10 +737,10 @@ function updateNoteData(noteId: string, content: string, attachments: Attachment
         const existingAttachmentsByTitle = toMap(note.getAttachments({ includeContentLength: false }), "title");
 
         for (const { attachmentId, role, mime, title, position, content } of attachments) {
-            if (attachmentId || !(title in existingAttachmentsByTitle)) {
+            const existingAttachment = existingAttachmentsByTitle.get(title);
+            if (attachmentId || !existingAttachment) {
                 note.saveAttachment({ attachmentId, role, mime, title, content, position });
             } else {
-                const existingAttachment = existingAttachmentsByTitle[title];
                 existingAttachment.role = role;
                 existingAttachment.mime = mime;
                 existingAttachment.position = position;
@@ -884,7 +887,7 @@ async function asyncPostProcessContent(note: BNote, content: string | Buffer) {
         return;
     }
 
-    if (note.hasStringContent() && !isString(content)) {
+    if (note.hasStringContent() && typeof content !== "string") {
         content = content.toString();
     }
 

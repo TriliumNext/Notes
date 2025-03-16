@@ -30,6 +30,8 @@ import HelpDialog from "../widgets/dialogs/help.js";
 import type AppContext from "../components/app_context.js";
 import TabRowWidget from "../widgets/tab_row.js";
 import JumpToNoteDialog from "../widgets/dialogs/jump_to_note.js";
+import RecentChangesDialog from "../widgets/dialogs/recent_changes.js";
+import PromptDialog from "../widgets/dialogs/prompt.js";
 
 const MOBILE_CSS = `
 <style>
@@ -45,7 +47,7 @@ kbd {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.5em;
+    font-size: 1.25em;
     padding-left: 0.5em;
     padding-right: 0.5em;
     color: var(--main-text-color);
@@ -151,7 +153,7 @@ export default class MobileLayout {
                                     .css("font-size", "larger")
                                     .css("align-items", "center")
                                     .child(new ToggleSidebarButtonWidget().contentSized())
-                                    .child(new NoteTitleWidget().contentSized().css("position", "relative").css("top", "5px").css("padding-left", "0.5em"))
+                                    .child(new NoteTitleWidget().contentSized().css("position", "relative").css("padding-left", "0.5em"))
                                     .child(new MobileDetailMenuWidget(true).contentSized())
                             )
                             .child(new SharedInfoWidget())
@@ -169,7 +171,7 @@ export default class MobileLayout {
                                 new ScrollingContainer()
                                     .filling()
                                     .contentSized()
-                                    .child(new NoteDetailWidget().css("padding", "5px 0 10px 0"))
+                                    .child(new NoteDetailWidget())
                                     .child(new NoteListWidget())
                                     .child(new FilePropertiesWidget().css("font-size", "smaller"))
                             )
@@ -187,6 +189,8 @@ export default class MobileLayout {
             .child(new ClassicEditorToolbar())
             .child(new AboutDialog())
             .child(new HelpDialog())
-            .child(new JumpToNoteDialog());
+            .child(new RecentChangesDialog())
+            .child(new JumpToNoteDialog())
+            .child(new PromptDialog());
     }
 }

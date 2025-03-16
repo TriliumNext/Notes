@@ -1,6 +1,7 @@
 import type { CommandNames } from "../../components/app_context.js";
 import keyboardActionsService, { type Action } from "../../services/keyboard_actions.js";
 import AbstractButtonWidget, { type AbstractButtonWidgetSettings } from "./abstract_button.js";
+import type { ButtonNoteIdProvider } from "./button_from_note.js";
 
 let actions: Action[];
 
@@ -13,6 +14,7 @@ type CommandOrCallback = CommandNames | (() => CommandNames);
 interface CommandButtonWidgetSettings extends AbstractButtonWidgetSettings {
     command?: CommandOrCallback;
     onClick?: ClickHandler;
+    buttonNoteIdProvider?: ButtonNoteIdProvider | null;
 }
 
 export default class CommandButtonWidget extends AbstractButtonWidget<CommandButtonWidgetSettings> {

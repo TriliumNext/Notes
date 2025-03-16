@@ -4,6 +4,7 @@ import assetPath from "../services/asset_path.js";
 import shareRoot from "./share_root.js";
 import escapeHtml from "escape-html";
 import type SNote from "./shaca/entities/snote.js";
+import { t } from "i18next";
 
 /**
  * Represents the output of the content renderer.
@@ -43,7 +44,7 @@ function getContent(note: SNote) {
     } else if (note.type === "book") {
         result.isEmpty = true;
     } else {
-        result.content = "<p>This note type cannot be displayed.</p>";
+        result.content = `<p>${t("content_renderer.note-cannot-be-displayed")}</p>`;
     }
 
     return result;

@@ -12,21 +12,21 @@ const TPL = `
         .bulk-actions-dialog .modal-body h4:not(:first-child) {
             margin-top: 20px;
         }
-    
+
         .bulk-actions-dialog .bulk-available-action-list button {
             padding: 2px 7px;
             margin-right: 10px;
             margin-bottom: 5px;
         }
-    
+
         .bulk-actions-dialog .bulk-existing-action-list {
             width: 100%;
         }
-    
+
         .bulk-actions-dialog .bulk-existing-action-list td {
             padding: 7px;
         }
-    
+
         .bulk-actions-dialog .bulk-existing-action-list .button-column {
             /* minimal width so that table remains static sized and most space remains for middle column with settings */
             width: 50px;
@@ -45,8 +45,10 @@ const TPL = `
                 <h4>${t("bulk_actions.affected_notes")}: <span class="affected-note-count">0</span></h4>
 
                 <div class="form-check">
-                    <input id="include-descendants" class="include-descendants form-check-input" type="checkbox" value="">
-                    <label for="include-descendants" class="form-check-label">${t("bulk_actions.include_descendants")}</label>
+                    <label for="include-descendants" class="form-check-label tn-checkbox">
+                        <input id="include-descendants" class="include-descendants form-check-input" type="checkbox" value="">
+                        ${t("bulk_actions.include_descendants")}
+                    </label>
                 </div>
 
                 <h4>${t("bulk_actions.available_actions")}</h4>

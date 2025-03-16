@@ -30,7 +30,7 @@ function getRelationMap(req: Request) {
         return resp;
     }
 
-    const questionMarks = noteIds.map((noteId) => "?").join(",");
+    const questionMarks = noteIds.map((_noteId) => "?").join(",");
 
     const relationMapNote = becca.getNoteOrThrow(relationMapNoteId);
 

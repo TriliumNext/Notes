@@ -102,7 +102,7 @@ You can also read [Patterns of personal knowledge base](https://triliumnext.gith
 git clone https://github.com/TriliumNext/Notes.git
 cd Notes
 npm install
-npm run start-server
+npm run server:start
 ```
 
 ### Documentation

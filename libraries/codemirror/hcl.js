@@ -198,6 +198,7 @@
         ext: [ "hcl " ],
         mime: "text/x-hcl",
         mode: "hcl",
+        name: "Terraform (HCL)"
     });
 
 });

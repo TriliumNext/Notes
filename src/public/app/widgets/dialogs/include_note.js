@@ -4,6 +4,7 @@ import noteAutocompleteService from "../../services/note_autocomplete.js";
 import utils from "../../services/utils.js";
 import froca from "../../services/froca.js";
 import BasicWidget from "../basic_widget.js";
+import { Modal } from "bootstrap";
 
 const TPL = `
 <div class="include-note-dialog modal mx-auto" tabindex="-1" role="dialog">
@@ -25,16 +26,22 @@ const TPL = `
                     ${t("include_note.box_size_prompt")}
 
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="include-note-box-size" value="small">
-                        <label class="form-check-label">${t("include_note.box_size_small")}</label>
+                        <label class="form-check-label tn-radio">
+                            <input class="form-check-input" type="radio" name="include-note-box-size" value="small">
+                            ${t("include_note.box_size_small")}
+                        </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="include-note-box-size" value="medium" checked>
-                        <label class="form-check-label">${t("include_note.box_size_medium")}</label>
+                        <label class="form-check-label tn-radio">
+                            <input class="form-check-input" type="radio" name="include-note-box-size" value="medium" checked>
+                            ${t("include_note.box_size_medium")}
+                        </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="include-note-box-size" value="full">
-                        <label class="form-check-label">${t("include_note.box_size_full")}</label>
+                        <label class="form-check-label tn-radio">
+                            <input class="form-check-input" type="radio" name="include-note-box-size" value="full">
+                            ${t("include_note.box_size_full")}
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -48,7 +55,7 @@ const TPL = `
 export default class IncludeNoteDialog extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget);
         this.$form = this.$widget.find(".include-note-form");
         this.$autoComplete = this.$widget.find(".include-note-autocomplete");
         this.$form.on("submit", () => {

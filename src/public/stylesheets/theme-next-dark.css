@@ -8,7 +8,7 @@
     --theme-style: dark;
     --native-titlebar-background: #00000000;
 
-    --main-background-color: #333;
+    --main-background-color: #272727;
     --main-text-color: #ccc;
     --main-border-color: #454545;
     --subtle-border-color: #313131;
@@ -19,21 +19,53 @@
 
     --accented-background-color: #555;
 
-    --button-background-color: transparent;
-    --button-border-color: #ccc;
-    --button-text-color: currentColor;
-    --button-border-radius: 5px;
-    --button-disabled-background-color: transparent;
-    --button-disabled-text-color: #999;
+    --tool-dialog-background-color: #262626;
+    --tool-dialog-shadow-color: black;
 
-    --primary-button-background-color: #888;
-    --primary-button-text-color: white;
-    --primary-button-border-color: #999;
+    --button-text-color: currentColor;
+
+    --cmd-button-background-color: #ffffff28;
+    --cmd-button-text-color: #ffffffc2;
+    --cmd-button-hover-background-color: #ffffff37;
+    --cmd-button-hover-text-color: white;
+    --cmd-button-shadow-color: #00000080;
+    --cmd-button-icon-color: white;
+    --cmd-button-keyboard-shortcut-background: #0000004d;
+    --cmd-button-keyboard-shortcut-color: white;
+    --cmd-button-disabled-opacity: 0.5;
+
+    --icon-button-color: currentColor;
+    --icon-button-hover-background: var(--hover-item-background-color);
+    --icon-button-hover-color: var(--hover-item-text-color);
 
     --muted-text-color: #bbb;
 
-    --input-text-color: #ccc;
-    --input-background-color: #333;
+    --input-background-color: #ffffff12;
+    --input-text-color: #ffffffc7;
+    --input-placeholder-color: #b7b7b782;
+    --input-selection-background: gray;
+    --input-selection-text-color: white;
+    --input-hover-background: #ffffff1f;
+    --input-hover-color: var(--input-text-color);
+    --input-focus-outline-color: #ffffff57;
+    --input-focus-background: #ffffff1f;
+    --input-focus-color: white;
+
+    --input-action-button-color: #c6c6c6;
+    --input-action-button-hover: white;
+
+    --radio-checkbox-background: #ffffff30;
+    --radio-checkbox-hover-background: #ffffff61;
+    --radio-checkbox-indicator-color: white;
+
+    --select-focus-background: #333;
+    --select-focus-text-color: var(--input-text-color);
+    --select-dropdown-text-color: var(--input-text-color);
+    --select-arrow-svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='transparent' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
+    --select-group-heading-text-color: gray;
+
+    --link-hover-background: #ffffff26;
+    --link-hover-color: white;
 
     --hover-item-text-color: #efefef;
     --hover-item-background-color: #ffffff24;
@@ -56,9 +88,24 @@
     --menu-item-keyboard-shortcut-color: #ffffff8f;
     --menu-item-arrow-color: #ffffffa3;
     --menu-item-delimiter-color: #ffffff1c;
+    --menu-item-group-header-color: #ffffff91;
 
-    --modal-background-color: #333;
-    --modal-backdrop-color: #444;
+    --modal-backdrop-color: #000;
+    --modal-shadow-color: rgba(0, 0, 0, .5);
+    --modal-border-color: #ffffff23;
+    --modal-background-color: #262626;
+    --modal-title-color: gray;
+    --modal-control-button-background: #ffffff2b;
+    --modal-control-button-color: #cbcbcb;
+    --modal-control-button-hover-color: white;
+    --modal-control-button-hover-background: #ffffff45;
+    --modal-close-button-hover-background: var(--tab-close-button-hover-background);
+    --modal-footer-background: #ffffff08;
+    --modal-footer-color: #ffffff7a;
+
+    --toast-background: #4d4d4dc2;
+    --toast-text-color: #e1e1e1;
+    --toast-close-button-background: #ffffff33;
 
     --quick-search-background: #ffffff12;
     --quick-search-color: #ffffff52;
@@ -91,6 +138,8 @@
     --protected-session-active-icon-color: #8edd8e;
     --sync-status-error-pulse-color: #f47871;
 
+    --right-pane-heading-color: gray;
+
     --root-background: var(--left-pane-background-color);
 
     --gutter-color: transparent;
@@ -109,6 +158,11 @@
     --inactive-tab-hover-background-color: #ffffff0f;
     --inactive-tab-text-color: #7c7c7c;
 
+    --alert-bar-background: #6b6b6b3b;
+
+    --promoted-attribute-card-background-color: var(--card-background-color);
+    --promoted-attribute-card-shadow-color: #000000b3;
+
     --right-pane-item-hover-background: #ffffff26;
     --right-pane-item-hover-color: white;
 
@@ -120,7 +174,7 @@
 
     --code-block-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 
-    --card-background-color: #363636;
+    --card-background-color: #ffffff12;
     --card-background-hover-color: #3c3c3c;
     --card-background-press-color: #464646;
     --card-border-color: #222222;
@@ -171,8 +225,4 @@ body .CodeMirror {
 
 body .todo-list input[type="checkbox"]:not(:checked):before {
     border-color: var(--muted-text-color) !important;
-}
-
-.btn-close {
-    filter: invert(1);
 }

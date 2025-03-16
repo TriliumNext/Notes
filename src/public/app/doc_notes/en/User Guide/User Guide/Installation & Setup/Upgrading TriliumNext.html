@@ -1,0 +1,45 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Upgrading TriliumNext</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Upgrading TriliumNext</h1>
+
+      <div class="ck-content">
+        <p>This document outlines the steps required to upgrade Trilium to a new
+          release version.</p>
+        <h2>How to Upgrade</h2>
+        <p>Trilium does not support built-in automatic upgrades; all updates must
+          be performed manually. The upgrade process varies depending on the installation
+          method:</p>
+        <ul>
+          <li><a href="Server%20Installation/1.%20Installing%20the%20server/Docker%20Server%20Installation.html"><strong>Docker Server Installation</strong></a>:
+            Pull the new image and restart the container.</li>
+          <li><strong>Other Installations</strong>: Download the latest version from
+            the <a href="https://github.com/TriliumNext/Notes/releases/latest">release page</a> and
+            replace the existing application files.</li>
+        </ul>
+        <h2>Database Compatibility and Migration</h2>
+        <p>Upon startup, Trilium will automatically migrate the <a href="../Advanced%20Usage/Database.html">database</a> to
+          the new version. Note that after migration, older versions of Trilium will
+          be unable to read the database. If you need to revert to a previous version
+          of Trilium and its database, you can restore the <a href="Backup.html">backup</a> that
+          is created prior to migration.</p>
+        <h2>Sync Compatibility</h2>
+        <p>The <a href="Synchronization.html">synchronization</a> protocol used by
+          Trilium is versioned, requiring all members of the sync cluster to use
+          the same protocol version. Therefore, when upgrading to a new version,
+          you may need to upgrade all instances in the sync cluster. Changes to the
+          sync protocol version are typically indicated on the release page.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

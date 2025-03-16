@@ -7,7 +7,7 @@ const TPL = `
 <div class="options-section">
     <h4>${t("search_engine.title")}</h4>
 
-    <p>${t("search_engine.custom_search_engine_info")}</p>
+    <p class="form-text">${t("search_engine.custom_search_engine_info")}</p>
 
     <form class="sync-setup-form">
         <div class="form-group">

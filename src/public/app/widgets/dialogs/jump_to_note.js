@@ -4,6 +4,7 @@ import utils from "../../services/utils.js";
 import appContext from "../../components/app_context.js";
 import BasicWidget from "../basic_widget.js";
 import shortcutService from "../../services/shortcuts.js";
+import { Modal } from "bootstrap";
 
 const TPL = `<div class="jump-to-note-dialog modal mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -35,7 +36,7 @@ export default class JumpToNoteDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget);
 
         this.$autoComplete = this.$widget.find(".jump-to-note-autocomplete");
         this.$results = this.$widget.find(".jump-to-note-results");

@@ -1,4 +1,5 @@
 // TODO: Booleans should probably be numbers instead (as SQLite does not have booleans.);
+// TODO: check against schema.sql which properties really are "optional"
 
 export interface AttachmentRow {
     attachmentId?: string;
@@ -12,6 +13,8 @@ export interface AttachmentRow {
     dateModified?: string;
     utcDateModified?: string;
     utcDateScheduledForErasureSince?: string;
+    isDeleted?: boolean;
+    deleteId?: string;
     contentLength?: number;
     content?: Buffer | string;
 }
@@ -19,7 +22,7 @@ export interface AttachmentRow {
 export interface RevisionRow {
     revisionId?: string;
     noteId: string;
-    type: string;
+    type: NoteType;
     mime: string;
     isProtected?: boolean;
     title: string;
@@ -116,7 +119,8 @@ export const ALLOWED_NOTE_TYPES = [
     "book",
     "webView",
     "code",
-    "mindMap"
+    "mindMap",
+    "geoMap"
 ] as const;
 export type NoteType = (typeof ALLOWED_NOTE_TYPES)[number];
 

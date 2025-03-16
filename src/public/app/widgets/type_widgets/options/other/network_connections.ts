@@ -6,7 +6,7 @@ const TPL = `
 <div class="options-section">
     <h4>${t("network_connections.network_connections_title")}</h4>
 
-    <label>
+    <label class="tn-checkbox">
         <input class="check-for-updates form-check-input" type="checkbox" name="check-for-updates">
         ${t("network_connections.check_for_updates")}
     </label>

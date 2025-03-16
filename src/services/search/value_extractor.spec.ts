@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import becca_mocking from "../../../spec/support/becca_mocking.js";
 import ValueExtractor from "./value_extractor.js";
 import becca from "../../becca/becca.js";
 import SearchContext from "./search_context.js";
+import { note } from "../../../spec/support/becca_mocking.js";
 
 const dsc = new SearchContext();
 
@@ -12,7 +12,7 @@ describe("Value extractor", () => {
     });
 
     it("simple title extraction", async () => {
-        const europe = becca_mocking.note("Europe").note;
+        const europe = note("Europe").note;
 
         const valueExtractor = new ValueExtractor(dsc, ["note", "title"]);
 
@@ -21,7 +21,7 @@ describe("Value extractor", () => {
     });
 
     it("label extraction", async () => {
-        const austria = becca_mocking.note("Austria").label("Capital", "Vienna").note;
+        const austria = note("Austria").label("Capital", "Vienna").note;
 
         let valueExtractor = new ValueExtractor(dsc, ["note", "labels", "capital"]);
 
@@ -35,8 +35,8 @@ describe("Value extractor", () => {
     });
 
     it("parent/child property extraction", async () => {
-        const vienna = becca_mocking.note("Vienna");
-        const europe = becca_mocking.note("Europe").child(becca_mocking.note("Austria").child(vienna));
+        const vienna = note("Vienna");
+        const europe = note("Europe").child(note("Austria").child(vienna));
 
         let valueExtractor = new ValueExtractor(dsc, ["note", "children", "children", "title"]);
 
@@ -50,9 +50,9 @@ describe("Value extractor", () => {
     });
 
     it("extract through relation", async () => {
-        const czechRepublic = becca_mocking.note("Czech Republic").label("capital", "Prague");
-        const slovakia = becca_mocking.note("Slovakia").label("capital", "Bratislava");
-        const austria = becca_mocking.note("Austria").relation("neighbor", czechRepublic.note).relation("neighbor", slovakia.note);
+        const czechRepublic = note("Czech Republic").label("capital", "Prague");
+        const slovakia = note("Slovakia").label("capital", "Bratislava");
+        const austria = note("Austria").relation("neighbor", czechRepublic.note).relation("neighbor", slovakia.note);
 
         let valueExtractor = new ValueExtractor(dsc, ["note", "relations", "neighbor", "labels", "capital"]);
 

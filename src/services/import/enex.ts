@@ -315,14 +315,10 @@ function importEnex(taskContext: TaskContext, file: File, parentNote: BNote): Pr
             resource.mime = resource.mime || "application/octet-stream";
 
             const createFileNote = () => {
-                if (typeof resource.content !== "string") {
-                    throw new Error("Missing or wrong content type for resource.");
-                }
-
                 const resourceNote = noteService.createNewNote({
                     parentNoteId: noteEntity.noteId,
                     title: resource.title,
-                    content: resource.content,
+                    content: resource.content ?? "",
                     type: "file",
                     mime: resource.mime,
                     isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()

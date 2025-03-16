@@ -30,12 +30,12 @@ function addClipping(req: Request) {
     // if a note under the clipperInbox has the same 'pageUrl' attribute,
     // add the content to that note and clone it under today's inbox
     // otherwise just create a new note under today's inbox
-    let { title, content, pageUrl, images } = req.body;
+    const { title, content, images } = req.body;
     const clipType = "clippings";
 
     const clipperInbox = getClipperInboxNote();
 
-    pageUrl = htmlSanitizer.sanitizeUrl(pageUrl);
+    const pageUrl = htmlSanitizer.sanitizeUrl(req.body.pageUrl);
     let clippingNote = findClippingNote(clipperInbox, pageUrl, clipType);
 
     if (!clippingNote) {
@@ -100,16 +100,15 @@ function getClipperInboxNote() {
 }
 
 function createNote(req: Request) {
-    let { title, content, pageUrl, images, clipType, labels } = req.body;
+    const { content, images, labels } = req.body;
 
-    if (!title || !title.trim()) {
-        title = `Clipped note from ${pageUrl}`;
-    }
+    const clipType = htmlSanitizer.sanitize(req.body.clipType);
+    const pageUrl = htmlSanitizer.sanitizeUrl(req.body.pageUrl);
 
-    clipType = htmlSanitizer.sanitize(clipType);
+    const trimmedTitle = (typeof req.body.title === "string") ? req.body.title.trim() : "";
+    const title = trimmedTitle || `Clipped note from ${pageUrl}`;
 
     const clipperInbox = getClipperInboxNote();
-    pageUrl = htmlSanitizer.sanitizeUrl(pageUrl);
     let note = findClippingNote(clipperInbox, pageUrl, clipType);
 
     if (!note) {
@@ -123,8 +122,6 @@ function createNote(req: Request) {
         note.setLabel("clipType", clipType);
 
         if (pageUrl) {
-            pageUrl = htmlSanitizer.sanitizeUrl(pageUrl);
-
             note.setLabel("pageUrl", pageUrl);
             note.setLabel("iconClass", "bx bx-globe");
         }
@@ -139,7 +136,7 @@ function createNote(req: Request) {
 
     const existingContent = note.getContent();
     if (typeof existingContent !== "string") {
-        throw new ValidationError("Invalid note content tpye.");
+        throw new ValidationError("Invalid note content type.");
     }
     const rewrittenContent = processContent(images, note, content);
     const newContent = `${existingContent}${existingContent.trim() ? "<br/>" : ""}${rewrittenContent}`;
@@ -195,7 +192,7 @@ function processContent(images: Image[], note: BNote, content: string) {
 }
 
 function openNote(req: Request) {
-    if (utils.isElectron()) {
+    if (utils.isElectron) {
         ws.sendMessageToAllClients({
             type: "openNote",
             noteId: req.params.noteId
@@ -219,9 +216,9 @@ function handshake() {
 }
 
 function findNotesByUrl(req: Request) {
-    let pageUrl = req.params.noteUrl;
+    const pageUrl = req.params.noteUrl;
     const clipperInbox = getClipperInboxNote();
-    let foundPage = findClippingNote(clipperInbox, pageUrl, null);
+    const foundPage = findClippingNote(clipperInbox, pageUrl, null);
     return {
         noteId: foundPage ? foundPage.noteId : null
     };

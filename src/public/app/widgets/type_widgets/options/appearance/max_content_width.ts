@@ -9,7 +9,7 @@ const TPL = `
 <div class="options-section">
     <h4>${t("max_content_width.title")}</h4>
 
-    <p>${t("max_content_width.default_description")}</p>
+    <p class="form-text">${t("max_content_width.default_description")}</p>
 
     <div class="form-group row">
         <div class="col-md-6">
@@ -20,7 +20,7 @@ const TPL = `
 
     <p>
         ${t("max_content_width.apply_changes_description")}
-        <button class="btn btn-micro reload-frontend-button">${t("max_content_width.reload_button")}</button>
+        <button class="btn btn-secondary btn-micro reload-frontend-button">${t("max_content_width.reload_button")}</button>
     </p>
 </div>`;
 

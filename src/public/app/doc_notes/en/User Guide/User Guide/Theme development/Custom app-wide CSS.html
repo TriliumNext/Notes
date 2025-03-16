@@ -1,0 +1,73 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Custom app-wide CSS</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Custom app-wide CSS</h1>
+
+      <div class="ck-content">
+        <p>It is possible to provide a CSS file to be used regardless of the theme
+          set by the user.</p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <img src="Custom app-wide CSS_image.png">
+              </td>
+              <td>Start by creating a new note and changing the note type to CSS</td>
+            </tr>
+            <tr>
+              <td>
+                <img src="1_Custom app-wide CSS_image.png">
+              </td>
+              <td>In the ribbon, press the “Owned Attributes” section and type <code>#appCss</code>.</td>
+            </tr>
+            <tr>
+              <td>
+                <img src="2_Custom app-wide CSS_image.png">
+              </td>
+              <td>Type the desired CSS.
+                <br>
+                <br>Generally it's a good idea to append <code>!important</code> for the styles
+                that are being changed, in order to prevent other</td>
+            </tr>
+          </tbody>
+        </table>
+        
+<h2>Seeing the changes</h2>
+        <p>Adding a new <em>app CSS note</em> or modifying an existing one does not
+          immediately apply changes. To see the changes, press Ctrl+Shift+R to refresh
+          the page first.</p>
+        <h2>Example use-case: customizing the printing stylesheet</h2>
+        <p>When printing a document or exporting as PDF, it is possible to adjust
+          the style by creating a CSS note that uses the <code>@media</code> selector.</p>
+        <p>For example, to change the font of the document from the one defined by
+          the theme or the user to a serif one:</p><pre><code class="language-text-x-trilium-auto">@media print {
+
+	body {
+
+        --main-font-family: serif !important;
+
+        --detail-font-family: var(--main-font-family) !important;
+
+    }
+
+}</code></pre>
+      </div>
+    </div>
+  </body>
+
+</html>

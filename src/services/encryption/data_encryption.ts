@@ -34,7 +34,7 @@ function encrypt(key: Buffer, plainText: Buffer | string) {
         throw new Error("No data key!");
     }
 
-    const plainTextBuffer = Buffer.from(plainText);
+    const plainTextBuffer = Buffer.isBuffer(plainText) ? plainText : Buffer.from(plainText);
 
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv("aes-128-cbc", pad(key), pad(iv));
@@ -88,7 +88,7 @@ function decrypt(key: Buffer, cipherText: string | Buffer): Buffer | false | nul
         if (e.message?.includes("WRONG_FINAL_BLOCK_LENGTH") || e.message?.includes("wrong final block length")) {
             log.info("Caught WRONG_FINAL_BLOCK_LENGTH, returning cipherText instead");
 
-            return Buffer.from(cipherText);
+            return (Buffer.isBuffer(cipherText) ? cipherText : Buffer.from(cipherText));
         } else {
             throw e;
         }

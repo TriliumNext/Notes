@@ -18,7 +18,7 @@ export class TypedComponent<ChildT extends TypedComponent<ChildT>> {
     children: ChildT[];
     initialized: Promise<void> | null;
     parent?: TypedComponent<any>;
-    position!: number;
+    _position!: number;
 
     constructor() {
         this.componentId = `${this.sanitizedClassName}-${utils.randomString(8)}`;
@@ -29,6 +29,14 @@ export class TypedComponent<ChildT extends TypedComponent<ChildT>> {
     get sanitizedClassName() {
         // webpack mangles names and sometimes uses unsafe characters
         return this.constructor.name.replace(/[^A-Z0-9]/gi, "_");
+    }
+
+    get position() {
+        return this._position;
+    }
+
+    set position(newPosition: number) {
+        this._position = newPosition;
     }
 
     setParent(parent: TypedComponent<any>) {
@@ -61,7 +69,7 @@ export class TypedComponent<ChildT extends TypedComponent<ChildT>> {
         }
     }
 
-    triggerEvent(name: string, data = {}): Promise<unknown> | undefined | null {
+    triggerEvent<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown> | undefined | null {
         return this.parent?.triggerEvent(name, data);
     }
 
@@ -80,8 +88,7 @@ export class TypedComponent<ChildT extends TypedComponent<ChildT>> {
         return promises.length > 0 ? Promise.all(promises) : null;
     }
 
-    triggerCommand<K extends CommandNames>(name: string, _data?: CommandMappings[K]): Promise<unknown> | undefined | null {
-        const data = _data || {};
+    triggerCommand<K extends CommandNames>(name: K, data?: CommandMappings[K]): Promise<unknown> | undefined | null {
         const fun = (this as any)[`${name}Command`];
 
         if (fun) {

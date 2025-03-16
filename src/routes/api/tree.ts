@@ -127,6 +127,46 @@ function getNotesAndBranchesAndAttributes(_noteIds: string[] | Set<string>) {
     };
 }
 
+/**
+ * @swagger
+ * /api/tree:
+ *   get:
+ *     summary: Retrieve tree data
+ *     operationId: tree
+ *     externalDocs:
+ *       description: Server implementation
+ *       url: https://github.com/TriliumNext/Notes/blob/v0.91.6/src/routes/api/tree.ts
+ *     parameters:
+ *       - in: query
+ *         name: subTreeNoteId
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Limit tree data to this note and descendants
+ *     responses:
+ *       '200':
+ *         description: Notes, branches and attributes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 branches:
+ *                   type: list
+ *                   items:
+ *                     $ref: '#/components/schemas/Branch'
+ *                 notes:
+ *                   type: list
+ *                   items:
+ *                     $ref: '#/components/schemas/Note'
+ *                 attributes:
+ *                   type: list
+ *                   items:
+ *                     $ref: '#/components/schemas/Attribute'
+ *     security:
+ *       - session: []
+ *     tags: ["data"]
+ */
 function getTree(req: Request) {
     const subTreeNoteId = typeof req.query.subTreeNoteId === "string" ? req.query.subTreeNoteId : "root";
     const collectedNoteIds = new Set<string>([subTreeNoteId]);

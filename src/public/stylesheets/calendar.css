@@ -41,18 +41,33 @@
     flex-grow: 1;
 }
 
+.calendar-dropdown-widget .calendar-header input[type="number"] {
+    appearance: textfield !important;
+}
+
+.calendar-dropdown-widget .calendar-header input[type="number"]::-webkit-outer-spin-button,
+.calendar-dropdown-widget .calendar-header input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .calendar-dropdown-widget .calendar-header select {
     cursor: pointer;
 }
 
 .calendar-dropdown-widget .calendar-header input,
-.calendar-dropdown-widget .calendar-header select {
+.calendar-dropdown-widget .calendar-header .dropdown-toggle {
     appearance: none;
     text-align: center;
     border: 0;
-    border-bottom: 1px solid var(--button-border-color);
-    background-color: var(--menu-background-color) !important;
+    border-left: unset;
+    background-color: var(--menu-background-color);
+    font-weight: bold;
     outline: 0;
+}
+
+.calendar-dropdown-widget .calendar-header .dropdown-toggle::after {
+    border: unset; /* Disable the dropdown arrow */
 }
 
 .calendar-dropdown-widget .calendar-week {
@@ -69,6 +84,7 @@
     padding-top: 5px;
     padding-bottom: 5px;
     text-align: center;
+    text-transform: uppercase;
 }
 
 .calendar-dropdown-widget .calendar-body {
@@ -79,7 +95,6 @@
 .calendar-dropdown-widget .calendar-date {
     align-items: center;
     color: var(--main-text-color);
-    background-color: var(--main-background-color);
     display: flex;
     flex-direction: column;
     flex: 0 0 14.28%;
@@ -91,6 +106,7 @@
 .calendar-dropdown-widget .calendar-date:hover {
     color: var(--hover-item-text-color);
     background-color: var(--hover-item-background-color);
+    text-decoration: underline;
 }
 
 .calendar-dropdown-widget .calendar-date-active {

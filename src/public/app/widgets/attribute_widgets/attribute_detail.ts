@@ -13,7 +13,7 @@ import appContext from "../../components/app_context.js";
 import type { Attribute } from "../../services/attribute_parser.js";
 
 const TPL = `
-<div class="attr-detail">
+<div class="attr-detail tn-tool-dialog">
     <style>
         .attr-detail {
             display: block;
@@ -48,8 +48,12 @@ const TPL = `
             text-align: left;
         }
 
-        .attr-edit-table td input {
+        .attr-edit-table td input[not(type="checkbox")] {
             width: 100%;
+        }
+
+        .attr-edit-table td input[type="checkbox"] {
+            display: inline-block;
         }
 
         .close-attr-detail-button {
@@ -67,12 +71,16 @@ const TPL = `
         .attr-detail input[readonly] {
             background-color: var(--accented-background-color) !important;
         }
+
+        .attr-edit-table td {
+            padding: 4px 0;
+        }
     </style>
 
     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
         <h5 class="attr-detail-title">${t("attribute_detail.attr_detail_title")}</h5>
 
-        <span class="bx bx-x close-attr-detail-button" title="${t("attribute_detail.close_button_title")}"></span>
+        <span class="bx bx-x close-attr-detail-button tn-tool-button" title="${t("attribute_detail.close_button_title")}"></span>
     </div>
 
     <div class="attr-is-owned-by">${t("attribute_detail.attr_is_owned_by")}</div>
@@ -97,8 +105,13 @@ const TPL = `
         </tr>
         <tr class="attr-row-promoted"
             title="${t("attribute_detail.promoted_title")}">
-            <th>${t("attribute_detail.promoted")}</th>
-            <td><input type="checkbox" class="attr-input-promoted form-check" /></td>
+            <th></th>
+            <td>
+                <label class="tn-checkbox">
+                    <input type="checkbox" class="attr-input-promoted" />
+                    ${t("attribute_detail.promoted")}
+                </label>
+            </td>
         </tr>
         <tr class="attr-row-promoted-alias">
             <th title="${t("attribute_detail.promoted_alias_title")}">${t("attribute_detail.promoted_alias")}</th>
@@ -149,8 +162,13 @@ const TPL = `
             </td>
         </tr>
         <tr title="${t("attribute_detail.inheritable_title")}">
-            <th>${t("attribute_detail.inheritable")}</th>
-            <td><input type="checkbox" class="attr-input-inheritable form-check" /></td>
+            <th></th>
+            <td>
+                <label class="tn-checkbox">
+                    <input type="checkbox" class="attr-input-inheritable" />
+                    ${t("attribute_detail.inheritable")}
+                </label>
+            </td>
         </tr>
     </table>
 
@@ -242,7 +260,9 @@ const ATTR_HELP: Record<string, Record<string, string>> = {
         executeDescription: t("attribute_detail.execute_description"),
         excludeFromNoteMap: t("attribute_detail.exclude_from_note_map"),
         newNotesOnTop: t("attribute_detail.new_notes_on_top"),
-        hideHighlightWidget: t("attribute_detail.hide_highlight_widget")
+        hideHighlightWidget: t("attribute_detail.hide_highlight_widget"),
+        printLandscape: t("attribute_detail.print_landscape"),
+        printPageSize: t("attribute_detail.print_page_size")
     },
     relation: {
         runOnNoteCreation: t("attribute_detail.run_on_note_creation"),

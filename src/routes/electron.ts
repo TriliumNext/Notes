@@ -7,7 +7,7 @@ interface Response {
     setHeader: (name: string, value: string) => Response;
     header: (name: string, value: string) => Response;
     status: (statusCode: number) => Response;
-    send: (obj: {}) => void;
+    send: (obj: {}) => void; // eslint-disable-line @typescript-eslint/no-empty-object-type
 }
 
 function init(app: Application) {

@@ -2,12 +2,9 @@
 
 import optionService from "./options.js";
 import log from "./log.js";
-import { isElectron as getIsElectron, isMac as getIsMac } from "./utils.js";
+import { isElectron, isMac } from "./utils.js";
 import type { KeyboardShortcut } from "./keyboard_actions_interface.js";
 import { t } from "i18next";
-
-const isMac = getIsMac();
-const isElectron = getIsElectron();
 
 function getDefaultKeyboardActions() {
     if (!t("keyboard_actions.note-navigation")) {
@@ -242,6 +239,12 @@ function getDefaultKeyboardActions() {
             scope: "window"
         },
         {
+            actionName: "toggleZenMode",
+            defaultShortcuts: ["Alt+Z"],
+            description: t("keyboard_actions.toggle-zen-mode"),
+            scope: "window"
+        },
+        {
             actionName: "firstTab",
             defaultShortcuts: ["CommandOrControl+1"],
             description: t("keyboard_actions.first-tab"),
@@ -345,6 +348,12 @@ function getDefaultKeyboardActions() {
             actionName: "showHelp",
             defaultShortcuts: ["F1"],
             description: t("keyboard_actions.show-help"),
+            scope: "window"
+        },
+        {
+            actionName: "showCheatsheet",
+            defaultShortcuts: ["Shift+F1"],
+            description: t("keyboard_actions.show-cheatsheet"),
             scope: "window"
         },
 
@@ -504,6 +513,12 @@ function getDefaultKeyboardActions() {
             actionName: "printActiveNote",
             defaultShortcuts: [],
             description: t("keyboard_actions.print-active-note"),
+            scope: "window"
+        },
+        {
+            actionName: "exportAsPdf",
+            defaultShortcuts: [],
+            description: t("keyboard_actions.export-as-pdf"),
             scope: "window"
         },
         {

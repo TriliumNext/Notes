@@ -5,6 +5,7 @@ import cls from "../services/cls.js";
 import sql from "../services/sql.js";
 import becca from "../becca/becca.js";
 import type { Request, Response, Router } from "express";
+import { safeExtractMessageAndStackFromError } from "../services/utils.js";
 
 function handleRequest(req: Request, res: Response) {
     // express puts content after first slash into 0 index element
@@ -25,8 +26,9 @@ function handleRequest(req: Request, res: Response) {
 
         try {
             match = path.match(regex);
-        } catch (e: any) {
-            log.error(`Testing path for label '${attr.attributeId}', regex '${attr.value}' failed with error: ${e.message}, stack: ${e.stack}`);
+        } catch (e: unknown) {
+            const [errMessage, errStack] = safeExtractMessageAndStackFromError(e);
+            log.error(`Testing path for label '${attr.attributeId}', regex '${attr.value}' failed with error: ${errMessage}, stack: ${errStack}`);
             continue;
         }
 
@@ -45,10 +47,10 @@ function handleRequest(req: Request, res: Response) {
                     req,
                     res
                 });
-            } catch (e: any) {
-                log.error(`Custom handler '${note.noteId}' failed with: ${e.message}, ${e.stack}`);
-
-                res.setHeader("Content-Type", "text/plain").status(500).send(e.message);
+            } catch (e: unknown) {
+                const [errMessage, errStack] = safeExtractMessageAndStackFromError(e);
+                log.error(`Custom handler '${note.noteId}' failed with: ${errMessage}, ${errStack}`);
+                res.setHeader("Content-Type", "text/plain").status(500).send(errMessage);
             }
         } else if (attr.name === "customResourceProvider") {
             fileService.downloadNoteInt(attr.noteId, res);
@@ -68,7 +70,7 @@ function handleRequest(req: Request, res: Response) {
 function register(router: Router) {
     // explicitly no CSRF middleware since it's meant to allow integration from external services
 
-    router.all("/custom/:path*", (req: Request, res: Response, next) => {
+    router.all("/custom/:path*", (req: Request, res: Response, _next) => {
         cls.namespace.bindEmitter(req);
         cls.namespace.bindEmitter(res);
 

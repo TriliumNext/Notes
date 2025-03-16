@@ -156,9 +156,11 @@ function createScriptLauncher(parentNoteId: string, forceNoteId?: string) {
     return note;
 }
 
+export type LauncherType = "launcher" | "note" | "script" | "customWidget" | "spacer";
+
 interface LauncherConfig {
     parentNoteId: string;
-    launcherType: string;
+    launcherType: LauncherType;
     noteId?: string;
 }
 

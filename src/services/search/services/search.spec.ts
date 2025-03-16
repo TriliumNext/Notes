@@ -5,7 +5,7 @@ import BBranch from "../../../becca/entities/bbranch.js";
 import SearchContext from "../search_context.js";
 import dateUtils from "../../date_utils.js";
 import becca from "../../../becca/becca.js";
-import becca_mocking from "../../../../spec/support/becca_mocking.js";
+import { findNoteByTitle, note, NoteBuilder } from "../../../../spec/support/becca_mocking.js";
 
 describe("Search", () => {
     let rootNote: any;
@@ -13,7 +13,7 @@ describe("Search", () => {
     beforeEach(() => {
         becca.reset();
 
-        rootNote = new becca_mocking.NoteBuilder(new BNote({ noteId: "root", title: "root", type: "text" }));
+        rootNote = new NoteBuilder(new BNote({ noteId: "root", title: "root", type: "text" }));
         new BBranch({
             branchId: "none_root",
             noteId: "root",
@@ -22,19 +22,19 @@ describe("Search", () => {
         });
     });
 
-    it.skip("simple path match", () => {
-        rootNote.child(becca_mocking.note("Europe").child(becca_mocking.note("Austria")));
+    it("simple path match", () => {
+        rootNote.child(note("Europe").child(note("Austria")));
 
         const searchContext = new SearchContext();
         const searchResults = searchService.findResultsWithQuery("europe austria", searchContext);
 
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
-    it.skip("normal search looks also at attributes", () => {
-        const austria = becca_mocking.note("Austria");
-        const vienna = becca_mocking.note("Vienna");
+    it("normal search looks also at attributes", () => {
+        const austria = note("Austria");
+        const vienna = note("Vienna");
 
         rootNote.child(austria.relation("capital", vienna.note)).child(vienna.label("inhabitants", "1888776"));
 
@@ -42,138 +42,132 @@ describe("Search", () => {
         let searchResults = searchService.findResultsWithQuery("capital", searchContext);
 
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("inhabitants", searchContext);
 
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Vienna")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Vienna")).toBeTruthy();
     });
 
-    it.skip("normal search looks also at type and mime", () => {
-        rootNote.child(becca_mocking.note("Effective Java", { type: "book", mime: "" })).child(becca_mocking.note("Hello World.java", { type: "code", mime: "text/x-java" }));
+    it("normal search looks also at type and mime", () => {
+        rootNote.child(note("Effective Java", { type: "book", mime: "" })).child(note("Hello World.java", { type: "code", mime: "text/x-java" }));
 
         const searchContext = new SearchContext();
         let searchResults = searchService.findResultsWithQuery("book", searchContext);
 
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Effective Java")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Effective Java")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("text", searchContext); // should match mime
 
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Hello World.java")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Hello World.java")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("java", searchContext);
 
         expect(searchResults.length).toEqual(2);
     });
 
-    it.skip("only end leafs are results", () => {
-        rootNote.child(becca_mocking.note("Europe").child(becca_mocking.note("Austria")));
+    it("only end leafs are results", () => {
+        rootNote.child(note("Europe").child(note("Austria")));
 
         const searchContext = new SearchContext();
         const searchResults = searchService.findResultsWithQuery("europe", searchContext);
 
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Europe")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Europe")).toBeTruthy();
     });
 
-    it.skip("only end leafs are results", () => {
-        rootNote.child(becca_mocking.note("Europe").child(becca_mocking.note("Austria").label("capital", "Vienna")));
+    it("only end leafs are results", () => {
+        rootNote.child(note("Europe").child(note("Austria").label("capital", "Vienna")));
 
         const searchContext = new SearchContext();
 
         const searchResults = searchService.findResultsWithQuery("Vienna", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
     it("label comparison with short syntax", () => {
-        rootNote.child(becca_mocking.note("Europe").child(becca_mocking.note("Austria").label("capital", "Vienna")).child(becca_mocking.note("Czech Republic").label("capital", "Prague")));
+        rootNote.child(note("Europe").child(note("Austria").label("capital", "Vienna")).child(note("Czech Republic").label("capital", "Prague")));
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery("#capital=Vienna", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
 
         // case sensitivity:
         searchResults = searchService.findResultsWithQuery("#CAPITAL=VIENNA", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("#caPItal=vienNa", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
     it("label comparison with full syntax", () => {
-        rootNote.child(becca_mocking.note("Europe").child(becca_mocking.note("Austria").label("capital", "Vienna")).child(becca_mocking.note("Czech Republic").label("capital", "Prague")));
+        rootNote.child(note("Europe").child(note("Austria").label("capital", "Vienna")).child(note("Czech Republic").label("capital", "Prague")));
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery("# note.labels.capital=Prague", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
     });
 
     it("numeric label comparison", () => {
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .label("country", "", true)
-                .child(becca_mocking.note("Austria").label("population", "8859000"))
-                .child(becca_mocking.note("Czech Republic").label("population", "10650000"))
+                .child(note("Austria").label("population", "8859000"))
+                .child(note("Czech Republic").label("population", "10650000"))
         );
 
         const searchContext = new SearchContext();
 
         const searchResults = searchService.findResultsWithQuery("#country #population >= 10000000", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
     });
 
-    it.skip("inherited label comparison", () => {
-        rootNote.child(becca_mocking.note("Europe").label("country", "", true).child(becca_mocking.note("Austria")).child(becca_mocking.note("Czech Republic")));
+    it("inherited label comparison", () => {
+        rootNote.child(note("Europe").label("country", "", true).child(note("Austria")).child(note("Czech Republic")));
 
         const searchContext = new SearchContext();
 
         const searchResults = searchService.findResultsWithQuery("austria #country", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
     it("numeric label comparison fallback to string comparison", () => {
         // dates should not be coerced into numbers which would then give wrong numbers
 
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .label("country", "", true)
-                .child(becca_mocking.note("Austria").label("established", "1955-07-27"))
-                .child(becca_mocking.note("Czech Republic").label("established", "1993-01-01"))
-                .child(becca_mocking.note("Hungary").label("established", "1920-06-04"))
+                .child(note("Austria").label("established", "1955-07-27"))
+                .child(note("Czech Republic").label("established", "1993-01-01"))
+                .child(note("Hungary").label("established", "1920-06-04"))
         );
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery('#established <= "1955-01-01"', searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Hungary")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Hungary")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery('#established > "1955-01-01"', searchContext);
         expect(searchResults.length).toEqual(2);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
     });
 
     it("smart date comparisons", () => {
         // dates should not be coerced into numbers which would then give wrong numbers
 
-        rootNote.child(
-            becca_mocking
-                .note("My note", { dateCreated: dateUtils.localNowDateTime() })
+        rootNote.child(note("My note", { dateCreated: dateUtils.localNowDateTime() })
                 .label("year", new Date().getFullYear().toString())
                 .label("month", dateUtils.localNowDate().substr(0, 7))
                 .label("date", dateUtils.localNowDate())
@@ -188,7 +182,7 @@ describe("Search", () => {
                 .toEqual(expectedResultCount);
 
             if (expectedResultCount === 1) {
-                expect(becca_mocking.findNoteByTitle(searchResults, "My note")).toBeTruthy();
+                expect(findNoteByTitle(searchResults, "My note")).toBeTruthy();
             }
         }
 
@@ -225,30 +219,26 @@ describe("Search", () => {
     });
 
     it("logical or", () => {
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .label("country", "", true)
-                .child(becca_mocking.note("Austria").label("languageFamily", "germanic"))
-                .child(becca_mocking.note("Czech Republic").label("languageFamily", "slavic"))
-                .child(becca_mocking.note("Hungary").label("languageFamily", "finnougric"))
+                .child(note("Austria").label("languageFamily", "germanic"))
+                .child(note("Czech Republic").label("languageFamily", "slavic"))
+                .child(note("Hungary").label("languageFamily", "finnougric"))
         );
 
         const searchContext = new SearchContext();
 
         const searchResults = searchService.findResultsWithQuery("#languageFamily = slavic OR #languageFamily = germanic", searchContext);
         expect(searchResults.length).toEqual(2);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
     it("fuzzy attribute search", () => {
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .label("country", "", true)
-                .child(becca_mocking.note("Austria").label("languageFamily", "germanic"))
-                .child(becca_mocking.note("Czech Republic").label("languageFamily", "slavic"))
+                .child(note("Austria").label("languageFamily", "germanic"))
+                .child(note("Czech Republic").label("languageFamily", "slavic"))
         );
 
         let searchContext = new SearchContext({ fuzzyAttributeSearch: false });
@@ -266,147 +256,135 @@ describe("Search", () => {
 
         searchResults = searchService.findResultsWithQuery("#languageFamily=ger", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
     it("filter by note property", () => {
-        rootNote.child(becca_mocking.note("Europe").child(becca_mocking.note("Austria")).child(becca_mocking.note("Czech Republic")));
+        rootNote.child(note("Europe").child(note("Austria")).child(note("Czech Republic")));
 
         const searchContext = new SearchContext();
 
         const searchResults = searchService.findResultsWithQuery("# note.title =* czech", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
     });
 
     it("filter by note's parent", () => {
         rootNote
-            .child(
-                becca_mocking
-                    .note("Europe")
-                    .child(becca_mocking.note("Austria"))
-                    .child(becca_mocking.note("Czech Republic").child(becca_mocking.note("Prague")))
+            .child(note("Europe")
+                    .child(note("Austria"))
+                    .child(note("Czech Republic").child(note("Prague")))
             )
-            .child(becca_mocking.note("Asia").child(becca_mocking.note("Taiwan")));
+            .child(note("Asia").child(note("Taiwan")));
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery("# note.parents.title = Europe", searchContext);
         expect(searchResults.length).toEqual(2);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("# note.parents.title = Asia", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Taiwan")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Taiwan")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("# note.parents.parents.title = Europe", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Prague")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Prague")).toBeTruthy();
     });
 
     it("filter by note's ancestor", () => {
         rootNote
-            .child(
-                becca_mocking
-                    .note("Europe")
-                    .child(becca_mocking.note("Austria"))
-                    .child(becca_mocking.note("Czech Republic").child(becca_mocking.note("Prague").label("city")))
+            .child(note("Europe")
+                    .child(note("Austria"))
+                    .child(note("Czech Republic").child(note("Prague").label("city")))
             )
-            .child(becca_mocking.note("Asia").child(becca_mocking.note("Taiwan").child(becca_mocking.note("Taipei").label("city"))));
+            .child(note("Asia").child(note("Taiwan").child(note("Taipei").label("city"))));
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery("#city AND note.ancestors.title = Europe", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Prague")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Prague")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("#city AND note.ancestors.title = Asia", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Taipei")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Taipei")).toBeTruthy();
     });
 
     it("filter by note's child", () => {
         rootNote
-            .child(
-                becca_mocking
-                    .note("Europe")
-                    .child(becca_mocking.note("Austria").child(becca_mocking.note("Vienna")))
-                    .child(becca_mocking.note("Czech Republic").child(becca_mocking.note("Prague")))
+            .child(note("Europe")
+                    .child(note("Austria").child(note("Vienna")))
+                    .child(note("Czech Republic").child(note("Prague")))
             )
-            .child(becca_mocking.note("Oceania").child(becca_mocking.note("Australia")));
+            .child(note("Oceania").child(note("Australia")));
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery("# note.children.title =* Aust", searchContext);
         expect(searchResults.length).toEqual(2);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Europe")).toBeTruthy();
-        expect(becca_mocking.findNoteByTitle(searchResults, "Oceania")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Europe")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Oceania")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("# note.children.title =* Aust AND note.children.title *= republic", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Europe")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Europe")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("# note.children.children.title = Prague", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Europe")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Europe")).toBeTruthy();
     });
 
     it("filter by relation's note properties using short syntax", () => {
-        const austria = becca_mocking.note("Austria");
-        const portugal = becca_mocking.note("Portugal");
+        const austria = note("Austria");
+        const portugal = note("Portugal");
 
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .child(austria)
-                .child(becca_mocking.note("Czech Republic").relation("neighbor", austria.note))
+                .child(note("Czech Republic").relation("neighbor", austria.note))
                 .child(portugal)
-                .child(becca_mocking.note("Spain").relation("neighbor", portugal.note))
+                .child(note("Spain").relation("neighbor", portugal.note))
         );
 
         const searchContext = new SearchContext();
 
         let searchResults = searchService.findResultsWithQuery("# ~neighbor.title = Austria", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("# ~neighbor.title = Portugal", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Spain")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Spain")).toBeTruthy();
     });
 
     it("filter by relation's note properties using long syntax", () => {
-        const austria = becca_mocking.note("Austria");
-        const portugal = becca_mocking.note("Portugal");
+        const austria = note("Austria");
+        const portugal = note("Portugal");
 
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .child(austria)
-                .child(becca_mocking.note("Czech Republic").relation("neighbor", austria.note))
+                .child(note("Czech Republic").relation("neighbor", austria.note))
                 .child(portugal)
-                .child(becca_mocking.note("Spain").relation("neighbor", portugal.note))
+                .child(note("Spain").relation("neighbor", portugal.note))
         );
 
         const searchContext = new SearchContext();
 
         const searchResults = searchService.findResultsWithQuery("# note.relations.neighbor.title = Austria", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
     });
 
     it("filter by multiple level relation", () => {
-        const austria = becca_mocking.note("Austria");
-        const slovakia = becca_mocking.note("Slovakia");
-        const italy = becca_mocking.note("Italy");
-        const ukraine = becca_mocking.note("Ukraine");
+        const austria = note("Austria");
+        const slovakia = note("Slovakia");
+        const italy = note("Italy");
+        const ukraine = note("Ukraine");
 
-        rootNote.child(
-            becca_mocking
-                .note("Europe")
+        rootNote.child(note("Europe")
                 .child(austria.relation("neighbor", italy.note).relation("neighbor", slovakia.note))
-                .child(becca_mocking.note("Czech Republic").relation("neighbor", austria.note).relation("neighbor", slovakia.note))
+                .child(note("Czech Republic").relation("neighbor", austria.note).relation("neighbor", slovakia.note))
                 .child(slovakia.relation("neighbor", ukraine.note))
                 .child(ukraine)
         );
@@ -415,25 +393,25 @@ describe("Search", () => {
 
         let searchResults = searchService.findResultsWithQuery("# note.relations.neighbor.relations.neighbor.title = Italy", searchContext);
         expect(searchResults.length).toEqual(1);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
 
         searchResults = searchService.findResultsWithQuery("# note.relations.neighbor.relations.neighbor.title = Ukraine", searchContext);
         expect(searchResults.length).toEqual(2);
-        expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
-        expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+        expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     });
 
     it("test note properties", () => {
-        const austria = becca_mocking.note("Austria");
+        const austria = note("Austria");
 
         austria.relation("myself", austria.note);
         austria.label("capital", "Vienna");
         austria.label("population", "8859000");
 
         rootNote
-            .child(becca_mocking.note("Asia"))
-            .child(becca_mocking.note("Europe").child(austria.child(becca_mocking.note("Vienna")).child(becca_mocking.note("Sebastian Kurz"))))
-            .child(becca_mocking.note("Mozart").child(austria));
+            .child(note("Asia"))
+            .child(note("Europe").child(austria.child(note("Vienna")).child(note("Sebastian Kurz"))))
+            .child(note("Mozart").child(austria));
 
         austria.note.isProtected = false;
         austria.note.dateCreated = "2020-05-14 12:11:42.001+0200";
@@ -490,12 +468,12 @@ describe("Search", () => {
     });
 
     it("test order by", () => {
-        const italy = becca_mocking.note("Italy").label("capital", "Rome");
-        const slovakia = becca_mocking.note("Slovakia").label("capital", "Bratislava");
-        const austria = becca_mocking.note("Austria").label("capital", "Vienna");
-        const ukraine = becca_mocking.note("Ukraine").label("capital", "Kiev");
+        const italy = note("Italy").label("capital", "Rome");
+        const slovakia = note("Slovakia").label("capital", "Bratislava");
+        const austria = note("Austria").label("capital", "Vienna");
+        const ukraine = note("Ukraine").label("capital", "Kiev");
 
-        rootNote.child(becca_mocking.note("Europe").child(ukraine).child(slovakia).child(austria).child(italy));
+        rootNote.child(note("Europe").child(ukraine).child(slovakia).child(austria).child(italy));
 
         const searchContext = new SearchContext();
 
@@ -533,10 +511,10 @@ describe("Search", () => {
     });
 
     it("test not(...)", () => {
-        const italy = becca_mocking.note("Italy").label("capital", "Rome");
-        const slovakia = becca_mocking.note("Slovakia").label("capital", "Bratislava");
+        const italy = note("Italy").label("capital", "Rome");
+        const slovakia = note("Slovakia").label("capital", "Bratislava");
 
-        rootNote.child(becca_mocking.note("Europe").child(slovakia).child(italy));
+        rootNote.child(note("Europe").child(slovakia).child(italy));
 
         const searchContext = new SearchContext();
 
@@ -549,11 +527,11 @@ describe("Search", () => {
         expect(becca.notes[searchResults[0].noteId].title).toEqual("Europe");
     });
 
-    it.skip("test note.text *=* something", () => {
-        const italy = becca_mocking.note("Italy").label("capital", "Rome");
-        const slovakia = becca_mocking.note("Slovakia").label("capital", "Bratislava");
+    it("test note.text *=* something", () => {
+        const italy = note("Italy").label("capital", "Rome");
+        const slovakia = note("Slovakia").label("capital", "Bratislava");
 
-        rootNote.child(becca_mocking.note("Europe").child(slovakia).child(italy));
+        rootNote.child(note("Europe").child(slovakia).child(italy));
 
         const searchContext = new SearchContext();
 
@@ -562,11 +540,11 @@ describe("Search", () => {
         expect(becca.notes[searchResults[0].noteId].title).toEqual("Slovakia");
     });
 
-    it.skip("test that fulltext does not match archived notes", () => {
-        const italy = becca_mocking.note("Italy").label("capital", "Rome");
-        const slovakia = becca_mocking.note("Slovakia").label("capital", "Bratislava");
+    it("test that fulltext does not match archived notes", () => {
+        const italy = note("Italy").label("capital", "Rome");
+        const slovakia = note("Slovakia").label("capital", "Bratislava");
 
-        rootNote.child(becca_mocking.note("Reddit").label("archived", "", true).child(becca_mocking.note("Post X")).child(becca_mocking.note("Post Y"))).child(becca_mocking.note("Reddit is bad"));
+        rootNote.child(note("Reddit").label("archived", "", true).child(note("Post X")).child(note("Post Y"))).child(note("Reddit is bad"));
 
         const searchContext = new SearchContext({ includeArchivedNotes: false });
 
@@ -579,14 +557,14 @@ describe("Search", () => {
 
     // it("comparison between labels", () => {
     //     rootNote
-    //         .child(becca_mocking.note("Europe")
-    //             .child(becca_mocking.note("Austria")
+    //         .child(note("Europe")
+    //             .child(note("Austria")
     //                 .label('capital', 'Vienna')
     //                 .label('largestCity', 'Vienna'))
-    //             .child(becca_mocking.note("Canada")
+    //             .child(note("Canada")
     //                 .label('capital', 'Ottawa')
     //                 .label('largestCity', 'Toronto'))
-    //             .child(becca_mocking.note("Czech Republic")
+    //             .child(note("Czech Republic")
     //                 .label('capital', 'Prague')
     //                 .label('largestCity', 'Prague'))
     //         );
@@ -595,7 +573,7 @@ describe("Search", () => {
     //
     //     const searchResults = searchService.findResultsWithQuery('#capital = #largestCity', searchContext);
     //     expect(searchResults.length).toEqual(2);
-    //     expect(becca_mocking.findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
-    //     expect(becca_mocking.findNoteByTitle(searchResults, "Austria")).toBeTruthy();
+    //     expect(findNoteByTitle(searchResults, "Czech Republic")).toBeTruthy();
+    //     expect(findNoteByTitle(searchResults, "Austria")).toBeTruthy();
     // })
 });

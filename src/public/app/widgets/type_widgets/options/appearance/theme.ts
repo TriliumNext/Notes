@@ -10,7 +10,7 @@ const TPL = `
 
     <div class="form-group row">
         <div>
-            <label>
+            <label class="tn-radio">
                 <input type="radio" name="layout-orientation" value="vertical" />
                 <strong>${t("theme.layout-vertical-title")}</strong>
                 - ${t("theme.layout-vertical-description")}
@@ -18,7 +18,7 @@ const TPL = `
         </div>
 
         <div>
-            <label>
+            <label class="tn-radio">
                 <input type="radio" name="layout-orientation" value="horizontal" />
                 <strong>${t("theme.layout-horizontal-title")}</strong>
                 - ${t("theme.layout-horizontal-description")}
@@ -37,7 +37,7 @@ const TPL = `
         </div>
 
         <div class="col-md-6 side-checkbox">
-            <label class="form-check">
+            <label class="form-check tn-checkbox">
                 <input type="checkbox" class="override-theme-fonts form-check-input">
                 ${t("theme.override_theme_fonts_label")}
             </label>
@@ -67,6 +67,9 @@ export default class ThemeOptions extends OptionsWidget {
             utils.reloadFrontendApp("layout orientation change");
         });
 
+        const $layoutOrientationSection = $(this.$widget[0]);
+        $layoutOrientationSection.toggleClass("hidden-ext", utils.isMobile());
+
         this.$themeSelect.on("change", async () => {
             const newTheme = this.$themeSelect.val();
 
@@ -91,10 +94,12 @@ export default class ThemeOptions extends OptionsWidget {
         this.$themeSelect.empty();
 
         for (const theme of themes) {
-            this.$themeSelect.append($("<option>")
-                .attr("value", theme.val)
-                .attr("data-note-id", theme.noteId || "")
-                .text(theme.title));
+            this.$themeSelect.append(
+                $("<option>")
+                    .attr("value", theme.val)
+                    .attr("data-note-id", theme.noteId || "")
+                    .text(theme.title)
+            );
         }
 
         this.$themeSelect.val(options.theme);

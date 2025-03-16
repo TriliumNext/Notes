@@ -3,6 +3,7 @@ import BasicWidget from "../basic_widget.js";
 import utils from "../../services/utils.js";
 import UpdateAvailableWidget from "./update_available.js";
 import options from "../../services/options.js";
+import { Tooltip, Dropdown } from "bootstrap";
 
 const TPL = `
 <div class="dropdown global-menu">
@@ -88,16 +89,6 @@ const TPL = `
         font-size: 120%;
         margin-right: 6px;
     }
-
-    body.mobile .global-menu .dropdown-submenu .dropdown-menu {
-        display: block;
-        font-size: 90%;
-        position: relative;
-        left: 0;
-        top: 5px;
-        --dropdown-shadow-opacity: 0;
-        --submenu-opening-delay: 0;
-    }
     </style>
 
     <button type="button" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -143,7 +134,13 @@ const TPL = `
             ${t("title_bar_buttons.window-on-top")}
         </li>
 
-        <div class="dropdown-divider zoom-container-separator"></div>
+        <li class="dropdown-item" data-trigger-command="toggleZenMode">
+            <span class="bx bxs-yin-yang"></span>
+            ${t("global_menu.toggle-zen-mode")}
+            <kbd data-command="toggleZenMode"></kbd>
+        </li>
+
+        <div class="dropdown-divider desktop-only"></div>
 
         <li class="dropdown-item switch-to-mobile-version-button" data-trigger-command="switchToMobileVersion">
             <span class="bx bx-mobile"></span>
@@ -226,6 +223,12 @@ const TPL = `
             <kbd data-command="showHelp"></kbd>
         </li>
 
+        <li class="dropdown-item show-help-button" data-trigger-command="showCheatsheet">
+            <span class="bx bxs-keyboard"></span>
+            ${t("global_menu.show-cheatsheet")}
+            <kbd data-command="showCheatsheet"></kbd>
+        </li>
+
         <li class="dropdown-item show-about-dialog-button">
             <span class="bx bx-info-circle"></span>
             ${t("global_menu.about")}
@@ -250,11 +253,12 @@ const TPL = `
 export default class GlobalMenuWidget extends BasicWidget {
     private updateAvailableWidget: UpdateAvailableWidget;
     private isHorizontalLayout: boolean;
-    private tooltip!: bootstrap.Tooltip;
-    private dropdown!: bootstrap.Dropdown;
+    private tooltip!: Tooltip;
+    private dropdown!: Dropdown;
 
     private $updateToLatestVersionButton!: JQuery<HTMLElement>;
     private $zoomState!: JQuery<HTMLElement>;
+    private $toggleZenMode!: JQuery<HTMLElement>;
 
     constructor(isHorizontalLayout: boolean) {
         super();
@@ -290,17 +294,16 @@ export default class GlobalMenuWidget extends BasicWidget {
                     </g>
                 </svg>`)
             );
-            //TODO: Fix once bootstrap is imported via modules.
-            //@ts-ignore
-            this.tooltip = new bootstrap.Tooltip(this.$widget.find("[data-bs-toggle='tooltip']"), { trigger: "hover" });
+
+            this.tooltip = new Tooltip(this.$widget.find("[data-bs-toggle='tooltip']")[0], { trigger: "hover" });
         } else {
             $globalMenuButton.toggleClass("bx bx-menu");
         }
 
-        //TODO: Fix once bootstrap is imported via modules.
-        //@ts-ignore
-        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"), {
-            alignment: "bottom"
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']")[0], {
+            popperConfig: {
+                placement: "bottom"
+            }
         });
 
         this.$widget.find(".show-about-dialog-button").on("click", () => this.triggerCommand("openAboutDialog"));
@@ -338,6 +341,15 @@ export default class GlobalMenuWidget extends BasicWidget {
 
             this.dropdown.toggle();
         });
+        if (utils.isMobile()) {
+            this.$widget.on("click", ".dropdown-submenu .dropdown-toggle", (e) => {
+                const $submenu = $(e.target).closest(".dropdown-item");
+                $submenu.toggleClass("submenu-open");
+                $submenu.find("ul.dropdown-menu").toggleClass("show");
+                e.stopPropagation();
+                return;
+            });
+        }
         this.$widget.on("click", ".dropdown-submenu", (e) => {
             if ($(e.target).children(".dropdown-menu").length === 1 || $(e.target).hasClass("dropdown-toggle")) {
                 e.stopPropagation();
@@ -350,17 +362,12 @@ export default class GlobalMenuWidget extends BasicWidget {
 
         if (!utils.isElectron()) {
             this.$widget.find(".zoom-container").hide();
-            this.$widget.find(".zoom-container-separator").hide();
         }
 
         this.$zoomState = this.$widget.find(".zoom-state");
-        this.$widget.on("show.bs.dropdown", () => {
-            this.updateZoomState();
-            if (this.tooltip) {
-                this.tooltip.hide();
-                this.tooltip.disable();
-            }
-        });
+        this.$toggleZenMode = this.$widget.find('[data-trigger-command="toggleZenMode"');
+        this.$toggleZenMode.toggle(!utils.isMobile());
+        this.$widget.on("show.bs.dropdown", () => this.#onShown());
         if (this.tooltip) {
             this.$widget.on("hide.bs.dropdown", () => this.tooltip.enable());
         }
@@ -374,6 +381,15 @@ export default class GlobalMenuWidget extends BasicWidget {
         this.updateVersionStatus();
 
         setInterval(() => this.updateVersionStatus(), 8 * 60 * 60 * 1000);
+    }
+
+    #onShown() {
+        this.$toggleZenMode.toggleClass("active", $("body").hasClass("zen"));
+        this.updateZoomState();
+        if (this.tooltip) {
+            this.tooltip.hide();
+            this.tooltip.disable();
+        }
     }
 
     updateZoomState() {

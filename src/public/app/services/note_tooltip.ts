@@ -18,11 +18,11 @@ function setupGlobalTooltip() {
             return;
         }
 
-        cleanUpTooltips();
+        dismissAllTooltips();
     });
 }
 
-function cleanUpTooltips() {
+function dismissAllTooltips() {
     $(".note-tooltip").remove();
 }
 
@@ -102,12 +102,12 @@ async function mouseEnterHandler(this: HTMLElement) {
             customClass: linkId
         });
 
-        cleanUpTooltips();
+        dismissAllTooltips();
         $(this).tooltip("show");
 
         // Dismiss the tooltip immediately if a link was clicked inside the tooltip.
         $(`.${tooltipClass} a`).on("click", (e) => {
-            cleanUpTooltips();
+            dismissAllTooltips();
         });
 
         // the purpose of the code below is to:
@@ -117,7 +117,7 @@ async function mouseEnterHandler(this: HTMLElement) {
         const checkTooltip = () => {
             if (!$(this).filter(":hover").length && !$(`.${linkId}:hover`).length) {
                 // cursor is neither over the link nor over the tooltip, user likely is not interested
-                cleanUpTooltips();
+                dismissAllTooltips();
             } else {
                 setTimeout(checkTooltip, 1000);
             }
@@ -140,10 +140,6 @@ async function renderTooltip(note: FNote | null) {
     }
 
     const noteTitleWithPathAsSuffix = await treeService.getNoteTitleWithPathAsSuffix(bestNotePath);
-    let content = "";
-    if (noteTitleWithPathAsSuffix) {
-        content = `<h5 class="note-tooltip-title">${noteTitleWithPathAsSuffix.prop("outerHTML")}</h5>`;
-    }
 
     const { $renderedAttributes } = await attributeRenderer.renderNormalAttributes(note);
 
@@ -151,8 +147,21 @@ async function renderTooltip(note: FNote | null) {
         tooltip: true,
         trim: true
     });
+    const isContentEmpty = $renderedContent[0].innerHTML.length === 0;
 
-    content = `${content}<div class="note-tooltip-attributes">${$renderedAttributes[0].outerHTML}</div>${$renderedContent[0].outerHTML}`;
+    let content = "";
+    if (noteTitleWithPathAsSuffix) {
+        const classes = ["note-tooltip-title"];
+        if (isContentEmpty) {
+            classes.push("note-no-content");
+        }
+        content = `<h5 class="${classes.join(" ")}"><a href="#${note.noteId}" data-no-context-menu="true">${noteTitleWithPathAsSuffix.prop("outerHTML")}</a></h5>`;
+    }
+
+    content = `${content}<div class="note-tooltip-attributes">${$renderedAttributes[0].outerHTML}</div>`;
+    if (!isContentEmpty) {
+        content += $renderedContent[0].outerHTML;
+    }
 
     return content;
 }
@@ -172,5 +181,6 @@ function renderFootnote($link: JQuery<HTMLElement>, url: string) {
 
 export default {
     setupGlobalTooltip,
-    setupElementTooltip
+    setupElementTooltip,
+    dismissAllTooltips
 };

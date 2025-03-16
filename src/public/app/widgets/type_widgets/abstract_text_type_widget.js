@@ -5,6 +5,7 @@ import linkService from "../../services/link.js";
 import contentRenderer from "../../services/content_renderer.js";
 import utils from "../../services/utils.js";
 import options from "../../services/options.js";
+import attributes from "../../services/attributes.js";
 
 export default class AbstractTextTypeWidget extends TypeWidget {
     doRender() {
@@ -117,5 +118,16 @@ export default class AbstractTextTypeWidget extends TypeWidget {
         if (loadResults.isOptionReloaded("codeBlockWordWrap")) {
             this.refreshCodeBlockOptions();
         }
+
+        if (loadResults.getAttributeRows().find((attr) =>
+            attr.type === "label" &&
+            attr.name === "language" &&
+            attributes.isAffecting(attr, this.note)))
+        {
+            await this.onLanguageChanged();
+        }
     }
+
+    async onLanguageChanged() { }
+
 }

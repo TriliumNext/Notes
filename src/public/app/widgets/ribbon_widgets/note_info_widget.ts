@@ -1,6 +1,5 @@
 import { formatDateTime } from "../../utils/formatters.js";
 import { t } from "../../services/i18n.js";
-import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
 import type { EventData } from "../../components/app_context.js";

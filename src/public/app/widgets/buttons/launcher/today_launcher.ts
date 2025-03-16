@@ -10,6 +10,6 @@ export default class TodayLauncher extends NoteLauncher {
     }
 
     getHoistedNoteId() {
-        return appContext.tabManager.getActiveContext().hoistedNoteId;
+        return appContext.tabManager.getActiveContext()?.hoistedNoteId;
     }
 }

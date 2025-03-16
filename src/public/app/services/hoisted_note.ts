@@ -1,5 +1,5 @@
 import appContext from "../components/app_context.js";
-import treeService, { type Node } from "./tree.js";
+import treeService from "./tree.js";
 import dialogService from "./dialog.js";
 import froca from "./froca.js";
 import type NoteContext from "../components/note_context.js";
@@ -19,11 +19,11 @@ async function unhoist() {
     }
 }
 
-function isTopLevelNode(node: Node) {
+function isTopLevelNode(node: Fancytree.FancytreeNode) {
     return isHoistedNode(node.getParent());
 }
 
-function isHoistedNode(node: Node) {
+function isHoistedNode(node: Fancytree.FancytreeNode) {
     // even though check for 'root' should not be necessary, we keep it just in case
     return node.data.noteId === "root" || node.data.noteId === getHoistedNoteId();
 }

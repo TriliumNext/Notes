@@ -1,7 +1,6 @@
 "use strict";
 
 import beccaService from "../../becca/becca_service.js";
-import revisionService from "../../services/revisions.js";
 import utils from "../../services/utils.js";
 import sql from "../../services/sql.js";
 import cls from "../../services/cls.js";
@@ -111,7 +110,7 @@ function eraseRevision(req: Request) {
 }
 
 function eraseAllExcessRevisions() {
-    let allNoteIds = sql.getRows("SELECT noteId FROM notes WHERE SUBSTRING(noteId, 1, 1) != '_'") as { noteId: string }[];
+    const allNoteIds = sql.getRows("SELECT noteId FROM notes WHERE SUBSTRING(noteId, 1, 1) != '_'") as { noteId: string }[];
     allNoteIds.forEach((row) => {
         becca.getNote(row.noteId)?.eraseExcessRevisionSnapshots();
     });
@@ -145,7 +144,7 @@ function restoreRevision(req: Request) {
 
             note.title = revision.title;
             note.mime = revision.mime;
-            note.type = revision.type as any;
+            note.type = revision.type;
             note.setContent(revisionContent, { forceSave: true });
         });
     }

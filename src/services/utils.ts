@@ -1,5 +1,7 @@
 "use strict";
 
+import chardet from "chardet";
+import stripBom from "strip-bom";
 import crypto from "crypto";
 import { generator } from "rand-token";
 import unescape from "unescape";
@@ -8,10 +10,20 @@ import sanitize from "sanitize-filename";
 import mimeTypes from "mime-types";
 import path from "path";
 import { fileURLToPath } from "url";
-import env from "./env.js";
 import { dirname, join } from "path";
+import type NoteMeta from "./meta/note_meta.js";
+import log from "./log.js";
+import { t } from "i18next";
 
 const randtoken = generator({ source: "crypto" });
+
+export const isMac = process.platform === "darwin";
+
+export const isWindows = process.platform === "win32";
+
+export const isElectron = !!process.versions["electron"];
+
+export const isDev = !!(process.env.TRILIUM_ENV && process.env.TRILIUM_ENV === "dev");
 
 export function newEntityId() {
     return randomString(12);
@@ -45,7 +57,8 @@ export function hashedBlobId(content: string | Buffer) {
 }
 
 export function toBase64(plainText: string | Buffer) {
-    return Buffer.from(plainText).toString("base64");
+    const buffer = (Buffer.isBuffer(plainText) ? plainText : Buffer.from(plainText));
+    return buffer.toString("base64");
 }
 
 export function fromBase64(encodedText: string) {
@@ -58,31 +71,24 @@ export function hmac(secret: any, value: any) {
     return hmac.digest("base64");
 }
 
-export function isElectron() {
-    return !!process.versions["electron"];
-}
-
 export function hash(text: string) {
     text = text.normalize();
 
     return crypto.createHash("sha1").update(text).digest("base64");
 }
 
-export function isEmptyOrWhitespace(str: string) {
-    return str === null || str.match(/^ *$/) !== null;
+export function isEmptyOrWhitespace(str: string | null | undefined) {
+    if (!str) return true;
+    return str.match(/^ *$/) !== null;
 }
 
 export function sanitizeSqlIdentifier(str: string) {
     return str.replace(/[^A-Za-z0-9_]/g, "");
 }
 
-export function escapeHtml(str: string) {
-    return escape(str);
-}
+export const escapeHtml = escape;
 
-export function unescapeHtml(str: string) {
-    return unescape(str);
-}
+export const unescapeHtml = unescape;
 
 export function toObject<T, K extends string | number | symbol, V>(array: T[], fn: (item: T) => [K, V]): Record<K, V> {
     const obj: Record<K, V> = {} as Record<K, V>; // TODO: unsafe?
@@ -100,62 +106,33 @@ export function stripTags(text: string) {
     return text.replace(/<(?:.|\n)*?>/gm, "");
 }
 
-export function union<T extends string | number | symbol>(a: T[], b: T[]): T[] {
-    const obj: Record<T, T> = {} as Record<T, T>; // TODO: unsafe?
-
-    for (let i = a.length - 1; i >= 0; i--) {
-        obj[a[i]] = a[i];
-    }
-
-    for (let i = b.length - 1; i >= 0; i--) {
-        obj[b[i]] = b[i];
-    }
-
-    const res: T[] = [];
-
-    for (const k in obj) {
-        if (obj.hasOwnProperty(k)) {
-            // <-- optional
-            res.push(obj[k]);
-        }
-    }
-
-    return res;
-}
-
 export function escapeRegExp(str: string) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
-export async function crash() {
-    if (isElectron()) {
-        (await import("electron")).app.exit(1);
+export async function crash(message: string) {
+    if (isElectron) {
+        const electron = await import("electron");
+        electron.dialog.showErrorBox(t("modals.error_title"), message);
+        electron.app.exit(1);
     } else {
+        log.error(message);
         process.exit(1);
     }
 }
 
-export function sanitizeFilenameForHeader(filename: string) {
-    let sanitizedFilename = sanitize(filename);
-
-    if (sanitizedFilename.trim().length === 0) {
-        sanitizedFilename = "file";
-    }
-
-    return encodeURIComponent(sanitizedFilename);
-}
-
 export function getContentDisposition(filename: string) {
-    const sanitizedFilename = sanitizeFilenameForHeader(filename);
-
-    return `file; filename="${sanitizedFilename}"; filename*=UTF-8''${sanitizedFilename}`;
+    const sanitizedFilename = sanitize(filename).trim() || "file";
+    const uriEncodedFilename = encodeURIComponent(sanitizedFilename);
+    return `file; filename="${uriEncodedFilename}"; filename*=UTF-8''${uriEncodedFilename}`;
 }
 
+// render and book are string note in the sense that they are expected to contain empty string
+const STRING_NOTE_TYPES = new Set(["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"]);
 const STRING_MIME_TYPES = new Set(["application/javascript", "application/x-javascript", "application/json", "application/x-sql", "image/svg+xml"]);
 
 export function isStringNote(type: string | undefined, mime: string) {
-    // render and book are string note in the sense that they are expected to contain empty string
-    return (type && ["text", "code", "relationMap", "search", "render", "book", "mermaid", "canvas"].includes(type)) || mime.startsWith("text/") || STRING_MIME_TYPES.has(mime);
+    return (type && STRING_NOTE_TYPES.has(type)) || mime.startsWith("text/") || STRING_MIME_TYPES.has(mime);
 }
 
 export function quoteRegex(url: string) {
@@ -199,35 +176,34 @@ export function removeTextFileExtension(filePath: string) {
 
     switch (extension) {
         case ".md":
+        case ".mdx":
         case ".markdown":
         case ".html":
         case ".htm":
+        case ".excalidraw":
             return filePath.substring(0, filePath.length - extension.length);
         default:
             return filePath;
     }
 }
 
-export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: { title?: string }) {
-    if (noteMeta?.title) {
-        return noteMeta.title;
-    } else {
-        const basename = path.basename(removeTextFileExtension(filePath));
-        if (replaceUnderscoresWithSpaces) {
-            return basename.replace(/_/g, " ").trim();
-        }
-        return basename;
-    }
+export function getNoteTitle(filePath: string, replaceUnderscoresWithSpaces: boolean, noteMeta?: NoteMeta) {
+    const trimmedNoteMeta = noteMeta?.title?.trim();
+    if (trimmedNoteMeta) return trimmedNoteMeta;
+
+    const basename = path.basename(removeTextFileExtension(filePath));
+    return replaceUnderscoresWithSpaces ? basename.replace(/_/g, " ").trim() : basename;
 }
 
 export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?: string): Promise<T> {
+    // TriliumNextTODO: since TS avoids this from ever happening – do we need this check?
     if (!promise || !promise.then) {
         // it's not actually a promise
         return promise;
     }
 
     // better stack trace if created outside of promise
-    const error = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
+    const errorTimeLimit = new Error(errorMessage || `Process exceeded time limit ${limitMs}`);
 
     return new Promise((res, rej) => {
         let resolved = false;
@@ -242,7 +218,7 @@ export function timeLimit<T>(promise: Promise<T>, limitMs: number, errorMessage?
 
         setTimeout(() => {
             if (!resolved) {
-                rej(error);
+                rej(errorTimeLimit);
             }
         }, limitMs);
     });
@@ -281,18 +257,28 @@ export function normalize(str: string) {
     return removeDiacritic(str).toLowerCase();
 }
 
-export function toMap<T extends Record<string, any>>(list: T[], key: keyof T): Record<string, T> {
-    const map: Record<string, T> = {};
-
+export function toMap<T extends Record<string, any>>(list: T[], key: keyof T) {
+    const map = new Map<string, T>();
     for (const el of list) {
-        map[el[key]] = el;
+        const keyForMap = el[key];
+        if (!keyForMap) continue;
+        // TriliumNextTODO: do we need to handle the case when the same key is used?
+        // currently this will overwrite the existing entry in the map
+        map.set(keyForMap, el);
     }
-
     return map;
 }
 
-export function isString(x: any) {
-    return Object.prototype.toString.call(x) === "[object String]";
+// try to turn 'true' and 'false' strings from process.env variables into boolean values or undefined
+export function envToBoolean(val: string | undefined) {
+    if (val === undefined || typeof val !== "string") return undefined;
+
+    const valLc = val.toLowerCase().trim();
+
+    if (valLc === "true") return true;
+    if (valLc === "false") return false;
+
+    return undefined;
 }
 
 /**
@@ -302,55 +288,122 @@ export function isString(x: any) {
  * @returns the resource dir.
  */
 export function getResourceDir() {
-    if (isElectron() && !env.isDev()) {
-        return process.resourcesPath;
-    } else {
-        return join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+    if (isElectron && !isDev) return process.resourcesPath;
+    return join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+}
+
+// TODO: Deduplicate with src/public/app/services/utils.ts
+/**
+ * Compares two semantic version strings.
+ * Returns:
+ *   1  if v1 is greater than v2
+ *   0  if v1 is equal to v2
+ *   -1 if v1 is less than v2
+ *
+ * @param v1 First version string
+ * @param v2 Second version string
+ * @returns
+ */
+function compareVersions(v1: string, v2: string): number {
+    // Remove 'v' prefix and everything after dash if present
+    v1 = v1.replace(/^v/, "").split("-")[0];
+    v2 = v2.replace(/^v/, "").split("-")[0];
+
+    const v1parts = v1.split(".").map(Number);
+    const v2parts = v2.split(".").map(Number);
+
+    // Pad shorter version with zeros
+    while (v1parts.length < 3) v1parts.push(0);
+    while (v2parts.length < 3) v2parts.push(0);
+
+    // Compare major version
+    if (v1parts[0] !== v2parts[0]) {
+        return v1parts[0] > v2parts[0] ? 1 : -1;
+    }
+
+    // Compare minor version
+    if (v1parts[1] !== v2parts[1]) {
+        return v1parts[1] > v2parts[1] ? 1 : -1;
+    }
+
+    // Compare patch version
+    if (v1parts[2] !== v2parts[2]) {
+        return v1parts[2] > v2parts[2] ? 1 : -1;
+    }
+
+    return 0;
+}
+
+/**
+ * For buffers, they are scanned for a supported encoding and decoded (UTF-8, UTF-16). In some cases, the BOM is also stripped.
+ *
+ * For strings, they are returned immediately without any transformation.
+ *
+ * For nullish values, an empty string is returned.
+ *
+ * @param data the string or buffer to process.
+ * @returns the string representation of the buffer, or the same string is it's a string.
+ */
+export function processStringOrBuffer(data: string | Buffer | null) {
+    if (!data) {
+        return "";
+    }
+
+    if (!Buffer.isBuffer(data)) {
+        return data;
+    }
+
+    const detectedEncoding = chardet.detect(data);
+    switch (detectedEncoding) {
+        case "UTF-16LE":
+            return stripBom(data.toString("utf-16le"));
+        case "UTF-8":
+        default:
+            return data.toString("utf-8");
     }
 }
 
-export function isMac() {
-    return process.platform === "darwin";
+export function safeExtractMessageAndStackFromError(err: unknown) {
+    return (err instanceof Error) ? [err.message, err.stack] as const : ["Unknown Error", undefined] as const;
 }
 
-export function isWindows() {
-    return process.platform === "win32";
-}
 
 export default {
-    randomSecureToken,
-    randomString,
+    compareVersions,
+    crash,
+    deferred,
+    envToBoolean,
+    escapeHtml,
+    escapeRegExp,
+    formatDownloadTitle,
+    fromBase64,
+    getContentDisposition,
+    getNoteTitle,
+    getResourceDir,
+    hash,
+    hashedBlobId,
+    hmac,
+    isDev,
+    isElectron,
+    isEmptyOrWhitespace,
+    isMac,
+    isStringNote,
+    isWindows,
     md5,
     newEntityId,
-    toBase64,
-    fromBase64,
-    hmac,
-    isElectron,
-    hash,
-    isEmptyOrWhitespace,
-    sanitizeSqlIdentifier,
-    escapeHtml,
-    unescapeHtml,
-    toObject,
-    stripTags,
-    union,
-    escapeRegExp,
-    crash,
-    getContentDisposition,
-    isStringNote,
-    quoteRegex,
-    replaceAll,
-    getNoteTitle,
-    removeTextFileExtension,
-    formatDownloadTitle,
-    timeLimit,
-    deferred,
-    removeDiacritic,
     normalize,
-    hashedBlobId,
+    quoteRegex,
+    randomSecureToken,
+    randomString,
+    removeDiacritic,
+    removeTextFileExtension,
+    replaceAll,
+    safeExtractMessageAndStackFromError,
+    sanitizeSqlIdentifier,
+    stripTags,
+    timeLimit,
+    toBase64,
     toMap,
-    isString,
-    getResourceDir,
-    isMac,
-    isWindows
+    toObject,
+    unescapeHtml
 };

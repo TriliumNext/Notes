@@ -4,20 +4,6 @@ import froca from "./froca.js";
 import hoistedNoteService from "../services/hoisted_note.js";
 import appContext from "../components/app_context.js";
 
-export interface Node {
-    title: string;
-    getParent(): Node;
-    getChildren(): Node[];
-    folder: boolean;
-    renderTitle(): void;
-    data: {
-        noteId?: string;
-        isProtected?: boolean;
-        branchId: string;
-        noteType: string;
-    };
-}
-
 /**
  * @returns {string|null}
  */
@@ -148,7 +134,7 @@ ws.subscribeToMessages((message) => {
     }
 });
 
-function getParentProtectedStatus(node: Node) {
+function getParentProtectedStatus(node: Fancytree.FancytreeNode) {
     return hoistedNoteService.isHoistedNode(node) ? false : node.getParent().data.isProtected;
 }
 
@@ -205,7 +191,7 @@ function getNoteIdAndParentIdFromUrl(urlOrNotePath: string) {
     };
 }
 
-function getNotePath(node: Node) {
+function getNotePath(node: Fancytree.FancytreeNode) {
     if (!node) {
         logError("Node is null");
         return "";

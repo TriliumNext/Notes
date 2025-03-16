@@ -77,13 +77,47 @@ body.background-effects.platform-win32.layout-vertical #vertical-main-container 
 /* #endregion */
 
 /* Matches when the left pane is collapsed */
-:has(#left-pane.hidden-int) {
+:has(.layout-vertical #left-pane.hidden-int) {
     --center-pane-border-radius: 0;
     --tab-first-item-horiz-offset: 5px;
 }
 
 :has(#left-pane.hidden-int) #launcher-pane.vertical {
     border-right: 2px solid var(--left-pane-collapsed-border-color);
+}
+
+/*
+ * Log in page
+ */
+
+.login-page {
+    display: flex; /* Note: the login page contents is hidden before this property is applied  */
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-page > div {
+    padding-top: 0 !important;
+    padding-bottom: 20vh;
+}
+
+.login-page h1 {
+    margin-bottom: .5em;
+    font-weight: 300;
+    color: var(--muted-text-color);
+}
+
+.login-page .form-group {
+    margin-top: 8px;
+}
+
+.login-page .alert {
+    margin: 0;
+    border: unset;
+    padding: 8px 0 0 0;
+    font-size: .85em;
+    color: var(--dropdown-item-icon-destructive-color) !important;
 }
 
 /*
@@ -227,6 +261,12 @@ body.layout-horizontal > .horizontal {
     --hover-item-background-color: transparent;
 }
 
+#launcher-pane.horizontal .global-menu-button .global-menu-button-update-available {
+    right: -23px;
+    bottom: -22px;
+    transform: scale(0.85);
+}
+
 .tooltip .tooltip-arrow {
     display: none;
 }
@@ -258,6 +298,14 @@ div.quick-search {
     height: unset;
     contain: unset;
     padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
+}
+
+div.quick-search,
+div.quick-search:hover,
+div.quick-search:focus-within {
+    /* Prevent changes to background and outline when the state of the input group changes */
+    background: transparent;
+    outline: none;
 }
 
 div.quick-search::before {
@@ -367,12 +415,6 @@ div.quick-search .search-button.show {
     overflow: hidden;
 }
 
-/* The "Show in full search" button */
-.quick-search .dropdown-menu button {
-    padding: 0;
-    color: var(--menu-text-color) !important;
-}
-
 /*
  * Left pane
  */
@@ -456,7 +498,7 @@ body.mobile .fancytree-node > span {
         background-color: rgba(0, 0, 0, 0.5);
     }
 
-    body.mobile #mobile-sidebar-wrapper {
+    body.mobile:not(.force-fixed-tree) #mobile-sidebar-wrapper {
         border-top-right-radius: 12px;
         border-bottom-right-radius: 12px;
         border-right: 1px solid var(--subtle-border-color);
@@ -518,7 +560,7 @@ body.mobile .fancytree-node > span {
 
 #context-menu-container {
     /* The context menu of the tree */
-    --menu-item-icon-vert-offset: 1.5px;
+    --menu-item-icon-vert-offset: -1px;
 }
 
 /* Tree actions toolbar */
@@ -761,7 +803,7 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
     text-overflow: ellipsis;
 }
 
-.tab-row-widget-is-sorting .note-tab[active] .note-tab-wrapper {
+body.layout-vertical .tab-row-widget-is-sorting .note-tab[active] .note-tab-wrapper {
     transform: scale(0.85);
     box-shadow: var(--active-tab-dragging-shadow) !important;
 }
@@ -868,7 +910,6 @@ body.layout-horizontal .tab-row-widget .note-tab .note-tab-wrapper {
  */
 
 #center-pane {
-    padding-top: 2px;
     background: var(--main-background-color);
 }
 
@@ -891,12 +932,53 @@ body.mobile .note-title {
     margin-bottom: 0 !important;
 }
 
+.note-split:not(.hidden-ext) + .note-split:not(.hidden-ext) {
+    border-left: 4px solid var(--root-background);
+}
+
+@keyframes note-entrance {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}
+
+.note-split {
+    padding-top: 2px;
+    animation: note-entrance 100ms linear;
+    /* will-change: opacity; -- causes some weird artifacts to the note menu in split view */
+}
+
 /*
  * Table of contents & Highlights list
  */
 
 #right-pane {
     background: var(--left-pane-background-color);
+}
+
+#right-pane div.card-header {
+    align-items: center;
+    border: 0;
+}
+
+#right-pane .card-header-title {
+    margin-top: 2px;
+    font-weight: 600;
+    font-size: .85em;
+    letter-spacing: .3pt;
+    color: var(--right-pane-heading-color);
+}
+
+#right-pane .card-header-buttons {
+    align-items: center;
+    top: 0;
+}
+
+#right-pane .toc-widget,
+#right-pane .highlights-list-widget {
+    padding: 0 0 0 10px;
 }
 
 #right-pane .toc li,
@@ -935,12 +1017,19 @@ body.mobile .note-title {
 
 /*
  * Menus
+ *
+ * Note: apply the "tn-dropdown-list" class for scrollable dropdown menus. Submenus are not
+ * supported when this class is used.
  */
 
-.dropdown-menu {
+.dropdown-menu:not(.static) {
     border-radius: var(--dropdown-border-radius);
     padding: var(--menu-padding-size) !important;
     font-size: 0.9rem !important;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: var(--menu-background-color);
 }
 
 body.mobile .dropdown-menu {
@@ -966,6 +1055,14 @@ body.desktop .dropdown-menu::before {
     z-index: -1;
 }
 
+body.desktop .dropdown-menu.tn-dropdown-list {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+}
+
+body.desktop .dropdown-menu.tn-dropdown-list::before {
+    display: none;
+}
+
 body.desktop .dropdown-submenu .dropdown-menu::before {
     content: unset;
 }
@@ -981,7 +1078,8 @@ body.desktop .dropdown-submenu .dropdown-menu {
 
 .dropdown-item,
 body.mobile .dropdown-submenu .dropdown-toggle {
-    padding: 2px 16px 2px 8px !important;
+    padding: 2px 2px 2px 8px !important;
+    padding-inline-end: 16px !important;
     /* Note: the right padding should also accommodate the submenu arrow. */
     border-radius: 6px;
     cursor: default !important;
@@ -995,15 +1093,12 @@ body.mobile .dropdown-item:not(:last-of-type) {
     margin-bottom: 0.5em;
 }
 
-body.mobile #launcher-pane .dropdown-submenu > .dropdown-toggle {
-    display: none;
-}
-
 body.mobile .dropdown-submenu:hover {
     background: transparent !important;
 }
 
-html body .dropdown-item.disabled {
+html body .dropdown-item.disabled,
+html body .dropdown-item[disabled] {
     color: var(--menu-text-color) !important;
     opacity: var(--menu-item-disabled-opacity);
 }
@@ -1056,6 +1151,43 @@ html body .dropdown-item.disabled {
     color: var(--menu-item-arrow-color) !important;
 }
 
+/* Menu item group heading */
+
+/* The heading body */
+.dropdown-menu h6 {
+    position: relative;
+    background: transparent;
+    padding: 1em 8px 14px 8px;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 1pt;
+    color: var(--menu-item-group-header-color) !important;
+}
+
+/* The delimiter line */
+.dropdown-menu h6::before {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: calc(0px - var(--menu-padding-size));
+    right: calc(0px - var(--menu-padding-size));
+    border-top: 1px solid var(--menu-item-delimiter-color);
+}
+
+/* Static menus (used as a list, such as on the note revisions dialog) */
+body.desktop .dropdown-menu.static {
+    box-shadow: unset;
+    border-radius: 4px;
+    border: unset;
+    background-color: var(--card-background-color) !important;
+    padding: var(--menu-padding-size) !important;
+    user-select: none;
+}
+
+body.desktop .dropdown-menu.static .dropdown-item.active {
+    --active-item-text-color: var(--menu-text-color);
+}
+
 body.desktop .dropdown-menu .dropdown-toggle::after {
     height: 100%;
 }
@@ -1073,32 +1205,52 @@ body.mobile .dropdown-menu .dropdown-item.submenu-open .dropdown-toggle::after {
  */
 
 .calendar-dropdown-widget {
+    width: unset !important;
     padding: 12px;
     color: var(--calendar-color);
+    user-select: none;
 }
 
 .calendar-dropdown-widget .calendar-header {
     padding: 8px 0 20px 0;
-}
-
-.calendar-dropdown-widget .calendar-header input[type="number"] {
-    appearance: textfield !important;
-}
-
-.calendar-dropdown-widget .calendar-header input[type="number"]::-webkit-outer-spin-button,
-.calendar-dropdown-widget .calendar-header input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+    gap: 10px;
 }
 
 .calendar-dropdown-widget .calendar-header input,
 .calendar-dropdown-widget .calendar-header [data-calendar-input="month"] {
-    /* TODO: Provide styling for background and states */
-    background: transparent !important;
-    border: unset;
+    --input-background-color: transparent;
+    --menu-background-color: transparent;
+
     text-align: center;
     font-size: 1.4em;
     font-weight: 300;
+}
+
+.calendar-dropdown-widget .calendar-header input:not(:focus) {
+    outline: 3px solid transparent;
+}
+
+.calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+    --select-arrow-svg: ""; /* Disable the dropdown arrow */
+}
+
+@media (max-width: 992px) {
+    .calendar-dropdown-widget .calendar-header button {
+        margin: 0 !important;
+        padding: 0;
+    }
+
+    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+        padding: 0 8px;
+        flex-grow: 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+        min-width: 120px;
+        padding: 0 10px;
+    }
 }
 
 .calendar-dropdown-widget .calendar-header .dropdown-toggle::after {
@@ -1143,6 +1295,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     border-radius: 6px;
     background: var(--calendar-day-hover-background);
     color: var(--calendar-day-hover-color) !important;
+    text-decoration: unset;
 }
 
 /*
@@ -1155,13 +1308,25 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 .note-tooltip-content {
     padding: 8px;
+    min-height: 56px;
 }
 
-.note-tooltip-content .note-title-with-path {
+.note-tooltip-title .note-title-with-path {
     display: flex;
     flex-direction: column-reverse;
-    border-bottom: 2px solid currentColor;
+}
+
+.note-tooltip-title a {
+    color: inherit !important;
+}
+
+.note-tooltip-title.note-no-content {
+    margin: 0;
+}
+
+.note-tooltip-title:not(.note-no-content) .note-title-with-path {
     padding-bottom: 6px;
+    border-bottom: 2px solid currentColor;
 }
 
 .note-tooltip-content .note-path {
@@ -1185,6 +1350,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 .jump-to-note-dialog .modal-dialog {
     --modal-background-color: var(--menu-background-color);
+    --modal-footer-background: transparent;
     --bs-modal-header-border-width: 0;
     --bs-modal-footer-border-width: 0;
     --bs-modal-footer-gap: 0;
@@ -1210,10 +1376,6 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 /* Search box wrapper */
 .jump-to-note-dialog .input-group {
     margin-right: 16px;
-    background: var(--quick-search-background);
-    border: 2px solid transparent;
-    border-radius: 6px;
-    color: var(--quick-search-color);
 }
 
 .jump-to-note-dialog .input-group:hover {
@@ -1227,47 +1389,16 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     color: var(--quick-search-focus-color);
 }
 
-/* Search box input */
-.jump-to-note-dialog .input-group input {
-    --bs-border-width: 0;
-
-    box-shadow: unset;
-    background: transparent;
-    color: currentColor;
-}
-
-/* Search box buttons */
-.jump-to-note-dialog .input-group button {
-    --bs-border-width: 0;
-    --accented-background-color: transparent;
-    padding: 0 4px;
-}
-
-.jump-to-note-dialog .input-group button:last-child {
-    padding-right: 0.75em;
-}
-
 .jump-to-note-dialog .input-clearer-button {
     background: transparent !important;
 }
 
-/* List body */
-.jump-to-note-dialog .jump-to-note-results .aa-suggestions {
-    padding: 0;
-}
+/*
+ * Note Map
+ */
 
-/* List item */
-.jump-to-note-dialog .aa-suggestions div {
-    border-radius: 6px;
-    padding: 6px 12px;
-    color: var(--menu-text-color);
-    cursor: default;
-}
-
-/* Selected list item */
-.jump-to-note-dialog .aa-suggestions div.aa-cursor {
-    background: var(--hover-item-background-color);
-    color: var(--hover-item-text-color);
+.note-detail-note-map .fixnodes-type-switcher .tn-tool-button.toggled {
+    color: var(--tab-close-button-hover-background);
 }
 
 /*
@@ -1353,7 +1484,7 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /* Item title for deleted notes */
-.recent-changes-content ul li.deleted-note .note-title {
+.recent-changes-content ul li.deleted-note .note-title > .note-title {
     text-decoration: line-through;
 }
 
@@ -1413,6 +1544,56 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 /* Hovered timeline bullet */
 .recent-changes-content ul li:hover::after {
     background: var(--timeline-bullet-hover-color);
+}
+
+/*
+ * Bookmarks folder popup
+ */
+
+div.bookmark-folder-widget {
+    min-width: auto;
+    max-width: 40vw;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+div.bookmark-folder-widget .children-notes {
+    margin: 0;
+}
+
+/* Item */
+div.bookmark-folder-widget span.note-link {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 6px 25px;
+}
+
+/* Item: the parent note */
+div.bookmark-folder-widget .parent-note .note-link {
+    padding: 6px 8px;
+    font-weight: bold;
+}
+
+div.bookmark-folder-widget .note-link:hover {
+    background: var(--hover-item-background-color);
+}
+
+div.bookmark-folder-widget .note-link a {
+    padding-left: 8px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+div.bookmark-folder-widget .note-link:hover a {
+    color: var(--hover-item-text-color);
+}
+
+/* The item's icon */
+div.bookmark-folder-widget .note-link .bx {
+    color: var(--menu-item-icon-color);
+    font-size: 1.2em;
 }
 
 /*
@@ -1503,7 +1684,8 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 
 .note-list-wrapper .note-book-card .note-book-content.type-canvas .rendered-content,
 .note-list-wrapper .note-book-card .note-book-content.type-mindMap .rendered-content,
-.note-list-wrapper .note-book-card .note-book-content.type-code .rendered-content {
+.note-list-wrapper .note-book-card .note-book-content.type-code .rendered-content,
+.note-list-wrapper .note-book-card .note-book-content.type-video .rendered-content {
     padding: 0;
 }
 
@@ -1560,7 +1742,15 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     transform: translateY(4%);
 }
 
-/* Search */
+/* 
+ * Search
+ */
+
+ /* Button bar */
+ .search-definition-widget .search-setting-table tbody:last-child div {
+    justify-content: flex-end !important;
+    gap: 8px;
+ }
 
 .search-result-widget-content .note-path .path-bracket {
     display: inline;
@@ -1571,7 +1761,51 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     font-weight: normal;
 }
 
-/* Help */
+/*
+ * SQL Console
+ */
+
+/* Table buttons */
+
+.sql-table-schemas-widget .sql-table-schemas button {
+    --color: var(--main-text-color);
+    --background: var(--card-background-color);
+
+    display: inline-block;
+    box-shadow: 2px 2px 2px var(--card-shadow-color);
+    margin-top: 4px;
+    vertical-align: baseline;
+    border: unset;
+    border-radius: 12px;
+    padding: 2px 12px;
+    background: var(--background) !important;
+    color: var(--color) !important;
+    line-height: unset;
+    cursor: help;
+}
+
+.sql-table-schemas-widget .sql-table-schemas button:hover,
+.sql-table-schemas-widget .sql-table-schemas button:active,
+.sql-table-schemas-widget .sql-table-schemas button:focus-visible {
+    --background: var(--card-background-press-color);
+    --color: var(--main-text-color);
+}
+
+/* Tooltip */
+
+.tooltip .table-schema {
+    font-family: var(--monospace-font-family);
+    font-size: .85em;
+}
+
+/* Data type */
+.tooltip .table-schema td:nth-child(2) {
+    color: var(--muted-text-color);
+}
+
+/*
+ * Help
+ */
 
 .help-dialog .modal-content {
     --modal-background-color: var(--help-background-color);
@@ -1625,7 +1859,8 @@ body .calendar-dropdown-widget .calendar-body a:hover {
 }
 
 /* Keyboard shortcut */
-.help-dialog .help-cards kbd {
+.help-dialog .help-cards kbd,
+.ck-content kbd {
     box-shadow: var(--help-kbd-shortcut-shadow);
     margin: 0 4px;
     border: none;
@@ -1647,4 +1882,297 @@ body .calendar-dropdown-widget .calendar-body a:hover {
     background: var(--help-code-background);
     padding: 0 8px;
     color: var(--help-code-color);
+}
+
+/* Note area */
+
+.title-row > *:first-child {
+    margin-right: 0;
+}
+
+.title-row > *:nth-child(2) {
+    margin-left: 0;
+}
+
+.title-row {
+    /* Aligns the "Create new split" button with the note menu button (the three dots button) */
+    padding-right: 3px;
+}
+
+.note-title-widget input {
+    --input-background-color: transparent;
+
+    border-radius: 8px;
+    padding-left: 12px;
+}
+
+.note-actions {
+    --menu-item-icon-vert-offset: -2.5px;
+}
+
+/* Promoted attributes */
+.promoted-attribute-cell div.input-group {
+    margin: 1px 0;
+}
+
+/* Delete notes preview dialog */
+
+.delete-notes-list .note-path {
+    padding-left: 8px;
+}
+
+/* The "Change note icon" button */
+
+.note-icon-widget .note-icon {
+    border: none;
+    border-radius: 8px;
+}
+
+.note-icon-widget .note-icon:hover {
+    background: var(--icon-button-hover-background);
+    color: var(--icon-button-hover-color);
+}
+
+/* Note icon popup */
+
+.note-icon-widget .icon-list span {
+    border-radius: 8px;
+}
+
+.note-icon-widget .icon-list span:hover {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
+}
+
+body.background-effects.zen #root-widget {
+    --main-background-color: transparent;
+    --root-background: transparent;
+}
+
+/* Alert bar */
+
+@keyframes alert-show {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#center-pane .note-split > div.alert {
+    position: relative;
+    margin: 8px 0 0 0;
+    border: unset;
+    border-radius: 0;
+    padding: 8px 16px;
+    background: var(--alert-bar-background) !important;
+    font-size: 0.9em;
+    font-weight: normal;
+    animation: alert-show 300ms ease-in;
+    border-bottom: 2px solid #0000001c !important;
+}
+
+/*
+ * Promoted attributes
+ */
+
+/* The promoted attributes section */
+div.promoted-attributes-container {
+    display: flex;
+    margin-right: 10%;
+    padding: 6px 0;
+    gap: 8px;
+    align-items: stretch;
+    container-type: inline-size;
+}
+
+div.promoted-attributes-container,
+div.promoted-attributes-container input {
+    font-size: 0.9rem;
+}
+
+/* A promoted attribute card */
+div.promoted-attribute-cell {
+    --pa-card-padding-left: 16px;
+    --pa-card-padding-right: 2px;
+    --input-background-color: transparent;
+
+    box-shadow: 1px 1px 2px var(--promoted-attribute-card-shadow-color);
+
+    display: inline-flex;
+    margin: 0;
+    border-radius: 8px;
+    padding: 2px var(--pa-card-padding-right) 2px var(--pa-card-padding-left);
+    background: var(--promoted-attribute-card-background-color);
+    overflow-y: visible;
+}
+
+@container (max-width: 500px) {
+    /* Narrow promoted attributes section */
+    div.promoted-attribute-cell {
+        flex-grow: 1;
+    }
+}
+
+/* A promoted attribute card (boolean attribute) */
+div.promoted-attribute-cell:has(input[type="checkbox"]):not(:has(.multiplicity > span)) {
+    /* Checbox attribute, without multiplicity */
+    padding-right: var(--pa-card-padding-left);
+}
+
+div.promoted-attribute-cell > * {
+    display: inline-block;
+}
+
+div.promoted-attribute-cell > label {
+    font-weight: normal;
+    white-space: nowrap;
+    opacity: 0.75;
+}
+
+div.promoted-attribute-cell:not(:has(input[type="checkbox"])) > label::after {
+    content: ":";
+}
+
+div.promoted-attribute-cell div.input-group {
+    min-height: auto;
+    padding: 1px 6px;
+}
+
+div.promoted-attribute-cell input {
+    padding: 2px 8px;
+    font-weight: 500;
+}
+
+div.promoted-attribute-cell input[type="text"] {
+    width: 10em !important;
+}
+
+div.promoted-attribute-cell input[type="number"] {
+    width: 6em !important;
+}
+
+div.promoted-attribute-cell span.open-external-link-button {
+    display: flex;
+    padding: 0;
+    font-size: 1.2em;
+}
+
+div.promoted-attribute-cell .tn-checkbox {
+    --box-label-gap: 0;
+
+    height: 1cap;
+}
+
+/* The <div> containing the checkbox for a promoted boolean attribute */
+div.promoted-attribute-cell div:has(input[type="checkbox"]) {
+    order: -1; /* Relocate the checkbox before the label */
+    margin-right: 1.5em;
+}
+
+/* The element containing the "new attribute" and "remove this attribute button" */
+div.promoted-attribute-cell .multiplicity:has(span) {
+    --icon-button-size: 24px;
+
+    margin-left: 8px;
+    margin-right: calc(var(--pa-card-padding-left) - var(--pa-card-padding-right));
+    font-size: 0; /* Prevent whitespaces creating a gap between buttons */
+}
+
+/*
+ * Modals
+ */
+
+/* Modal body */
+.modal .modal-content {
+    box-shadow: 0 .5em 3em .5em var(--modal-shadow-color);
+    border: 1px solid var(--modal-border-color);
+    background: var(--modal-background-color);
+}
+
+/* Modal header */
+.modal .modal-header {
+    border-bottom: unset;
+    user-select: none;
+}
+
+.modal .modal-header .modal-title {
+    flex-grow: 1;
+    font-size: 1.2em;
+    color: var(--modal-title-color);
+}
+
+/* Modal and toast control buttons (close and help) */
+
+.modal .modal-header .btn-close,
+.modal .modal-header .help-button,
+#toast-container .toast .toast-header .btn-close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 8px;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    width: var(--modal-control-button-size);
+    height: var(--modal-control-button-size);
+    background: var(--modal-control-button-background);
+    font-size: var(--modal-control-button-size);
+    line-height: normal;
+    font-weight: normal;
+    color: var(--modal-control-button-color);
+    opacity: 1;
+    cursor: default;
+}
+
+.modal .modal-header .btn-close,
+#toast-container .toast .toast-header .btn-close {
+    --modal-control-button-hover-background: var(--modal-close-button-hover-background);
+}
+
+.modal .modal-header .btn-close::after,
+#toast-container .toast .toast-header .btn-close::after {
+    content: "\ec8d";
+    font-family: boxicons;
+}
+
+.modal .modal-header .help-button {
+    margin-right: 0;
+    font-size: calc(var(--modal-control-button-size) * .75);
+    font-family: unset;
+    font-weight: bold;
+}
+
+.modal .modal-header .btn-close:hover,
+.modal .modal-header .help-button:hover,
+#toast-container .toast .toast-header .btn-close:hover {
+    background: var(--modal-control-button-hover-background);
+    color: var(--modal-control-button-hover-color);
+}
+
+.modal .modal-header .btn-close:active,
+.modal .modal-header .help-button:active,
+#toast-container .toast .toast-header .btn-close:active {
+    transform: scale(.85);
+}
+
+.modal .modal-header .btn-close:focus,
+.modal .modal-header .help-button:focus,
+#toast-container .toast .toast-header .btn-close:focus {
+    box-shadow: none !important;
+}
+
+.modal .modal-header .btn-close:focus-visible,
+.modal .modal-header .help-button:focus-visible,
+#toast-container .toast .toast-header .btn-close:focus-visible {
+    outline: 2px solid var(--input-focus-outline-color);
+    outline-offset: 2px;
+}
+
+/* Modal footer */
+.modal .modal-footer {
+    background: var(--modal-footer-background);
+    color: var(--modal-footer-color);
+    border-top: unset;
 }

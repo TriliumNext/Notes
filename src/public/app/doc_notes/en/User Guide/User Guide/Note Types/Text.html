@@ -1,0 +1,108 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Text</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Text</h1>
+
+      <div class="ck-content">
+        <p>Trilium utilizes the powerful <a href="https://ckeditor.com/ckeditor-5/">CKEditor 5</a> as
+          its text editing component.</p>
+        <h2>Formatting Options</h2>
+        <p>The Trilium text note interface does not display toolbars or formatting
+          options by default. These can be accessed by:</p>
+        <p>
+          <img src="../Attachments/text-notes-formatting-inli.png" alt="inline note formatting">
+        </p>
+        <ol>
+          <li>Selecting text to bring up an inline toolbar.</li>
+        </ol>
+        <p>
+          <img src="../Attachments/text-notes-formatting-bloc.png" alt="formating note block">2. Clicking on the block toolbar.</p>
+        <h2>Read-Only vs. Editing Mode</h2>
+        <p>Text notes are usually opened in edit mode. However, they may open in
+          read-only mode under the following circumstances:</p>
+        <ul>
+          <li>The note is long and would take time to load, so it is opened in read-only
+            mode by default for quicker access.</li>
+          <li>The note has a <code>readOnly</code>  <a href="../Advanced%20Usage/Attributes.html">label</a>.</li>
+        </ul>
+        <p>In both cases, it is possible to switch back to editable mode using the
+          <img
+          src="Text_bx-edit-alt.svg">button at top right of page.</p>
+        <p>For more information, see <a href="../Basic%20Concepts/Note/Read-Only%20Notes.html">Read-Only Notes</a>.</p>
+        <h2>General Formatting</h2>
+        <p>Since Trilium uses CKEditor, all of its formatting options are available
+          here. You may use the graphical toolbar shown above, or enter formatting
+          such as markdown markdown directly in the text. Examples include:</p>
+        <ul>
+          <li><strong>Bold</strong>: Type <code>**text**</code> or <code>__text__</code>
+          </li>
+          <li><em>Italic</em>: Type <code>*text*</code> or <code>_text_</code>
+          </li>
+          <li><code>Code</code>: Type `text`</li>
+          <li><del>Strikethrough</del>: Type <code>~~text~~</code>
+          </li>
+        </ul>
+        <h3>Lists</h3>
+        <p>See <a href="Text/Lists.html">Lists</a>.</p>
+        <h3>Blocks</h3>
+        <ul>
+          <li>Block quote: Start a line with <code>&gt;</code> followed by a space</li>
+        </ul>
+        <h3>Multi-Line Code Blocks</h3>
+        <p>To create a multi-line code block, start a line with "```[lang]", for
+          example:</p><pre><code class="language-text-x-trilium-auto">if (1 &gt; 2) {
+    console.log("Error in the matrix");
+}</code></pre>
+        <h3>Headings</h3>
+        <p>Create headings by starting a line with <code>##</code> for heading 2, <code>###</code> for
+          heading 3, and so on up to heading 6. Note that <code>#</code> is reserved
+          for the title.</p>
+        <h3>Horizontal Line</h3>
+        <p>Insert a horizontal line by starting a line with <code>---</code>.</p>
+        <h2>Markdown &amp; Autoformat</h2>
+        <p>CKEditor supports a markdown-like editing experience, recognising syntax
+          and automatically converting it to rich text.</p>
+        <p>
+          <img src="Text_image.png">
+        </p>
+        <p>Complete documentation for this feature is available in the <a href="https://ckeditor.com/docs/ckeditor5/latest/features/autoformat.html">CKEditor documentation</a>.</p>
+        <p>If autoformatting is not desirable, press <kbd>Ctrl</kbd> + <kbd>Z</kbd> to
+          revert the text to its original form.</p>
+        <p>Note: The use of <code>#</code> for Heading 1 is not supported because it
+          is reserved for the title. Start with <code>##</code> for Heading 2. More
+          information is available <a href="https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#heading-levels">here</a>.</p>
+        <h2>Math Support</h2>
+        <p>Trilium provides math support through <a href="https://katex.org/">KaTeX</a>.</p>
+        <h2>Cutting Selection to Sub-Note</h2>
+        <p>When editing a document that becomes too large, you can split it into
+          sub-notes:</p>
+        <ol>
+          <li>Select the desired text and cut it to the clipboard.</li>
+          <li>Create a new sub-note and name it.</li>
+          <li>Paste the content from the clipboard into the sub-note.</li>
+        </ol>
+        <p>Trilium can automate this process. Select some text within the note, and
+          in the selection toolbar, click the scissors icon for the "cut &amp; pasted
+          selection to sub-note" action. The heading is automatically detected and
+          the new sub-note is named accordingly. You can also assign a keyboard shortcut
+          for this action. This functionality is available through the block toolbar
+          icon.</p>
+        <h2>Including a Note</h2>
+        <p>Text notes can "include" another note as a read only widget. This can
+          be useful for e.g. including a dynamically generated chart (from scripts
+          &amp; "render HTML" note) or other more advanced use cases.</p>
+        <p>This functionality is available in the block toolbar icon.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

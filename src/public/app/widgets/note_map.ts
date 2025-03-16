@@ -12,7 +12,7 @@ import type FNote from "../entities/fnote.js";
 
 const esc = utils.escapeHtml;
 
-const TPL = `<div class="note-map-widget" style="position: relative;">
+const TPL = `<div class="note-map-widget">
     <style>
         .note-detail-note-map {
             height: 100%;
@@ -34,60 +34,76 @@ const TPL = `<div class="note-map-widget" style="position: relative;">
         /* Style Ui Element to Drag Nodes */
         .fixnodes-type-switcher {
             position: absolute;
-            top: 10px;
-            left: 45%;
+            display: flex;
+            align-items: center;
+            bottom: 10px;
+            left: 10px;
             z-index: 10; /* should be below dropdown (note actions) */
-            border-radius:0.2rem;
+            border-radius: .2rem;
+        }
+
+        .fixnodes-type-switcher button.toggled {
+            background: var(--active-item-background-color);
+            color: var(--active-item-text-color);
         }
 
         /* Start of styling the slider */
-            input[type="range"] {
+        .fixnodes-type-switcher input[type="range"] {
 
             /* removing default appearance */
             -webkit-appearance: none;
             appearance: none;
             margin-left: 15px;
-            width:50%
-
+            width: 150px;
         }
-
-
 
         /* Changing slider tracker */
-        input[type="range"]::-webkit-slider-runnable-track {
-        height: 6px;
-        background: #ccc;
-        border-radius: 16px;
+        .fixnodes-type-switcher input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            background-color: var(--main-border-color);
+            border-radius: 4px;
         }
 
+        /* Changing Slider Thumb */
+        .fixnodes-type-switcher input[type="range"]::-webkit-slider-thumb {
+            /* removing default appearance */
+            -webkit-appearance: none;
+            appearance: none;
+            /* creating a custom design */
+            height: 15px;
+            width: 15px;
+            margin-top:-5px;
+            background-color: var(--accented-background-color);
+            border: 1px solid var(--main-text-color);
+            border-radius: 50%;
+        }
 
-        /* Changing Slider Thumb*/
-        input[type="range"]::-webkit-slider-thumb {
-        /* removing default appearance */
-        -webkit-appearance: none;
-        appearance: none;
-        /* creating a custom design */
-        height: 15px;
-        width: 15px;
-        margin-top:-4px;
-        background-color: #661822;
-        border-radius: 50%;
+        .fixnodes-type-switcher input[type="range"]::-moz-range-track {
+            background-color: var(--main-border-color);
+            border-radius: 4px;
+        }
+
+        .fixnodes-type-switcher input[type="range"]::-moz-range-thumb {
+            background-color: var(--accented-background-color);
+            border-color: var(--main-text-color);
+            height: 10px;
+            width: 10px;
+        }
 
         /* End of styling the slider */
 
     </style>
 
     <div class="btn-group btn-group-sm map-type-switcher" role="group">
-      <button type="button" class="btn bx bx-network-chart" title="${t("note-map.button-link-map")}" data-type="link"></button>
-      <button type="button" class="btn bx bx-sitemap" title="${t("note-map.button-tree-map")}" data-type="tree"></button>
+      <button type="button" class="btn bx bx-network-chart tn-tool-button" title="${t("note-map.button-link-map")}" data-type="link"></button>
+      <button type="button" class="btn bx bx-sitemap tn-tool-button" title="${t("note-map.button-tree-map")}" data-type="tree"></button>
     </div>
 
     <! UI for dragging Notes and link force >
 
-     <div class=" btn-group-sm fixnodes-type-switcher" role="group">
-      <button type="button" class="btn bx bx-expand" title="${t("note_map.fix-nodes")}" data-type="moveable"></button>
-      <input type="range" class=" slider" min="1" title="${t("note_map.link-distance")}" max="100" value="40" >
-
+    <div class=" btn-group-sm fixnodes-type-switcher" role="group">
+      <button type="button" data-toggle="button" class="btn bx bx-lock-alt tn-tool-button" title="${t("note_map.fix-nodes")}" data-type="moveable"></button>
+      <input type="range" class="slider" min="1" title="${t("note_map.link-distance")}" max="100" value="40" >
     </div>
 
     <div class="style-resolver"></div>
@@ -123,7 +139,7 @@ interface NotesAndRelationsData {
         source: string;
         target: string;
         name: string;
-    }[]
+    }[];
 }
 
 // Replace
@@ -136,7 +152,7 @@ interface ResponseLink {
 
 interface PostNotesMapResponse {
     notes: string[];
-    links: ResponseLink[],
+    links: ResponseLink[];
     noteIdToDescendantCountMap: Record<string, number>;
 }
 
@@ -144,7 +160,7 @@ interface GroupedLink {
     id: string;
     sourceNoteId: string;
     targetNoteId: string;
-    names: string[]
+    names: string[];
 }
 
 interface CssData {
@@ -163,6 +179,7 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
     private themeStyle!: string;
     private $container!: JQuery<HTMLElement>;
     private $styleResolver!: JQuery<HTMLElement>;
+    private $fixNodesButton!: JQuery<HTMLElement>;
     graph!: ForceGraph;
     private noteIdToSizeMap!: Record<string, number>;
     private zoomLevel!: number;
@@ -182,6 +199,7 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
 
         this.$container = this.$widget.find(".note-map-container");
         this.$styleResolver = this.$widget.find(".style-resolver");
+        this.$fixNodesButton = this.$widget.find(".fixnodes-type-switcher > button");
 
         new ResizeObserver(() => this.setDimensions()).observe(this.$container[0]);
 
@@ -191,11 +209,11 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
             await attributeService.setLabel(this.noteId ?? "", "mapType", type);
         });
 
-        // Reading the status of the Drag nodes Ui element. Changing it´s color when activated. Reading Force value of the link distance.
-
-        this.$widget.find(".fixnodes-type-switcher").on("click", async (event) => {
+        // Reading the status of the Drag nodes Ui element. Changing it´s color when activated.
+        // Reading Force value of the link distance.
+        this.$fixNodesButton.on("click", async (event) => {
             this.fixNodes = !this.fixNodes;
-            event.target.style.backgroundColor = this.fixNodes ? "#661822" : "transparent";
+            this.$fixNodesButton.toggleClass("toggled", this.fixNodes);
         });
 
         super.doRender();
@@ -295,9 +313,7 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
                 ctx.fillStyle = color;
                 ctx.beginPath();
                 if (node.x && node.y) {
-                    ctx.arc(node.x, node.y,
-                        this.noteIdToSizeMap[node.id], 0,
-                        2 * Math.PI, false);
+                    ctx.arc(node.x, node.y, this.noteIdToSizeMap[node.id], 0, 2 * Math.PI, false);
                 }
                 ctx.fill();
             })
@@ -306,7 +322,7 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
             .warmupTicks(30)
             .onNodeClick((node) => {
                 if (node.id) {
-                    appContext.tabManager.getActiveContext().setNote((node as Node).id);
+                    appContext.tabManager.getActiveContext()?.setNote((node as Node).id);
                 }
             })
             .onNodeRightClick((node, e) => {
@@ -355,7 +371,7 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
         if (mapRootNoteId === "hoisted") {
             mapRootNoteId = hoistedNoteService.getHoistedNoteId();
         } else if (!mapRootNoteId) {
-            mapRootNoteId = appContext.tabManager.getActiveContext().parentNoteId;
+            mapRootNoteId = appContext.tabManager.getActiveContext()?.parentNoteId;
         }
 
         return mapRootNoteId ?? "";
@@ -449,13 +465,13 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
         }
 
         if (source.x && source.y && target.x && target.y) {
-            const x = ((source.x) + (target.x)) / 2;
-            const y = ((source.y) + (target.y)) / 2;
+            const x = (source.x + target.x) / 2;
+            const y = (source.y + target.y) / 2;
             ctx.save();
             ctx.translate(x, y);
 
-            const deltaY = (source.y) - (target.y);
-            const deltaX = (source.x) - (target.x);
+            const deltaY = source.y - target.y;
+            const deltaX = source.x - target.x;
 
             let angle = Math.atan2(deltaY, deltaX);
             let moveY = 2;

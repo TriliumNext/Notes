@@ -6,6 +6,7 @@ import utils from "../services/utils.js";
 import appContext from "../components/app_context.js";
 import shortcutService from "../services/shortcuts.js";
 import { t } from "../services/i18n.js";
+import { Dropdown, Tooltip } from "bootstrap";
 
 const TPL = `
 <div class="quick-search input-group input-group-sm">
@@ -14,12 +15,12 @@ const TPL = `
         padding: 10px 10px 10px 0px;
         height: 50px;
     }
-    
+
     .quick-search button, .quick-search input {
         border: 0;
         font-size: 100% !important;
     }
-  
+
     .quick-search .dropdown-menu {
         max-height: 600px;
         max-width: 400px;
@@ -29,12 +30,12 @@ const TPL = `
         box-shadow: -30px 50px 93px -50px black;
     }
   </style>
-  
+
   <div class="input-group-prepend">
     <button class="btn btn-outline-secondary search-button" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="bx bx-search"></span>
     </button>
-    <div class="dropdown-menu dropdown-menu-left"></div>
+    <div class="dropdown-menu dropdown-menu-left tn-dropdown-list"></div>
   </div>
   <input type="text" class="form-control form-control-sm search-string" placeholder="${t("quick-search.placeholder")}">
 </div>`;
@@ -44,7 +45,7 @@ const MAX_DISPLAYED_NOTES = 15;
 export default class QuickSearchWidget extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
-        this.dropdown = bootstrap.Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"));
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']"));
 
         this.$searchString = this.$widget.find(".search-string");
         this.$dropdownMenu = this.$widget.find(".dropdown-menu");
@@ -100,7 +101,7 @@ export default class QuickSearchWidget extends BasicWidget {
         const { searchResultNoteIds, error } = await server.get(`quick-search/${encodeURIComponent(searchString)}`);
 
         if (error) {
-            let tooltip = new bootstrap.Tooltip(this.$searchString, {
+            let tooltip = new Tooltip(this.$searchString, {
                 trigger: "manual",
                 title: `Search error: ${error}`,
                 placement: "right"
@@ -145,7 +146,7 @@ export default class QuickSearchWidget extends BasicWidget {
             this.$dropdownMenu.append(`<span class="dropdown-item disabled">${t("quick-search.more-results", { number: numRemainingResults })}</span>`);
         }
 
-        const $showInFullButton = $('<a class="dropdown-item" tabindex="0">').append($(`<button class="btn btn-sm">${t("quick-search.show-in-full-search")}</button>`));
+        const $showInFullButton = $('<a class="dropdown-item" tabindex="0">').text(t("quick-search.show-in-full-search"));
 
         this.$dropdownMenu.append($(`<div class="dropdown-divider">`));
         this.$dropdownMenu.append($showInFullButton);

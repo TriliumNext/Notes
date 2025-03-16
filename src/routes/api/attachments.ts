@@ -33,7 +33,9 @@ function getAllAttachments(req: Request) {
 function saveAttachment(req: Request) {
     const { noteId } = req.params;
     const { attachmentId, role, mime, title, content } = req.body;
-    const { matchBy } = req.query as any;
+    const matchByQuery = req.query.matchBy
+    const isValidMatchBy = (typeof matchByQuery === "string") && (matchByQuery === "attachmentId" || matchByQuery === "title");
+    const matchBy = isValidMatchBy ? matchByQuery : undefined;
 
     const note = becca.getNoteOrThrow(noteId);
     note.saveAttachment({ attachmentId, role, mime, title, content }, matchBy);
@@ -41,7 +43,14 @@ function saveAttachment(req: Request) {
 
 function uploadAttachment(req: Request) {
     const { noteId } = req.params;
-    const { file } = req as any;
+    const { file } = req;
+
+    if (!file) {
+        return {
+            uploaded: false,
+            message: `Missing attachment data.`
+        };
+    }
 
     const note = becca.getNoteOrThrow(noteId);
     let url;

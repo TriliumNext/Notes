@@ -6,6 +6,7 @@ import log from "./log.js";
 import dateUtils from "./date_utils.js";
 import keyboardActions from "./keyboard_actions.js";
 import type { KeyboardShortcutWithRequiredActionName } from "./keyboard_actions_interface.js";
+import { DEFAULT_ALLOWED_TAGS } from "./html_sanitizer.js";
 
 function initDocumentOptions() {
     optionService.createOption("documentId", randomSecureToken(16), false);
@@ -75,9 +76,11 @@ async function initNotSyncedOptions(initialized: boolean, opts: NotSyncedOpts = 
  */
 const defaultOptions: DefaultOption[] = [
     { name: "revisionSnapshotTimeInterval", value: "600", isSynced: true },
+    { name: "revisionSnapshotTimeIntervalTimeScale", value: "60", isSynced: true }, // default to Minutes
     { name: "revisionSnapshotNumberLimit", value: "-1", isSynced: true },
     { name: "protectedSessionTimeout", value: "600", isSynced: true },
-    { name: "zoomFactor", value: isWindows() ? "0.9" : "1.0", isSynced: false },
+    { name: "protectedSessionTimeoutTimeScale", value: "60", isSynced: true },
+    { name: "zoomFactor", value: isWindows ? "0.9" : "1.0", isSynced: false },
     { name: "overrideThemeFonts", value: "false", isSynced: false },
     { name: "mainFontFamily", value: "theme", isSynced: false },
     { name: "mainFontSize", value: "100", isSynced: false },
@@ -96,7 +99,7 @@ const defaultOptions: DefaultOption[] = [
     { name: "codeLineWrapEnabled", value: "true", isSynced: false },
     {
         name: "codeNotesMimeTypes",
-        value: '["text/x-csrc","text/x-c++src","text/x-csharp","text/css","text/x-go","text/x-groovy","text/x-haskell","text/html","message/http","text/x-java","application/javascript;env=frontend","application/javascript;env=backend","application/json","text/x-kotlin","text/x-markdown","text/x-perl","text/x-php","text/x-python","text/x-ruby",null,"text/x-sql","text/x-sqlite;schema=trilium","text/x-swift","text/xml","text/x-yaml","text/x-sh"]',
+        value: '["text/x-csrc","text/x-c++src","text/x-csharp","text/css","text/x-go","text/x-groovy","text/x-haskell","text/html","message/http","text/x-java","application/javascript;env=frontend","application/javascript;env=backend","application/json","text/x-kotlin","text/x-markdown","text/x-perl","text/x-php","text/x-python","text/x-ruby",null,"text/x-sql","text/x-sqlite;schema=trilium","text/x-swift","text/xml","text/x-yaml","text/x-sh","application/typescript"]',
         isSynced: true
     },
     { name: "leftPaneWidth", value: "25", isSynced: false },
@@ -105,6 +108,7 @@ const defaultOptions: DefaultOption[] = [
     { name: "rightPaneVisible", value: "true", isSynced: false },
     { name: "nativeTitleBarVisible", value: "false", isSynced: false },
     { name: "eraseEntitiesAfterTimeInSeconds", value: "604800", isSynced: true }, // default is 7 days
+    { name: "eraseEntitiesAfterTimeScale", value: "86400", isSynced: true }, // default 86400 seconds = Day
     { name: "hideArchivedNotes_main", value: "false", isSynced: false },
     { name: "debugModeEnabled", value: "false", isSynced: false },
     { name: "headingStyle", value: "underline", isSynced: true },
@@ -121,7 +125,8 @@ const defaultOptions: DefaultOption[] = [
     { name: "highlightsList", value: '["bold","italic","underline","color","bgColor"]', isSynced: true },
     { name: "checkForUpdates", value: "true", isSynced: true },
     { name: "disableTray", value: "false", isSynced: false },
-    { name: "eraseUnusedAttachmentsAfterSeconds", value: "2592000", isSynced: true },
+    { name: "eraseUnusedAttachmentsAfterSeconds", value: "2592000", isSynced: true }, // default 30 days
+    { name: "eraseUnusedAttachmentsAfterTimeScale", value: "86400", isSynced: true }, // default 86400 seconds = Day
     { name: "customSearchEngineName", value: "DuckDuckGo", isSynced: true },
     { name: "customSearchEngineUrl", value: "https://duckduckgo.com/?q={keyword}", isSynced: true },
     { name: "promotedAttributesOpenInRibbon", value: "true", isSynced: true },
@@ -130,6 +135,7 @@ const defaultOptions: DefaultOption[] = [
     // Internationalization
     { name: "locale", value: "en", isSynced: true },
     { name: "firstDayOfWeek", value: "1", isSynced: true },
+    { name: "languages", value: "[]", isSynced: true },
 
     // Code block configuration
     {
@@ -154,104 +160,13 @@ const defaultOptions: DefaultOption[] = [
     { name: "backgroundEffects", value: "false", isSynced: false },
     {
         name: "allowedHtmlTags",
-        value: JSON.stringify([
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "blockquote",
-            "p",
-            "a",
-            "ul",
-            "ol",
-            "li",
-            "b",
-            "i",
-            "strong",
-            "em",
-            "strike",
-            "s",
-            "del",
-            "abbr",
-            "code",
-            "hr",
-            "br",
-            "div",
-            "table",
-            "thead",
-            "caption",
-            "tbody",
-            "tfoot",
-            "tr",
-            "th",
-            "td",
-            "pre",
-            "section",
-            "img",
-            "figure",
-            "figcaption",
-            "span",
-            "label",
-            "input",
-            "details",
-            "summary",
-            "address",
-            "aside",
-            "footer",
-            "header",
-            "hgroup",
-            "main",
-            "nav",
-            "dl",
-            "dt",
-            "menu",
-            "bdi",
-            "bdo",
-            "dfn",
-            "kbd",
-            "mark",
-            "q",
-            "time",
-            "var",
-            "wbr",
-            "area",
-            "map",
-            "track",
-            "video",
-            "audio",
-            "picture",
-            "del",
-            "ins",
-            "en-media",
-            "acronym",
-            "article",
-            "big",
-            "button",
-            "cite",
-            "col",
-            "colgroup",
-            "data",
-            "dd",
-            "fieldset",
-            "form",
-            "legend",
-            "meter",
-            "noscript",
-            "option",
-            "progress",
-            "rp",
-            "samp",
-            "small",
-            "sub",
-            "sup",
-            "template",
-            "textarea",
-            "tt"
-        ]),
+        value: JSON.stringify(DEFAULT_ALLOWED_TAGS),
         isSynced: true
-    }
+    },
+
+    // Share settings
+    { name: "redirectBareDomain", value: "false", isSynced: true },
+    { name: "showLoginInShareTheme", value: "false", isSynced: true }
 ];
 
 /**

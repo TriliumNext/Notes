@@ -1,19 +1,20 @@
+import fs from "fs/promises";
 import path from "path";
 import url from "url";
 import port from "./port.js";
 import optionService from "./options.js";
-import env from "./env.js";
 import log from "./log.js";
 import sqlInit from "./sql_init.js";
 import cls from "./cls.js";
 import keyboardActionsService from "./keyboard_actions.js";
 import remoteMain from "@electron/remote/main/index.js";
-import type { App, BrowserWindow, BrowserWindowConstructorOptions, WebContents } from "electron";
-import { ipcMain } from "electron";
-import { isMac, isWindows } from "./utils.js";
+import { BrowserWindow, shell, type App, type BrowserWindowConstructorOptions, type WebContents } from "electron";
+import { dialog, ipcMain } from "electron";
+import { formatDownloadTitle, isDev, isMac, isWindows } from "./utils.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { t } from "i18next";
 
 // Prevent the window being garbage collected
 let mainWindow: BrowserWindow | null;
@@ -45,6 +46,61 @@ async function createExtraWindow(extraWindowHash: string) {
 
 ipcMain.on("create-extra-window", (event, arg) => {
     createExtraWindow(arg.extraWindowHash);
+});
+
+interface ExportAsPdfOpts {
+    title: string;
+    landscape: boolean;
+    pageSize: "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "Legal" | "Letter" | "Tabloid" | "Ledger";
+}
+
+ipcMain.on("export-as-pdf", async (e, opts: ExportAsPdfOpts) => {
+    const browserWindow = BrowserWindow.fromWebContents(e.sender);
+    if (!browserWindow) {
+        return;
+    }
+
+    const filePath = dialog.showSaveDialogSync(browserWindow, {
+        defaultPath: formatDownloadTitle(opts.title, "file", "application/pdf"),
+        filters: [
+            {
+                name: t("pdf.export_filter"),
+                extensions: ["pdf"]
+            }
+        ]
+    });
+    if (!filePath) {
+        return;
+    }
+
+    let buffer: Buffer;
+    try {
+        buffer = await browserWindow.webContents.printToPDF({
+            landscape: opts.landscape,
+            pageSize: opts.pageSize,
+            generateDocumentOutline: true,
+            generateTaggedPDF: true,
+            printBackground: true,
+            displayHeaderFooter: true,
+            headerTemplate: `<div></div>`,
+            footerTemplate: `
+                <div class="pageNumber" style="width: 100%; text-align: center; font-size: 10pt;">
+                </div>
+            `
+        });
+    } catch (e) {
+        dialog.showErrorBox(t("pdf.unable-to-export-title"), t("pdf.unable-to-export-message"));
+        return;
+    }
+
+    try {
+        await fs.writeFile(filePath, buffer);
+    } catch (e) {
+        dialog.showErrorBox(t("pdf.unable-to-export-title"), t("pdf.unable-to-save-message"));
+        return;
+    }
+
+    shell.openPath(filePath);
 });
 
 async function createMainWindow(app: App) {
@@ -116,10 +172,10 @@ function getWindowExtraOpts() {
     const extraOpts: Partial<BrowserWindowConstructorOptions> = {};
 
     if (!optionService.getOptionBool("nativeTitleBarVisible")) {
-        if (isMac()) {
+        if (isMac) {
             extraOpts.titleBarStyle = "hiddenInset";
             extraOpts.titleBarOverlay = true;
-        } else if (isWindows()) {
+        } else if (isWindows) {
             extraOpts.titleBarStyle = "hidden";
             extraOpts.titleBarOverlay = true;
         } else {
@@ -129,7 +185,7 @@ function getWindowExtraOpts() {
     }
 
     // Window effects (Mica)
-    if (optionService.getOptionBool("backgroundEffects") && isWindows()) {
+    if (optionService.getOptionBool("backgroundEffects") && isWindows) {
         extraOpts.backgroundMaterial = "auto";
     }
 
@@ -169,7 +225,7 @@ function configureWebContents(webContents: WebContents, spellcheckEnabled: boole
 }
 
 function getIcon() {
-    return path.join(dirname(fileURLToPath(import.meta.url)), "../../images/app-icons/png/256x256" + (env.isDev() ? "-dev" : "") + ".png");
+    return path.join(dirname(fileURLToPath(import.meta.url)), "../../images/app-icons/png/256x256" + (isDev ? "-dev" : "") + ".png");
 }
 
 async function createSetupWindow() {

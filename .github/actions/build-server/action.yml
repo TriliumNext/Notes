@@ -1,0 +1,31 @@
+inputs:
+  os:
+    description: "One of the supported platforms: windows"
+    required: true
+  arch:
+    description: "The architecture to build for: x64, arm64"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set up node & dependencies
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: "npm"
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+    - name: Run Linux server build
+      env:
+        MATRIX_ARCH: ${{ inputs.arch }}
+      shell: bash
+      run: |
+        npm run chore:update-build-info
+        ./bin/build-server.sh
+    - name: Prepare artifacts
+      shell: bash
+      run: |
+        mkdir -p upload
+        file=$(find dist -name '*.tar.xz' -print -quit)
+        cp "$file" "upload/TriliumNextNotes-Server-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.tar.xz"

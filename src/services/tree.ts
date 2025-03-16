@@ -145,8 +145,8 @@ function sortNotes(parentNoteId: string, customSortBy: string = "title", reverse
                 return compare(bottomBEl, bottomAEl) * (reverse ? -1 : 1);
             }
 
-            const customAEl = fetchValue(a, customSortBy);
-            const customBEl = fetchValue(b, customSortBy);
+            const customAEl = fetchValue(a, customSortBy) ?? fetchValue(a, "title");
+            const customBEl = fetchValue(b, customSortBy) ?? fetchValue(b, "title");
 
             if (customAEl !== customBEl) {
                 return compare(customAEl, customBEl);

@@ -10,9 +10,9 @@ import type NoteContext from "../components/note_context.js";
 class NoteContextAwareWidget extends BasicWidget {
     protected noteContext?: NoteContext;
 
-    isNoteContext(ntxId: string | null | undefined) {
+    isNoteContext(ntxId: string | string[] | null | undefined) {
         if (Array.isArray(ntxId)) {
-            return this.noteContext && ntxId.includes(this.noteContext.ntxId);
+            return this.noteContext && this.noteContext.ntxId && ntxId.includes(this.noteContext.ntxId);
         } else {
             return this.noteContext && this.noteContext.ntxId === ntxId;
         }
@@ -54,7 +54,7 @@ class NoteContextAwareWidget extends BasicWidget {
      *
      * @returns true when an active note exists
      */
-    isEnabled() {
+    isEnabled(): boolean | null | undefined {
         return !!this.note;
     }
 
@@ -125,7 +125,7 @@ class NoteContextAwareWidget extends BasicWidget {
         }
     }
 
-    async frocaReloadedEvent() {
+    async frocaReloadedEvent(): Promise<void> {
         await this.refresh();
     }
 }

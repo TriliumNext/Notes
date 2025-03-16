@@ -7,9 +7,9 @@ const TPL = `
 <div class="options-section">
     <h4>${t("vacuum_database.title")}</h4>
 
-    <p>${t("vacuum_database.description")}</p>
+    <p class="form-text">${t("vacuum_database.description")}</p>
 
-    <button class="vacuum-database-button btn">${t("vacuum_database.button_text")}</button>
+    <button class="vacuum-database-button btn btn-secondary">${t("vacuum_database.button_text")}</button>
 </div>`;
 
 export default class VacuumDatabaseOptions extends OptionsWidget {

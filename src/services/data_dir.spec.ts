@@ -77,6 +77,11 @@ describe("data_dir.ts unit tests", async () => {
             ["w/ darwin it should return '~/Library/Application Support'", ["darwin", undefined], "/Users/mock/Library/Application Support", "/Users/mock"]
         ];
 
+        beforeEach(() => {
+            // make sure OS does not set its own process.env.APPDATA, so that we can use our own supplied value
+            delete process.env.APPDATA;
+        });
+
         testCases.forEach((testCase) => {
             const [testDescription, fnValues, expected, osHomedirMockValue] = testCase;
             return it(testDescription, () => {
@@ -267,7 +272,7 @@ describe("data_dir.ts unit tests", async () => {
     });
 
     describe("#getDataDirs()", () => {
-        const envKeys: Omit<keyof ReturnType<typeof getDataDirs>, "TRILIUM_DATA_DIR">[] = ["DOCUMENT_PATH", "BACKUP_DIR", "LOG_DIR", "ANONYMIZED_DB_DIR", "CONFIG_INI_PATH"];
+        const envKeys: Omit<keyof ReturnType<typeof getDataDirs>, "TRILIUM_DATA_DIR">[] = ["DOCUMENT_PATH", "BACKUP_DIR", "LOG_DIR", "ANONYMIZED_DB_DIR", "CONFIG_INI_PATH", "TMP_DIR"];
 
         const setMockedEnv = (prefix: string | null) => {
             envKeys.forEach((key) => {

@@ -206,7 +206,7 @@ async function getProxyAgent(opts: ClientOpts) {
 async function getClient(opts: ClientOpts): Promise<Client> {
     // it's not clear how to explicitly configure proxy (as opposed to system proxy),
     // so in that case, we always use node's modules
-    if (isElectron() && !opts.proxy) {
+    if (isElectron && !opts.proxy) {
         return (await import("electron")).net as Client;
     } else {
         const { protocol } = url.parse(opts.url);

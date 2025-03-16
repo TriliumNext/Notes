@@ -8,6 +8,7 @@ export interface FBranchRow {
     prefix?: string;
     isExpanded?: boolean;
     fromSearchNote: boolean;
+    isDeleted?: boolean;
 }
 
 /**

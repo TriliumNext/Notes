@@ -9,20 +9,20 @@ const TPL = `
     <p>${t("highlights_list.description")}</p>
 
     <div>
-        <label><input type="checkbox" class="highlights-list-check form-check-input" value="bold"> ${t("highlights_list.bold")} &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check form-check-input" value="italic"> ${t("highlights_list.italic")} &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check form-check-input" value="underline"> ${t("highlights_list.underline")} &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check form-check-input" value="color"> ${t("highlights_list.color")} &nbsp;</label>
-        <label><input type="checkbox" class="highlights-list-check form-check-input" value="bgColor"> ${t("highlights_list.bg_color")} &nbsp;</label>
+        <label class="tn-checkbox"><input type="checkbox" class="highlights-list-check form-check-input" value="bold"> ${t("highlights_list.bold")}</label>
+        <label class="tn-checkbox"><input type="checkbox" class="highlights-list-check form-check-input" value="italic"> ${t("highlights_list.italic")}</label>
+        <label class="tn-checkbox"><input type="checkbox" class="highlights-list-check form-check-input" value="underline"> ${t("highlights_list.underline")}</label>
+        <label class="tn-checkbox"><input type="checkbox" class="highlights-list-check form-check-input" value="color"> ${t("highlights_list.color")}</label>
+        <label class="tn-checkbox"><input type="checkbox" class="highlights-list-check form-check-input" value="bgColor"> ${t("highlights_list.bg_color")}</label>
     </div>
 
     <hr />
 
     <h5>${t("highlights_list.visibility_title")}</h5>
 
-    <p>${t("highlights_list.visibility_description")}</p>
+    <p class="form-text">${t("highlights_list.visibility_description")}</p>
 
-    <p>${t("highlights_list.shortcut_info")}</p>
+    <p class="form-text">${t("highlights_list.shortcut_info")}</p>
 </div>`;
 
 export default class HighlightsListOptions extends OptionsWidget {

@@ -1,0 +1,94 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../style.css">
+    <base target="_parent">
+    <title data-trilium-title>FAQ</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>FAQ</h1>
+
+      <div class="ck-content">
+        <h2>macOS support</h2>
+        <p>Originally, Trilium Notes considered the macOS build unsupported. TriliumNext
+          commits to make the experience on macOS as good as possible.</p>
+        <p>if you find any platform-specific issues, feel free to <a href="Troubleshooting/Reporting%20issues.html">report them</a>.</p>
+        <h2>Translation / localisation support</h2>
+        <p>The original Trilium Notes application did not support multiple languages.
+          Since we believe that internationalisation is a core part of an application,
+          we have added support for it.</p>
+        <p>Contributions to translations are welcome.</p>
+        <h2>Multi-user support</h2>
+        <p>Common request is to allow multiple users collaborate, share notes etc.
+          So far I'm resisting this because of these reasons:</p>
+        <ul>
+          <li>it's a huge feature, or rather a Pandora's box of collaboration features
+            like user management, permissions, conflict resolution, real-time editing
+            of a note by multiple people etc. This would be a huge amount of work.
+            Trilium Notes is project made mostly by one person in free time and that's
+            unlikely to change in the future.</li>
+          <li>given its size it would probably pivot the attention away from my main
+            focus which is a personal note-taking</li>
+          <li>the assumption that only single person has access to the app simplifies
+            many things, or just outright makes them possible. In multi-user app, our
+            <a
+            href="Note%20Types/Code/Scripts.html">scripting</a>support would be a XSS security hole, while with the single
+              user assumption it's an endless customizable tool.</li>
+        </ul>
+        <h2>How to open multiple documents in one Trilium instance</h2>
+        <p>This is normally not supported - one Trilium process can open only a single
+          instance of a <a href="Advanced%20Usage/Database.html">database</a>. However,
+          you can run two Trilium processes (from one installation), each connected
+          to a separate document. To achieve this, you need to set a location for
+          the <a href="Installation%20%26%20Setup/Data%20directory.html">data directory</a> in
+          the <code>TRILIUM_DATA_DIR</code> environment variable and separate port
+          on <code>TRILIUM_PORT</code> environment variable. How to do that depends
+          on the platform, in Unix-based systems you can achieve that by running
+          command such as this:</p><pre><code class="language-text-x-trilium-auto">TRILIUM_DATA_DIR=/home/me/path/to/data/dir TRILIUM_PORT=12345 trilium </code></pre>
+        <p>You can save this command into a <code>.sh</code> script file or make an
+          alias. Do this similarly for a second instance with different data directory
+          and port.</p>
+        <h2>Can I use Dropbox / Google Drive / OneDrive to sync data across multiple computers.</h2>
+        <p>No.</p>
+        <p>These general purpose sync apps are not suitable to sync database files
+          which are open and being worked on by another application. The result is
+          that they will corrupt the database file, resulting in data loss and this
+          message in the Trilium logs:</p><pre><code class="language-text-x-trilium-auto">SqliteError: database disk image is malformed</code></pre>
+        <p>The only supported way to sync Trilium's data across the network is to
+          use a <a href="Installation%20%26%20Setup/Synchronization.html">sync/web server</a>.</p>
+        <h2>Why database instead of flat files?</h2>
+        <p>Trilium stores notes in a <a href="Advanced%20Usage/Database.html">database</a> which
+          is an SQLite database. People often ask why doesn't Trilium rather use
+          flat files for note storage - it's fair question since flat files are easily
+          interoperable, work with SCM/git etc.</p>
+        <p>Short answer is that file systems are simply not powerful enough for what
+          we want to achieve with Trilium. Using filesystem would mean fewer features
+          with probably more problems.</p>
+        <p>More detailed answer:</p>
+        <ul>
+          <li><a href="Basic%20Concepts/Note/Cloning%20Notes.html">clones</a> are what
+            you might call "hard directory link" in filesystem lingo, but this concept
+            is not implemented in any filesystem</li>
+          <li>filesystems make a distinction between directory and file while there's
+            intentionally no such difference in Trilium</li>
+          <li>files are stored in no particular order and user can't change this</li>
+          <li>Trilium allows storing note <a href="Advanced%20Usage/Attributes.html">attributes</a> which
+            could be represented in extended user attributes but their support differs
+            greatly among different filesystems / operating systems</li>
+          <li>Trilium makes links / relations between different notes which can be quickly
+            retrieved / navigated (e.g. for <a href="Advanced%20Usage/Note%20Map.html">note map</a>).
+            There's no such support in file systems which means these would have to
+            be stored in some kind of side-car files (mini-databases).</li>
+          <li>Filesystems are generally not transactional. While this is not completely
+            required for a note-taking application, having transactions make it way
+            easier to keep notes and their metadata in predictable and consistent state.</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

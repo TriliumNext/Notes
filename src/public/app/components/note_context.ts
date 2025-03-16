@@ -9,8 +9,9 @@ import hoistedNoteService from "../services/hoisted_note.js";
 import options from "../services/options.js";
 import type { ViewScope } from "../services/link.js";
 import type FNote from "../entities/fnote.js";
+import type TypeWidget from "../widgets/type_widgets/type_widget.js";
 
-interface SetNoteOpts {
+export interface SetNoteOpts {
     triggerSwitchEvent?: unknown;
     viewScope?: ViewScope;
 }
@@ -163,6 +164,7 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
                     noteId: this.note?.noteId,
                     notePath: this.notePath
                 });
+                utils.reloadTray();
             }
         }, 5000);
     }
@@ -287,8 +289,8 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
     hasNoteList() {
         return (
             this.note &&
-            this.viewScope?.viewMode === "default" &&
-            this.note.hasChildren() &&
+            ["default", "contextual-help"].includes(this.viewScope?.viewMode ?? "") &&
+            (this.note.hasChildren() || this.note.getLabelValue("viewType") === "calendar") &&
             ["book", "text", "code"].includes(this.note.type) &&
             this.note.mime !== "text/x-sqlite;schema=trilium" &&
             !this.note.isLabelTruthy("hideChildrenOverview")
@@ -318,6 +320,15 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
         );
     }
 
+    /**
+     * Returns a promise which will retrieve the JQuery element of the content of this note context.
+     *
+     * Do note that retrieving the content element needs to be handled by the type widget, which is the one which
+     * provides the content element by listening to the `executeWithContentElement` event. Not all note types support
+     * this.
+     *
+     * If no content could be determined `null` is returned instead.
+     */
     async getContentElement() {
         return this.timeout<JQuery<HTMLElement>>(
             new Promise((resolve) =>
@@ -331,7 +342,7 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
 
     async getTypeWidget() {
         return this.timeout(
-            new Promise((resolve) =>
+            new Promise<TypeWidget | null>((resolve) =>
                 appContext.triggerCommand("executeWithTypeWidget", {
                     resolve,
                     ntxId: this.ntxId
@@ -358,7 +369,8 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
 
         const { note, viewScope } = this;
 
-        let title = viewScope?.viewMode === "default" ? note.title : `${note.title}: ${viewScope?.viewMode}`;
+        const isNormalView = (viewScope?.viewMode === "default" || viewScope?.viewMode === "contextual-help");
+        let title = (isNormalView ? note.title : `${note.title}: ${viewScope?.viewMode}`);
 
         if (viewScope?.attachmentId) {
             // assuming the attachment has been already loaded

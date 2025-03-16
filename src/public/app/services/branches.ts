@@ -6,7 +6,6 @@ import hoistedNoteService from "./hoisted_note.js";
 import ws from "./ws.js";
 import appContext from "../components/app_context.js";
 import { t } from "./i18n.js";
-import type { Node } from "./tree.js";
 import type { ResolveOptions } from "../widgets/dialogs/delete_notes.js";
 
 // TODO: Deduplicate type with server
@@ -153,14 +152,14 @@ async function deleteNotes(branchIdsToDelete: string[], forceDeleteAllClones = f
 async function activateParentNotePath() {
     // this is not perfect, maybe we should find the next/previous sibling, but that's more complex
     const activeContext = appContext.tabManager.getActiveContext();
-    const parentNotePathArr = activeContext.notePathArray.slice(0, -1);
+    const parentNotePathArr = activeContext?.notePathArray.slice(0, -1);
 
-    if (parentNotePathArr.length > 0) {
-        activeContext.setNote(parentNotePathArr.join("/"));
+    if (parentNotePathArr && parentNotePathArr.length > 0) {
+        activeContext?.setNote(parentNotePathArr.join("/"));
     }
 }
 
-async function moveNodeUpInHierarchy(node: Node) {
+async function moveNodeUpInHierarchy(node: Fancytree.FancytreeNode) {
     if (hoistedNoteService.isHoistedNode(node) || hoistedNoteService.isTopLevelNode(node) || node.getParent().data.noteType === "search") {
         return;
     }
@@ -253,7 +252,7 @@ async function cloneNoteToBranch(childNoteId: string, parentBranchId: string, pr
     }
 }
 
-async function cloneNoteToParentNote(childNoteId: string, parentNoteId: string, prefix: string) {
+async function cloneNoteToParentNote(childNoteId: string, parentNoteId: string, prefix?: string) {
     const resp = await server.put<Response>(`notes/${childNoteId}/clone-to-note/${parentNoteId}`, {
         prefix: prefix
     });

@@ -44,8 +44,8 @@ test("Highlights list is displayed", async ({ page, context }) => {
 
     await expect(app.sidebar).toContainText("Highlights List");
     const rootList = app.sidebar.locator(".highlights-list ol");
-    let index=0;
-    for (const highlightedEl of [ "Bold 1", "Italic 1", "Underline 1", "Colored text 1", "Background text 1", "Bold 2", "Italic 2", "Underline 2", "Colored text 2", "Background text 2" ]) {
+    let index = 0;
+    for (const highlightedEl of ["Bold 1", "Italic 1", "Underline 1", "Colored text 1", "Background text 1", "Bold 2", "Italic 2", "Underline 2", "Colored text 2", "Background text 2"]) {
         await expect(rootList.locator("li").nth(index++)).toContainText(highlightedEl);
     }
 });
@@ -54,7 +54,7 @@ test("Displays math popup", async ({ page, context }) => {
     const app = new App(page, context);
     await app.goto();
     await app.goToNoteInNewTab("Empty text");
-    const noteContent = app.currentNoteSplit.locator(".note-detail-editable-text-editor")
+    const noteContent = app.currentNoteSplit.locator(".note-detail-editable-text-editor");
     await noteContent.fill("Hello world");
     await noteContent.press("ControlOrMeta+M");
 

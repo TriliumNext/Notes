@@ -39,7 +39,9 @@ test("Displays lint errors for backend script", async ({ page, context }) => {
 });
 
 async function expectTooltip(page: Page, tooltip: string) {
-    await expect(page.locator(".CodeMirror-lint-tooltip:visible", {
-        "hasText": tooltip
-    })).toBeVisible();
+    await expect(
+        page.locator(".CodeMirror-lint-tooltip:visible", {
+            hasText: tooltip
+        })
+    ).toBeVisible();
 }

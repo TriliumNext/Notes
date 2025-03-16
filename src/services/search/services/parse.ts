@@ -427,7 +427,7 @@ export interface ParseOpts {
     fulltextTokens: TokenData[];
     expressionTokens: TokenStructure;
     searchContext: SearchContext;
-    originalQuery?: string
+    originalQuery?: string;
 }
 
 function parse({ fulltextTokens, expressionTokens, searchContext }: ParseOpts) {
@@ -450,7 +450,7 @@ function parse({ fulltextTokens, expressionTokens, searchContext }: ParseOpts) {
 
     if (searchContext.limit && !searchContext.orderBy) {
         const filterExp = exp;
-        exp = new OrderByAndLimitExp([], searchContext.limit || undefined );
+        exp = new OrderByAndLimitExp([], searchContext.limit || undefined);
         (exp as any).subExpression = filterExp;
     }
 

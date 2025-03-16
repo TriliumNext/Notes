@@ -96,7 +96,7 @@ export default class NotePathsWidget extends RightPanelWidget {
 
         const $noteLink = await linkService.createLink(notePath, { title });
 
-        $noteLink.find("a").addClass("no-tooltip-preview");
+        $noteLink.find("a").addClass("no-tooltip-preview tn-link");
 
         const icons = [];
 
@@ -130,8 +130,7 @@ export default class NotePathsWidget extends RightPanelWidget {
     }
 
     entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
-        if (loadResults.getBranchRows().find((branch) => branch.noteId === this.noteId) ||
-            (this.noteId != null && loadResults.isNoteReloaded(this.noteId))) {
+        if (loadResults.getBranchRows().find((branch) => branch.noteId === this.noteId) || (this.noteId != null && loadResults.isNoteReloaded(this.noteId))) {
             this.refresh();
         }
     }

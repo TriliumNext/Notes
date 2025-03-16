@@ -15,6 +15,7 @@ import options from "../../services/options.js";
 import toast from "../../services/toast.js";
 import { getMermaidConfig } from "../mermaid.js";
 import { normalizeMimeTypeForCKEditor } from "../../services/mime_type_definitions.js";
+import { buildConfig, buildToolbarConfig } from "./ckeditor/config.js";
 
 const ENABLE_INSPECTOR = false;
 
@@ -88,7 +89,7 @@ const TPL = `
     }
     </style>
 
-    <div class="note-detail-editable-text-editor" tabindex="300"></div>
+    <div class="note-detail-editable-text-editor use-tn-links" tabindex="300"></div>
 </div>
 `;
 
@@ -139,8 +140,6 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         const isClassicEditor = utils.isMobile() || options.get("textNoteEditorType") === "ckeditor-classic";
         const editorClass = isClassicEditor ? CKEditor.DecoupledEditor : CKEditor.BalloonEditor;
 
-        const codeBlockLanguages = buildListOfLanguages();
-
         // CKEditor since version 12 needs the element to be visible before initialization. At the same time,
         // we want to avoid flicker - i.e., show editor only once everything is ready. That's why we have separate
         // display of $widget in both branches.
@@ -183,23 +182,31 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
 
         this.watchdog.setCreator(async (elementOrData, editorConfig) => {
             logInfo("Creating new CKEditor");
-            const extraOpts = {};
-            if (isClassicEditor) {
-                extraOpts.toolbar = {
-                    shouldNotGroupWhenFull: utils.isDesktop() && options.get("textNoteEditorMultilineToolbar") === "true"
-                };
-            }
 
-            const editor = await editorClass.create(elementOrData, {
+            const finalConfig = {
                 ...editorConfig,
-                ...extraOpts,
+                ...buildConfig(),
+                ...buildToolbarConfig(isClassicEditor),
                 htmlSupport: {
                     allow: JSON.parse(options.get("allowedHtmlTags")),
                     styles: true,
                     classes: true,
                     attributes: true
                 }
-            });
+            };
+
+            const contentLanguage = this.note.getLabelValue("language");
+            if (contentLanguage) {
+                finalConfig.language = {
+                    ui: (typeof finalConfig.language === "string" ? finalConfig.language : "en"),
+                    content: contentLanguage
+                }
+                this.contentLanguage = contentLanguage;
+            } else {
+                this.contentLanguage = null;
+            }
+
+            const editor = await editorClass.create(elementOrData, finalConfig);
 
             const notificationsPlugin = editor.plugins.get("Notification");
             notificationsPlugin.on("show:warning", (evt, data) => {
@@ -227,7 +234,9 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
                 }
 
                 $classicToolbarWidget.empty();
-                $classicToolbarWidget[0].appendChild(editor.ui.view.toolbar.element);
+                if ($classicToolbarWidget.length) {
+                    $classicToolbarWidget[0].appendChild(editor.ui.view.toolbar.element);
+                }
 
                 if (utils.isMobile()) {
                     $classicToolbarWidget.addClass("visible");
@@ -244,11 +253,15 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
             return editor;
         });
 
+        await this.createEditor();
+    }
+
+    async createEditor() {
         await this.watchdog.create(this.$editor[0], {
             placeholder: t("editable_text.placeholder"),
             mention: mentionSetup,
             codeBlock: {
-                languages: codeBlockLanguages
+                languages: buildListOfLanguages()
             },
             math: {
                 engine: "katex",
@@ -267,7 +280,15 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
     async doRefresh(note) {
         const blob = await note.getBlob();
 
-        await this.spacedUpdate.allowUpdateWithoutChange(() => this.watchdog.editor.setData(blob.content || ""));
+        await this.spacedUpdate.allowUpdateWithoutChange(async () => {
+            const data = blob.content || "";
+            const newContentLanguage = this.note.getLabelValue("language");
+            if (this.contentLanguage !== newContentLanguage) {
+                await this.reinitialize(data);
+            } else {
+                this.watchdog.editor.setData(data);
+            }
+        });
     }
 
     getData() {
@@ -292,7 +313,7 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         this.watchdog?.editor.editing.view.focus();
     }
 
-    show() {}
+    show() { }
 
     getEditor() {
         return this.watchdog?.editor;
@@ -339,14 +360,14 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         this.addTextToEditor(text);
     }
 
-    async addLink(notePath, linkTitle) {
+    async addLink(notePath, linkTitle, externalLink = false) {
         await this.initialized;
 
         if (linkTitle) {
             if (this.hasSelection()) {
-                this.watchdog.editor.execute("link", `#${notePath}`);
+                this.watchdog.editor.execute("link", externalLink ? `${notePath}` : `#${notePath}`);
             } else {
-                await this.addLinkToEditor(`#${notePath}`, linkTitle);
+                await this.addLinkToEditor(externalLink ? `${notePath}` : `#${notePath}`, linkTitle);
             }
         } else {
             this.watchdog.editor.execute("referenceLink", { href: "#" + notePath });
@@ -470,4 +491,20 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
     async refreshIncludedNoteEvent({ noteId }) {
         this.refreshIncludedNote(this.$editor, noteId);
     }
+
+    async reinitialize(data) {
+        if (!this.watchdog) {
+            return;
+        }
+
+        this.watchdog.destroy();
+        await this.createEditor();
+        this.watchdog.editor.setData(data);
+    }
+
+    async onLanguageChanged() {
+        const data = this.watchdog.editor.getData();
+        await this.reinitialize(data);
+    }
+
 }

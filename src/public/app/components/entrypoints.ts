@@ -13,7 +13,7 @@ import { t } from "../services/i18n.js";
 import type FNote from "../entities/fnote.js";
 
 // TODO: Move somewhere else nicer.
-export type SqlExecuteResults = unknown[];
+export type SqlExecuteResults = string[][][];
 
 // TODO: Deduplicate with server.
 interface SqlExecuteResponse {

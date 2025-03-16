@@ -86,6 +86,9 @@ import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolb
 import options from "../services/options.js";
 import utils from "../services/utils.js";
 import RightPaneToggleWidget from "../widgets/buttons/right_pane_toggle.js";
+import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
+import ContextualHelpButton from "../widgets/floating_buttons/help_button.js";
+import CloseZenButton from "../widgets/close_zen_button.js";
 
 export default class DesktopLayout {
     constructor(customWidgets) {
@@ -202,8 +205,10 @@ export default class DesktopLayout {
                                                                 .child(new ShowHighlightsListWidgetButton())
                                                                 .child(new CodeButtonsWidget())
                                                                 .child(new RelationMapButtons())
+                                                                .child(new GeoMapButtons())
                                                                 .child(new CopyImageReferenceButton())
                                                                 .child(new SvgExportButton())
+                                                                .child(new ContextualHelpButton())
                                                                 .child(new HideFloatingButtonsButton())
                                                         )
                                                         .child(new MermaidWidget())
@@ -264,7 +269,8 @@ export default class DesktopLayout {
             .child(new DeleteNotesDialog())
             .child(new InfoDialog())
             .child(new ConfirmDialog())
-            .child(new PromptDialog());
+            .child(new PromptDialog())
+            .child(new CloseZenButton());
     }
 
     #buildLauncherPane(isHorizontal) {

@@ -79,7 +79,7 @@ async function renderAttributes(attributes: FAttribute[], renderIsInheritable: b
     return $container;
 }
 
-const HIDDEN_ATTRIBUTES = ["originalFileName", "fileSize", "template", "inherit", "cssClass", "iconClass", "pageSize", "viewType"];
+const HIDDEN_ATTRIBUTES = ["originalFileName", "fileSize", "template", "inherit", "cssClass", "iconClass", "pageSize", "viewType", "geolocation", "docName"];
 
 async function renderNormalAttributes(note: FNote) {
     const promotedDefinitionAttributes = note.getPromotedDefinitionAttributes();

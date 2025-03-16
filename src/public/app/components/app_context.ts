@@ -18,11 +18,13 @@ import type NoteDetailWidget from "../widgets/note_detail.js";
 import type { ResolveOptions } from "../widgets/dialogs/delete_notes.js";
 import type { PromptDialogOptions } from "../widgets/dialogs/prompt.js";
 import type { ConfirmWithMessageOptions, ConfirmWithTitleOptions } from "../widgets/dialogs/confirm.js";
-import type { Node } from "../services/tree.js";
 import type LoadResults from "../services/load_results.js";
 import type { Attribute } from "../services/attribute_parser.js";
 import type NoteTreeWidget from "../widgets/note_tree.js";
 import type { default as NoteContext, GetTextEditorCallback } from "./note_context.js";
+import type { ContextMenuEvent } from "../menus/context_menu.js";
+import type TypeWidget from "../widgets/type_widgets/type_widget.js";
+import type EditableTextTypeWidget from "../widgets/type_widgets/editable_text.js";
 
 interface Layout {
     getRootWidget: (appContext: AppContext) => RootWidget;
@@ -47,21 +49,21 @@ export interface CommandData {
  * Represents a set of commands that are triggered from the context menu, providing information such as the selected note.
  */
 export interface ContextMenuCommandData extends CommandData {
-    node: Node;
-    notePath: string;
+    node: Fancytree.FancytreeNode;
+    notePath?: string;
     noteId?: string;
-    selectedOrActiveBranchIds: any; // TODO: Remove any once type is defined
+    selectedOrActiveBranchIds?: any; // TODO: Remove any once type is defined
     selectedOrActiveNoteIds: any; // TODO: Remove  any once type is defined
 }
 
 export interface NoteCommandData extends CommandData {
-    notePath: string;
+    notePath?: string;
     hoistedNoteId?: string;
     viewScope?: ViewScope;
 }
 
-export interface ExecuteCommandData extends CommandData {
-    resolve: unknown;
+export interface ExecuteCommandData<T> extends CommandData {
+    resolve: (data: T) => void;
 }
 
 /**
@@ -69,15 +71,24 @@ export interface ExecuteCommandData extends CommandData {
  */
 export type CommandMappings = {
     "api-log-messages": CommandData;
-    focusOnDetail: Required<CommandData>;
+    focusTree: CommandData;
+    focusOnTitle: CommandData;
+    focusOnDetail: CommandData;
     focusOnSearchDefinition: Required<CommandData>;
     searchNotes: CommandData & {
         searchString?: string;
         ancestorNoteId?: string | null;
     };
+    closeTocCommand: CommandData;
+    closeHlt: CommandData;
     showLaunchBarSubtree: CommandData;
+    showRevisions: CommandData;
     showOptions: CommandData & {
         section: string;
+    };
+    showExportDialog: CommandData & {
+        notePath: string;
+        defaultType: "single" | "subtree";
     };
     showDeleteNotesDialog: CommandData & {
         branchIdsToDelete: string[];
@@ -97,15 +108,20 @@ export type CommandMappings = {
     showPromptDialog: PromptDialogOptions;
     showInfoDialog: ConfirmWithMessageOptions;
     showConfirmDialog: ConfirmWithMessageOptions;
+    showRecentChanges: CommandData & { ancestorNoteId: string };
+    showImportDialog: CommandData & { noteId: string };
     openNewNoteSplit: NoteCommandData;
     openInWindow: NoteCommandData;
     openNoteInNewTab: CommandData;
     openNoteInNewSplit: CommandData;
     openNoteInNewWindow: CommandData;
+    openAboutDialog: CommandData;
+    hideFloatingButtons: {};
     hideLeftPane: CommandData;
     showLeftPane: CommandData;
-    toggleLeftPane: CommandData;
-    toggleRightPane: CommandData;
+    hoistNote: CommandData & { noteId: string };
+    leaveProtectedSession: CommandData;
+    enterProtectedSession: CommandData;
 
     openInTab: ContextMenuCommandData;
     openNoteInSplit: ContextMenuCommandData;
@@ -113,9 +129,14 @@ export type CommandMappings = {
     insertNoteAfter: ContextMenuCommandData;
     insertChildNote: ContextMenuCommandData;
     delete: ContextMenuCommandData;
+    editNoteTitle: ContextMenuCommandData;
     protectSubtree: ContextMenuCommandData;
     unprotectSubtree: ContextMenuCommandData;
-    openBulkActionsDialog: ContextMenuCommandData;
+    openBulkActionsDialog:
+    | ContextMenuCommandData
+    | {
+        selectedOrActiveNoteIds?: string[];
+    };
     editBranchPrefix: ContextMenuCommandData;
     convertNoteToAttachment: ContextMenuCommandData;
     duplicateSubtree: ContextMenuCommandData;
@@ -134,6 +155,11 @@ export type CommandMappings = {
     importIntoNote: ContextMenuCommandData;
     exportNote: ContextMenuCommandData;
     searchInSubtree: ContextMenuCommandData;
+    moveNoteUp: ContextMenuCommandData;
+    moveNoteDown: ContextMenuCommandData;
+    moveNoteUpInHierarchy: ContextMenuCommandData;
+    moveNoteDownInHierarchy: ContextMenuCommandData;
+    selectAllNotesInParent: ContextMenuCommandData;
 
     addNoteLauncher: ContextMenuCommandData;
     addScriptLauncher: ContextMenuCommandData;
@@ -147,12 +173,16 @@ export type CommandMappings = {
         callback: (value: NoteDetailWidget | PromiseLike<NoteDetailWidget>) => void;
     };
     executeWithTextEditor: CommandData &
-        ExecuteCommandData & {
+        ExecuteCommandData<TextEditor> & {
             callback?: GetTextEditorCallback;
         };
-    executeWithCodeEditor: CommandData & ExecuteCommandData;
-    executeWithContentElement: CommandData & ExecuteCommandData;
-    executeWithTypeWidget: CommandData & ExecuteCommandData;
+    executeWithCodeEditor: CommandData & ExecuteCommandData<null>;
+    /**
+     * Called upon when attempting to retrieve the content element of a {@link NoteContext}.
+     * Generally should not be invoked manually, as it is used by {@link NoteContext.getContentElement}.
+     */
+    executeWithContentElement: CommandData & ExecuteCommandData<JQuery<HTMLElement>>;
+    executeWithTypeWidget: CommandData & ExecuteCommandData<TypeWidget | null>;
     addTextToActiveEditor: CommandData & {
         text: string;
     };
@@ -162,6 +192,7 @@ export type CommandMappings = {
     importMarkdownInline: CommandData;
     showPasswordNotSet: CommandData;
     showProtectedSessionPasswordDialog: CommandData;
+    showUploadAttachmentsDialog: CommandData & { noteId: string };
     closeProtectedSessionPasswordDialog: CommandData;
     copyImageReferenceToClipboard: CommandData;
     copyImageToClipboard: CommandData;
@@ -185,6 +216,7 @@ export type CommandMappings = {
         screen: Screen;
     };
     closeTab: CommandData;
+    closeToc: CommandData;
     closeOtherTabs: CommandData;
     closeRightTabs: CommandData;
     closeAllTabs: CommandData;
@@ -192,11 +224,34 @@ export type CommandMappings = {
     moveTabToNewWindow: CommandData;
     copyTabToNewWindow: CommandData;
     closeActiveTab: CommandData & {
-        $el: JQuery<HTMLElement>
-    },
+        $el: JQuery<HTMLElement>;
+    };
     setZoomFactorAndSave: {
         zoomFactor: string;
-    }
+    };
+
+    reEvaluateRightPaneVisibility: CommandData;
+    runActiveNote: CommandData;
+    scrollContainerToCommand: CommandData & {
+        position: number;
+    };
+    scrollToEnd: CommandData;
+    closeThisNoteSplit: CommandData;
+    moveThisNoteSplit: CommandData & { isMovingLeft: boolean };
+
+    // Geomap
+    deleteFromMap: { noteId: string };
+    openGeoLocation: { noteId: string; event: JQuery.MouseDownEvent };
+
+    toggleZenMode: CommandData;
+
+    updateAttributeList: CommandData & { attributes: Attribute[] };
+    saveAttributes: CommandData;
+    reloadAttributes: CommandData;
+    refreshNoteList: CommandData & { noteId: string };
+
+    refreshResults: {};
+    refreshSearchDefinition: {};
 };
 
 type EventMappings = {
@@ -231,9 +286,15 @@ type EventMappings = {
     activeContextChanged: {
         noteContext: NoteContext;
     };
+    beforeNoteSwitch: {
+        noteContext: NoteContext;
+    };
+    beforeNoteContextRemove: {
+        ntxIds: string[];
+    };
     noteSwitched: {
         noteContext: NoteContext;
-        notePath: string;
+        notePath?: string | null;
     };
     noteSwitchedAndActivatedEvent: {
         noteContext: NoteContext;
@@ -248,19 +309,34 @@ type EventMappings = {
     reEvaluateHighlightsListWidgetVisibility: {
         noteId: string | undefined;
     };
+    reEvaluateTocWidgetVisibility: {
+        noteId: string | undefined;
+    };
     showHighlightsListWidget: {
         noteId: string;
     };
+    showTocWidget: {
+        noteId: string;
+    };
+    showSearchError: {
+        error: string;
+    };
+    searchRefreshed: { ntxId?: string | null };
     hoistedNoteChanged: {
-        ntxId: string;
+        noteId: string;
+        ntxId: string | null;
     };
     contextsReopenedEvent: {
         mainNtxId: string;
         tabPosition: number;
     };
+    noteDetailRefreshed: {
+        ntxId?: string | null;
+    };
     noteContextReorderEvent: {
         oldMainNtxId: string;
         newMainNtxId: string;
+        ntxIdsInOrder: string[];
     };
     newNoteContextCreated: {
         noteContext: NoteContext;
@@ -269,8 +345,29 @@ type EventMappings = {
         ntxIds: string[];
     };
     exportSvg: {
-        ntxId: string;
-    }
+        ntxId: string | null | undefined;
+    };
+    geoMapCreateChildNote: {
+        ntxId: string | null | undefined; // TODO: deduplicate ntxId
+    };
+    tabReorder: {
+        ntxIdsInOrder: string[];
+    };
+    refreshNoteList: {
+        noteId: string;
+    };
+    noteTypeMimeChanged: { noteId: string };
+    zenModeChanged: { isEnabled: boolean };
+    relationMapCreateChildNote: { ntxId: string | null | undefined };
+    relationMapResetPanZoom: { ntxId: string | null | undefined };
+    relationMapResetZoomIn: { ntxId: string | null | undefined };
+    relationMapResetZoomOut: { ntxId: string | null | undefined };
+    activeNoteChangedEvent: {};
+    showAddLinkDialog: {
+        textTypeWidget: EditableTextTypeWidget;
+        text: string;
+    };
+
 };
 
 export type EventListener<T extends EventNames> = {
@@ -307,6 +404,8 @@ class AppContext extends Component {
     tabManager!: TabManager;
     layout?: Layout;
     noteTreeWidget?: NoteTreeWidget;
+
+    lastSearchString?: string;
 
     constructor(isMainWindow: boolean) {
         super();
@@ -452,10 +551,12 @@ $(window).on("beforeunload", () => {
 });
 
 $(window).on("hashchange", function () {
-    const { notePath, ntxId, viewScope } = linkService.parseNavigationStateFromUrl(window.location.href);
+    const { notePath, ntxId, viewScope, searchString } = linkService.parseNavigationStateFromUrl(window.location.href);
 
     if (notePath || ntxId) {
         appContext.tabManager.switchToNoteContext(ntxId, notePath, viewScope);
+    } else if (searchString) {
+        appContext.triggerCommand("searchNotes", { searchString });
     }
 });
 

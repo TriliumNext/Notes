@@ -8,7 +8,7 @@ import becca from "../../becca/becca.js";
 async function getSimilarNotes(req: Request) {
     const noteId = req.params.noteId;
 
-    const note = becca.getNoteOrThrow(noteId);
+    const _note = becca.getNoteOrThrow(noteId);
 
     return await similarityService.findSimilarNotes(noteId);
 }

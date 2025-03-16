@@ -6,6 +6,7 @@ import becca from "../../becca/becca.js";
 import syncService from "../../services/sync.js";
 import sql from "../../services/sql.js";
 import type { Request } from "express";
+import { safeExtractMessageAndStackFromError } from "../../services/utils.js";
 
 interface ScriptBody {
     script: string;
@@ -33,8 +34,12 @@ async function exec(req: Request) {
             executionResult: result,
             maxEntityChangeId: syncService.getMaxEntityChangeId()
         };
-    } catch (e: any) {
-        return { success: false, error: e.message };
+    } catch (e: unknown) {
+        const [errMessage] = safeExtractMessageAndStackFromError(e);
+        return {
+            success: false,
+            error: errMessage
+        };
     }
 }
 

@@ -3,12 +3,10 @@
  */
 
 import { t } from "../../services/i18n.js";
-import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import linkService from "../../services/link.js";
 import server from "../../services/server.js";
 import froca from "../../services/froca.js";
 import type FNote from "../../entities/fnote.js";
-import RightPaneContainer from "../containers/right_pane_container.js";
 import RightPanelWidget from "../right_panel_widget.js";
 
 const TPL = `

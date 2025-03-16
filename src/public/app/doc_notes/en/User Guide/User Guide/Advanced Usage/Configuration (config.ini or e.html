@@ -1,0 +1,47 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Configuration (config.ini or environment variables)</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Configuration (config.ini or environment variables)</h1>
+
+      <div class="ck-content">
+        <p>Trilium supports configuration via a file named <code>config.ini</code> and
+          environment variables. Please review the file named <a href="https://github.com/TriliumNext/Notes/blob/develop/config-sample.ini">config-sample.ini</a> in
+          the <a href="https://github.com/TriliumNext/Notes">Notes</a> repository to
+          see what values are supported.</p>
+        <p>You can provide the same values via environment variables instead of the <code>config.ini</code> file,
+          and these environment variables use the following format:</p>
+        <ol>
+          <li>Environment variables should be prefixed with <code>TRILIUM_</code> and
+            use underscores to represent the INI section structure.</li>
+          <li>The format is: <code>TRILIUM_&lt;SECTION&gt;_&lt;KEY&gt;=&lt;VALUE&gt;</code>
+          </li>
+          <li>The environment variables will override any matching values from config.ini</li>
+        </ol>
+        <p>For example, if you have this in your config.ini:</p><pre><code class="language-text-x-trilium-auto">[Network]
+host=localhost
+port=8080</code></pre>
+        <p>You can override these values using environment variables:</p><pre><code class="language-text-x-trilium-auto">TRILIUM_NETWORK_HOST=0.0.0.0
+TRILIUM_NETWORK_PORT=9000</code></pre>
+        <p>The code will:</p>
+        <ol>
+          <li>First load the <code>config.ini</code> file as before</li>
+          <li>Then scan all environment variables for ones starting with <code>TRILIUM_</code>
+          </li>
+          <li>Parse these variables into section/key pairs</li>
+          <li>Merge them with the config from the file, with environment variables taking
+            precedence</li>
+        </ol>
+      </div>
+    </div>
+  </body>
+
+</html>

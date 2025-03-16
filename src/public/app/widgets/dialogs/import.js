@@ -1,9 +1,10 @@
-import utils from "../../services/utils.js";
+import utils, { escapeQuotes } from "../../services/utils.js";
 import treeService from "../../services/tree.js";
 import importService from "../../services/import.js";
 import options from "../../services/options.js";
 import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
+import { Modal, Tooltip } from "bootstrap";
 
 const TPL = `
 <div class="import-dialog modal fade mx-auto" tabindex="-1" role="dialog">
@@ -18,7 +19,9 @@ const TPL = `
                     <div class="form-group">
                         <label for="import-file-upload-input"><strong>${t("import.chooseImportFile")}</strong></label>
 
-                        <input type="file" class="import-file-upload-input form-control-file" multiple />
+                        <label class="tn-file-input tn-input-field">
+                            <input type="file" class="import-file-upload-input form-control-file" multiple />
+                        </label>
 
                         <p>${t("import.importDescription")} <strong class="import-note-title"></strong>.
                     </div>
@@ -27,40 +30,40 @@ const TPL = `
                         <strong>${t("import.options")}:</strong>
 
                         <div class="checkbox">
-                            <label data-bs-toggle="tooltip" title="${t("import.safeImportTooltip")}">
+                            <label class="tn-checkbox" data-bs-toggle="tooltip" title="${escapeQuotes(t("import.safeImportTooltip"))}">
                                 <input class="safe-import-checkbox" value="1" type="checkbox" checked>
                                 <span>${t("import.safeImport")}</span>
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-bs-toggle="tooltip" title="${t("import.explodeArchivesTooltip")}">
+                            <label class="tn-checkbox" data-bs-toggle="tooltip" title="${escapeQuotes(t("import.explodeArchivesTooltip"))}">
                                 <input class="explode-archives-checkbox" value="1" type="checkbox" checked>
                                 <span>${t("import.explodeArchives")}</span>
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-bs-toggle="tooltip" title="${t("import.shrinkImagesTooltip")}">
+                            <label class="tn-checkbox" data-bs-toggle="tooltip" title="${escapeQuotes(t("import.shrinkImagesTooltip"))}">
                                 <input class="shrink-images-checkbox" value="1" type="checkbox" checked> <span>${t("import.shrinkImages")}</span>
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label>
+                            <label class="tn-checkbox">
                                 <input class="text-imported-as-text-checkbox" value="1" type="checkbox" checked>
                                 ${t("import.textImportedAsText")}
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label>
+                            <label class="tn-checkbox">
                                 <input class="code-imported-as-code-checkbox" value="1" type="checkbox" checked> ${t("import.codeImportedAsCode")}
                             </label>
                         </div>
 
                         <div class="checkbox">
-                            <label>
+                            <label class="tn-checkbox">
                                 <input class="replace-underscores-with-spaces-checkbox" value="1" type="checkbox" checked>
                                 ${t("import.replaceUnderscoresWithSpaces")}
                             </label>
@@ -84,7 +87,7 @@ export default class ImportDialog extends BasicWidget {
 
     doRender() {
         this.$widget = $(TPL);
-        bootstrap.Modal.getOrCreateInstance(this.$widget);
+        Modal.getOrCreateInstance(this.$widget);
 
         this.$form = this.$widget.find(".import-form");
         this.$noteTitle = this.$widget.find(".import-note-title");
@@ -115,7 +118,7 @@ export default class ImportDialog extends BasicWidget {
         });
 
         let _ = [...this.$widget.find('[data-bs-toggle="tooltip"]')].forEach((element) => {
-            bootstrap.Tooltip.getOrCreateInstance(element, {
+            Tooltip.getOrCreateInstance(element, {
                 html: true
             });
         });

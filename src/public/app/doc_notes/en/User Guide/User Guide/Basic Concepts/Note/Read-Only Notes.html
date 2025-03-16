@@ -1,0 +1,34 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Read-Only Notes</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Read-Only Notes</h1>
+
+      <div class="ck-content">
+        <p>Both <a href="../../Note%20Types/Text.html">text</a> and <a href="../../Note%20Types/Code.html">code</a> notes
+          in Trilium can be set to read-only. When a note is in read-only mode, it
+          is presented to the user in a non-editable view, with the option to switch
+          to editing mode if needed.</p>
+        <h2>Setting Read-Only Mode with a Label</h2>
+        <p>To set a note as read-only, add the <code>readOnly</code>  <a href="../../Advanced%20Usage/Attributes.html">label</a> to
+          the note.</p>
+        <h2>Automatic Read-Only Mode</h2>
+        <p>For optimization purposes, Trilium will automatically set very large notes
+          to read-only. Displaying such lengthy notes in editing mode can slow down
+          performance, especially when editing is unnecessary.</p>
+        <p>If you want to ensure that a specific note remains editable regardless
+          of its size, you can add the <code>autoReadOnlyDisabled</code>  <a href="../../Advanced%20Usage/Attributes.html">label</a> to
+          the note.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

@@ -5,7 +5,16 @@ import utils from "./utils.js";
 import appContext from "../components/app_context.js";
 import { t } from "./i18n.js";
 
-export async function uploadFiles(entityType: string, parentNoteId: string, files: string[], options: Record<string, string | Blob>) {
+interface UploadFilesOptions {
+    safeImport?: boolean;
+    shrinkImages: boolean | "true" | "false";
+    textImportedAsText?: boolean;
+    codeImportedAsCode?: boolean;
+    explodeArchives?: boolean;
+    replaceUnderscoresWithSpaces?: boolean;
+}
+
+export async function uploadFiles(entityType: string, parentNoteId: string, files: string[] | File[], options: UploadFilesOptions) {
     if (!["notes", "attachments"].includes(entityType)) {
         throw new Error(`Unrecognized import entity type '${entityType}'.`);
     }
@@ -26,7 +35,7 @@ export async function uploadFiles(entityType: string, parentNoteId: string, file
         formData.append("last", counter === files.length ? "true" : "false");
 
         for (const key in options) {
-            formData.append(key, options[key]);
+            formData.append(key, (options as any)[key]);
         }
 
         await $.ajax({
@@ -71,7 +80,7 @@ ws.subscribeToMessages(async (message) => {
         toastService.showPersistent(toast);
 
         if (message.result.importedNoteId) {
-            await appContext.tabManager.getActiveContext().setNote(message.result.importedNoteId);
+            await appContext.tabManager.getActiveContext()?.setNote(message.result.importedNoteId);
         }
     }
 });
@@ -93,7 +102,7 @@ ws.subscribeToMessages(async (message) => {
         toastService.showPersistent(toast);
 
         if (message.result.parentNoteId) {
-            await appContext.tabManager.getActiveContext().setNote(message.result.importedNoteId, {
+            await appContext.tabManager.getActiveContext()?.setNote(message.result.importedNoteId, {
                 viewScope: {
                     viewMode: "attachments"
                 }

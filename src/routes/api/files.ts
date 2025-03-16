@@ -14,6 +14,7 @@ import ValidationError from "../../errors/validation_error.js";
 import type { Request, Response } from "express";
 import type BNote from "../../becca/entities/bnote.js";
 import type BAttachment from "../../becca/entities/battachment.js";
+import dataDirs from "../../services/data_dir.js";
 
 function updateFile(req: Request) {
     const note = becca.getNoteOrThrow(req.params.noteId);
@@ -167,7 +168,10 @@ function saveAttachmentToTmpDir(req: Request) {
 const createdTemporaryFiles = new Set<string>();
 
 function saveToTmpDir(fileName: string, content: string | Buffer, entityType: string, entityId: string) {
-    const tmpObj = tmp.fileSync({ postfix: fileName });
+    const tmpObj = tmp.fileSync({
+        postfix: fileName,
+        tmpdir: dataDirs.TMP_DIR
+    });
 
     if (typeof content === "string") {
         fs.writeSync(tmpObj.fd, content);
@@ -181,7 +185,7 @@ function saveToTmpDir(fileName: string, content: string | Buffer, entityType: st
 
     log.info(`Saved temporary file ${tmpObj.name}`);
 
-    if (utils.isElectron()) {
+    if (utils.isElectron) {
         chokidar.watch(tmpObj.name).on("change", (path, stats) => {
             ws.sendMessageToAllClients({
                 type: "openedFileUpdated",

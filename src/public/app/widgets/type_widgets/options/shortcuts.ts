@@ -7,7 +7,7 @@ import type { KeyboardShortcut } from "../../../../../services/keyboard_actions_
 import type { OptionNames } from "../../../../../services/options_interface.js";
 
 const TPL = `
-<div class="options-section shortcuts-options-section">
+<div class="options-section shortcuts-options-section tn-no-card">
     <style>
         .shortcuts-options-section {
             display: flex;
@@ -30,7 +30,7 @@ const TPL = `
 
     <h4>${t("shortcuts.keyboard_shortcuts")}</h4>
 
-    <p>
+    <p class="form-text use-tn-links">
       ${t("shortcuts.multiple_shortcuts")}
       ${t("shortcuts.electron_documentation")}
     </p>
@@ -56,7 +56,7 @@ const TPL = `
     <div class="shortcuts-options-buttons">
         <button class="options-keyboard-shortcuts-reload-app btn btn-primary">${t("shortcuts.reload_app")}</button>
 
-        <button class="options-keyboard-shortcuts-set-all-to-default btn">${t("shortcuts.set_all_to_default")}</button>
+        <button class="options-keyboard-shortcuts-set-all-to-default btn btn-secondary">${t("shortcuts.set_all_to_default")}</button>
     </div>
 </div>`;
 
@@ -77,7 +77,7 @@ export default class KeyboardShortcutsOptions extends OptionsWidget {
                 const $tr = $("<tr>");
 
                 if (action.separator) {
-                    $tr.append($('<td colspan="4">').attr("style", "background-color: var(--accented-background-color); font-weight: bold;").text(action.separator));
+                    $tr.append($('<td class="separator" colspan="4">').attr("style", "background-color: var(--accented-background-color); font-weight: bold;").text(action.separator));
                 } else if (action.defaultShortcuts && action.actionName) {
                     $tr.append($("<td>").text(action.actionName))
                         .append(

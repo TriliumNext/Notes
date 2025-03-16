@@ -6,7 +6,7 @@ import packageJson from "../../package.json" with { type: "json" };
 import dataDir from "./data_dir.js";
 
 const APP_DB_VERSION = 228;
-const SYNC_VERSION = 33;
+const SYNC_VERSION = 34;
 const CLIPPER_PROTOCOL_VERSION = "1.0";
 
 export default {

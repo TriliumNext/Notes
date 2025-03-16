@@ -8,7 +8,7 @@ const TPL = `
     <h4>${t("editing.editor_type.label")}</h4>
 
     <div>
-        <label>
+        <label class="tn-radio">
             <input type="radio" name="editor-type" value="ckeditor-balloon" />
             <strong>${t("editing.editor_type.floating.title")}</strong>
             - ${t("editing.editor_type.floating.description")}
@@ -16,14 +16,14 @@ const TPL = `
     </div>
 
     <div>
-        <label>
+        <label class="tn-radio">
             <input type="radio" name="editor-type" value="ckeditor-classic" />
             <strong>${t("editing.editor_type.fixed.title")}</strong>
             - ${t("editing.editor_type.fixed.description")}
         </label>
 
         <div>
-            <label>
+            <label class="tn-checkbox">
                 <input type="checkbox" name="multiline-toolbar" />
                 ${t("editing.editor_type.multiline-toolbar")}
             </label>

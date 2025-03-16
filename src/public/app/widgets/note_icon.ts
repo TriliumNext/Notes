@@ -73,7 +73,7 @@ const TPL = `
     <button class="btn dropdown-toggle note-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="${t("note_icon.change_note_icon")}"></button>
     <div class="dropdown-menu" aria-labelledby="note-path-list-button" style="width: 610px;">
         <div class="filter-row">
-            <span>${t("note_icon.category")}</span> <select name="icon-category" class="form-control"></select>
+            <span>${t("note_icon.category")}</span> <select name="icon-category" class="form-select"></select>
 
             <span>${t("note_icon.search")}</span> <input type="text" name="icon-search" class="form-control" />
         </div>

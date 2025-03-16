@@ -35,39 +35,13 @@
             return [];
         }
 
-        await glob.requireLibrary(glob.ESLINT);
-
         if (text.length > 20000) {
             console.log("Skipping linting because of large size: ", text.length);
 
             return [];
         }
 
-        const errors = new eslint().verify(text, {
-            root: true,
-            parserOptions: {
-                ecmaVersion: "latest"
-            },
-            extends: ['eslint:recommended', 'airbnb-base'],
-            env: {
-                'browser': true,
-                'node': true
-            },
-            rules: {
-                'import/no-unresolved': 'off',
-                'func-names': 'off',
-                'comma-dangle': ['warn'],
-                'padded-blocks': 'off',
-                'linebreak-style': 'off',
-                'class-methods-use-this': 'off',
-                'no-unused-vars': ['warn', { vars: 'local', args: 'after-used' }],
-                'no-nested-ternary': 'off',
-                'no-underscore-dangle': ['error', {'allow': ['_super', '_lookupFactory']}]
-            },
-            globals: {
-                "api": "readonly"
-            }
-        });
+        const errors = await glob.linter(text, glob.getActiveContextNote().mime);
 
         console.log(errors);
 

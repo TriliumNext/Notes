@@ -1,10 +1,42 @@
-.git
-.idea
+# ignored Files
+.dockerignore
+.editorconfig
+.git*
+.prettier*
+electron*
+entitlements.plist
+nodemon.json
+renovate.json
+trilium.iml
+Dockerfile
+Dockerfile.*
+npm-debug.log
+/src/**/*.spec.ts
+
+# ignored folders
+/.cache
+/.git
+/.github
+/.idea
+/.vscode
 /bin
+/build
 /dist
 /docs
-/npm-debug.log
-node_modules
+/dump-db
+/e2e
+/integration-tests
+/spec
+/test
+/test-etapi
+/node_modules
 
-src/**/*.ts
-!src/services/asset_path.ts
+
+# exceptions
+!/bin/copy-dist.ts
+
+# temporary exception to make copy-dist inside Docker build not fail
+# TriliumNextTODO: make copy-dist *not* requiring to copy this file for builds other than electron-forge
+!forge.config.cjs
+!/bin/tpl
+!/bin/electron-forge/desktop.ejs

@@ -7,6 +7,8 @@ import { isElectron } from "./utils.js";
 import passwordEncryptionService from "./encryption/password_encryption.js";
 import config from "./config.js";
 import passwordService from "./encryption/password.js";
+import options from "./options.js";
+import attributes from "./attributes.js";
 import type { NextFunction, Request, Response } from "express";
 
 const noAuthentication = config.General && config.General.noAuthentication === true;
@@ -14,8 +16,17 @@ const noAuthentication = config.General && config.General.noAuthentication === t
 function checkAuth(req: Request, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {
         res.redirect("setup");
-    } else if (!req.session.loggedIn && !isElectron() && !noAuthentication) {
-        res.redirect("login");
+    } else if (!req.session.loggedIn && !isElectron && !noAuthentication) {
+        const redirectToShare = options.getOptionBool("redirectBareDomain");
+        if (redirectToShare) {
+            // Check if any note has the #shareRoot label
+            const shareRootNotes = attributes.getNotesWithLabel("shareRoot");
+            if (shareRootNotes.length === 0) {
+                res.status(404).json({ message: "Share root not found. Please set up a note with #shareRoot label first." });
+                return;
+            }
+        }
+        res.redirect(redirectToShare ? "share" : "login");
     } else {
         next();
     }
@@ -24,7 +35,7 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
 // for electron things which need network stuff
 //  currently, we're doing that for file upload because handling form data seems to be difficult
 function checkApiAuthOrElectron(req: Request, res: Response, next: NextFunction) {
-    if (!req.session.loggedIn && !isElectron() && !noAuthentication) {
+    if (!req.session.loggedIn && !isElectron && !noAuthentication) {
         reject(req, res, "Logged in session not found");
     } else {
         next();
@@ -48,7 +59,7 @@ function checkAppInitialized(req: Request, res: Response, next: NextFunction) {
 }
 
 function checkPasswordSet(req: Request, res: Response, next: NextFunction) {
-    if (!isElectron() && !passwordService.isPasswordSet()) {
+    if (!isElectron && !passwordService.isPasswordSet()) {
         res.redirect("set-password");
     } else {
         next();
@@ -56,7 +67,7 @@ function checkPasswordSet(req: Request, res: Response, next: NextFunction) {
 }
 
 function checkPasswordNotSet(req: Request, res: Response, next: NextFunction) {
-    if (!isElectron() && passwordService.isPasswordSet()) {
+    if (!isElectron && passwordService.isPasswordSet()) {
         res.redirect("login");
     } else {
         next();

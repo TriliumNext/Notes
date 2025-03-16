@@ -18,7 +18,7 @@ export default class RightPaneContainer extends FlexContainer<RightPanelWidget> 
         return super.isEnabled() && options.is("rightPaneVisible");
     }
 
-    handleEventInChildren<T extends EventNames>(name: T, data: EventData<T>): Promise<unknown[] | unknown> | null {
+    async handleEventInChildren<T extends EventNames>(name: T, data: EventData<T>) {
         const promise = super.handleEventInChildren(name, data);
 
         if (["activeContextChanged", "noteSwitchedAndActivated", "noteSwitched"].includes(name)) {

@@ -109,7 +109,8 @@
     "choose_export_type": "Choose export type first please",
     "export_status": "Export status",
     "export_in_progress": "Export in progress: {{progressCount}}",
-    "export_finished_successfully": "Export finished successfully."
+    "export_finished_successfully": "Export finished successfully.",
+    "format_pdf": "PDF - for printing or sharing purposes."
   },
   "help": {
     "fullDocumentation": "Help (full documentation is available <a class=\"external\" href=\"https://triliumnext.github.io/Docs/\">online</a>)",
@@ -271,12 +272,12 @@
     "help_title": "Help on Note Revisions",
     "close": "Close",
     "revision_last_edited": "This revision was last edited on {{date}}",
-    "confirm_delete_all": "Do you want to delete all revisions of this note? This action will erase the revision title and content, but still preserve the revision metadata.",
+    "confirm_delete_all": "Do you want to delete all revisions of this note?",
     "no_revisions": "No revisions for this note yet...",
     "restore_button": "Restore this revision",
     "confirm_restore": "Do you want to restore this revision? This will overwrite the current title and content of the note with this revision.",
     "delete_button": "Delete this revision",
-    "confirm_delete": "Do you want to delete this revision? This action will delete the revision title and content, but still preserve the revision metadata.",
+    "confirm_delete": "Do you want to delete this revision?",
     "revisions_deleted": "Note revisions have been deleted.",
     "revision_restored": "Note revision has been restored.",
     "revision_deleted": "Note revision has been deleted.",
@@ -375,7 +376,7 @@
     "auto_read_only_disabled": "text/code notes can be set automatically into read mode when they are too large. You can disable this behavior on per-note basis by adding this label to the note",
     "app_css": "marks CSS notes which are loaded into the Trilium application and can thus be used to modify Trilium's looks.",
     "app_theme": "marks CSS notes which are full Trilium themes and are thus available in Trilium options.",
-    "app_theme_base": "set to \"next\" in order to use the TriliumNext theme as a base for a custom theme instead of the legacy one.",
+    "app_theme_base": "set to \"next\", \"next-light\", or \"next-dark\" to use the corresponding TriliumNext theme (auto, light or dark) as the base for a custom theme, instead of the legacy one.",
     "css_class": "value of this label is then added as CSS class to the node representing given note in the tree. This can be useful for advanced theming. Can be used in template notes.",
     "icon_class": "value of this label is added as a CSS class to the icon on the tree which can help visually distinguish the notes in the tree. Example might be bx bx-home - icons are taken from boxicons. Can be used in template notes.",
     "page_size": "number of items per page in note listing",
@@ -437,7 +438,9 @@
     "share_favicon": "Favicon note to be set in the shared page. Typically you want to set it to share root and make it inheritable. Favicon note must be in the shared sub-tree as well. Consider using 'share_hidden_from_tree'.",
     "is_owned_by_note": "is owned by note",
     "other_notes_with_name": "Other notes with {{attributeType}} name \"{{attributeName}}\"",
-    "and_more": "... and {{count}} more."
+    "and_more": "... and {{count}} more.",
+    "print_landscape": "When exporting to PDF, changes the orientation of the page to landscape instead of portrait.",
+    "print_page_size": "When exporting to PDF, changes the size of the page. Supported values: <code>A0</code>, <code>A1</code>, <code>A2</code>, <code>A3</code>, <code>A4</code>, <code>A5</code>, <code>A6</code>, <code>Legal</code>, <code>Letter</code>, <code>Tabloid</code>, <code>Ledger</code>."
   },
   "attribute_editor": {
     "help_text_body1": "To add label, just type e.g. <code>#rock</code> or if you want to add also value then e.g. <code>#year = 2020</code>",
@@ -638,7 +641,12 @@
     "show_hidden_subtree": "Show Hidden Subtree",
     "show_help": "Show Help",
     "about": "About TriliumNext Notes",
-    "logout": "Logout"
+    "logout": "Logout",
+    "show-cheatsheet": "Show Cheatsheet",
+    "toggle-zen-mode": "Zen Mode"
+  },
+  "zen_mode": {
+    "button_exit": "Exit Zen Mode"
   },
   "sync_status": {
     "unknown": "<p>Sync status will be known once the next sync attempt starts.</p><p>Click to trigger sync now.</p>",
@@ -672,7 +680,8 @@
     "save_revision": "Save revision",
     "convert_into_attachment_failed": "Converting note '{{title}}' failed.",
     "convert_into_attachment_successful": "Note '{{title}}' has been converted to attachment.",
-    "convert_into_attachment_prompt": "Are you sure you want to convert note '{{title}}' into an attachment of the parent note?"
+    "convert_into_attachment_prompt": "Are you sure you want to convert note '{{title}}' into an attachment of the parent note?",
+    "print_pdf": "Export as PDF..."
   },
   "onclick_button": {
     "no_click_handler": "Button widget '{{componentId}}' has no defined click handler"
@@ -735,7 +744,8 @@
   "basic_properties": {
     "note_type": "Note type",
     "editable": "Editable",
-    "basic_properties": "Basic Properties"
+    "basic_properties": "Basic Properties",
+    "language": "Language"
   },
   "book_properties": {
     "view_type": "View type",
@@ -746,7 +756,8 @@
     "collapse": "Collapse",
     "expand": "Expand",
     "book_properties": "Book Properties",
-    "invalid_view_type": "Invalid view type '{{type}}'"
+    "invalid_view_type": "Invalid view type '{{type}}'",
+    "calendar": "Calendar"
   },
   "edited_notes": {
     "no_edited_notes_found": "No edited notes on this day yet...",
@@ -817,6 +828,7 @@
   },
   "promoted_attributes": {
     "promoted_attributes": "Promoted Attributes",
+    "unset-field-placeholder": "not set",
     "url_placeholder": "http://website...",
     "open_external_link": "Open external link",
     "unknown_label_type": "Unknown label type '{{type}}'",
@@ -959,7 +971,8 @@
     "enter_workspace": "Enter workspace {{title}}"
   },
   "file": {
-    "file_preview_not_available": "File preview is not available for this file format."
+    "file_preview_not_available": "File preview is not available for this file format.",
+    "too_big": "The preview only shows the first {{maxNumChars}} characters of the file for performance reasons. Download the file and open it externally to be able to see the entire content."
   },
   "protected_session": {
     "enter_password_instruction": "Showing protected note requires entering your password:",
@@ -998,9 +1011,7 @@
   "web_view": {
     "web_view": "Web View",
     "embed_websites": "Note of type Web View allows you to embed websites into Trilium.",
-    "create_label": "To start, please create a label with a URL address you want to embed, e.g. #webViewSrc=\"https://www.google.com\"",
-    "disclaimer": "Disclaimer on the experimental status",
-    "experimental_note": "Web View is an experimental note type, and it might be removed or substantially changed in the future. Web View works also only in the desktop build."
+    "create_label": "To start, please create a label with a URL address you want to embed, e.g. #webViewSrc=\"https://www.google.com\""
   },
   "backend_log": {
     "refresh": "Refresh"
@@ -1119,6 +1130,9 @@
     "description": "Automatic read-only note size is the size after which notes will be displayed in a read-only mode (for performance reasons).",
     "label": "Automatic read-only size (code notes)"
   },
+  "code-editor-options": {
+    "title": "Editor"
+  },
   "code_mime_types": {
     "title": "Available MIME types in the dropdown"
   },
@@ -1141,7 +1155,7 @@
   "attachment_erasure_timeout": {
     "attachment_erasure_timeout": "Attachment Erasure Timeout",
     "attachment_auto_deletion_description": "Attachments get automatically deleted (and erased) if they are not referenced by their note anymore after a defined time out.",
-    "erase_attachments_after_x_seconds": "Erase attachments after X seconds of not being used in its note",
+    "erase_attachments_after": "Erase unused attachments after:",
     "manual_erasing_description": "You can also trigger erasing manually (without considering the timeout defined above):",
     "erase_unused_attachments_now": "Erase unused attachment notes now",
     "unused_attachments_erased": "Unused attachments have been erased."
@@ -1153,15 +1167,15 @@
   "note_erasure_timeout": {
     "note_erasure_timeout_title": "Note Erasure Timeout",
     "note_erasure_description": "Deleted notes (and attributes, revisions...) are at first only marked as deleted and it is possible to recover them from Recent Notes dialog. After a period of time, deleted notes are \"erased\" which means their content is not recoverable anymore. This setting allows you to configure the length of the period between deleting and erasing the note.",
-    "erase_notes_after_x_seconds": "Erase notes after X seconds",
+    "erase_notes_after": "Erase notes after:",
     "manual_erasing_description": "You can also trigger erasing manually (without considering the timeout defined above):",
     "erase_deleted_notes_now": "Erase deleted notes now",
     "deleted_notes_erased": "Deleted notes have been erased."
   },
   "revisions_snapshot_interval": {
     "note_revisions_snapshot_interval_title": "Note Revision Snapshot Interval",
-    "note_revisions_snapshot_description": "The Note revision snapshot interval is the time in seconds after which a new note revision will be created for the note. See <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a> for more info.",
-    "snapshot_time_interval_label": "Note revision snapshot time interval (in seconds):"
+    "note_revisions_snapshot_description": "The Note revision snapshot interval is the time after which a new note revision will be created for the note. See <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a> for more info.",
+    "snapshot_time_interval_label": "Note revision snapshot time interval:"
   },
   "revisions_snapshot_limit": {
     "note_revisions_snapshot_limit_title": "Note Revision Snapshot Limit",
@@ -1242,10 +1256,10 @@
   "etapi": {
     "title": "ETAPI",
     "description": "ETAPI is a REST API used to access Trilium instance programmatically, without UI.",
-    "see_more": "See more details on",
+    "see_more": "See more details in the {{- link_to_wiki}} and the {{- link_to_openapi_spec}} or the {{- link_to_swagger_ui }}.",
     "wiki": "wiki",
-    "and": "and",
     "openapi_spec": "ETAPI OpenAPI spec",
+    "swagger_ui": "ETAPI Swagger UI",
     "create_token": "Create new ETAPI token",
     "existing_tokens": "Existing tokens",
     "no_tokens_yet": "There are no tokens yet. Click on the button above to create one.",
@@ -1280,7 +1294,7 @@
     "protected_session_timeout_description": "Protected session timeout is a time period after which the protected session is wiped from the browser's memory. This is measured from the last interaction with protected notes. See",
     "wiki": "wiki",
     "for_more_info": "for more info.",
-    "protected_session_timeout_label": "Protected session timeout (in seconds)",
+    "protected_session_timeout_label": "Protected session timeout:",
     "reset_confirmation": "By resetting the password you will forever lose access to all your existing protected notes. Do you really want to reset the password?",
     "reset_success_message": "Password has been reset. Please set new password",
     "change_password_heading": "Change Password",
@@ -1403,13 +1417,15 @@
     "mermaid-diagram": "Mermaid Diagram",
     "canvas": "Canvas",
     "web-view": "Web View",
-    "mind-map": "Mind Map (Beta)",
+    "mind-map": "Mind Map",
     "file": "File",
     "image": "Image",
     "launcher": "Launcher",
     "doc": "Doc",
     "widget": "Widget",
-    "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?"
+    "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?",
+    "geo-map": "Geo Map",
+    "beta-feature": "Beta"
   },
   "protect_note": {
     "toggle-on": "Protect the note",
@@ -1629,5 +1645,56 @@
   },
   "note_tooltip": {
     "note-has-been-deleted": "Note has been deleted."
+  },
+  "geo-map": {
+    "create-child-note-title": "Create a new child note and add it to the map",
+    "create-child-note-instruction": "Click on the map to create a new note at that location or press Escape to dismiss.",
+    "unable-to-load-map": "Unable to load map."
+  },
+  "geo-map-context": {
+    "open-location": "Open location",
+    "remove-from-map": "Remove from map"
+  },
+  "help-button": {
+    "title": "Open the relevant help page"
+  },
+  "duration": {
+    "seconds": "Seconds",
+    "minutes": "Minutes",
+    "hours": "Hours",
+    "days": "Days"
+  },
+  "share": {
+    "title": "Share Settings",
+    "redirect_bare_domain": "Redirect bare domain to Share page",
+    "redirect_bare_domain_description": "Redirect anonymous users to the Share page instead of showing Login",
+    "show_login_link": "Show Login link in Share theme",
+    "show_login_link_description": "Add a login link to the Share page footer",
+    "check_share_root": "Check Share Root Status",
+    "share_root_found": "Share root note '{{noteTitle}}' is ready",
+    "share_root_not_found": "No note with #shareRoot label found",
+    "share_root_not_shared": "Note '{{noteTitle}}' has #shareRoot label but is not shared"
+  },
+  "time_selector": {
+    "invalid_input": "The entered time value is not a valid number.",
+    "minimum_input": "The entered time value needs to be at least {{minimumSeconds}} seconds."
+  },
+  "tasks": {
+    "due": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday"
+    }
+  },
+  "content_widget": {
+    "unknown_widget": "Unknown widget for \"{{id}}\"."
+  },
+  "note_language": {
+    "not_set": "Not set",
+    "configure-languages": "Configure languages..."
+  },
+  "content_language": {
+    "title": "Content languages",
+    "description": "Select one or more languages that should appear in the language selection in the Basic Properties section of a read-only or editable text note. This will allow features such as spell-checking or right-to-left support."
   }
 }

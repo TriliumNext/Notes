@@ -23,23 +23,27 @@ const TPL = `
             padding: 2px 10px 2px 10px;
             align-items: center;
         }
-        
+
         .find-widget-box > *, .replace-widget-box > *{
             margin-right: 15px;
         }
-        
+
         .find-widget-box, .replace-widget-box {
             display: flex;
         }
 
         .find-widget-found-wrapper {
-            font-weight: bold;
+            justify-content: center;
+            min-width: 60px;
+            padding: 0 4px;
+            font-size: .85em;
+            text-align: center;
         }
-        
+
         .find-widget-search-term-input-group, .replace-widget-replacetext-input {
-            max-width: 300px;
+            max-width: 350px;
         }
-        
+
         .find-widget-spacer {
             flex-grow: 1;
         }
@@ -49,31 +53,34 @@ const TPL = `
         <div class="input-group find-widget-search-term-input-group">
             <input type="text" class="form-control find-widget-search-term-input" placeholder="${t("find.find_placeholder")}">
             <button class="btn btn-outline-secondary bx bxs-chevron-up find-widget-previous-button" type="button"></button>
+            <div class="find-widget-found-wrapper input-group-text">
+                <span>
+                    <span class="find-widget-current-found">0</span>
+                    /
+                    <span class="find-widget-total-found">0</span>
+                <span>
+            </div>
             <button class="btn btn-outline-secondary bx bxs-chevron-down find-widget-next-button" type="button"></button>
         </div>
-        
+
         <div class="form-check">
-            <label tabIndex="-1" class="form-check-label">
-                <input type="checkbox" class="form-check-input find-widget-case-sensitive-checkbox"> 
+            <label tabIndex="-1" class="form-check-label tn-checkbox">
+                <input type="checkbox" class="form-check-input find-widget-case-sensitive-checkbox">
                 ${t("find.case_sensitive")}
             </label>
         </div>
 
         <div class="form-check">
-            <label tabIndex="-1" class="form-check-label">
+            <label tabIndex="-1" class="form-check-label tn-checkbox">
                 <input type="checkbox" class="form-check-input find-widget-match-words-checkbox">
                 ${t("find.match_words")}
             </label>
         </div>
-        
-        <div class="find-widget-found-wrapper">
-            <span class="find-widget-current-found">0</span>
-            /
-            <span class="find-widget-total-found">0</span>
-        </div>
-        
+
+
+
         <div class="find-widget-spacer"></div>
-        
+
         <div class="find-widget-close-button"><button class="btn icon-action bx bx-x"></button></div>
     </div>
 

@@ -6,6 +6,8 @@ import noteService from "./notes.js";
 import log from "./log.js";
 import migrationService from "./migration.js";
 import { t } from "i18next";
+import { cleanUpHelp, getHelpHiddenSubtreeData } from "./in_app_help.js";
+import buildLaunchBarConfig from "./hidden_subtree_launcherbar.js";
 
 const LBTPL_ROOT = "_lbTplRoot";
 const LBTPL_BASE = "_lbTplBase";
@@ -16,21 +18,21 @@ const LBTPL_BUILTIN_WIDGET = "_lbTplBuiltinWidget";
 const LBTPL_SPACER = "_lbTplSpacer";
 const LBTPL_CUSTOM_WIDGET = "_lbTplCustomWidget";
 
-interface Attribute {
+interface HiddenSubtreeAttribute {
     type: AttributeType;
     name: string;
     isInheritable?: boolean;
     value?: string;
 }
 
-interface Item {
+export interface HiddenSubtreeItem {
     notePosition?: number;
     id: string;
     title: string;
     type: NoteType;
     icon?: string;
-    attributes?: Attribute[];
-    children?: Item[];
+    attributes?: HiddenSubtreeAttribute[];
+    children?: HiddenSubtreeItem[];
     isExpanded?: boolean;
     baseSize?: string;
     growthFactor?: string;
@@ -54,9 +56,11 @@ enum Command {
  * duplicate subtrees. This way, all instances will generate the same structure with the same IDs.
  */
 
-let hiddenSubtreeDefinition: Item;
+let hiddenSubtreeDefinition: HiddenSubtreeItem;
 
-function buildHiddenSubtreeDefinition(): Item {
+function buildHiddenSubtreeDefinition(helpSubtree: HiddenSubtreeItem[]): HiddenSubtreeItem {
+    const launchbarConfig = buildLaunchBarConfig();
+
     return {
         id: "_hidden",
         title: t("hidden-subtree.root-title"),
@@ -213,25 +217,7 @@ function buildHiddenSubtreeDefinition(): Item {
                         icon: "bx-hide",
                         isExpanded: true,
                         attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
-                        children: [
-                            {
-                                id: "_lbBackInHistory",
-                                title: t("hidden-subtree.go-to-previous-note-title"),
-                                type: "launcher",
-                                builtinWidget: "backInHistoryButton",
-                                icon: "bx bxs-chevron-left",
-                                attributes: [{ type: "label", name: "docName", value: "launchbar_history_navigation" }]
-                            },
-                            {
-                                id: "_lbForwardInHistory",
-                                title: t("hidden-subtree.go-to-next-note-title"),
-                                type: "launcher",
-                                builtinWidget: "forwardInHistoryButton",
-                                icon: "bx bxs-chevron-right",
-                                attributes: [{ type: "label", name: "docName", value: "launchbar_history_navigation" }]
-                            },
-                            { id: "_lbBackendLog", title: t("hidden-subtree.backend-log-title"), type: "launcher", targetNoteId: "_backendLog", icon: "bx bx-terminal" }
-                        ]
+                        children: launchbarConfig.desktopAvailableLaunchers
                     },
                     {
                         id: "_lbVisibleLaunchers",
@@ -240,43 +226,7 @@ function buildHiddenSubtreeDefinition(): Item {
                         icon: "bx-show",
                         isExpanded: true,
                         attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
-                        children: [
-                            { id: "_lbNewNote", title: t("hidden-subtree.new-note-title"), type: "launcher", command: "createNoteIntoInbox", icon: "bx bx-file-blank" },
-                            {
-                                id: "_lbSearch",
-                                title: t("hidden-subtree.search-notes-title"),
-                                type: "launcher",
-                                command: "searchNotes",
-                                icon: "bx bx-search",
-                                attributes: [{ type: "label", name: "desktopOnly" }]
-                            },
-                            {
-                                id: "_lbJumpTo",
-                                title: t("hidden-subtree.jump-to-note-title"),
-                                type: "launcher",
-                                command: "jumpToNote",
-                                icon: "bx bx-send",
-                                attributes: [{ type: "label", name: "desktopOnly" }]
-                            },
-                            { id: "_lbNoteMap", title: t("hidden-subtree.note-map-title"), type: "launcher", targetNoteId: "_globalNoteMap", icon: "bx bxs-network-chart" },
-                            { id: "_lbCalendar", title: t("hidden-subtree.calendar-title"), type: "launcher", builtinWidget: "calendar", icon: "bx bx-calendar" },
-                            {
-                                id: "_lbRecentChanges",
-                                title: t("hidden-subtree.recent-changes-title"),
-                                type: "launcher",
-                                command: "showRecentChanges",
-                                icon: "bx bx-history",
-                                attributes: [{ type: "label", name: "desktopOnly" }]
-                            },
-                            { id: "_lbSpacer1", title: t("hidden-subtree.spacer-title"), type: "launcher", builtinWidget: "spacer", baseSize: "50", growthFactor: "0" },
-                            { id: "_lbBookmarks", title: t("hidden-subtree.bookmarks-title"), type: "launcher", builtinWidget: "bookmarks", icon: "bx bx-bookmark" },
-                            { id: "_lbToday", title: t("hidden-subtree.open-today-journal-note-title"), type: "launcher", builtinWidget: "todayInJournal", icon: "bx bx-calendar-star" },
-                            { id: "_lbSpacer2", title: t("hidden-subtree.spacer-title"), type: "launcher", builtinWidget: "spacer", baseSize: "0", growthFactor: "1" },
-                            { id: "_lbQuickSearch", title: t("hidden-subtree.quick-search-title"), type: "launcher", builtinWidget: "quickSearch", icon: "bx bx-rectangle" },
-                            { id: "_lbProtectedSession", title: t("hidden-subtree.protected-session-title"), type: "launcher", builtinWidget: "protectedSession", icon: "bx bx bx-shield-quarter" },
-                            { id: "_lbSyncStatus", title: t("hidden-subtree.sync-status-title"), type: "launcher", builtinWidget: "syncStatus", icon: "bx bx-wifi" },
-                            { id: "_lbSettings", title: t("hidden-subtree.settings-title"), type: "launcher", command: "showOptions", icon: "bx bx-cog" }
-                        ]
+                        children: launchbarConfig.desktopVisibleLaunchers
                     }
                 ]
             },
@@ -295,7 +245,7 @@ function buildHiddenSubtreeDefinition(): Item {
                         icon: "bx-hide",
                         isExpanded: true,
                         attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
-                        children: []
+                        children: launchbarConfig.mobileAvailableLaunchers
                     },
                     {
                         id: "_lbMobileVisibleLaunchers",
@@ -304,25 +254,7 @@ function buildHiddenSubtreeDefinition(): Item {
                         icon: "bx-show",
                         isExpanded: true,
                         attributes: [{ type: "label", name: "docName", value: "launchbar_intro" }],
-                        children: [
-                            {
-                                id: "_lbMobileBackInHistory",
-                                title: t("hidden-subtree.go-to-previous-note-title"),
-                                type: "launcher",
-                                builtinWidget: "backInHistoryButton",
-                                icon: "bx bxs-chevron-left",
-                                attributes: [{ type: "label", name: "docName", value: "launchbar_history_navigation" }]
-                            },
-                            {
-                                id: "_lbMobileForwardInHistory",
-                                title: t("hidden-subtree.go-to-next-note-title"),
-                                type: "launcher",
-                                builtinWidget: "forwardInHistoryButton",
-                                icon: "bx bxs-chevron-right",
-                                attributes: [{ type: "label", name: "docName", value: "launchbar_history_navigation" }]
-                            },
-                            { id: "_lbMobileJumpTo", title: t("hidden-subtree.jump-to-note-title"), type: "launcher", command: "jumpToNote", icon: "bx bx-plus-circle" }
-                        ]
+                        children: launchbarConfig.mobileVisibleLaunchers
                     }
                 ]
             },
@@ -343,8 +275,17 @@ function buildHiddenSubtreeDefinition(): Item {
                     { id: "_optionsBackup", title: t("hidden-subtree.backup-title"), type: "contentWidget", icon: "bx-data" },
                     { id: "_optionsSync", title: t("hidden-subtree.sync-title"), type: "contentWidget", icon: "bx-wifi" },
                     { id: "_optionsOther", title: t("hidden-subtree.other"), type: "contentWidget", icon: "bx-dots-horizontal" },
+                    { id: "_optionsLocalization", title: t("hidden-subtree.localization"), type: "contentWidget", icon: "bx-world" },
                     { id: "_optionsAdvanced", title: t("hidden-subtree.advanced-title"), type: "contentWidget" }
                 ]
+            },
+            {
+                id: "_help",
+                title: t("hidden-subtree.user-guide"),
+                type: "book",
+                icon: "bx-help-circle",
+                children: helpSubtree,
+                isExpanded: true
             }
         ]
     };
@@ -361,14 +302,22 @@ function checkHiddenSubtree(force = false, extraOpts: CheckHiddenExtraOpts = {})
         return;
     }
 
+    const helpSubtree = getHelpHiddenSubtreeData();
     if (!hiddenSubtreeDefinition || force) {
-        hiddenSubtreeDefinition = buildHiddenSubtreeDefinition();
+        hiddenSubtreeDefinition = buildHiddenSubtreeDefinition(helpSubtree);
     }
 
     checkHiddenSubtreeRecursively("root", hiddenSubtreeDefinition, extraOpts);
+
+    try {
+        cleanUpHelp(helpSubtree);
+    } catch (e) {
+        // Non-critical operation should something go wrong.
+        console.error(e);
+    }
 }
 
-function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOpts: CheckHiddenExtraOpts = {}) {
+function checkHiddenSubtreeRecursively(parentNoteId: string, item: HiddenSubtreeItem, extraOpts: CheckHiddenExtraOpts = {}) {
     if (!item.id || !item.type || !item.title) {
         throw new Error(`Item does not contain mandatory properties: ${JSON.stringify(item)}`);
     }
@@ -449,7 +398,9 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOp
     for (const attr of attrs) {
         const attrId = note.noteId + "_" + attr.type.charAt(0) + attr.name;
 
-        if (!note.getAttributes().find((attr) => attr.attributeId === attrId)) {
+        const existingAttribute = note.getAttributes().find((attr) => attr.attributeId === attrId);
+
+        if (!existingAttribute) {
             new BAttribute({
                 attributeId: attrId,
                 noteId: note.noteId,
@@ -458,6 +409,12 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: Item, extraOp
                 value: attr.value,
                 isInheritable: false
             }).save();
+        } else if (attr.name === "docName" || (existingAttribute.noteId.startsWith("_help") && attr.name === "iconClass")) {
+            if (existingAttribute.value !== attr.value) {
+                existingAttribute.value = attr.value ?? "";
+                console.log("Updating attribute ", attrId);
+                existingAttribute.save();
+            }
         }
     }
 

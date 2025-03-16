@@ -8,20 +8,20 @@ import { t } from "../../services/i18n.js";
 
 const TPL = `
 <div class="file-properties-widget">
-    <style> 
+    <style>
         .file-table {
             width: 100%;
             margin-top: 10px;
         }
-        
+
         .file-table th, .file-table td {
             padding: 5px;
             overflow-wrap: anywhere;
         }
-        
+
         .file-buttons {
-            padding: 10px; 
-            display: flex; 
+            padding: 10px;
+            display: flex;
             justify-content: space-evenly;
         }
     </style>
@@ -39,16 +39,25 @@ const TPL = `
             <th class="text-nowrap">${t("file_properties.file_size")}:</th>
             <td class="file-filesize"></td>
         </tr>
-        
+
         <tr>
             <td colspan="4">
                 <div class="file-buttons">
-                    <button class="file-download btn btn-sm btn-primary" type="button">${t("file_properties.download")}</button>
-                    &nbsp;
-                    <button class="file-open btn btn-sm btn-primary" type="button">${t("file_properties.open")}</button>
-                    &nbsp;
-                    <button class="file-upload-new-revision btn btn-sm btn-primary">${t("file_properties.upload_new_revision")}</button>
-                
+                    <button class="file-download btn btn-sm btn-primary" type="button">
+                        <span class="bx bx-download"></span>
+                        ${t("file_properties.download")}
+                    </button>
+
+                    <button class="file-open btn btn-sm btn-primary" type="button">
+                        <span class="bx bx-link-external"></span>
+                        ${t("file_properties.open")}
+                    </button>
+
+                    <button class="file-upload-new-revision btn btn-sm btn-primary">
+                        <span class="bx bx-folder-open"></span>
+                        ${t("file_properties.upload_new_revision")}
+                    </button>
+
                     <input type="file" class="file-upload-new-revision-input" style="display: none">
                 </div>
             </td>

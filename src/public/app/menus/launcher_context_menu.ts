@@ -1,4 +1,4 @@
-import treeService, { type Node } from "../services/tree.js";
+import treeService from "../services/tree.js";
 import froca from "../services/froca.js";
 import contextMenu, { type MenuCommandItem, type MenuItem } from "./context_menu.js";
 import dialogService from "../services/dialog.js";
@@ -12,17 +12,17 @@ type LauncherCommandNames = FilteredCommandNames<ContextMenuCommandData>;
 
 export default class LauncherContextMenu implements SelectMenuItemEventListener<LauncherCommandNames> {
     private treeWidget: NoteTreeWidget;
-    private node: Node;
+    private node: Fancytree.FancytreeNode;
 
-    constructor(treeWidget: NoteTreeWidget, node: Node) {
+    constructor(treeWidget: NoteTreeWidget, node: Fancytree.FancytreeNode) {
         this.treeWidget = treeWidget;
         this.node = node;
     }
 
-    async show(e: PointerEvent) {
+    async show(e: PointerEvent | JQuery.TouchStartEvent | JQuery.ContextMenuEvent) {
         contextMenu.show({
-            x: e.pageX,
-            y: e.pageY,
+            x: e.pageX ?? 0,
+            y: e.pageY ?? 0,
             items: await this.getMenuItems(),
             selectMenuItemHandler: (item, e) => this.selectMenuItemHandler(item)
         });
@@ -34,8 +34,8 @@ export default class LauncherContextMenu implements SelectMenuItemEventListener<
 
         const isVisibleRoot = note?.noteId === "_lbVisibleLaunchers";
         const isAvailableRoot = note?.noteId === "_lbAvailableLaunchers";
-        const isVisibleItem = (parentNoteId === "_lbVisibleLaunchers" || parentNoteId === "_lbMobileVisibleLaunchers");
-        const isAvailableItem = (parentNoteId === "_lbAvailableLaunchers" || parentNoteId === "_lbMobileAvailableLaunchers");
+        const isVisibleItem = parentNoteId === "_lbVisibleLaunchers" || parentNoteId === "_lbMobileVisibleLaunchers";
+        const isAvailableItem = parentNoteId === "_lbAvailableLaunchers" || parentNoteId === "_lbMobileAvailableLaunchers";
         const isItem = isVisibleItem || isAvailableItem;
         const canBeDeleted = !note?.noteId.startsWith("_"); // fixed notes can't be deleted
         const canBeReset = !canBeDeleted && note?.isLaunchBarConfig();

@@ -6,6 +6,7 @@ import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 import appContext from "../../components/app_context.js";
 import { t } from "../../services/i18n.js";
+import { Modal } from "bootstrap";
 
 let branchId;
 
@@ -39,7 +40,7 @@ const TPL = `<div class="branch-prefix-dialog modal fade mx-auto" tabindex="-1" 
 export default class BranchPrefixDialog extends BasicWidget {
     doRender() {
         this.$widget = $(TPL);
-        this.modal = bootstrap.Modal.getOrCreateInstance(this.$widget);
+        this.modal = Modal.getOrCreateInstance(this.$widget);
         this.$form = this.$widget.find(".branch-prefix-form");
         this.$treePrefixInput = this.$widget.find(".branch-prefix-input");
         this.$noteTitle = this.$widget.find(".branch-prefix-note-title");

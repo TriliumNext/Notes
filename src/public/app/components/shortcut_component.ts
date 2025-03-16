@@ -17,7 +17,7 @@ export default class ShortcutComponent extends Component implements EventListene
     }
 
     bindNoteShortcutHandler(labelOrRow: AttributeRow) {
-        const handler = () => appContext.tabManager.getActiveContext().setNote(labelOrRow.noteId);
+        const handler = () => appContext.tabManager.getActiveContext()?.setNote(labelOrRow.noteId);
         const namespace = labelOrRow.attributeId;
 
         if (labelOrRow.isDeleted) {

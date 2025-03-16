@@ -1,38 +1,46 @@
 import type { Application, NextFunction, Request, Response } from "express";
 import log from "../services/log.js";
+import NotFoundError from "../errors/not_found_error.js";
+import ForbiddenError from "../errors/forbidden_error.js";
+import HttpError from "../errors/http_error.js";
 
 function register(app: Application) {
-    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-        if (err.code !== "EBADCSRFTOKEN") {
-            return next(err);
+
+    app.use((err: unknown | Error, req: Request, res: Response, next: NextFunction) => {
+
+        const isCsrfTokenError = typeof err === "object"
+            && err
+            && "code" in err
+            && err.code === "EBADCSRFTOKEN";
+
+        if (isCsrfTokenError) {
+            log.error(`Invalid CSRF token: ${req.headers["x-csrf-token"]}, secret: ${req.cookies["_csrf"]}`);
+            return next(new ForbiddenError("Invalid CSRF token"));
         }
 
-        log.error(`Invalid CSRF token: ${req.headers["x-csrf-token"]}, secret: ${req.cookies["_csrf"]}`);
-
-        err = new Error("Invalid CSRF token");
-        err.status = 403;
-        next(err);
+        return next(err);
     });
 
     // catch 404 and forward to error handler
     app.use((req, res, next) => {
-        const err = new Error(`Router not found for request ${req.method} ${req.url}`);
-        (err as any).status = 404;
+        const err = new NotFoundError(`Router not found for request ${req.method} ${req.url}`);
         next(err);
     });
 
     // error handler
-    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-        if (err.status !== 404) {
-            log.info(err);
-        } else {
-            log.info(`${err.status} ${req.method} ${req.url}`);
-        }
+    app.use((err: unknown | Error, req: Request, res: Response, _next: NextFunction) => {
 
-        res.status(err.status || 500);
-        res.send({
-            message: err.message
+        const statusCode = (err instanceof HttpError) ? err.statusCode : 500;
+        const errMessage = (err instanceof Error && statusCode !== 404)
+            ? err
+            : `${statusCode} ${req.method} ${req.url}`;
+
+        log.info(errMessage);
+
+        res.status(statusCode).send({
+            message: err instanceof Error ? err.message : "Unknown Error"
         });
+
     });
 }
 

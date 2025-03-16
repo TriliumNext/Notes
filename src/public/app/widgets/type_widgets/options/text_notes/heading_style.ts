@@ -6,24 +6,33 @@ const TPL = `
 <div class="options-section">
     <h4>${t("heading_style.title")}</h4>
 
-    <select class="heading-style form-select">
-        <option value="plain">${t("heading_style.plain")}</option>
-        <option value="underline">${t("heading_style.underline")}</option>
-        <option value="markdown">${t("heading_style.markdown")}</option>
-    </select>
+    <div role="group">
+        <label class="tn-radio">
+            <input name="heading-style" type="radio" value="plain" />
+            ${t("heading_style.plain")}
+        </label>
+
+        <label class="tn-radio">
+            <input name="heading-style" type="radio" value="underline" />
+            ${t("heading_style.underline")}
+        </label>
+
+        <label class="tn-radio">
+            <input name="heading-style" type="radio" value="markdown" />
+            ${t("heading_style.markdown")}
+        </label>
+    </div>
 </div>`;
 
 export default class HeadingStyleOptions extends OptionsWidget {
 
     private $body!: JQuery<HTMLElement>;
-    private $headingStyle!: JQuery<HTMLElement>;
 
     doRender() {
         this.$widget = $(TPL);
         this.$body = $("body");
-        this.$headingStyle = this.$widget.find(".heading-style");
-        this.$headingStyle.on("change", () => {
-            const newHeadingStyle = String(this.$headingStyle.val());
+        this.$widget.find(`input[name="heading-style"]`).on("change", () => {
+            const newHeadingStyle = String(this.$widget.find(`input[name="heading-style"]:checked`).val());
 
             this.toggleBodyClass("heading-style-", newHeadingStyle);
 
@@ -32,7 +41,8 @@ export default class HeadingStyleOptions extends OptionsWidget {
     }
 
     async optionsLoaded(options: OptionMap) {
-        this.$headingStyle.val(options.headingStyle);
+        this.$widget.find(`input[name="heading-style"][value="${options.headingStyle}"]`)
+                    .prop("checked", "true");
     }
 
     toggleBodyClass(prefix: string, value: string) {

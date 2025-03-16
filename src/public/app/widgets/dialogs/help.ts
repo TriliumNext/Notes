@@ -3,7 +3,7 @@ import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
 
 const TPL = `
-<div class="help-dialog modal" tabindex="-1" role="dialog">
+<div class="help-dialog modal use-tn-links" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="min-width: 90%;">
         <div class="modal-content" style="height: auto;">
             <div class="modal-header">
@@ -153,7 +153,7 @@ export default class HelpDialog extends BasicWidget {
         this.$widget = $(TPL);
     }
 
-    showHelpEvent() {
+    showCheatsheetEvent() {
         utils.openDialog(this.$widget);
     }
 }

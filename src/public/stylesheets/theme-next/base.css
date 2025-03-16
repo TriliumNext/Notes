@@ -1,5 +1,8 @@
+@import url(./forms.css);
 @import url(./shell.css);
+@import url(./ribbon.css);
 @import url(./settings.css);
+@import url(./notes/empty.css);
 @import url(./notes/text.css);
 
 @font-face {
@@ -43,7 +46,7 @@
     --center-pane-border-radius: 10px;
 
     --menu-padding-size: 8px;
-    --menu-item-icon-vert-offset: 0;
+    --menu-item-icon-vert-offset: -2px;
 
     --more-accented-background-color: var(--card-background-hover-color);
 
@@ -57,6 +60,87 @@
 
     --help-backdrop-blur: 10px;
 
+    --icon-button-size: 32px;
+    --icon-button-icon-ratio: 0.65;
+
+    --modal-control-button-size: 22px;
+
     /* Theme capabilities */
     --tab-note-icons: true;
+}
+
+/* Tool dialogs - small dialogs without a backdrop */
+div.tn-tool-dialog {
+    border-radius: 10px;
+    background: var(--tool-dialog-background-color) !important;
+    user-select: none;
+    box-shadow: 10px 10px 93px -25px var(--tool-dialog-shadow-color);
+}
+
+/*
+ * Note search suggestions
+ */
+
+/* List body */
+.jump-to-note-dialog .jump-to-note-results .aa-suggestions,
+.note-detail-empty .aa-suggestions {
+    padding: 0;
+}
+
+/* List item */
+.jump-to-note-dialog .aa-suggestions div,
+.note-detail-empty .aa-suggestions div {
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+/* Selected list item */
+.jump-to-note-dialog .aa-suggestions div.aa-cursor,
+.note-detail-empty .aa-suggestions div.aa-cursor {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
+}
+
+/*
+ * Toasts
+ */
+
+#toast-container {
+    /* The vertical gap between toasts */
+    gap: 10px;
+}
+
+#toast-container .toast {
+    --bs-toast-padding-x: 12px;
+    --bs-border-radius: 8px;
+    --bs-toast-bg: var(--toast-background);
+    --bs-toast-color: var(--toast-text-color);
+    --modal-control-button-background: var(--toast-close-button-background);
+    --modal-control-button-color: var(--bs-toast-color);
+
+    display: flex;
+    flex-direction: row-reverse;
+    backdrop-filter: blur(6px);
+}
+
+#toast-container .toast .toast-header {
+    padding: 0 !important;
+    background: transparent !important;
+    border-bottom: none;
+}
+
+#toast-container .toast .toast-header strong {
+    /* The title of the toast is no longer displayed */
+    display: none;
+}
+
+#toast-container .toast .toast-header .btn-close {
+    margin: 0 var(--bs-toast-padding-x) 0 12px;
+
+}
+
+#toast-container .toast .toast-body {
+    flex-grow: 1;
 }

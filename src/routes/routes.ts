@@ -1,6 +1,6 @@
 "use strict";
 
-import utils from "../services/utils.js";
+import { isElectron, safeExtractMessageAndStackFromError } from "../services/utils.js";
 import multer from "multer";
 import log from "../services/log.js";
 import express from "express";
@@ -71,7 +71,7 @@ import etapiSpecialNoteRoutes from "../etapi/special_notes.js";
 import etapiSpecRoute from "../etapi/spec.js";
 import etapiBackupRoute from "../etapi/backup.js";
 
-
+import apiDocsRoute from "./api_docs.js";
 
 const MAX_ALLOWED_FILE_SIZE_MB = 250;
 const GET = "get",
@@ -280,7 +280,7 @@ function register(app: express.Application) {
     apiRoute(DEL, "/api/etapi-tokens/:etapiTokenId", etapiTokensApiRoutes.deleteToken);
 
     // in case of local electron, local calls are allowed unauthenticated, for server they need auth
-    const clipperMiddleware = utils.isElectron() ? [] : [auth.checkEtapiToken];
+    const clipperMiddleware = isElectron ? [] : [auth.checkEtapiToken];
 
     route(GET, "/api/clipper/handshake", clipperMiddleware, clipperRoute.handshake, apiResultHandler);
     route(PST, "/api/clipper/clippings", clipperMiddleware, clipperRoute.addClipping, apiResultHandler);
@@ -368,6 +368,9 @@ function register(app: express.Application) {
     etapiSpecialNoteRoutes.register(router);
     etapiSpecRoute.register(router);
     etapiBackupRoute.register(router);
+
+    // API Documentation
+    apiDocsRoute.register(app);
 
     app.use("", router);
 }
@@ -468,7 +471,7 @@ function route(method: HttpMethod, path: string, middleware: express.Handler[], 
 
             if (result?.then) {
                 // promise
-                result.then((promiseResult: unknown) => handleResponse(resultHandler, req, res, promiseResult, start)).catch((e: any) => handleException(e, method, path, res));
+                result.then((promiseResult: unknown) => handleResponse(resultHandler, req, res, promiseResult, start)).catch((e: unknown) => handleException(e, method, path, res));
             } else {
                 handleResponse(resultHandler, req, res, result, start);
             }
@@ -484,22 +487,17 @@ function handleResponse(resultHandler: ApiResultHandler, req: express.Request, r
     log.request(req, res, Date.now() - start, responseLength);
 }
 
-function handleException(e: any, method: HttpMethod, path: string, res: express.Response) {
-    log.error(`${method} ${path} threw exception: '${e.message}', stack: ${e.stack}`);
+function handleException(e: unknown | Error, method: HttpMethod, path: string, res: express.Response) {
+    const [errMessage, errStack] = safeExtractMessageAndStackFromError(e);
 
-    if (e instanceof ValidationError) {
-        res.status(400).json({
-            message: e.message
-        });
-    } else if (e instanceof NotFoundError) {
-        res.status(404).json({
-            message: e.message
-        });
-    } else {
-        res.status(500).json({
-            message: e.message
-        });
-    }
+    log.error(`${method} ${path} threw exception: '${errMessage}', stack: ${errStack}`);
+
+    const resStatusCode = (e instanceof ValidationError || e instanceof NotFoundError) ?  e.statusCode : 500;
+
+    res.status(resStatusCode).json({
+        message: errMessage
+    });
+
 }
 
 function createUploadMiddleware() {

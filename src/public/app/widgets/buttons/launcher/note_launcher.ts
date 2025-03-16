@@ -78,7 +78,7 @@ export default class NoteLauncher extends AbstractLauncher {
     }
 
     getHoistedNoteId() {
-        return this.launcherNote.getRelationValue("hoistedNote") || appContext.tabManager.getActiveContext().hoistedNoteId;
+        return this.launcherNote.getRelationValue("hoistedNote") || appContext.tabManager.getActiveContext()?.hoistedNoteId;
     }
 
     getTitle() {

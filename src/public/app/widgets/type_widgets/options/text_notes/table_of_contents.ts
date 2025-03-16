@@ -12,9 +12,9 @@ const TPL = `
         <input type="number" class="min-toc-headings form-control options-number-input options-number-input" min="0" max="9999999999999999" step="1" />
     </div>
 
-    <p>${t("table_of_contents.disable_info")}</p>
+    <p class="form-text">${t("table_of_contents.disable_info")}</p>
 
-    <p>${t("table_of_contents.shortcut_info")}</p>
+    <p class="form-text">${t("table_of_contents.shortcut_info")}</p>
 </div>`;
 
 export default class TableOfContentsOptions extends OptionsWidget {

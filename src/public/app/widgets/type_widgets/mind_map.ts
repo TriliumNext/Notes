@@ -259,7 +259,7 @@ export default class MindMapWidget extends TypeWidget {
         return await this.mind.exportSvg().text();
     }
 
-    async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded"> ) {
+    async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
         if (this.noteId && loadResults.isNoteReloaded(this.noteId)) {
             this.refresh();
         }

@@ -25,7 +25,7 @@ const TPL = `
 <div class="options-section">
     <h4>${t("highlighting.title")}</h4>
 
-    <p>${t("highlighting.description")}</p>
+    <p class="form-text">${t("highlighting.description")}</p>
 
     <div class="form-group row">
         <div class="col-md-6">
@@ -34,7 +34,7 @@ const TPL = `
         </div>
 
         <div class="col-md-6 side-checkbox">
-            <label class="form-check">
+            <label class="form-check tn-checkbox">
                 <input type="checkbox" class="word-wrap form-check-input" />
                 ${t("code_block.word_wrapping")}
             </label>
@@ -60,7 +60,7 @@ interface Theme {
     val: string;
 }
 
-type Response = Record<string, Theme[]>
+type Response = Record<string, Theme[]>;
 
 /**
  * Contains appearance settings for code blocks within text notes, such as the theme for the syntax highlighter.

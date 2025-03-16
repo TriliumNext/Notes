@@ -2,6 +2,9 @@ import { MIME_TYPE_AUTO, MIME_TYPES_DICT, normalizeMimeTypeForCKEditor, type Mim
 import options from "./options.js";
 
 interface MimeType extends MimeTypeDefinition {
+    /**
+     * True if this mime type was enabled by the user in the "Available MIME types in the dropdown" option in the Code Notes settings.
+     */
     enabled: boolean;
 }
 

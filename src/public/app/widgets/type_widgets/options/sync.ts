@@ -23,14 +23,14 @@ const TPL = `
             <label for="sync-proxy form-control" >${t("sync_2.proxy_label")}</label>
             <input id="sync-proxy form-control" class="sync-proxy form-control" placeholder="https://<host>:<port>">
 
-            <p><strong>${t("sync_2.note")}:</strong> ${t("sync_2.note_description")}</p>
-            <p>${t("sync_2.special_value_description")}</p>
+            <p class="form-text"><strong>${t("sync_2.note")}:</strong> ${t("sync_2.note_description")}</p>
+            <p class="form-text">${t("sync_2.special_value_description")}</p>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
             <button class="btn btn-primary">${t("sync_2.save")}</button>
 
-            <button class="btn" type="button" data-help-page="synchronization.html">${t("sync_2.help")}</button>
+            <button class="btn btn-secondary" type="button" data-help-page="synchronization.html">${t("sync_2.help")}</button>
         </div>
     </form>
 </div>
@@ -40,7 +40,7 @@ const TPL = `
 
     <p>${t("sync_2.test_description")}</p>
 
-    <button class="test-sync-button btn">${t("sync_2.test_button")}</button>
+    <button class="test-sync-button btn btn-secondary">${t("sync_2.test_button")}</button>
 </div>`;
 
 // TODO: Deduplicate

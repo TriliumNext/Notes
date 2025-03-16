@@ -131,7 +131,6 @@ function fullTextSearch($el: JQuery<HTMLElement>, options: Options) {
     $el.trigger("focus");
     options.fastSearch = false;
     $el.autocomplete("val", "");
-    $el.autocomplete();
     $el.setSelectedNotePath("");
     $el.autocomplete("val", searchString);
     // Set a delay to avoid resetting to true before full text search (await server.get) is called.
@@ -152,11 +151,11 @@ function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
 
     $el.addClass("note-autocomplete-input");
 
-    const $clearTextButton = $("<button>").addClass("input-group-text input-clearer-button bx bxs-tag-x").prop("title", t("note_autocomplete.clear-text-field"));
+    const $clearTextButton = $("<a>").addClass("input-group-text input-clearer-button bx bxs-tag-x").prop("title", t("note_autocomplete.clear-text-field"));
 
-    const $showRecentNotesButton = $("<button>").addClass("input-group-text show-recent-notes-button bx bx-time").prop("title", t("note_autocomplete.show-recent-notes"));
+    const $showRecentNotesButton = $("<a>").addClass("input-group-text show-recent-notes-button bx bx-time").prop("title", t("note_autocomplete.show-recent-notes"));
 
-    const $fullTextSearchButton = $("<button>")
+    const $fullTextSearchButton = $("<a>")
         .addClass("input-group-text full-text-search-button bx bx-search")
         .prop("title", `${t("note_autocomplete.full-text-search")} (Shift+Enter)`);
 
@@ -323,9 +322,7 @@ function init() {
 
     $.fn.setSelectedNotePath = function (notePath) {
         notePath = notePath || "";
-
         $(this).attr(SELECTED_NOTE_PATH_KEY, notePath);
-
         $(this).closest(".input-group").find(".go-to-selected-note-button").toggleClass("disabled", !notePath.trim()).attr("href", `#${notePath}`); // we also set href here so tooltip can be displayed
     };
 
@@ -337,11 +334,9 @@ function init() {
         }
     };
 
-    $.fn.setSelectedExternalLink = function (externalLink) {
-        if (externalLink) {
-            // TODO: This doesn't seem to do anything with the external link, is it normal?
-            $(this).closest(".input-group").find(".go-to-selected-note-button").toggleClass("disabled", true);
-        }
+    $.fn.setSelectedExternalLink = function (externalLink: string | null) {
+        $(this).attr(SELECTED_EXTERNAL_LINK_KEY, externalLink);
+        $(this).closest(".input-group").find(".go-to-selected-note-button").toggleClass("disabled", true);
     };
 
     $.fn.setNote = async function (noteId) {

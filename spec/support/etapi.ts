@@ -1,4 +1,5 @@
 import type child_process from "child_process";
+import { describe, beforeAll, afterAll } from "vitest";
 
 let etapiAuthToken: string | undefined;
 

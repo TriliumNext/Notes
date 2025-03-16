@@ -25,7 +25,7 @@ export default class App {
         this.tabBar = page.locator(".tab-row-widget-container");
         this.noteTree = page.locator(".tree-wrapper");
         this.launcherBar = page.locator("#launcher-container");
-        this.currentNoteSplit = page.locator(".note-split:not(.hidden-ext)")
+        this.currentNoteSplit = page.locator(".note-split:not(.hidden-ext)");
         this.sidebar = page.locator("#right-pane");
     }
 
@@ -42,12 +42,11 @@ export default class App {
             url = "/";
         }
 
-        await this.page.goto(url, { waitUntil: "networkidle" });
+        await this.page.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
 
         // Wait for the page to load.
         if (url === "/") {
-            await expect(this.page.locator(".tree"))
-                .toContainText("Trilium Integration Test");
+            await expect(this.page.locator(".tree")).toContainText("Trilium Integration Test");
             await this.closeAllTabs();
         }
     }
@@ -109,11 +108,12 @@ export default class App {
         });
 
         expect(csrfToken).toBeTruthy();
-        await expect(await this.page.request.put(`${BASE_URL}/api/options/${key}/${value}`, {
-            headers: {
-                "x-csrf-token": csrfToken
-            }
-        })).toBeOK();
+        await expect(
+            await this.page.request.put(`${BASE_URL}/api/options/${key}/${value}`, {
+                headers: {
+                    "x-csrf-token": csrfToken
+                }
+            })
+        ).toBeOK();
     }
-
 }

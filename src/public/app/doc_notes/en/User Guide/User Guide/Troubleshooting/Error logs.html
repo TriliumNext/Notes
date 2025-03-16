@@ -1,0 +1,65 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Error logs</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Error logs</h1>
+
+      <div class="ck-content">
+        <p>It's important to provide all available error logs together with bug reports.
+          This page will show you how to do it.</p>
+        <h2>Backend logs</h2>
+        <p>Open <a href="../Installation%20%26%20Setup/Data%20directory.html">data directory</a>,
+          go to <code>log</code> subdirectory and find the latest log file, e.g. <code>trilium-2022-12-14.log</code>.
+          You can attach the whole file to the bug report (preferable) or open it
+          and copy-paste only the last lines / lines you believe are relevant.</p>
+        <p>If you have trouble finding it the log files, there's also an in-app option
+          in top-left menu button -&gt; Advanced -&gt; Show backend log.</p>
+        <h2>Frontend logs</h2>
+        <p>To provide frontend logs, we need to open the Developer Console. Often
+          the easiest way is to press <kbd>Ctrl</kbd>-<kbd>Shift</kbd>-<kbd>I</kbd> which
+          should work in most browsers (and desktop app). Make sure that the error
+          producing action happened right before you copy&amp;paste the errors, the
+          console is cleared on app restart.</p>
+        <p>If that doesn't work, then:</p>
+        <ul>
+          <li>in Trilium desktop app, go to top-left menu button -&gt; Advanced -&gt;
+            Open Dev Tools</li>
+          <li>In Firefox/Chrome right-click anywhere in the page and click Inspect:</li>
+        </ul>
+        <p>
+          <img src="../Attachments/error-logs-firefox-context.png">
+        </p>
+        <p>Once you have Dev Tools open, click on "Console" tab:</p>
+        <p>
+          <img src="Error logs_image.png">
+        </p>
+        <p>Copy-paste (or screenshot) the logs. It's better to provide not just errors,
+          but the whole log, which might provide context while analyzing the bug.</p>
+        <h2>Providing sensitive data</h2>
+        <p>If you don't feel comfortable attaching the logs or anything sensitive
+          to the public GitHub issues, feel free to contact the devs in our Matrix
+          <a
+          href="https://github.com/TriliumNext/Notes#-discuss-with-us">support channel</a>.</p>
+        <p>Use this email to also provide anything which could assist in analysing
+          the bug - e.g. files/images/ZIPs being imported or <a href="Anonymized%20Database.html">anonymized database</a>.</p>
+        <h3>Exporting note subtree for reproduction</h3>
+        <p>Often times, bugs manifest themselves in specific notes and having them
+          would greatly ease reproduction and fixing.</p>
+        <p>In such case, please export the relevant note subtree by right-clicking
+          it on the left tree, choosing Export - HTML as ZIP:</p>
+        <p>
+          <img src="../Attachments/error-logs-export-subtree.png">
+        </p>
+      </div>
+    </div>
+  </body>
+
+</html>

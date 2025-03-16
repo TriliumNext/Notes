@@ -3,7 +3,8 @@ import App from "../support/app";
 
 test("renders ELK flowchart", async ({ page, context }) => {
     await testAriaSnapshot({
-        page, context,
+        page,
+        context,
         noteTitle: "Flowchart ELK on",
         snapshot: `
             - document:
@@ -22,12 +23,13 @@ test("renders ELK flowchart", async ({ page, context }) => {
                 - paragraph: Guarantee
                 - text: Interfaces for B
         `
-    })
+    });
 });
 
 test("renders standard flowchart", async ({ page, context }) => {
     await testAriaSnapshot({
-        page, context,
+        page,
+        context,
         noteTitle: "Flowchart ELK off",
         snapshot: `
             - document:
@@ -46,7 +48,7 @@ test("renders standard flowchart", async ({ page, context }) => {
                 - paragraph: C
                 - text: Interfaces for B
         `
-    })
+    });
 });
 
 interface AriaTestOpts {

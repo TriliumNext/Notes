@@ -6,13 +6,22 @@ import server from "../../../services/server.js";
 import toastService from "../../../services/toast.js";
 
 const TPL = `
-<div class="options-section">
+<div class="etapi-options-section options-section">
     <h4>${t("etapi.title")}</h4>
 
-    <p>${t("etapi.description")} <br/>
-       ${t("etapi.see_more")} <a href="https://triliumnext.github.io/Docs/Wiki/etapi.html">${t("etapi.wiki")}</a> ${t("etapi.and")} <a onclick="window.open('etapi/etapi.openapi.yaml')" href="etapi/etapi.openapi.yaml">${t("etapi.openapi_spec")}</a>.</p>
+    <p class="form-text">${t("etapi.description")} <br/>
+      ${t("etapi.see_more", {
+        link_to_wiki: `<a class="tn-link" href="https://triliumnext.github.io/Docs/Wiki/etapi.html">${t("etapi.wiki")}</a>`,
+        // TODO: We use window.open src/public/app/services/link.ts -> prevents regular click behavior on "a" element here because it's a relative path
+        link_to_openapi_spec: `<a class="tn-link" onclick="window.open('etapi/etapi.openapi.yaml')" href="etapi/etapi.openapi.yaml">${t("etapi.openapi_spec")}</a>`,
+        link_to_swagger_ui: `<a class="tn-link" href="#_help_f3xpgx6H01PW">${t("etapi.swagger_ui")}</a>`
+      })}
+    </p>
 
-    <button type="button" class="create-etapi-token btn btn-sm">${t("etapi.create_token")}</button>
+    <button type="button" class="create-etapi-token btn btn-sm">
+        <span class="bx bx-plus"></span>
+        ${t("etapi.create_token")}
+    </button>
 
     <hr />
 
@@ -112,8 +121,8 @@ export default class EtapiOptions extends OptionsWidget {
                     .append($("<td>").text(formatDateTime(token.utcDateCreated)))
                     .append(
                         $("<td>").append(
-                            $(`<span class="bx bx-pen token-table-button" title="${t("etapi.rename_token")}"></span>`).on("click", () => this.renameToken(token.etapiTokenId, token.name)),
-                            $(`<span class="bx bx-trash token-table-button" title="${t("etapi.delete_token")}"></span>`).on("click", () => this.deleteToken(token.etapiTokenId, token.name))
+                            $(`<span class="bx bx-edit-alt token-table-button icon-action" title="${t("etapi.rename_token")}"></span>`).on("click", () => this.renameToken(token.etapiTokenId, token.name)),
+                            $(`<span class="bx bx-trash token-table-button icon-action" title="${t("etapi.delete_token")}"></span>`).on("click", () => this.deleteToken(token.etapiTokenId, token.name))
                         )
                     )
             );

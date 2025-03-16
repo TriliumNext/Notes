@@ -5,15 +5,18 @@ import log from "../../services/log.js";
 import searchService from "../../services/search/services/search.js";
 import ValidationError from "../../errors/validation_error.js";
 import type { Request } from "express";
-import { changeLanguage } from "../../services/i18n.js";
+import { changeLanguage, getLocales } from "../../services/i18n.js";
 import { listSyntaxHighlightingThemes } from "../../services/code_block_theme.js";
 import type { OptionNames } from "../../services/options_interface.js";
 
 // options allowed to be updated directly in the Options dialog
 const ALLOWED_OPTIONS = new Set([
     "eraseEntitiesAfterTimeInSeconds",
+    "eraseEntitiesAfterTimeScale",
     "protectedSessionTimeout",
+    "protectedSessionTimeoutTimeScale",
     "revisionSnapshotTimeInterval",
+    "revisionSnapshotTimeIntervalTimeScale",
     "revisionSnapshotNumberLimit",
     "zoomFactor",
     "theme",
@@ -60,6 +63,7 @@ const ALLOWED_OPTIONS = new Set([
     "checkForUpdates",
     "disableTray",
     "eraseUnusedAttachmentsAfterSeconds",
+    "eraseUnusedAttachmentsAfterTimeScale",
     "disableTray",
     "customSearchEngineName",
     "customSearchEngineUrl",
@@ -67,11 +71,14 @@ const ALLOWED_OPTIONS = new Set([
     "editedNotesOpenInRibbon",
     "locale",
     "firstDayOfWeek",
+    "languages",
     "textNoteEditorType",
     "textNoteEditorMultilineToolbar",
     "layoutOrientation",
     "backgroundEffects",
-    "allowedHtmlTags" // Allow configuring HTML import tags
+    "allowedHtmlTags",
+    "redirectBareDomain",
+    "showLoginInShareTheme"
 ]);
 
 function getOptions() {
@@ -152,37 +159,7 @@ function getSyntaxHighlightingThemes() {
 }
 
 function getSupportedLocales() {
-    // TODO: Currently hardcoded, needs to read the list of available languages.
-    return [
-        {
-            id: "en",
-            name: "English"
-        },
-        {
-            id: "de",
-            name: "Deutsch"
-        },
-        {
-            id: "es",
-            name: "Español"
-        },
-        {
-            id: "fr",
-            name: "Français"
-        },
-        {
-            id: "cn",
-            name: "简体中文"
-        },
-        {
-            id: "tw",
-            name: "繁體中文"
-        },
-        {
-            id: "ro",
-            name: "Română"
-        }
-    ];
+    return getLocales();
 }
 
 function isAllowed(name: string) {

@@ -1,0 +1,66 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Events</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Events</h1>
+
+      <div class="ck-content">
+        <p><a href="Scripts.html">Script</a> notes can be triggered by events. Note
+          that these are backend events and thus relation need to point to the "JS
+          backend" code note.</p>
+        <h2>Global events</h2>
+        <p>Global events are attached to the script note via label. Simply create
+          e.g. "run" label with some of these values and script note will be executed
+          once the event occurs.</p>
+        <ul>
+          <li><code>run</code>
+            <ul>
+              <li><code>frontendStartup</code> - executes on frontend upon startup</li>
+              <li><code>mobileStartup</code> - executes on mobile frontend upon startup</li>
+              <li><code>backendStartup</code> - executes on backend upon startup</li>
+              <li><code>hourly</code> - executes once an hour on backend</li>
+              <li><code>daily</code> - executes once a day on backend</li>
+            </ul>
+          </li>
+        </ul>
+        <h2>Entity events</h2>
+        <p>Other events are bound to some entity, these are defined as <a href="../../Advanced%20Usage/Attributes.html">relations</a> -
+          meaning that script is triggered only if note has this script attached
+          to it through relations (or it can inherit it).</p>
+        <ul>
+          <li><code>runOnNoteCreation</code> - executes when note is created on backend</li>
+          <li><code>runOnNoteTitleChange</code> - executes when note title is changed
+            (includes note creation as well)</li>
+          <li><code>runOnNoteContentChange</code> - executes when note content is changed
+            (includes note creation as well).</li>
+          <li><code>runOnNoteChange</code> - executes when note is changed (includes
+            note creation as well)</li>
+          <li><code>runOnNoteDeletion</code> - executes when note is being deleted</li>
+          <li><code>runOnBranchCreation</code> - executes when a branch is created. Branch
+            is a link between parent note and child note and is created e.g. when cloning
+            or moving note.</li>
+          <li><code>runOnBranchChange</code> (since v0.62) - executes when a branch is
+            changed - either expanded status or prefix are changed.</li>
+          <li><code>runOnBranchDeletion</code> - executes when a branch is delete. Branch
+            is a link between parent note and child note and is deleted e.g. when moving
+            note (old branch/link is deleted).</li>
+          <li><code>runOnChildNoteCreation</code> - executes when new note is created
+            under <em>this</em> note</li>
+          <li><code>runOnAttributeCreation</code> - executes when new attribute is created
+            under <em>this</em> note</li>
+          <li><code>runOnAttributeChange</code> - executes when attribute is changed
+            under <em>this</em> note</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

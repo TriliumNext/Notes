@@ -78,7 +78,7 @@
   "attachment_erasure_timeout": {
     "attachment_auto_deletion_description": "Atașamentele se șterg automat (permanent) dacă nu sunt referențiate de către notița lor părinte după un timp prestabilit de timp.",
     "attachment_erasure_timeout": "Perioadă de ștergere a atașamentelor",
-    "erase_attachments_after_x_seconds": "Șterge atașamentele după X secunde după ce acestea n-au mai fost folosite într-o notiță",
+    "erase_attachments_after": "Erase unused attachments after:",
     "erase_unused_attachments_now": "Elimină atașamentele șterse acum",
     "manual_erasing_description": "Șterge acum toate atașamentele nefolosite din notițe",
     "unused_attachments_erased": "Atașamentele nefolosite au fost șterse."
@@ -230,7 +230,9 @@
     "workspace_search_home": "notițele de căutare vor fi create sub această notiță",
     "workspace_tab_background_color": "Culoare CSS ce va fi folosită în tab-urile ce aparțin spațiului de lucru",
     "workspace_template": "Această notița va apărea în lista de șabloane când se crează o nouă notiță, dar doar când spațiul de lucru în care se află notița este focalizat",
-    "app_theme_base": "setați valoarea la „next” pentru a folosi drept temă de bază „TriliumNext” în loc de cea clasică."
+    "app_theme_base": "setați valoarea la „next” pentru a folosi drept temă de bază „TriliumNext” în loc de cea clasică.",
+    "print_landscape": "Schimbă orientarea paginii din portret în vedere atunci când se exportă în PDF.",
+    "print_page_size": "Schimbă dimensiunea paginii când se exportă în PDF. Valori suportate: <code>A0</code>, <code>A1</code>, <code>A2</code>, <code>A3</code>, <code>A4</code>, <code>A5</code>, <code>A6</code>, <code>Legal</code>, <code>Letter</code>, <code>Tabloid</code>, <code>Ledger</code>."
   },
   "attribute_editor": {
     "add_a_new_attribute": "Adaugă un nou attribut",
@@ -279,7 +281,8 @@
     "grid": "Grilă",
     "invalid_view_type": "Mod de afișare incorect „{{type}}”",
     "list": "Listă",
-    "view_type": "Mod de afișare"
+    "view_type": "Mod de afișare",
+    "calendar": "Calendar"
   },
   "bookmark_switch": {
     "bookmark": "Semn de carte",
@@ -476,7 +479,6 @@
   },
   "etapi": {
     "actions": "Acțiuni",
-    "and": "și",
     "create_token": "Crează un token ETAPI nou",
     "created": "Creat",
     "default_token_name": "token nou",
@@ -489,10 +491,11 @@
     "new_token_title": "Token ETAPI nou",
     "no_tokens_yet": "Nu există încă token-uri. Clic pe butonul de deasupra pentru a crea una.",
     "openapi_spec": "Specificația OpenAPI pentru ETAPI",
+    "swagger_ui": "UI-ul Swagger pentru ETAPI",
     "rename_token": "Redenumește token-ul",
     "rename_token_message": "Introduceți denumirea noului token",
     "rename_token_title": "Redenumire token",
-    "see_more": "Mai multe informații pe",
+    "see_more": "Vedeți mai multe detalii în {{- link_to_wiki}} și în {{- link_to_openapi_spec}} sau în {{- link_to_swagger_ui }}.",
     "title": "ETAPI",
     "token_created_message": "Copiați token-ul creat în clipboard. Trilium stochează token-ul ca hash așadar această valoare poate fi văzută doar acum.",
     "token_created_title": "Token ETAPI creat",
@@ -520,14 +523,16 @@
     "format_opml": "OPML - format de interschimbare pentru editoare cu structură ierarhică (outline). Formatarea, imaginile și fișierele nu vor fi incluse.",
     "opml_version_1": "OPML v1.0 - text simplu",
     "opml_version_2": "OPML v2.0 - permite și HTML",
-    "format_html": "HTML - recomandat deoarece păstrează toata formatarea"
+    "format_html": "HTML - recomandat deoarece păstrează toata formatarea",
+    "format_pdf": "PDF - cu scopul de printare sau partajare."
   },
   "fast_search": {
     "description": "Căutarea rapidă dezactivează căutarea la nivel de conținut al notițelor cu scopul de a îmbunătăți performanța de căutare pentru baze de date mari.",
     "fast_search": "Căutare rapidă"
   },
   "file": {
-    "file_preview_not_available": "Previzualizarea fișierelor nu este disponibilă pentru acest format de fișier."
+    "file_preview_not_available": "Previzualizarea fișierelor nu este disponibilă pentru acest format de fișier.",
+    "too_big": "Previzualizarea conține doar primele {{maxNumChars}} caractere din fișier din motive de performanță. Descărcați fișierul și deschideți-l extern pentru a-l putea vedea în întregime."
   },
   "file_properties": {
     "download": "Descarcă",
@@ -588,7 +593,9 @@
     "toggle_fullscreen": "Comută mod ecran complet",
     "zoom": "Zoom",
     "zoom_in": "Mărește",
-    "zoom_out": "Micșorează"
+    "zoom_out": "Micșorează",
+    "show-cheatsheet": "Afișează ghidul rapid",
+    "toggle-zen-mode": "Mod zen"
   },
   "heading_style": {
     "markdown": "Stil Markdown",
@@ -824,12 +831,13 @@
     "search_in_note": "Caută în notiță",
     "convert_into_attachment_failed": "Nu s-a putut converti notița „{{title}}”.",
     "convert_into_attachment_successful": "Notița „{{title}}” a fost convertită în atașament.",
-    "convert_into_attachment_prompt": "Doriți convertirea notiței „{{title}}” într-un atașament al notiței părinte?"
+    "convert_into_attachment_prompt": "Doriți convertirea notiței „{{title}}” într-un atașament al notiței părinte?",
+    "print_pdf": "Exportare ca PDF..."
   },
   "note_erasure_timeout": {
     "deleted_notes_erased": "Notițele șterse au fost eliminate permanent.",
     "erase_deleted_notes_now": "Elimină notițele șterse acum",
-    "erase_notes_after_x_seconds": "Elimină notițele șterse după X secunde",
+    "erase_notes_after": "Elimină notițele șterse după:",
     "manual_erasing_description": "Se poate rula o eliminare manuală (fără a lua în considerare timpul definit mai sus):",
     "note_erasure_description": "Notițele șterse (precum și atributele, reviziile) sunt prima oară doar marcate drept șterse și este posibil să fie recuperate din ecranul Notițe recente. După o perioadă de timp, notițele șterse vor fi „eliminate”, caz în care conținutul lor nu se poate recupera. Această setare permite configurarea duratei de timp dintre ștergerea și eliminarea notițelor.",
     "note_erasure_timeout_title": "Timpul de eliminare automată a notițelor șterse"
@@ -916,7 +924,7 @@
     "password_mismatch": "Noile parole nu coincid.",
     "protected_session_timeout": "Timpul de expirare a sesiunii protejate",
     "protected_session_timeout_description": "Timpul de expirare a sesiunii protejate este o perioadă de timp după care sesiunea protejată este ștearsă din memoria navigatorului. Aceasta este măsurată de la timpul ultimei interacțiuni cu notițele protejate. Vezi",
-    "protected_session_timeout_label": "Timpul de expirare a sesiunii protejate (în secunde)",
+    "protected_session_timeout_label": "Timpul de expirare a sesiunii protejate:",
     "reset_confirmation": "Prin resetarea parolei se va pierde pentru totdeauna accesul la notițele protejate existente. Sigur doriți resetarea parolei?",
     "reset_link": "click aici pentru a o reseta.",
     "reset_success_message": "Parola a fost resetată. Setați o nouă parolă",
@@ -937,7 +945,8 @@
     "remove_this_attribute": "Elimină acest atribut",
     "unknown_attribute_type": "Tip de atribut necunoscut „{{type}}”",
     "unknown_label_type": "Tip de etichetă necunoscut „{{type}}”",
-    "url_placeholder": "http://siteweb..."
+    "url_placeholder": "http://siteweb...",
+    "unset-field-placeholder": "nesetat"
   },
   "prompt": {
     "defaultTitle": "Aviz",
@@ -1033,8 +1042,8 @@
     "note_detail_render_help_2": "Notița de tipul „Render HTML” este utilizată pentru <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/scripts.html\">scriptare</a>. Pe scurt, se folosește o notiță de tip cod HTML (opțional cu niște JavaScript) și această notiță o va randa. Pentru a funcționa, trebuie definită o <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/attributes.html\">relație</a> denumită „renderNote” ce indică notița HTML de randat."
   },
   "revisions": {
-    "confirm_delete": "Doriți ștergerea acestei revizii? Această acțiune va șterge titlul reviziei și conținutul, dar va păstra metainformațiile.",
-    "confirm_delete_all": "Doriți ștergerea tuturor reviziilor acestei notițe? Acest lucru va șterge titlurile și conținuturile reviziilor, dar va păstra metainformațiile.",
+    "confirm_delete": "Doriți ștergerea acestei revizii?",
+    "confirm_delete_all": "Doriți ștergerea tuturor reviziilor acestei notițe?",
     "confirm_restore": "Doriți restaurarea acestei revizii? Acest lucru va suprascrie titlul și conținutul curent cu cele ale acestei revizii.",
     "delete_all_button": "Șterge toate reviziile",
     "delete_all_revisions": "Șterge toate reviziile acestei notițe",
@@ -1061,9 +1070,9 @@
     "note_revisions": "Revizii ale notiței"
   },
   "revisions_snapshot_interval": {
-    "note_revisions_snapshot_description": "Intervalul de salvare a reviziilor este timpul în secunde după care se crează o nouă revizie a unei notițe. Vedeți <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki-ul</a> pentru mai multe informații.",
+    "note_revisions_snapshot_description": "Intervalul de salvare a reviziilor este timpul după care se crează o nouă revizie a unei notițe. Vedeți <a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki-ul</a> pentru mai multe informații.",
     "note_revisions_snapshot_interval_title": "Intervalul de salvare a reviziilor",
-    "snapshot_time_interval_label": "Intervalul de salvare a reviziilor (în secunde)"
+    "snapshot_time_interval_label": "Intervalul de salvare a reviziilor:"
   },
   "ribbon": {
     "edited_notes_message": "Tab-ul panglicii „Notițe editate” se va deschide automat pentru notițele zilnice",
@@ -1300,9 +1309,7 @@
   },
   "web_view": {
     "create_label": "Pentru a începe, creați o etichetă cu adresa URL de încorporat, e.g.  #webViewSrc=\"https://www.google.com\"",
-    "disclaimer": "Avertisment despre statutul experimental",
     "embed_websites": "Notițele de tip „Vizualizare web” permit încorporarea site-urilor web în Trilium.",
-    "experimental_note": "„Vizualizare web” este un tip experimental de notiță, și poate fi înlăturat sau schimbat substanțial în viitor. De asemenea, Web View funcționeză doar în aplicația desktop.",
     "web_view": "Vizualizare web"
   },
   "wrap_lines": {
@@ -1367,7 +1374,7 @@
     "canvas": "Schiță",
     "code": "Cod sursă",
     "mermaid-diagram": "Diagramă Mermaid",
-    "mind-map": "Hartă mentală (beta)",
+    "mind-map": "Hartă mentală",
     "note-map": "Hartă notițe",
     "relation-map": "Hartă relații",
     "render-note": "Randare notiță",
@@ -1379,7 +1386,10 @@
     "image": "Imagine",
     "launcher": "Scurtătură",
     "widget": "Widget",
-    "confirm-change": "Nu se recomandă schimbarea tipului notiței atunci când ea are un conținut. Procedați oricum?"
+    "confirm-change": "Nu se recomandă schimbarea tipului notiței atunci când ea are un conținut. Procedați oricum?",
+    "geo-map": "Hartă geografică",
+    "beta-feature": "Beta",
+    "task-list": "Listă de sarcini"
   },
   "protect_note": {
     "toggle-off": "Deprotejează notița",
@@ -1633,5 +1643,50 @@
   "notes": {
     "duplicate-note-suffix": "(dupl.)",
     "duplicate-note-title": "{{ noteTitle }} {{ duplicateNoteSuffix }}"
+  },
+  "geo-map-context": {
+    "open-location": "Deschide locația",
+    "remove-from-map": "Înlătură de pe hartă"
+  },
+  "geo-map": {
+    "create-child-note-title": "Crează o notiță nouă și adaug-o pe hartă",
+    "unable-to-load-map": "Nu s-a putut încărca harta."
+  },
+  "duration": {
+    "days": "zile",
+    "hours": "ore",
+    "minutes": "minute",
+    "seconds": "secunde"
+  },
+  "help-button": {
+    "title": "Deschide ghidul relevant"
+  },
+  "zen_mode": {
+    "button_exit": "Ieși din modul zen"
+  },
+  "time_selector": {
+    "minimum_input": "Valoarea introdusă trebuie să fie de cel puțin {{minimumSeconds}} secunde.",
+    "invalid_input": "Valoarea de timp introdusă nu este corectă."
+  },
+  "share": {
+    "title": "Setări de partajare",
+    "show_login_link_description": "Adaugă o legătură de autentificare în subsolul paginilor partajate",
+    "show_login_link": "Afișează legătura de autentificare în tema de partajare",
+    "share_root_not_shared": "Notița „{{noteTitle}}” are eticheta #shareRoot dar nu este partajată",
+    "share_root_not_found": "Nu s-a identificat nicio notiță cu eticheta `#shareRoot`",
+    "share_root_found": "Notița principală pentru partajare „{{noteTitle}}” este pregătită",
+    "redirect_bare_domain_description": "Redirecționează utilizatorii anonimi către pagina de partajare în locul paginii de autentificare",
+    "redirect_bare_domain": "Redirecționează domeniul principal la pagina de partajare",
+    "check_share_root": "Verificare stare pagină partajată principală"
+  },
+  "tasks": {
+    "due": {
+      "today": "Azi",
+      "tomorrow": "Mâine",
+      "yesterday": "Ieri"
+    }
+  },
+  "content_widget": {
+    "unknown_widget": "Nu s-a putut găsi widget-ul corespunzător pentru „{{id}}”."
   }
 }

@@ -22,11 +22,7 @@ interface CreateNoteOpts {
     focus?: "title" | "content";
     target?: string;
     targetBranchId?: string;
-    textEditor?: {
-        // TODO: Replace with interface once note_context.js is converted.
-        getSelectedHtml(): string;
-        removeSelection(): void;
-    };
+    textEditor?: TextEditor;
 }
 
 interface Response {
@@ -66,7 +62,7 @@ async function createNote(parentNotePath: string | undefined, options: CreateNot
 
     const parentNoteId = treeService.getNoteIdFromUrl(parentNotePath);
 
-    if (options.type === "mermaid" && !options.content) {
+    if (options.type === "mermaid" && !options.content && !options.templateNoteId) {
         options.content = `graph TD;
     A-->B;
     A-->C;
@@ -90,8 +86,8 @@ async function createNote(parentNotePath: string | undefined, options: CreateNot
 
     await ws.waitForMaxKnownEntityChangeId();
 
-    if (options.activate) {
-        const activeNoteContext = appContext.tabManager.getActiveContext();
+    const activeNoteContext = appContext.tabManager.getActiveContext();
+    if (activeNoteContext && options.activate) {
         await activeNoteContext.setNote(`${parentNotePath}/${note.noteId}`);
 
         if (options.focus === "title") {
@@ -156,8 +152,7 @@ async function duplicateSubtree(noteId: string, parentNotePath: string) {
 
     await ws.waitForMaxKnownEntityChangeId();
 
-    const activeNoteContext = appContext.tabManager.getActiveContext();
-    activeNoteContext.setNote(`${parentNotePath}/${note.noteId}`);
+    appContext.tabManager.getActiveContext()?.setNote(`${parentNotePath}/${note.noteId}`);
 
     const origNote = await froca.getNote(noteId);
     toastService.showMessage(t("note_create.duplicated", { title: origNote?.title }));

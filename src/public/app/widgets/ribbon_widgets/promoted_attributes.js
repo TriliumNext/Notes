@@ -16,7 +16,7 @@ const TPL = `
         flex-shrink: 0.4;
         overflow: auto;
     }
-    
+
     .promoted-attributes-container {
         margin: 0 1.5em;
         overflow: auto;
@@ -39,7 +39,7 @@ const TPL = `
         display: table-cell;
         padding: 1px 0;
     }
-    
+
     .promoted-attribute-cell div.input-group {
         margin-left: 10px;
         display: flex;
@@ -54,9 +54,9 @@ const TPL = `
         flex-grow: 0;
         width: unset;
     }
-    
+
     </style>
-    
+
     <div class="promoted-attributes-container"></div>
 </div>`;
 
@@ -155,6 +155,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
             .attr("data-attribute-type", valueAttr.type)
             .attr("data-attribute-name", valueAttr.name)
             .prop("value", valueAttr.value)
+            .prop("placeholder", t("promoted_attributes.unset-field-placeholder"))
             .addClass("form-control")
             .addClass("promoted-attribute-input")
             .on("change", (event) => this.promotedAttributeChanged(event));
@@ -226,6 +227,9 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
             } else if (definition.labelType === "boolean") {
                 $input.prop("type", "checkbox");
 
+                $input.wrap($(`<label class="tn-checkbox"></label>`));
+                $wrapper.find(".input-group").removeClass("input-group");
+
                 if (valueAttr.value === "true") {
                     $input.prop("checked", "checked");
                 }
@@ -272,7 +276,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
 
         if (definition.multiplicity === "multi") {
             const $addButton = $("<span>")
-                .addClass("bx bx-plus pointer")
+                .addClass("bx bx-plus pointer tn-tool-button")
                 .prop("title", t("promoted_attributes.add_new_attribute"))
                 .on("click", async () => {
                     const $new = await this.createPromotedAttributeCell(
@@ -292,7 +296,7 @@ export default class PromotedAttributesWidget extends NoteContextAwareWidget {
                 });
 
             const $removeButton = $("<span>")
-                .addClass("bx bx-trash pointer")
+                .addClass("bx bx-trash pointer tn-tool-button")
                 .prop("title", t("promoted_attributes.remove_this_attribute"))
                 .on("click", async () => {
                     const attributeId = $input.attr("data-attribute-id");

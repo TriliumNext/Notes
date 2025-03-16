@@ -16,6 +16,7 @@ import type SNote from "./shaca/entities/snote.js";
 import type SBranch from "./shaca/entities/sbranch.js";
 import type SAttachment from "./shaca/entities/sattachment.js";
 import utils from "../services/utils.js";
+import options from "../services/options.js";
 
 function getSharedSubTreeRoot(note: SNote): { note?: SNote; branch?: SBranch } {
     if (note.noteId === shareRoot.SHARE_ROOT_NOTE_ID) {
@@ -86,7 +87,6 @@ function checkNoteAccess(noteId: string, req: Request, res: Response) {
     const header = req.header("Authorization");
 
     if (!header?.startsWith("Basic ")) {
-        requestCredentials(res);
         return false;
     }
 
@@ -131,6 +131,7 @@ function renderImageAttachment(image: SNote, res: Response, attachmentName: stri
 function register(router: Router) {
     function renderNote(note: SNote, req: Request, res: Response) {
         if (!note) {
+            console.log("Unable to find note ", note);
             res.status(404).render("share/404");
             return;
         }
@@ -143,7 +144,7 @@ function register(router: Router) {
 
         addNoIndexHeader(note, res);
 
-        if (note.isLabelTruthy("shareRaw")) {
+        if (note.isLabelTruthy("shareRaw") || typeof req.query.raw !== "undefined") {
             res.setHeader("Content-Type", note.mime).send(note.getContent());
 
             return;
@@ -151,7 +152,8 @@ function register(router: Router) {
 
         const { header, content, isEmpty } = contentRenderer.getContent(note);
         const subRoot = getSharedSubTreeRoot(note);
-        const opts = { note, header, content, isEmpty, subRoot, assetPath, appPath };
+        const showLoginInShareTheme = options.getOption("showLoginInShareTheme");
+        const opts = { note, header, content, isEmpty, subRoot, assetPath, appPath, showLoginInShareTheme };
         let useDefaultView = true;
 
         // Check if the user has their own template

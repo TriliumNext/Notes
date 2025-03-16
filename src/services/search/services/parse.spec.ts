@@ -14,11 +14,14 @@ import { default as parseInternal, type ParseOpts } from "./parse.js";
 
 describe("Parser", () => {
     it("fulltext parser without content", () => {
-        const rootExp = parse({
-            fulltextTokens: tokens(["hello", "hi"]),
-            expressionTokens: [],
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: tokens(["hello", "hi"]),
+                expressionTokens: [],
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         expectExpression(rootExp.subExpressions[0], PropertyComparisonExp);
         const orExp = expectExpression(rootExp.subExpressions[2], OrExp);
@@ -27,11 +30,14 @@ describe("Parser", () => {
     });
 
     it("fulltext parser with content", () => {
-        const rootExp = parse({
-            fulltextTokens: tokens(["hello", "hi"]),
-            expressionTokens: [],
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: tokens(["hello", "hi"]),
+                expressionTokens: [],
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -45,11 +51,14 @@ describe("Parser", () => {
     });
 
     it("simple label comparison", () => {
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#mylabel", "=", "text"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#mylabel", "=", "text"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
         const labelComparisonExp = expectExpression(rootExp.subExpressions[2], LabelComparisonExp);
@@ -59,11 +68,14 @@ describe("Parser", () => {
     });
 
     it("simple attribute negation", () => {
-        let rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#!mylabel"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        let rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#!mylabel"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
         let notExp = expectExpression(rootExp.subExpressions[2], NotExp);
@@ -71,11 +83,14 @@ describe("Parser", () => {
         expect(attributeExistsExp.attributeType).toEqual("label");
         expect(attributeExistsExp.attributeName).toEqual("mylabel");
 
-        rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["~!myrelation"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["~!myrelation"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
         notExp = expectExpression(rootExp.subExpressions[2], NotExp);
@@ -85,11 +100,14 @@ describe("Parser", () => {
     });
 
     it("simple label AND", () => {
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#first", "=", "text", "and", "#second", "=", "text"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#first", "=", "text", "and", "#second", "=", "text"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -101,11 +119,14 @@ describe("Parser", () => {
     });
 
     it("simple label AND without explicit AND", () => {
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#first", "=", "text", "#second", "=", "text"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#first", "=", "text", "#second", "=", "text"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -117,11 +138,14 @@ describe("Parser", () => {
     });
 
     it("simple label OR", () => {
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#first", "=", "text", "or", "#second", "=", "text"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#first", "=", "text", "or", "#second", "=", "text"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -132,11 +156,14 @@ describe("Parser", () => {
     });
 
     it("fulltext and simple label", () => {
-        const rootExp = parse({
-            fulltextTokens: tokens(["hello"]),
-            expressionTokens: tokens(["#mylabel", "=", "text"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: tokens(["hello"]),
+                expressionTokens: tokens(["#mylabel", "=", "text"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         const [firstSub, _, thirdSub, fourth] = expectSubexpressions(rootExp, PropertyComparisonExp, undefined, OrExp, LabelComparisonExp);
 
@@ -149,11 +176,14 @@ describe("Parser", () => {
     });
 
     it("label sub-expression", () => {
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#first", "=", "text", "or", ["#second", "=", "text", "and", "#third", "=", "text"]]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#first", "=", "text", "or", ["#second", "=", "text", "and", "#third", "=", "text"]]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -168,11 +198,14 @@ describe("Parser", () => {
     });
 
     it("label sub-expression without explicit operator", () => {
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: tokens(["#first", ["#second", "or", "#third"], "#fourth"]),
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: tokens(["#first", ["#second", "or", "#third"], "#fourth"]),
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -189,11 +222,14 @@ describe("Parser", () => {
     });
 
     it("parses limit without order by", () => {
-        const rootExp = parse({
-            fulltextTokens: tokens(["hello", "hi"]),
-            expressionTokens: [],
-            searchContext: new SearchContext({ limit: 2 })
-        }, OrderByAndLimitExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: tokens(["hello", "hi"]),
+                expressionTokens: [],
+                searchContext: new SearchContext({ limit: 2 })
+            },
+            OrderByAndLimitExp
+        );
 
         expect(rootExp.limit).toBe(2);
         expect(rootExp.subExpression).toBeInstanceOf(AndExp);
@@ -236,15 +272,18 @@ describe("Invalid expressions", () => {
 
         expect(searchContext.error).toEqual(`Error near token "note" in "#first = note.relations.second", it's possible to compare with constant only.`);
 
-        const rootExp = parse({
-            fulltextTokens: [],
-            expressionTokens: [
-                { token: "#first", inQuotes: false },
-                { token: "=", inQuotes: false },
-                { token: "#second", inQuotes: true }
-            ],
-            searchContext: new SearchContext()
-        }, AndExp);
+        const rootExp = parse(
+            {
+                fulltextTokens: [],
+                expressionTokens: [
+                    { token: "#first", inQuotes: false },
+                    { token: "=", inQuotes: false },
+                    { token: "#second", inQuotes: true }
+                ],
+                searchContext: new SearchContext()
+            },
+            AndExp
+        );
 
         assertIsArchived(rootExp.subExpressions[0]);
 
@@ -327,16 +366,13 @@ function expectExpression<T extends Expression>(exp: Expression, type: ClassType
  * @param fourthType the type of the fourth subexpression.
  * @returns an array of all the subexpressions (in order) typecasted to their expected type.
  */
-function expectSubexpressions<FirstT extends Expression,
-                              SecondT extends Expression,
-                              ThirdT extends Expression,
-                              FourthT extends Expression>(
-                                exp: AndExp,
-                                firstType: ClassType<FirstT>,
-                                secondType?: ClassType<SecondT>,
-                                thirdType?: ClassType<ThirdT>,
-                                fourthType?: ClassType<FourthT>): [ FirstT, SecondT, ThirdT, FourthT ]
-{
+function expectSubexpressions<FirstT extends Expression, SecondT extends Expression, ThirdT extends Expression, FourthT extends Expression>(
+    exp: AndExp,
+    firstType: ClassType<FirstT>,
+    secondType?: ClassType<SecondT>,
+    thirdType?: ClassType<ThirdT>,
+    fourthType?: ClassType<FourthT>
+): [FirstT, SecondT, ThirdT, FourthT] {
     expectExpression(exp.subExpressions[0], firstType);
     if (secondType) {
         expectExpression(exp.subExpressions[1], secondType);
@@ -347,10 +383,5 @@ function expectSubexpressions<FirstT extends Expression,
     if (fourthType) {
         expectExpression(exp.subExpressions[3], fourthType);
     }
-    return [
-        exp.subExpressions[0] as FirstT,
-        exp.subExpressions[1] as SecondT,
-        exp.subExpressions[2] as ThirdT,
-        exp.subExpressions[3] as FourthT
-    ]
+    return [exp.subExpressions[0] as FirstT, exp.subExpressions[1] as SecondT, exp.subExpressions[2] as ThirdT, exp.subExpressions[3] as FourthT];
 }

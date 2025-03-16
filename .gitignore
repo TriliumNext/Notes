@@ -1,3 +1,4 @@
+.cache
 .DS_Store
 node_modules/
 dist/
@@ -7,8 +8,10 @@ src/public/app-dist/
 npm-debug.log
 yarn-error.log
 po-*/
+.flatpak-builder/
 
 *.db
+!test/**/*.db
 !integration-tests/db/document.db
 !integration-tests/db/config.ini
 integration-tests/db/log
@@ -34,3 +37,9 @@ images/app-icons/mac/*.png
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+data-docs/backup
+data-docs/log
+data-docs/session
+data-docs/session_secret.txt
+data-docs/document.*

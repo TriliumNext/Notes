@@ -1,0 +1,90 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Admonitions</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Admonitions</h1>
+
+      <div class="ck-content">
+        <div>
+          <div>
+            <figure class="image">
+              <img style="aspect-ratio:959/547;" src="1_Admonitions_image.png" width="959"
+              height="547">
+            </figure>
+            <p>Admonitions are a way to highlight information to the reader. Other names
+              for it include <em>call-outs</em> and <em>info/warning/alert boxes</em>.</p>
+            <h2>Inserting a new admonition</h2>
+            <h3>From the UI</h3>
+            <p>In the Formatting toolbar:</p>
+            <p>
+              <img src="Admonitions_image.png" width="202" height="194">
+            </p>
+            <h3>Via the keyboard</h3>
+            <p>It's possible to insert an admonition simply by typing:</p>
+            <ul>
+              <li><code>!!! note</code>
+              </li>
+              <li><code>!!! tip</code>
+              </li>
+              <li><code>!!! important</code>
+              </li>
+              <li><code>!!! caution</code>
+              </li>
+              <li><code>!!! warning</code>
+              </li>
+            </ul>
+            <p>In addition to that, it's also possible to type <code>!!!&nbsp;</code> followed
+              by any text, case in which a default admonition type will appear (note)
+              with the entered text inside it.</p>
+            <h2>Interaction</h2>
+            <p>By design, admonitions act very similar to block quotes.</p>
+            <ul>
+              <li>Selecting a text and pressing the admonition button will turn that text
+                into an admonition.</li>
+              <li>If selecting multiple admonitions, pressing the admonition button will
+                automatically merge them into one.</li>
+            </ul>
+            <p>Inside an admonition:</p>
+            <ul>
+              <li>Pressing <kbd>Backspace</kbd> while the admonition is empty will remove
+                it.</li>
+              <li>Pressing <kbd>Enter</kbd> will start a new paragraph. Pressing it twice
+                will exit out of the admonition.</li>
+              <li>Headings and other block content including tables can be inserted inside
+                the admonition.</li>
+            </ul>
+            <h2>Types of admonitions</h2>
+            <p>There are currently five types of admonitions: <em>Note</em>, <em>Tip</em>, <em>Important</em>, <em>Caution</em>, <em>Warning</em>.</p>
+            <p>These types were inspired by GitHub's support for this feature and there
+              are currently no plans for adjusting it or allowing the user to customize
+              them.</p>
+            <h2>Markdown support</h2>
+            <p>The Markdown syntax for admonitions as supported by Trilium is the one
+              that GitHub uses, which is as follows:</p><pre><code class="language-text-x-markdown">&gt; [!NOTE]
+&gt; This is a note.
+
+&gt; [!TIP]
+&gt; This is a tip.
+
+&gt; [!IMPORTANT]
+&gt; This is a very important information.
+
+&gt; [!CAUTION]
+&gt; This is a caution.</code></pre>
+            <p>There are currently no plans of supporting alternative admonition syntaxes
+              such as <code>!!! note</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

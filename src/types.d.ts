@@ -18,7 +18,7 @@ declare module "normalize-strings" {
     export default normalizeString;
 }
 
-declare module "joplin-turndown-plugin-gfm" {
+declare module "@joplin/turndown-plugin-gfm" {
     import TurndownService from "turndown";
     namespace gfm {
         function gfm(service: TurndownService): void;

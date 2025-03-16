@@ -13,7 +13,7 @@ declare module "draggabilly" {
             containment: HTMLElement
         });
         element: HTMLElement;
-        on(event: "pointerDown" | "dragStart" | "dragEnd" | "dragMove", callback: Callback)
+        on(event: "pointerDown" | "dragStart" | "dragEnd" | "dragMove", callback: Callback);
         dragEnd();
         isDragging: boolean;
         positionDrag: () => void;
@@ -21,6 +21,6 @@ declare module "draggabilly" {
     }
 }
 
-declare module '@mind-elixir/node-menu' {
+declare module "@mind-elixir/node-menu" {
     export default mindmap;
 }

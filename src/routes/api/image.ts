@@ -41,8 +41,8 @@ function returnImageInt(image: BNote | BRevision | null, res: Response) {
     }
 }
 
-function renderSvgAttachment(image: BNote | BRevision, res: Response, attachmentName: string) {
-    let svg: string | Buffer = "<svg/>";
+export function renderSvgAttachment(image: BNote | BRevision, res: Response, attachmentName: string) {
+    let svg: string | Buffer = `<svg xmlns="http://www.w3.org/2000/svg"></svg>`;
     const attachment = image.getAttachmentByTitle(attachmentName);
 
     if (attachment) {
@@ -82,7 +82,7 @@ function updateImage(req: Request) {
     const { noteId } = req.params;
     const { file } = req;
 
-    const note = becca.getNoteOrThrow(noteId);
+    const _note = becca.getNoteOrThrow(noteId);
 
     if (!file) {
         return {

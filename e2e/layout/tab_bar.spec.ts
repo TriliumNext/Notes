@@ -19,13 +19,13 @@ test("Can drag tabs around", async ({ page, context }) => {
     let tab = app.getTab(0);
 
     // Drag the first tab at the end
-    await tab.dragTo(app.getTab(2), { targetPosition: { x: 50, y: 0 }});
+    await tab.dragTo(app.getTab(2), { targetPosition: { x: 50, y: 0 } });
 
     tab = app.getTab(2);
     await expect(tab).toContainText(NOTE_TITLE);
 
     // Drag the tab to the left
-    await tab.dragTo(app.getTab(0), { targetPosition: { x: 50, y: 0 }});
+    await tab.dragTo(app.getTab(0), { targetPosition: { x: 50, y: 0 } });
     await expect(app.getTab(0)).toContainText(NOTE_TITLE);
 });
 

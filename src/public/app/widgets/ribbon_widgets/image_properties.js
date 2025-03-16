@@ -23,15 +23,27 @@ const TPL = `
             <span class="image-filesize"></span>
         </span>
     </div>
-    
+
     <div class="no-print" style="display: flex; justify-content: space-evenly; margin: 10px;">
-        <button class="image-download btn btn-sm btn-primary" type="button">${t("image_properties.download")}</button>
+        <button class="image-download btn btn-sm btn-primary" type="button">
+            <span class="bx bx-download"></span>
+            ${t("image_properties.download")}
+        </button>
 
-        <button class="image-open btn btn-sm btn-primary" type="button">${t("image_properties.open")}</button>
+        <button class="image-open btn btn-sm btn-primary" type="button">
+            <span class="bx bx-link-external"></span>
+            ${t("image_properties.open")}
+        </button>
 
-        <button class="image-copy-reference-to-clipboard btn btn-sm btn-primary" type="button">${t("image_properties.copy_reference_to_clipboard")}</button>
+        <button class="image-copy-reference-to-clipboard btn btn-sm btn-primary" type="button">
+            <span class="bx bx-copy"></span>
+            ${t("image_properties.copy_reference_to_clipboard")}
+        </button>
 
-        <button class="image-upload-new-revision btn btn-sm btn-primary" type="button">${t("image_properties.upload_new_revision")}</button>
+        <button class="image-upload-new-revision btn btn-sm btn-primary" type="button">
+            <span class="bx bx-folder-open"></span>
+            ${t("image_properties.upload_new_revision")}
+        </button>
     </div>
 
     <input type="file" class="image-upload-new-revision-input" style="display: none">

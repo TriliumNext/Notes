@@ -1,30 +1,31 @@
-import OptionsWidget from "../options_widget.js";
 import { t } from "../../../../services/i18n.js";
-import type { OptionMap } from "../../../../../../services/options_interface.js";
+import TimeSelector from "../time_selector.js";
 
 const TPL = `
 <div class="options-section">
     <h4>${t("revisions_snapshot_interval.note_revisions_snapshot_interval_title")}</h4>
 
-    <p>${t("revisions_snapshot_interval.note_revisions_snapshot_description")}</p>
-
-    <div class="form-group">
-        <label>${t("revisions_snapshot_interval.snapshot_time_interval_label")}</label>
-        <input class="revision-snapshot-time-interval-in-seconds form-control options-number-input" type="number" min="10">
-    </div>
+    <p class="form-text use-tn-links">${t("revisions_snapshot_interval.note_revisions_snapshot_description")}</p>
+    <div id="time-selector-placeholder"></div>
 </div>`;
 
-export default class RevisionsSnapshotIntervalOptions extends OptionsWidget {
+export default class RevisionsSnapshotIntervalOptions extends TimeSelector {
 
-    private $revisionsTimeInterval!: JQuery<HTMLElement>;
-
-    doRender() {
-        this.$widget = $(TPL);
-        this.$revisionsTimeInterval = this.$widget.find(".revision-snapshot-time-interval-in-seconds");
-        this.$revisionsTimeInterval.on("change", () => this.updateOption("revisionSnapshotTimeInterval", this.$revisionsTimeInterval.val()));
+    constructor() {
+        super({
+            widgetId: "revision-snapshot-time-interval",
+            widgetLabelId: "revisions_snapshot_interval.snapshot_time_interval_label",
+            optionValueId: "revisionSnapshotTimeInterval",
+            optionTimeScaleId: "revisionSnapshotTimeIntervalTimeScale",
+            minimumSeconds: 10
+        });
+        super.doRender();
     }
 
-    async optionsLoaded(options: OptionMap) {
-        this.$revisionsTimeInterval.val(options.revisionSnapshotTimeInterval);
+    doRender() {
+        const $timeSelector = this.$widget;
+        // inject TimeSelector widget template
+        this.$widget = $(TPL);
+        this.$widget.find("#time-selector-placeholder").replaceWith($timeSelector);
     }
 }

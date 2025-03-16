@@ -2,6 +2,16 @@ import sanitizeHtml from "sanitize-html";
 import sanitizeUrl from "@braintree/sanitize-url";
 import optionService from "./options.js";
 
+// Be consistent with `ALLOWED_PROTOCOLS` in `src\public\app\services\link.js`
+// TODO: Deduplicate with client once we can.
+export const ALLOWED_PROTOCOLS = [
+    'http', 'https', 'ftp', 'ftps', 'mailto', 'data', 'evernote', 'file', 'facetime', 'gemini', 'git',
+    'gopher', 'imap', 'irc', 'irc6', 'jabber', 'jar', 'lastfm', 'ldap', 'ldaps', 'magnet', 'message',
+    'mumble', 'nfs', 'onenote', 'pop', 'rmi', 's3', 'sftp', 'skype', 'sms', 'spotify', 'steam', 'svn', 'udp',
+    'view-source', 'vlc', 'vnc', 'ws', 'wss', 'xmpp', 'jdbc', 'slack', 'tel', 'smb', 'zotero', 'geo',
+    'mid'
+];
+
 // Default list of allowed HTML tags
 export const DEFAULT_ALLOWED_TAGS = [
     "h1",
@@ -131,6 +141,9 @@ function sanitize(dirtyHtml: string) {
         allowedTags = DEFAULT_ALLOWED_TAGS;
     }
 
+    const colorRegex = [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/, /^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/];
+    const sizeRegex = [/^\d+(?:px|em|%)$/];
+
     // to minimize document changes, compress H
     return sanitizeHtml(dirtyHtml, {
         allowedTags,
@@ -138,56 +151,27 @@ function sanitize(dirtyHtml: string) {
             "*": ["class", "style", "title", "src", "href", "hash", "disabled", "align", "alt", "center", "data-*"],
             input: ["type", "checked"]
         },
-        // Be consistent with `allowedSchemes` in `src\public\app\services\link.js`
-        allowedSchemes: [
-            "http",
-            "https",
-            "ftp",
-            "ftps",
-            "mailto",
-            "data",
-            "evernote",
-            "file",
-            "facetime",
-            "gemini",
-            "git",
-            "gopher",
-            "imap",
-            "irc",
-            "irc6",
-            "jabber",
-            "jar",
-            "lastfm",
-            "ldap",
-            "ldaps",
-            "magnet",
-            "message",
-            "mumble",
-            "nfs",
-            "onenote",
-            "pop",
-            "rmi",
-            "s3",
-            "sftp",
-            "skype",
-            "sms",
-            "spotify",
-            "steam",
-            "svn",
-            "udp",
-            "view-source",
-            "vlc",
-            "vnc",
-            "ws",
-            "wss",
-            "xmpp",
-            "jdbc",
-            "slack",
-            "tel",
-            "smb",
-            "zotero",
-            "geo"
-        ],
+        allowedStyles: {
+            "*": {
+                color: colorRegex,
+                "background-color": colorRegex
+            },
+            figure: {
+                float: [/^\s*(left|right|none)\s*$/],
+                width: sizeRegex,
+                height: sizeRegex
+            },
+            table: {
+                "border-color": colorRegex,
+                "border-style": [/^\s*(none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset)\s*$/]
+            },
+            td: {
+                border: [
+                    /^\s*\d+(?:px|em|%)\s*(none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset)\s*(#(0x)?[0-9a-fA-F]+|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)|hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\))\s*$/
+                ]
+            }
+        },
+        allowedSchemes: ALLOWED_PROTOCOLS,
         nonTextTags: ["head"],
         transformTags
     });

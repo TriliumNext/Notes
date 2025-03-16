@@ -7,7 +7,7 @@ const TPL = `
 <div class="options-section">
     <h4>${t("tray.title")}</h4>
 
-    <label>
+    <label class="tn-checkbox">
         <input type="checkbox" class="tray-enabled">
         ${t("tray.enable_tray")}
     </label>

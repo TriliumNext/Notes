@@ -41,7 +41,6 @@ interface SimilarNote {
     noteId: string;
 }
 
-
 export default class SimilarNotesWidget extends RightPanelWidget {
 
     private $similarNotesWrapper!: JQuery<HTMLElement>;

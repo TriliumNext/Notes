@@ -14,6 +14,8 @@ import type AttributeDetailWidget from "./attribute_detail.js";
 import type { CommandData, EventData, EventListener, FilteredCommandNames } from "../../components/app_context.js";
 import type { default as FAttribute, AttributeType } from "../../entities/fattribute.js";
 import type FNote from "../../entities/fnote.js";
+import { escapeQuotes } from "../../services/utils.js";
+import { buildConfig } from "../type_widgets/ckeditor/config.js";
 
 const HELP_TEXT = `
 <p>${t("attribute_editor.help_text_body1")}</p>
@@ -76,8 +78,8 @@ const TPL = `
 
     <div class="attribute-list-editor" tabindex="200"></div>
 
-    <div class="bx bx-save save-attributes-button" title="${t("attribute_editor.save_attributes")}"></div>
-    <div class="bx bx-plus add-new-attribute-button" title="${t("attribute_editor.add_a_new_attribute")}"></div>
+    <div class="bx bx-save save-attributes-button tn-tool-button" title="${escapeQuotes(t("attribute_editor.save_attributes"))}"></div>
+    <div class="bx bx-plus add-new-attribute-button tn-tool-button" title="${escapeQuotes(t("attribute_editor.add_a_new_attribute"))}"></div>
 
     <div class="attribute-errors" style="display: none;"></div>
 </div>
@@ -129,6 +131,7 @@ const mentionSetup: MentionConfig = {
 };
 
 const editorConfig = {
+    ...buildConfig(),
     removePlugins: [
         "Heading",
         "Link",
@@ -171,12 +174,14 @@ const editorConfig = {
         "SelectAll",
         "IncludeNote",
         "CutToNote",
-        "Mathematics",
+        "Math",
         "AutoformatMath",
         "indentBlockShortcutPlugin",
         "removeFormatLinksPlugin",
         "Footnotes",
-        "Mermaid"
+        "Mermaid",
+        "Kbd",
+        "Admonition"
     ],
     toolbar: {
         items: []

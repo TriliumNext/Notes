@@ -25,14 +25,18 @@ function buildDatabase() {
     return new Database(dataDir.DOCUMENT_PATH);
 }
 
-function buildIntegrationTestDatabase() {
-    const dbBuffer = fs.readFileSync(dataDir.DOCUMENT_PATH);
+function buildIntegrationTestDatabase(dbPath?: string) {
+    const dbBuffer = fs.readFileSync(dbPath ?? dataDir.DOCUMENT_PATH);
     return new Database(dbBuffer);
 }
 
-function rebuildIntegrationTestDatabase() {
+function rebuildIntegrationTestDatabase(dbPath?: string) {
+    if (dbConnection) {
+        dbConnection.close();
+    }
+
     // This allows a database that is read normally but is kept in memory and discards all modifications.
-    dbConnection = buildIntegrationTestDatabase();
+    dbConnection = buildIntegrationTestDatabase(dbPath);
     statementCache = {};
 }
 
@@ -274,6 +278,7 @@ function transactional<T>(func: (statement: Statement) => T) {
 
         return ret;
     } catch (e) {
+        console.warn("Got error ", e);
         const entityChangeIds = cls.getAndClearEntityChangeIds();
 
         if (entityChangeIds.length > 0) {

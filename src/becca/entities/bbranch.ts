@@ -159,7 +159,7 @@ class BBranch extends AbstractBeccaEntity<BBranch> {
             }
         }
 
-        if (this.noteId === "root" || this.noteId === cls.getHoistedNoteId()) {
+        if ((this.noteId === "root" || this.noteId === cls.getHoistedNoteId()) && !this.isWeak) {
             throw new Error("Can't delete root or hoisted branch/note");
         }
 

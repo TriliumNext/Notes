@@ -6,32 +6,50 @@ import type { OptionMap } from "../../../../../../services/options_interface.js"
 
 const TPL = `
 <div class="options-section">
+    <style>
+        .database-database-anonymization-option {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 1em;
+        }
+
+        .database-database-anonymization-option p {
+            margin-top: .75em;
+            flex-grow: 1;
+        }
+    </style>
+
     <h4>${t("database_anonymization.title")}</h4>
 
     <div class="row">
-        <p>${t("database_anonymization.choose_anonymization")}</p>
+        <p class="form-text">${t("database_anonymization.choose_anonymization")}</p>
 
-        <div class="col-md-6">
+        <div class="col-md-6 database-database-anonymization-option">
             <h5>${t("database_anonymization.full_anonymization")}</h5>
 
-            <p>${t("database_anonymization.full_anonymization_description")}</p>
-            <button class="anonymize-full-button btn">${t("database_anonymization.save_fully_anonymized_database")}</button>
+            <p class="form-text">${t("database_anonymization.full_anonymization_description")}</p>
+            <button class="anonymize-full-button btn btn-secondary">${t("database_anonymization.save_fully_anonymized_database")}</button>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 database-database-anonymization-option">
             <h5>${t("database_anonymization.light_anonymization")}</h5>
 
-            <p>${t("database_anonymization.light_anonymization_description")}</p>
+            <p class="form-text">${t("database_anonymization.light_anonymization_description")}</p>
 
-            <button class="anonymize-light-button btn">${t("database_anonymization.save_lightly_anonymized_database")}</button>
+            <button class="anonymize-light-button btn btn-secondary">${t("database_anonymization.save_lightly_anonymized_database")}</button>
         </div>
     </div>
 
     <hr />
 
-    <h5>${t("database_anonymization.existing_anonymized_databases")}</h5>
-
-    <ul class="existing-anonymized-databases"></ul>
+    <table class="existing-anonymized-databases-table table table-stripped">
+        <thead>
+            <th>${t("database_anonymization.existing_anonymized_databases")}</th>
+        </thead>
+        <tbody class="existing-anonymized-databases">
+        </tbody>
+    </table>
 </div>`;
 
 // TODO: Deduplicate with server
@@ -94,7 +112,7 @@ export default class DatabaseAnonymizationOptions extends OptionsWidget {
             }
 
             for (const { filePath } of anonymizedDatabases) {
-                this.$existingAnonymizedDatabases.append($("<li>").text(filePath));
+                this.$existingAnonymizedDatabases.append($("<tr>").append($("<td>").text(filePath)));
             }
         });
     }

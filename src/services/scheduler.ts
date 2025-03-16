@@ -19,7 +19,7 @@ function getRunAtHours(note: BNote): number[] {
 }
 
 function runNotesWithLabel(runAttrValue: string) {
-    const instanceName = config.General ? config.General.instanceName : null;
+    const instanceName = config.General.instanceName;
     const currentHours = new Date().getHours();
     const notes = attributeService.getNotesWithLabel("run", runAttrValue);
 
