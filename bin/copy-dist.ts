@@ -80,13 +80,10 @@ function cleanupNodeModules() {
         "tests"
     ]);
 
-    const filteredDirs = nodeDir
+    nodeDir
         .filter(el => el.isDirectory() && filterableDirs.has(el.name))
-        .map(el => path.join(DEST_DIR, el.parentPath, el.name));
-
-    filteredDirs.forEach(dir => {
-        fs.removeSync(dir);
-    })
+        .map(el => path.join(DEST_DIR, el.parentPath, el.name))
+        .forEach(dir => fs.removeSync(dir));
 
 }
 
