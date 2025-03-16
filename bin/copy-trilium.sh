@@ -13,9 +13,6 @@ fi
 # Patch package.json main
 sed -i 's|./dist/electron-main.js|electron-main.js|g' "$BUILD_DIR/package.json"
 
-# run in subshell (so we return to original dir)
-(cd $BUILD_DIR && npm ci --omit=dev)
-
 if [[ -d "$BUILD_DIR"/node_modules ]]; then
     # cleanup of useless files in dependencies
     for d in 'image-q/demo' \
