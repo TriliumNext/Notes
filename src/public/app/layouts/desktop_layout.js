@@ -85,6 +85,7 @@ import ScrollPaddingWidget from "../widgets/scroll_padding.js";
 import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolbar.js";
 import options from "../services/options.js";
 import utils from "../services/utils.js";
+import RightPaneToggleWidget from "../widgets/buttons/right_pane_toggle.js";
 import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
 import ContextualHelpButton from "../widgets/floating_buttons/help_button.js";
 import CloseZenButton from "../widgets/close_zen_button.js";
@@ -121,6 +122,7 @@ export default class DesktopLayout {
                     .child(new FlexContainer("row").id("tab-row-left-spacer"))
                     .optChild(launcherPaneIsHorizontal, new LeftPaneToggleWidget(true))
                     .child(new TabRowWidget().class("full-width"))
+                    .child(new RightPaneToggleWidget())
                     .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
                     .css("height", "40px")
                     .css("background-color", "var(--launcher-pane-background-color)")
@@ -142,7 +144,11 @@ export default class DesktopLayout {
                         new FlexContainer("column")
                             .id("rest-pane")
                             .css("flex-grow", "1")
-                            .optChild(!fullWidthTabBar, new FlexContainer("row").child(new TabRowWidget()).optChild(customTitleBarButtons, new TitleBarButtonsWidget()).css("height", "40px"))
+                            .optChild(!fullWidthTabBar, new FlexContainer("row")
+                                .child(new TabRowWidget())
+                                .optChild(customTitleBarButtons, new TitleBarButtonsWidget())
+                                .child(new RightPaneToggleWidget())
+                                .css("height", "40px"))
                             .child(
                                 new FlexContainer("row")
                                     .filling()
@@ -187,10 +193,6 @@ export default class DesktopLayout {
                                                                 .ribbon(new BasicPropertiesWidget())
                                                                 .ribbon(new OwnedAttributeListWidget())
                                                                 .ribbon(new InheritedAttributesWidget())
-                                                                .ribbon(new NotePathsWidget())
-                                                                .ribbon(new NoteMapRibbonWidget())
-                                                                .ribbon(new SimilarNotesWidget())
-                                                                .ribbon(new NoteInfoWidget())
                                                                 .button(new RevisionsButton())
                                                                 .button(new NoteActionsWidget())
                                                         )
@@ -206,7 +208,6 @@ export default class DesktopLayout {
                                                                 .child(new GeoMapButtons())
                                                                 .child(new CopyImageReferenceButton())
                                                                 .child(new SvgExportButton())
-                                                                .child(new BacklinksWidget())
                                                                 .child(new ContextualHelpButton())
                                                                 .child(new HideFloatingButtonsButton())
                                                         )
@@ -234,9 +235,14 @@ export default class DesktopLayout {
                                     )
                                     .child(
                                         new RightPaneContainer()
+                                            .child(new NotePathsWidget())
                                             .child(new TocWidget())
                                             .child(new HighlightsListWidget())
+                                            .child(new SimilarNotesWidget())
+                                            .child(new BacklinksWidget())
+                                            .child(new NoteMapRibbonWidget())
                                             .child(...this.customWidgets.get("right-pane"))
+                                            .child(new NoteInfoWidget())
                                     )
                             )
                     )

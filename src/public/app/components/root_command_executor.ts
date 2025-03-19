@@ -86,6 +86,10 @@ export default class RootCommandExecutor extends Component {
         options.toggle("leftPaneVisible");
     }
 
+    toggleRightPaneCommand() {
+        options.toggle("rightPaneVisible");
+    }
+
     async showBackendLogCommand() {
         await appContext.tabManager.openTabWithNoteWithHoisting("_backendLog", { activate: true });
     }

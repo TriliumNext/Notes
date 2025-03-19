@@ -1,3 +1,4 @@
+import type { OptionNames } from "../../../services/options_interface.js";
 import type { AttachmentRow } from "../../../becca/entities/rows.js";
 import type { AttributeType } from "../entities/fattribute.js";
 import type { EntityChange } from "../server_types.js";
@@ -185,7 +186,7 @@ export default class LoadResults {
         this.optionNames.push(name);
     }
 
-    isOptionReloaded(name: string) {
+    isOptionReloaded(name: OptionNames) {
         return this.optionNames.includes(name);
     }
 
