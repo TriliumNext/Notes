@@ -14,6 +14,8 @@ module.exports = {
     // we run electron-forge inside the ./build folder,
     // to have it output to ./dist, we need to go up a directory first
     outDir: "../dist",
+    // we prune ourselves via copy-dist
+    prune: false,
     packagerConfig: {
         executableName: "trilium",
         name: APP_NAME,
