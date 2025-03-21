@@ -2,6 +2,9 @@ import type { Message, ChatCompletionOptions } from './ai_interface.js';
 import aiServiceManager from './ai_service_manager.js';
 import chatStorageService from './chat_storage_service.js';
 import log from '../log.js';
+import agentTools from './agent_tools/index.js';
+import { AgentInterfaces } from './agent_tools/agent_interface.js';
+import type { AgentExecution } from './agent_tools/agent_interface.js';
 
 export interface ChatSession {
     id: string;
@@ -9,6 +12,8 @@ export interface ChatSession {
     messages: Message[];
     isStreaming?: boolean;
     options?: ChatCompletionOptions;
+    agentExecution?: AgentExecution;
+    isAgentMode?: boolean;
 }
 
 /**
@@ -125,14 +130,16 @@ export class ChatService {
 
             return session;
 
-        } catch (error: any) {
+        } catch (error) {
             session.isStreaming = false;
             console.error('Error in AI chat:', error);
+            
+            const errorMsg = error instanceof Error ? error.message : String(error);
 
             // Add error message so user knows something went wrong
             const errorMessage: Message = {
                 role: 'assistant',
-                content: `Error: Failed to generate response. ${error.message || 'Please check AI settings and try again.'}`
+                content: `Error: Failed to generate response. ${errorMsg || 'Please check AI settings and try again.'}`
             };
 
             session.messages.push(errorMessage);
@@ -300,14 +307,16 @@ export class ChatService {
 
             return session;
 
-        } catch (error: any) {
+        } catch (error) {
             session.isStreaming = false;
             console.error('Error in context-aware chat:', error);
+            
+            const errorMsg = error instanceof Error ? error.message : String(error);
 
             // Add error message
             const errorMessage: Message = {
                 role: 'assistant',
-                content: `Error: Failed to generate response with note context. ${error.message || 'Please try again.'}`
+                content: `Error: Failed to generate response with note context. ${errorMsg || 'Please try again.'}`
             };
 
             session.messages.push(errorMessage);
@@ -346,6 +355,131 @@ export class ChatService {
         this.activeSessions.delete(sessionId);
         this.streamingCallbacks.delete(sessionId);
         return chatStorageService.deleteChat(sessionId);
+    }
+
+    /**
+     * Send a message using the agent system for enhanced capabilities
+     * 
+     * @param sessionId - The ID of the chat session
+     * @param content - The user's message
+     * @param noteId - The ID of the current note (for context)
+     * @param options - Chat completion options
+     * @param streamCallback - Callback for streaming response
+     * @returns The updated chat session
+     */
+    async sendAgentMessage(
+        sessionId: string,
+        content: string,
+        noteId: string,
+        options?: ChatCompletionOptions,
+        streamCallback?: (content: string, isDone: boolean) => void
+    ): Promise<ChatSession> {
+        const session = await this.getOrCreateSession(sessionId);
+
+        // Add user message
+        const userMessage: Message = {
+            role: 'user',
+            content
+        };
+
+        session.messages.push(userMessage);
+        session.isStreaming = true;
+        session.isAgentMode = true;
+
+        // Set up streaming if callback provided
+        if (streamCallback) {
+            this.streamingCallbacks.set(session.id, streamCallback);
+            // Initial feedback that agent is working
+            streamCallback('I\'m working on this using available tools...', false);
+        }
+
+        try {
+            // Immediately save the user message
+            await chatStorageService.updateChat(session.id, session.messages);
+
+            // Ensure agent tools are initialized
+            const agentManager = aiServiceManager.getInstance();
+            if (!agentManager.getAgentTools().isInitialized()) {
+                await agentManager.initializeAgentTools();
+            }
+
+            // Get showThinking option
+            const showThinking = options?.showThinking === true;
+            
+            log.info(`Processing agent message: "${content.substring(0, 100)}..."`);
+            log.info(`Using agent with: noteId=${noteId}, showThinking=${showThinking}`);
+
+            // Configure agent options
+            const agentConfig = {
+                maxIterations: 10,
+                showThinking,
+                contextNoteId: noteId,
+                returnIntermediateSteps: false,
+                functionCallFormat: 'json'
+            };
+
+            // Get all available tools
+            const adaptedTools = agentTools.getAdaptedTools();
+            
+            // Execute agent
+            const executor = agentTools.getAgentExecutor();
+            const execution = await executor.execute(content, adaptedTools, agentConfig);
+            
+            // Store execution in the session
+            session.agentExecution = execution;
+            
+            // Create assistant message with final response
+            const assistantMessage: Message = {
+                role: 'assistant',
+                content: execution.finalResponse || 'I wasn\'t able to find an answer to your question.'
+            };
+
+            session.messages.push(assistantMessage);
+            session.isStreaming = false;
+
+            // Save the complete conversation
+            await chatStorageService.updateChat(session.id, session.messages);
+
+            // If first message, update the title
+            if (session.messages.length <= 2 && (!session.title || session.title === 'New Chat')) {
+                const title = this.generateTitleFromMessages(session.messages);
+                session.title = title;
+                await chatStorageService.updateChat(session.id, session.messages, title);
+            }
+
+            // Notify streaming is complete
+            if (streamCallback) {
+                streamCallback(assistantMessage.content, true);
+                this.streamingCallbacks.delete(session.id);
+            }
+
+            return session;
+
+        } catch (error) {
+            session.isStreaming = false;
+            console.error('Error in agent chat:', error);
+            
+            const errorMsg = error instanceof Error ? error.message : String(error);
+
+            // Add error message
+            const errorMessage: Message = {
+                role: 'assistant',
+                content: `Error: Failed to complete agent execution. ${errorMsg || 'Please try again.'}`
+            };
+
+            session.messages.push(errorMessage);
+
+            // Save the conversation with error
+            await chatStorageService.updateChat(session.id, session.messages);
+
+            // Notify streaming is complete with error
+            if (streamCallback) {
+                streamCallback(errorMessage.content, true);
+                this.streamingCallbacks.delete(session.id);
+            }
+
+            return session;
+        }
     }
 
     /**

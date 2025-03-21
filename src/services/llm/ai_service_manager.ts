@@ -302,6 +302,25 @@ export class AIServiceManager {
     getAgentTools() {
         return agentTools;
     }
+    
+    /**
+     * Get the agent executor for advanced agentic capabilities
+     */
+    getAgentExecutor() {
+        try {
+            // First make sure tools are initialized
+            if (!agentTools.isInitialized()) {
+                throw new Error("Agent tools not initialized. Call initializeAgentTools() first.");
+            }
+            
+            // Cast to access the enhanced tools
+            const enhancedTools = agentTools as any;
+            return enhancedTools.getAgentExecutor();
+        } catch (error) {
+            log.error(`Error getting agent executor: ${error}`);
+            throw error;
+        }
+    }
 
     /**
      * Get the vector search tool for semantic similarity search

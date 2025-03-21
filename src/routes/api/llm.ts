@@ -550,8 +550,72 @@ async function sendMessage(req: Request, res: Response) {
             content = requestBody.content;
             useAdvancedContext = requestBody.useAdvancedContext || false;
             showThinking = requestBody.showThinking || false;
-
-            // Add logging for POST requests
+            
+            // Check for agent mode flag
+            const useAgentMode = requestBody.useAgentMode || false;
+            
+            // If agent mode is enabled, use the agent executor to handle the request
+            if (useAgentMode && content) {
+                log.info(`Using agent mode for message: sessionId=${req.params.sessionId}, contentLength=${content ? content.length : 0}`);
+                
+                // Get session and other required data
+                const sessionId = req.params.sessionId;
+                const session = sessions.get(sessionId);
+                
+                if (!session) {
+                    throw new Error(`Session ${sessionId} not found`);
+                }
+                
+                // Add the user message to the session
+                session.messages.push({
+                    role: 'user',
+                    content: content,
+                    timestamp: new Date()
+                });
+                
+                // Update session timestamp
+                session.lastActive = new Date();
+                
+                // Get the context note ID if available
+                const contextNoteId = requestBody.contextNoteId || session.noteContext;
+                
+                try {
+                    // Initialize AI service manager for agent usage
+                    const aiManager = aiServiceManagerModule.default;
+                    await aiManager.initializeAgentTools();
+                    
+                    // Make sure we get the chat service without circular imports
+                    const chatService = await import('../../services/llm/chat_service.js');
+                    
+                    // Use the agent chat message method
+                    const agentResult = await chatService.default.sendAgentMessage(
+                        sessionId,
+                        content,
+                        contextNoteId || 'root',
+                        {
+                            showThinking: showThinking,
+                            temperature: session.metadata.temperature || 0.7
+                        }
+                    );
+                    
+                    // The response will already have been stored in the session by the service
+                    // We just need to extract the last message as our response
+                    const lastMessage = agentResult.messages[agentResult.messages.length - 1];
+                    if (lastMessage && lastMessage.role === 'assistant') {
+                        return {
+                            content: lastMessage.content,
+                            agentMode: true
+                        };
+                    } else {
+                        throw new Error('Agent did not return a valid response');
+                    }
+                } catch (agentError: any) {
+                    log.error(`Error processing agent request: ${agentError}`);
+                    throw new Error(`Agent error: ${agentError.message}`);
+                }
+            }
+            
+            // If not agent mode, continue with normal flow
             log.info(`LLM POST message: sessionId=${req.params.sessionId}, useAdvancedContext=${useAdvancedContext}, showThinking=${showThinking}, contentLength=${content ? content.length : 0}`);
         } else if (req.method === 'GET') {
             // For GET (streaming) requests, get format from query params

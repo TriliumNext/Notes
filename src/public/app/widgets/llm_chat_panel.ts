@@ -34,6 +34,7 @@ export default class LlmChatPanel extends BasicWidget {
     private sourcesList!: HTMLElement;
     private useAdvancedContextCheckbox!: HTMLInputElement;
     private showThinkingCheckbox!: HTMLInputElement;
+    private useAgentModeCheckbox!: HTMLInputElement;
     private validationWarning!: HTMLElement;
     private sessionId: string | null = null;
     private currentNoteId: string | null = null;
@@ -78,6 +79,13 @@ export default class LlmChatPanel extends BasicWidget {
                                 <i class="bx bx-info-circle ms-1 small text-muted"></i>
                             </label>
                         </div>
+                        <div class="form-check form-switch ms-3">
+                            <input class="form-check-input use-agent-mode-checkbox" type="checkbox" id="useAgentMode">
+                            <label class="form-check-label" for="useAgentMode" title="Use AI agent with abilities to search and navigate your notes">
+                                Use Agent Mode
+                                <i class="bx bx-bot ms-1 small text-muted"></i>
+                            </label>
+                        </div>
                     </div>
                     <div class="d-flex chat-input-container">
                         <textarea
@@ -103,6 +111,7 @@ export default class LlmChatPanel extends BasicWidget {
         this.sourcesList = element.querySelector('.sources-list') as HTMLElement;
         this.useAdvancedContextCheckbox = element.querySelector('.use-advanced-context-checkbox') as HTMLInputElement;
         this.showThinkingCheckbox = element.querySelector('.show-thinking-checkbox') as HTMLInputElement;
+        this.useAgentModeCheckbox = element.querySelector('.use-agent-mode-checkbox') as HTMLInputElement;
         this.validationWarning = element.querySelector('.provider-validation-warning') as HTMLElement;
 
         // Set up event delegation for the settings link
@@ -174,16 +183,18 @@ export default class LlmChatPanel extends BasicWidget {
         try {
             const useAdvancedContext = this.useAdvancedContextCheckbox.checked;
             const showThinking = this.showThinkingCheckbox.checked;
+            const useAgentMode = this.useAgentModeCheckbox.checked;
 
             // Add logging to verify parameters
-            console.log(`Sending message with: useAdvancedContext=${useAdvancedContext}, showThinking=${showThinking}, noteId=${this.currentNoteId}`);
+            console.log(`Sending message with: useAdvancedContext=${useAdvancedContext}, showThinking=${showThinking}, useAgentMode=${useAgentMode}, noteId=${this.currentNoteId}`);
 
             // Create the message parameters
             const messageParams = {
                 content,
                 contextNoteId: this.currentNoteId,
                 useAdvancedContext,
-                showThinking
+                showThinking,
+                useAgentMode
             };
 
             // First, send the message via POST request
