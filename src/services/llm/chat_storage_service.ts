@@ -92,9 +92,9 @@ export class ChatStorageService {
      */
     async getAllChats(): Promise<StoredChat[]> {
         const chats = await sql.getRows<{noteId: string, title: string, dateCreated: string, dateModified: string, content: string}>(
-            `SELECT notes.noteId, notes.title, notes.dateCreated, notes.dateModified, note_contents.content
+            `SELECT notes.noteId, notes.title, notes.dateCreated, notes.dateModified, blobs.content
              FROM notes
-             JOIN note_contents ON notes.noteId = note_contents.noteId
+             JOIN blobs ON notes.blobId = blobs.blobId
              JOIN attributes ON notes.noteId = attributes.noteId
              WHERE attributes.name = ? AND attributes.value = ?
              ORDER BY notes.dateModified DESC`,
@@ -126,9 +126,9 @@ export class ChatStorageService {
      */
     async getChat(chatId: string): Promise<StoredChat | null> {
         const chat = await sql.getRow<{noteId: string, title: string, dateCreated: string, dateModified: string, content: string}>(
-            `SELECT notes.noteId, notes.title, notes.dateCreated, notes.dateModified, note_contents.content
+            `SELECT notes.noteId, notes.title, notes.dateCreated, notes.dateModified, blobs.content
              FROM notes
-             JOIN note_contents ON notes.noteId = note_contents.noteId
+             JOIN blobs ON notes.blobId = blobs.blobId
              WHERE notes.noteId = ?`,
             [chatId]
         );
@@ -167,14 +167,29 @@ export class ChatStorageService {
 
         const now = new Date();
 
-        // Update content directly using SQL since we don't have a method for this in the notes service
+        // Get the blobId for this note
+        const note = await sql.getRow<{blobId: string}>(
+            `SELECT blobId FROM notes WHERE noteId = ?`,
+            [chatId]
+        );
+
+        if (!note || !note.blobId) {
+            return null;
+        }
+
+        // Update content in the blobs table instead of note_contents
         await sql.execute(
-            `UPDATE note_contents SET content = ? WHERE noteId = ?`,
-            [JSON.stringify({
-                messages,
-                createdAt: chat.createdAt,
-                updatedAt: now
-            }, null, 2), chatId]
+            `UPDATE blobs SET content = ?, utcDateModified = ?, dateModified = ? WHERE blobId = ?`,
+            [
+                JSON.stringify({
+                    messages,
+                    createdAt: chat.createdAt,
+                    updatedAt: now
+                }, null, 2),
+                now.toISOString(),
+                now.toISOString(),
+                note.blobId
+            ]
         );
 
         // Update title if provided
