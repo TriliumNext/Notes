@@ -369,6 +369,11 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
 
         const { note, viewScope } = this;
 
+        // For llmChat viewMode, show a custom title
+        if (viewScope?.viewMode === "llmChat") {
+            return "Chat with Notes";
+        }
+
         const isNormalView = (viewScope?.viewMode === "default" || viewScope?.viewMode === "contextual-help");
         let title = (isNormalView ? note.title : `${note.title}: ${viewScope?.viewMode}`);
 

@@ -78,7 +78,37 @@ const ALLOWED_OPTIONS = new Set([
     "backgroundEffects",
     "allowedHtmlTags",
     "redirectBareDomain",
-    "showLoginInShareTheme"
+    "showLoginInShareTheme",
+    // AI/LLM integration options
+    "aiEnabled",
+    "openaiApiKey",
+    "openaiDefaultModel",
+    "openaiEmbeddingModel",
+    "openaiBaseUrl",
+    "anthropicApiKey",
+    "anthropicDefaultModel",
+    "voyageEmbeddingModel",
+    "voyageApiKey",
+    "anthropicBaseUrl",
+    "ollamaEnabled",
+    "ollamaBaseUrl",
+    "ollamaDefaultModel",
+    "ollamaEmbeddingModel",
+    "aiProviderPrecedence",
+    "aiTemperature",
+    "aiSystemPrompt",
+    // Embedding options
+    "embeddingAutoUpdateEnabled",
+    "embeddingBatchSize",
+    "embeddingUpdateInterval",
+    "embeddingDefaultDimension",
+    "embeddingsDefaultProvider",
+    "embeddingProviderPrecedence",
+    "embeddingSimilarityThreshold",
+    "maxNotesPerLlmQuery",
+    "enableAutomaticIndexing",
+    "embeddingGenerationLocation",
+    "embeddingDimensionStrategy"
 ]);
 
 function getOptions() {

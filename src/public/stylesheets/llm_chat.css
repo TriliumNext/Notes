@@ -1,0 +1,119 @@
+/* LLM Chat Panel Styles */
+.note-context-chat {
+    background-color: var(--main-background-color);
+}
+
+/* Message Styling */
+.chat-message {
+    margin-bottom: 1rem;
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    background-color: var(--input-background-color);
+    color: var(--cmd-button-icon-color);
+}
+
+.assistant-avatar {
+    background-color: var(--subtle-border-color, var(--main-border-color));
+    color: var(--hover-item-text-color);
+}
+
+.message-content {
+    max-width: calc(100% - 50px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    color: var(--main-text-color);
+}
+
+.user-content {
+    border-radius: 0.5rem 0.5rem 0 0.5rem !important;
+    background-color: var(--input-background-color) !important;
+}
+
+.assistant-content {
+    border-radius: 0.5rem 0.5rem 0.5rem 0 !important;
+    background-color: var(--main-background-color);
+    border: 1px solid var(--subtle-border-color, var(--main-border-color));
+}
+
+/* Sources Styling */
+.sources-container {
+    background-color: var(--accented-background-color, var(--main-background-color));
+    border-top: 1px solid var(--main-border-color);
+    color: var(--main-text-color);
+}
+
+.source-item {
+    transition: all 0.2s ease;
+    background-color: var(--main-background-color);
+    border-color: var(--subtle-border-color, var(--main-border-color)) !important;
+}
+
+.source-item:hover {
+    background-color: var(--link-hover-background, var(--hover-item-background-color));
+}
+
+.source-link {
+    color: var(--link-color, var(--hover-item-text-color));
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.source-link:hover {
+    color: var(--link-hover-color, var(--hover-item-text-color));
+}
+
+/* Input Area Styling */
+.note-context-chat-form {
+    background-color: var(--main-background-color);
+    border-top: 1px solid var(--main-border-color);
+}
+
+.context-option-container {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--subtle-border-color, var(--main-border-color));
+    color: var(--main-text-color);
+}
+
+.chat-input-container {
+    padding-top: 0.5rem;
+}
+
+.note-context-chat-input {
+    border-color: var(--subtle-border-color, var(--main-border-color));
+    background-color: var(--input-background-color) !important;
+    color: var(--input-text-color) !important;
+    resize: none;
+    transition: all 0.2s ease;
+    min-height: 50px;
+    max-height: 150px;
+}
+
+.note-context-chat-input:focus {
+    border-color: var(--input-focus-outline-color, var(--main-border-color));
+    box-shadow: 0 0 0 0.25rem var(--input-focus-outline-color, rgba(13, 110, 253, 0.25));
+}
+
+.note-context-chat-send-button {
+    width: 40px;
+    height: 40px;
+    align-self: flex-end;
+    background-color: var(--cmd-button-background-color) !important;
+    color: var(--cmd-button-text-color) !important;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: var(--muted-text-color);
+} 

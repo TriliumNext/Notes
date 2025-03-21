@@ -7,8 +7,12 @@ import protectedSessionService from "../services/protected_session.js";
 import options from "../services/options.js";
 import froca from "../services/froca.js";
 import utils from "../services/utils.js";
+import LlmChatPanel from "../widgets/llm_chat_panel.js";
+import toastService from "../services/toast.js";
 
 export default class RootCommandExecutor extends Component {
+    private llmChatPanel: any = null;
+
     editReadOnlyNoteCommand() {
         const noteContext = appContext.tabManager.getActiveContext();
         if (noteContext?.viewScope) {
@@ -224,6 +228,25 @@ export default class RootCommandExecutor extends Component {
 
         if (tab) {
             appContext.tabManager.activateNoteContext(tab.ntxId);
+        }
+    }
+
+    async showLlmChatCommand() {
+        console.log("showLlmChatCommand triggered");
+        toastService.showMessage("Opening LLM Chat...");
+
+        try {
+            // We'll use the Note Map approach - open a known note ID that corresponds to the LLM chat panel
+            await appContext.tabManager.openTabWithNoteWithHoisting("_globalNoteMap", {
+                activate: true,
+                viewScope: {
+                    viewMode: "llmChat" // We'll need to handle this custom view mode elsewhere
+                }
+            });
+        }
+        catch (e) {
+            console.error("Error opening LLM Chat:", e);
+            toastService.showError("Failed to open LLM Chat: " + (e as Error).message);
         }
     }
 }
