@@ -12,7 +12,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import log from '../../../services/log.js';
-import { Message } from './agent_interface.js';
+import type { Message } from './agent_interface.js';
 import aiServiceManager from '../ai_service_manager.js';
 import contextService from '../context_service.js';
 import { ContextualThinkingTool } from './contextual_thinking_tool.js';
@@ -22,9 +22,11 @@ import type {
   AgentMessage,
   FunctionCall,
   IAgentExecutor,
-  ToolExecutionResult
+  ToolExecutionResult,
+  AgentConfig
 } from './agent_interface.js';
 import { AgentInterfaces } from './agent_interface.js';
+import type { Message as AIMessage } from '../ai_interface.js';
 
 // Default prompt templates for the agent
 const DEFAULT_SYSTEM_PROMPT = `You are an AI agent that helps users find and understand information in their Trilium Notes knowledge base.
@@ -330,7 +332,8 @@ export class AgentExecutor implements IAgentExecutor {
       prompt += `Parameters:\n`;
 
       for (const [paramName, paramDetails] of Object.entries(tool.parameters)) {
-        prompt += `- ${paramName}: ${paramDetails.description} (${paramDetails.type})\n`;
+        const details = paramDetails as { description: string; type: string };
+        prompt += `- ${paramName}: ${details.description} (${details.type})\n`;
       }
     }
 
@@ -344,13 +347,15 @@ export class AgentExecutor implements IAgentExecutor {
    */
   private async getLLMResponse(messages: Message[]): Promise<AgentMessage> {
     try {
-      // Get the active AI service
-      const aiService = aiServiceManager.getActiveAIService();
+      // Convert our Message type to the AIMessage type expected by aiServiceManager
+      const aiMessages: AIMessage[] = messages.filter(m => m.role !== 'function').map(m => ({
+        role: m.role as 'user' | 'assistant' | 'system',
+        content: m.content
+      }));
 
-      // Generate chat completion
-      const completion = await aiService.generateChatCompletion(messages, {
-        temperature: 0.2, // Lower temperature for more focused responses
-        functionCalling: true // Enable function calling
+      // Generate chat completion directly using the aiServiceManager
+      const completion = await aiServiceManager.generateChatCompletion(aiMessages, {
+        temperature: 0.2 // Lower temperature for more focused responses
       });
 
       return this.parseAgentMessage(completion.text);
@@ -436,7 +441,7 @@ export class AgentExecutor implements IAgentExecutor {
 
       if (thinkingId) {
         this.contextualThinking.addThinkingStep(thinkingId, {
-          type: 'evidence',
+          type: 'observation',
           content: `Tool execution result: ${typeof result === 'object' ? JSON.stringify(result).substring(0, 100) + '...' : result}`
         });
       }
@@ -461,7 +466,7 @@ export class AgentExecutor implements IAgentExecutor {
         toolName: name,
         result: null,
         success: false,
-        error: error.message
+        error: errorMessage
       };
     }
   }
