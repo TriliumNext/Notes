@@ -8,65 +8,46 @@ import { getEmbeddingProvider, getEnabledEmbeddingProviders } from '../../embedd
 export class ProviderManager {
     /**
      * Get the preferred embedding provider based on user settings
-     * Tries to use the most appropriate provider in this order:
-     * 1. User's configured default provider
-     * 2. OpenAI if API key is set
-     * 3. Anthropic if API key is set
-     * 4. Ollama if configured
-     * 5. Any available provider
-     * 6. Local provider as fallback
+     * Uses the embeddingProviderPrecedence setting to determine the order
      *
      * @returns The preferred embedding provider or null if none available
      */
     async getPreferredEmbeddingProvider(): Promise<any> {
         try {
-            // First try user's configured default provider
-            const providerId = await options.getOption('embeddingsDefaultProvider');
-            if (providerId) {
-                const provider = await getEmbeddingProvider(providerId);
-                if (provider) {
-                    log.info(`Using configured embedding provider: ${providerId}`);
-                    return provider;
+            // Get all enabled providers
+            const enabledProviders = await getEnabledEmbeddingProviders();
+
+            if (enabledProviders.length === 0) {
+                log.info('No embedding providers are enabled');
+                return null;
+            }
+
+            // Get the provider precedence from settings
+            const precedenceOption = await options.getOption('embeddingProviderPrecedence');
+            let precedenceList: string[] = [];
+
+            if (precedenceOption) {
+                if (precedenceOption.includes(',')) {
+                    precedenceList = precedenceOption.split(',').map(p => p.trim());
+                } else {
+                    precedenceList = [precedenceOption];
                 }
             }
 
-            // Then try OpenAI
-            const openaiKey = await options.getOption('openaiApiKey');
-            if (openaiKey) {
-                const provider = await getEmbeddingProvider('openai');
-                if (provider) {
-                    log.info('Using OpenAI embeddings provider');
-                    return provider;
+            // Try to find first enabled provider from precedence list
+            if (precedenceList.length > 0) {
+                for (const providerName of precedenceList) {
+                    const matchedProvider = enabledProviders.find(p => p.name === providerName);
+                    if (matchedProvider) {
+                        log.info(`Using preferred embedding provider: ${matchedProvider.name}`);
+                        return matchedProvider;
+                    }
                 }
             }
 
-            // Try Anthropic
-            const anthropicKey = await options.getOption('anthropicApiKey');
-            if (anthropicKey) {
-                const provider = await getEmbeddingProvider('anthropic');
-                if (provider) {
-                    log.info('Using Anthropic embeddings provider');
-                    return provider;
-                }
-            }
-
-            // Try Ollama
-            const provider = await getEmbeddingProvider('ollama');
-            if (provider) {
-                log.info('Using Ollama embeddings provider');
-                return provider;
-            }
-
-            // If no preferred providers, get any enabled provider
-            const providers = await getEnabledEmbeddingProviders();
-            if (providers.length > 0) {
-                log.info(`Using available embedding provider: ${providers[0].name}`);
-                return providers[0];
-            }
-
-            // Last resort is local provider
-            log.info('Using local embedding provider as fallback');
-            return await getEmbeddingProvider('local');
+            // Otherwise use the first enabled provider
+            log.info(`Using available embedding provider: ${enabledProviders[0].name}`);
+            return enabledProviders[0];
         } catch (error) {
             log.error(`Error getting preferred embedding provider: ${error}`);
             return null;

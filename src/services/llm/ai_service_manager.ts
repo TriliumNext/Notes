@@ -44,47 +44,31 @@ export class AIServiceManager {
             const customOrder = options.getOption('aiProviderPrecedence');
 
             if (customOrder) {
-                try {
-                    // Try to parse as JSON first
-                    let parsed;
-
-                    // Handle both array in JSON format and simple string format
-                    if (customOrder.startsWith('[') && customOrder.endsWith(']')) {
-                        parsed = JSON.parse(customOrder);
-                    } else if (typeof customOrder === 'string') {
-                        // If it's a string with commas, split it
-                        if (customOrder.includes(',')) {
-                            parsed = customOrder.split(',').map(p => p.trim());
-                        } else {
-                            // If it's a simple string (like "ollama"), convert to single-item array
-                            parsed = [customOrder];
-                        }
-                    } else {
-                        // Fallback to default
-                        parsed = defaultOrder;
-                    }
+                // Parse as comma-separated list
+                if (customOrder.includes(',')) {
+                    const parsed = customOrder.split(',').map(p => p.trim());
 
                     // Validate that all providers are valid
-                    if (Array.isArray(parsed) &&
-                        parsed.every(p => Object.keys(this.services).includes(p))) {
+                    if (parsed.every(p => Object.keys(this.services).includes(p))) {
                         this.providerOrder = parsed as ServiceProviders[];
                     } else {
                         log.info('Invalid AI provider precedence format, using defaults');
                         this.providerOrder = defaultOrder;
                     }
-                } catch (e) {
-                    log.error(`Failed to parse AI provider precedence: ${e}`);
-                    this.providerOrder = defaultOrder;
+                } else {
+                    // Single value
+                    if (Object.keys(this.services).includes(customOrder)) {
+                        this.providerOrder = [customOrder] as ServiceProviders[];
+                    } else {
+                        log.info('Invalid AI provider, using defaults');
+                        this.providerOrder = defaultOrder;
+                    }
                 }
             } else {
                 this.providerOrder = defaultOrder;
             }
 
             this.initialized = true;
-
-            // Remove the validateEmbeddingProviders call since we now do validation on the client
-            // this.validateEmbeddingProviders();
-
             return true;
         } catch (error) {
             // If options table doesn't exist yet, use defaults
@@ -112,19 +96,15 @@ export class AIServiceManager {
             // Get default embedding provider
             const defaultProviderName = await options.getOption('embeddingsDefaultProvider') || 'openai';
 
-            // Parse provider precedence list (similar to updateProviderOrder)
+            // Parse provider precedence list as simple comma-separated list
             let precedenceList: string[] = [];
-            const precedenceOption = await options.getOption('aiProviderPrecedence');
+            const precedenceOption = await options.getOption('embeddingProviderPrecedence');
 
             if (precedenceOption) {
-                if (precedenceOption.startsWith('[') && precedenceOption.endsWith(']')) {
-                    precedenceList = JSON.parse(precedenceOption);
-                } else if (typeof precedenceOption === 'string') {
-                    if (precedenceOption.includes(',')) {
-                        precedenceList = precedenceOption.split(',').map(p => p.trim());
-                    } else {
-                        precedenceList = [precedenceOption];
-                    }
+                if (precedenceOption.includes(',')) {
+                    precedenceList = precedenceOption.split(',').map(p => p.trim());
+                } else {
+                    precedenceList = [precedenceOption];
                 }
             }
 
@@ -140,7 +120,7 @@ export class AIServiceManager {
 
             // Check if all providers in precedence list are enabled
             const allPrecedenceEnabled = precedenceList.every(p =>
-                enabledProviderNames.includes(p) || p === 'local');
+                enabledProviderNames.includes(p));
 
             // Return warning message if there are issues
             if (!defaultInPrecedence || !defaultIsEnabled || !allPrecedenceEnabled) {
@@ -156,7 +136,7 @@ export class AIServiceManager {
 
                 if (!allPrecedenceEnabled) {
                     const disabledProviders = precedenceList.filter(p =>
-                        !enabledProviderNames.includes(p) && p !== 'local');
+                        !enabledProviderNames.includes(p));
                     message += `\n• The following providers in your precedence list are not enabled: ${disabledProviders.join(', ')}.`;
                 }
 
@@ -302,7 +282,7 @@ export class AIServiceManager {
     getAgentTools() {
         return agentTools;
     }
-    
+
     /**
      * Get the agent executor for advanced agentic capabilities
      */
@@ -312,7 +292,7 @@ export class AIServiceManager {
             if (!agentTools.isInitialized()) {
                 throw new Error("Agent tools not initialized. Call initializeAgentTools() first.");
             }
-            
+
             // Cast to access the enhanced tools
             const enhancedTools = agentTools as any;
             return enhancedTools.getAgentExecutor();

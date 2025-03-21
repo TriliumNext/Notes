@@ -490,181 +490,172 @@ class IndexService {
             await this.initialize();
         }
 
-        try {
-            // Get all enabled embedding providers
-            const providers = await providerManager.getEnabledEmbeddingProviders();
-            if (!providers || providers.length === 0) {
-                throw new Error("No embedding providers available");
+        // Get embedding providers
+        const providers = await providerManager.getEnabledEmbeddingProviders();
+
+        if (providers.length === 0) {
+            throw new Error("No embedding providers are enabled");
+        }
+
+        let provider;
+
+        // Check embedding provider precedence
+        const embeddingPrecedence = options.getOption('embeddingProviderPrecedence');
+        let preferredProviders: string[] = [];
+
+        if (embeddingPrecedence) {
+            // Parse as comma-separated list only
+            if (embeddingPrecedence.includes(',')) {
+                preferredProviders = embeddingPrecedence.split(',').map(p => p.trim());
+            } else {
+                preferredProviders = [embeddingPrecedence];
             }
 
-            // Get the embedding provider precedence
-            const options = (await import('../options.js')).default;
-            let preferredProviders: string[] = [];
-
-            const embeddingPrecedence = await options.getOption('embeddingProviderPrecedence');
-            let provider;
-
-            if (embeddingPrecedence) {
-                // Parse the precedence string
-                if (embeddingPrecedence.startsWith('[') && embeddingPrecedence.endsWith(']')) {
-                    preferredProviders = JSON.parse(embeddingPrecedence);
-                } else if (typeof embeddingPrecedence === 'string') {
-                    if (embeddingPrecedence.includes(',')) {
-                        preferredProviders = embeddingPrecedence.split(',').map(p => p.trim());
-                    } else {
-                        preferredProviders = [embeddingPrecedence];
-                    }
+            // Find first enabled provider by precedence order
+            for (const providerName of preferredProviders) {
+                const matchedProvider = providers.find(p => p.name === providerName);
+                if (matchedProvider) {
+                    provider = matchedProvider;
+                    break;
                 }
+            }
 
-                // Find first enabled provider by precedence order
-                for (const providerName of preferredProviders) {
-                    const matchedProvider = providers.find(p => p.name === providerName);
-                    if (matchedProvider) {
-                        provider = matchedProvider;
-                        break;
-                    }
-                }
-
-                // If no match found, use first available
-                if (!provider && providers.length > 0) {
-                    provider = providers[0];
-                }
-            } else {
-                // Default to first available provider
+            // If no match found, use first available
+            if (!provider && providers.length > 0) {
                 provider = providers[0];
             }
+        } else {
+            // Default to first available provider
+            provider = providers[0];
+        }
 
-            if (!provider) {
-                throw new Error("No suitable embedding provider found");
+        if (!provider) {
+            throw new Error("No suitable embedding provider found");
+        }
+
+        log.info(`Searching with embedding provider: ${provider.name}, model: ${provider.getConfig().model}`);
+
+        // Generate embedding for the query
+        const embedding = await provider.generateEmbeddings(query);
+        log.info(`Generated embedding for query: "${query}" (${embedding.length} dimensions)`);
+
+        // Store query text in a global cache for possible regeneration with different providers
+        // Use a type declaration to avoid TypeScript errors
+        interface CustomGlobal {
+            recentEmbeddingQueries?: Record<string, string>;
+        }
+        const globalWithCache = global as unknown as CustomGlobal;
+
+        if (!globalWithCache.recentEmbeddingQueries) {
+            globalWithCache.recentEmbeddingQueries = {};
+        }
+
+        // Use a substring of the embedding as a key (full embedding is too large)
+        const embeddingKey = embedding.toString().substring(0, 100);
+        globalWithCache.recentEmbeddingQueries[embeddingKey] = query;
+
+        // Limit cache size to prevent memory leaks (keep max 50 recent queries)
+        const keys = Object.keys(globalWithCache.recentEmbeddingQueries);
+        if (keys.length > 50) {
+            delete globalWithCache.recentEmbeddingQueries[keys[0]];
+        }
+
+        // Get Note IDs to search, optionally filtered by branch
+        let similarNotes: { noteId: string; title: string; similarity: number; contentType?: string }[] = [];
+
+        // Check if we need to restrict search to a specific branch
+        if (contextNoteId) {
+            const note = becca.getNote(contextNoteId);
+            if (!note) {
+                throw new Error(`Context note ${contextNoteId} not found`);
             }
 
-            log.info(`Searching with embedding provider: ${provider.name}, model: ${provider.getConfig().model}`);
-
-            // Generate embedding for the query
-            const embedding = await provider.generateEmbeddings(query);
-            log.info(`Generated embedding for query: "${query}" (${embedding.length} dimensions)`);
-
-            // Store query text in a global cache for possible regeneration with different providers
-            // Use a type declaration to avoid TypeScript errors
-            interface CustomGlobal {
-                recentEmbeddingQueries?: Record<string, string>;
-            }
-            const globalWithCache = global as unknown as CustomGlobal;
-
-            if (!globalWithCache.recentEmbeddingQueries) {
-                globalWithCache.recentEmbeddingQueries = {};
-            }
-
-            // Use a substring of the embedding as a key (full embedding is too large)
-            const embeddingKey = embedding.toString().substring(0, 100);
-            globalWithCache.recentEmbeddingQueries[embeddingKey] = query;
-
-            // Limit cache size to prevent memory leaks (keep max 50 recent queries)
-            const keys = Object.keys(globalWithCache.recentEmbeddingQueries);
-            if (keys.length > 50) {
-                delete globalWithCache.recentEmbeddingQueries[keys[0]];
-            }
-
-            // Get Note IDs to search, optionally filtered by branch
-            let similarNotes: { noteId: string; title: string; similarity: number; contentType?: string }[] = [];
-
-            // Check if we need to restrict search to a specific branch
-            if (contextNoteId) {
-                const note = becca.getNote(contextNoteId);
-                if (!note) {
-                    throw new Error(`Context note ${contextNoteId} not found`);
-                }
-
-                // Get all note IDs in the branch
-                const branchNoteIds = new Set<string>();
-                const collectNoteIds = (noteId: string) => {
-                    branchNoteIds.add(noteId);
-                    const note = becca.getNote(noteId);
-                    if (note) {
-                        for (const childNote of note.getChildNotes()) {
-                            if (!branchNoteIds.has(childNote.noteId)) {
-                                collectNoteIds(childNote.noteId);
-                            }
-                        }
-                    }
-                };
-
-                collectNoteIds(contextNoteId);
-
-                // Get embeddings for all notes in the branch
-                const config = provider.getConfig();
-
-                // Import the ContentType detection from vector utils
-                const { ContentType, detectContentType, cosineSimilarity } = await import('./embeddings/vector_utils.js');
-
-                for (const noteId of branchNoteIds) {
-                    const noteEmbedding = await vectorStore.getEmbeddingForNote(
-                        noteId,
-                        provider.name,
-                        config.model
-                    );
-
-                    if (noteEmbedding) {
-                        // Get the note to determine its content type
-                        const note = becca.getNote(noteId);
-                        if (note) {
-                            // Detect content type from mime type
-                            const contentType = detectContentType(note.mime, '');
-
-                            // Use content-aware similarity calculation
-                            const similarity = cosineSimilarity(
-                                embedding,
-                                noteEmbedding.embedding,
-                                true, // normalize
-                                config.model, // source model
-                                noteEmbedding.providerId, // target model (use providerId)
-                                contentType, // content type for padding strategy
-                                undefined // use default BALANCED performance profile
-                            );
-
-                            if (similarity >= this.defaultSimilarityThreshold) {
-                                similarNotes.push({
-                                    noteId,
-                                    title: note.title,
-                                    similarity,
-                                    contentType: contentType.toString()
-                                });
-                            }
+            // Get all note IDs in the branch
+            const branchNoteIds = new Set<string>();
+            const collectNoteIds = (noteId: string) => {
+                branchNoteIds.add(noteId);
+                const note = becca.getNote(noteId);
+                if (note) {
+                    for (const childNote of note.getChildNotes()) {
+                        if (!branchNoteIds.has(childNote.noteId)) {
+                            collectNoteIds(childNote.noteId);
                         }
                     }
                 }
+            };
 
-                // Sort by similarity and return top results
-                return similarNotes
-                    .sort((a, b) => b.similarity - a.similarity)
-                    .slice(0, limit);
-            } else {
-                // Search across all notes
-                const config = provider.getConfig();
-                const results = await vectorStore.findSimilarNotes(
-                    embedding,
+            collectNoteIds(contextNoteId);
+
+            // Get embeddings for all notes in the branch
+            const config = provider.getConfig();
+
+            // Import the ContentType detection from vector utils
+            const { ContentType, detectContentType, cosineSimilarity } = await import('./embeddings/vector_utils.js');
+
+            for (const noteId of branchNoteIds) {
+                const noteEmbedding = await vectorStore.getEmbeddingForNote(
+                    noteId,
                     provider.name,
-                    config.model,
-                    limit,
-                    this.defaultSimilarityThreshold
+                    config.model
                 );
 
-                // Enhance results with note titles
-                similarNotes = results.map(result => {
-                    const note = becca.getNote(result.noteId);
-                    return {
-                        noteId: result.noteId,
-                        title: note ? note.title : 'Unknown Note',
-                        similarity: result.similarity,
-                        contentType: result.contentType
-                    };
-                });
+                if (noteEmbedding) {
+                    // Get the note to determine its content type
+                    const note = becca.getNote(noteId);
+                    if (note) {
+                        // Detect content type from mime type
+                        const contentType = detectContentType(note.mime, '');
 
-                return similarNotes;
+                        // Use content-aware similarity calculation
+                        const similarity = cosineSimilarity(
+                            embedding,
+                            noteEmbedding.embedding,
+                            true, // normalize
+                            config.model, // source model
+                            noteEmbedding.providerId, // target model (use providerId)
+                            contentType, // content type for padding strategy
+                            undefined // use default BALANCED performance profile
+                        );
+
+                        if (similarity >= this.defaultSimilarityThreshold) {
+                            similarNotes.push({
+                                noteId,
+                                title: note.title,
+                                similarity,
+                                contentType: contentType.toString()
+                            });
+                        }
+                    }
+                }
             }
-        } catch (error: any) {
-            log.error(`Error finding similar notes: ${error.message || "Unknown error"}`);
-            return [];
+
+            // Sort by similarity and return top results
+            return similarNotes
+                .sort((a, b) => b.similarity - a.similarity)
+                .slice(0, limit);
+        } else {
+            // Search across all notes
+            const config = provider.getConfig();
+            const results = await vectorStore.findSimilarNotes(
+                embedding,
+                provider.name,
+                config.model,
+                limit,
+                this.defaultSimilarityThreshold
+            );
+
+            // Enhance results with note titles
+            similarNotes = results.map(result => {
+                const note = becca.getNote(result.noteId);
+                return {
+                    noteId: result.noteId,
+                    title: note ? note.title : 'Unknown Note',
+                    similarity: result.similarity,
+                    contentType: result.contentType
+                };
+            });
+
+            return similarNotes;
         }
     }
 

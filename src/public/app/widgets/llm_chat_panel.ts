@@ -498,13 +498,11 @@ export default class LlmChatPanel extends BasicWidget {
             const defaultProvider = options.get('embeddingsDefaultProvider') || 'openai';
 
             // Get provider precedence
-            const precedenceStr = options.get('aiProviderPrecedence') || 'openai,anthropic,ollama';
+            const precedenceStr = options.get('embeddingProviderPrecedence') || 'openai,ollama';
             let precedenceList: string[] = [];
 
             if (precedenceStr) {
-                if (precedenceStr.startsWith('[') && precedenceStr.endsWith(']')) {
-                    precedenceList = JSON.parse(precedenceStr);
-                } else if (precedenceStr.includes(',')) {
+                if (precedenceStr.includes(',')) {
                     precedenceList = precedenceStr.split(',').map(p => p.trim());
                 } else {
                     precedenceList = [precedenceStr];
@@ -533,56 +531,36 @@ export default class LlmChatPanel extends BasicWidget {
                 enabledProviders.push('ollama');
             }
 
-            // Local is always available
-            enabledProviders.push('local');
-
-            // Perform validation checks
+            // Check if default provider is in precedence list
             const defaultInPrecedence = precedenceList.includes(defaultProvider);
+
+            // Check if default provider is enabled
             const defaultIsEnabled = enabledProviders.includes(defaultProvider);
-            const allPrecedenceEnabled = precedenceList.every((p: string) => enabledProviders.includes(p));
 
-            // Get embedding queue status
-            const embeddingStats = await server.get('embeddings/stats') as {
-                success: boolean,
-                stats: {
-                    totalNotesCount: number;
-                    embeddedNotesCount: number;
-                    queuedNotesCount: number;
-                    failedNotesCount: number;
-                    lastProcessedDate: string | null;
-                    percentComplete: number;
-                }
-            };
-            const queuedNotes = embeddingStats?.stats?.queuedNotesCount || 0;
-            const hasEmbeddingsInQueue = queuedNotes > 0;
+            // Check if all providers in precedence list are enabled
+            const allPrecedenceEnabled = precedenceList.every(p =>
+                enabledProviders.includes(p));
 
-            // Show warning if there are issues
-            if (!defaultInPrecedence || !defaultIsEnabled || !allPrecedenceEnabled || hasEmbeddingsInQueue) {
-                let message = '<i class="bx bx-error-circle me-2"></i><strong>AI Provider Configuration Issues</strong>';
-
-                message += '<ul class="mb-1 ps-4">';
+            // Return warning message if there are issues
+            if (!defaultInPrecedence || !defaultIsEnabled || !allPrecedenceEnabled) {
+                let message = 'There are issues with your AI provider configuration:';
 
                 if (!defaultInPrecedence) {
-                    message += `<li>The default embedding provider "${defaultProvider}" is not in your provider precedence list.</li>`;
+                    message += `<br>• The default embedding provider "${defaultProvider}" is not in your provider precedence list.`;
                 }
 
                 if (!defaultIsEnabled) {
-                    message += `<li>The default embedding provider "${defaultProvider}" is not enabled.</li>`;
+                    message += `<br>• The default embedding provider "${defaultProvider}" is not enabled.`;
                 }
 
                 if (!allPrecedenceEnabled) {
-                    const disabledProviders = precedenceList.filter((p: string) => !enabledProviders.includes(p));
-                    message += `<li>The following providers in your precedence list are not enabled: ${disabledProviders.join(', ')}.</li>`;
+                    const disabledProviders = precedenceList.filter(p =>
+                        !enabledProviders.includes(p));
+                    message += `<br>• The following providers in your precedence list are not enabled: ${disabledProviders.join(', ')}.`;
                 }
 
-                if (hasEmbeddingsInQueue) {
-                    message += `<li>Currently processing embeddings for ${queuedNotes} notes. Some AI features may produce incomplete results until processing completes.</li>`;
-                }
+                message += '<br><br>Please check your AI settings.';
 
-                message += '</ul>';
-                message += '<div class="mt-2"><a href="javascript:" class="settings-link btn btn-sm btn-outline-secondary"><i class="bx bx-cog me-1"></i>Open AI Settings</a></div>';
-
-                // Update HTML content - no need to attach event listeners here anymore
                 this.validationWarning.innerHTML = message;
                 this.validationWarning.style.display = 'block';
             } else {
