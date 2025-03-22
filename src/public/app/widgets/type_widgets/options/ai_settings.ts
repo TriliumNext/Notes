@@ -86,14 +86,15 @@ export default class AiSettingsWidget extends OptionsWidget {
 
     doRender() {
         this.$widget = $(`
-        <!-- Configuration warning alert at the top -->
-        <div class="provider-validation-warning alert alert-warning mb-4"
-             style="display: none; padding: 12px 15px; border-left: 4px solid #ffc107;
-                    background-color: rgba(255, 248, 230, 0.9); font-size: 14px;">
-        </div>
-
         <div class="options-section">
             <h4>${t("ai_llm.title")}</h4>
+
+            <!-- Warning alert div -->
+            <div class="provider-validation-warning alert alert-warning"
+                 style="display: none; padding-left: 15px; border-left: 4px solid #ffc107;
+                        background-color: rgba(255, 248, 230, 0.9); font-size: 14px;
+                        margin-bottom: 15px;">
+            </div>
 
             <div class="form-group">
                 <label class="tn-checkbox">
@@ -934,11 +935,13 @@ export default class AiSettingsWidget extends OptionsWidget {
 
         this.updateAiSectionVisibility();
 
-        // Call displayValidationWarnings instead of directly calling validateEmbeddingProviders
-        this.displayValidationWarnings();
-
-        // Check for provider errors
+        // First, try to fetch provider errors from server
+        console.log('Trying to fetch provider errors first');
         await this.fetchProviderErrors();
+
+        // Then, only if no errors were shown, check for client-side validation issues
+        console.log('Then checking for client-side validation issues');
+        await this.displayValidationWarnings();
     }
 
     updateAiSectionVisibility() {
@@ -1366,31 +1369,33 @@ export default class AiSettingsWidget extends OptionsWidget {
             const $warningDiv = this.$widget.find('.provider-validation-warning');
             console.log('Warning div found:', $warningDiv.length > 0);
 
-            if (response.success && response.errors && response.errors.length > 0) {
-                // Show errors in the warning box with better styling
-                let message = '<strong>Configuration Issues Detected:</strong><br><ul class="mt-2">';
+            // FOR TESTING: Force display of a test warning regardless of server response
+            const testMode = true;
 
-                for (const error of response.errors) {
-                    message += `<li>${error}</li>`;
+            if (testMode || (response.success && response.errors && response.errors.length > 0)) {
+                // Show errors in the warning box
+                let message = '<strong>Configuration Issues Detected:</strong><br><ul class="mt-2 mb-0">';
+
+                if (testMode && (!response.errors || response.errors.length === 0)) {
+                    // Add a test error if no real errors
+                    message += `<li>TEST ERROR: This is a test warning message to verify the warning display.</li>`;
+                } else {
+                    for (const error of response.errors) {
+                        message += `<li>${error}</li>`;
+                    }
                 }
 
                 message += '</ul>';
                 console.log('Setting warning message:', message);
 
-                // Make sure the warning is visible with good styling
+                // Just set the HTML content without changing any styling
                 $warningDiv.html(message);
-                $warningDiv.css({
-                    'display': 'block',
-                    'padding': '10px 15px',
-                    'margin-bottom': '20px',
-                    'border-left': '4px solid #ffc107',
-                    'background-color': 'rgba(255, 248, 230, 0.9)'
-                });
+                $warningDiv.show();
 
-                // Make sure it's at the top
-                if ($warningDiv.parent().is(this.$widget)) {
-                    $warningDiv.prependTo(this.$widget);
-                }
+                // Additionally log the HTML structure to see where the warning is
+                console.log('Warning div parent:', $warningDiv.parent().prop('tagName'));
+                console.log('Warning div visible:', $warningDiv.is(':visible'));
+                console.log('Warning div display:', $warningDiv.css('display'));
             } else {
                 // No errors, hide the warning
                 $warningDiv.hide();
@@ -1405,6 +1410,13 @@ export default class AiSettingsWidget extends OptionsWidget {
         if (!this.$widget) return;
 
         const $warningDiv = this.$widget.find('.provider-validation-warning');
+
+        // If warning is already visible, don't override it
+        if ($warningDiv.is(':visible')) {
+            console.log('Warning already visible, not overriding');
+            return;
+        }
+
         let hasWarnings = false;
         let message = 'There are issues with your AI provider configuration:';
 
@@ -1497,6 +1509,7 @@ export default class AiSettingsWidget extends OptionsWidget {
                 message += '<br><br>Please check your AI settings.';
                 $warningDiv.html(message);
                 $warningDiv.show();
+                console.log('Setting validation warnings:', message);
             } else {
                 $warningDiv.hide();
             }
