@@ -96,25 +96,75 @@ export async function getEnabledEmbeddingProviders(): Promise<EmbeddingProvider[
         return [];
     }
 
-    // Get enabled providers from database
-    const enabledProviders = await sql.getRows(`
-        SELECT providerId, name, config
-        FROM embedding_providers
-        WHERE isEnabled = 1
-        ORDER BY priority DESC`
-    );
+    // Get provider precedence from options
+    const embeddingPrecedenceStr = await options.getOption('embeddingProviderPrecedence') || '';
+    const aiPrecedenceStr = await options.getOption('aiProviderPrecedence') || '';
 
+    let enabledProviderNames: string[] = [];
+
+    // Parse embedding provider precedence
+    if (embeddingPrecedenceStr) {
+        if (embeddingPrecedenceStr.includes(',')) {
+            enabledProviderNames = enabledProviderNames.concat(
+                embeddingPrecedenceStr.split(',').map(p => p.trim())
+            );
+        } else {
+            enabledProviderNames.push(embeddingPrecedenceStr.trim());
+        }
+    }
+
+    // Parse AI provider precedence (some may also be embedding providers)
+    if (aiPrecedenceStr) {
+        if (aiPrecedenceStr.includes(',')) {
+            enabledProviderNames = enabledProviderNames.concat(
+                aiPrecedenceStr.split(',').map(p => p.trim())
+            );
+        } else {
+            enabledProviderNames.push(aiPrecedenceStr.trim());
+        }
+    }
+
+    // Remove duplicates
+    enabledProviderNames = [...new Set(enabledProviderNames)];
+
+    // Get available providers from registered providers
     const result: EmbeddingProvider[] = [];
 
-    for (const row of enabledProviders) {
-        const rowData = row as any;
-        const provider = providers.get(rowData.name);
+    // Static set to track which providers we've already logged errors for to prevent spam
+    if (!(getEnabledEmbeddingProviders as any).erroredProviders) {
+        (getEnabledEmbeddingProviders as any).erroredProviders = new Set<string>();
+    }
+    const erroredProviders = (getEnabledEmbeddingProviders as any).erroredProviders as Set<string>;
+
+    for (const name of enabledProviderNames) {
+        const provider = providers.get(name);
 
         if (provider) {
             result.push(provider);
-        } else {
-            // Use error instead of warn if warn is not available
-            log.error(`Enabled embedding provider ${rowData.name} not found in registered providers`);
+            // If we previously errored about this provider but it's now available, remove from errored set
+            if (erroredProviders.has(name)) {
+                erroredProviders.delete(name);
+            }
+        } else if (!erroredProviders.has(name)) {
+            // Only log the error once per provider to prevent spam
+            erroredProviders.add(name);
+
+            let errorMessage = `Embedding provider "${name}" is listed in your provider precedence, but is not available.`;
+
+            // Add provider-specific guidance
+            if (name === 'openai') {
+                errorMessage += ` Make sure you have added an OpenAI API key in AI settings.`;
+            } else if (name === 'ollama') {
+                errorMessage += ` Make sure Ollama is running and enabled in AI settings.`;
+            } else if (name === 'voyage') {
+                errorMessage += ` Make sure you have added a Voyage API key in AI settings.`;
+            } else if (name === 'anthropic') {
+                errorMessage += ` Make sure you have added an Anthropic API key in AI settings.`;
+            }
+
+            errorMessage += ` Remove "${name}" from embeddingProviderPrecedence and aiProviderPrecedence if you don't intend to use it.`;
+
+            log.error(errorMessage);
         }
     }
 
@@ -127,7 +177,6 @@ export async function getEnabledEmbeddingProviders(): Promise<EmbeddingProvider[
 export async function createEmbeddingProviderConfig(
     name: string,
     config: EmbeddingConfig,
-    isEnabled = false,
     priority = 0
 ): Promise<string> {
     const providerId = randomString(16);
@@ -136,10 +185,10 @@ export async function createEmbeddingProviderConfig(
 
     await sql.execute(`
         INSERT INTO embedding_providers
-        (providerId, name, isEnabled, priority, config,
+        (providerId, name, priority, config,
          dateCreated, utcDateCreated, dateModified, utcDateModified)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [providerId, name, isEnabled ? 1 : 0, priority, JSON.stringify(config),
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [providerId, name, priority, JSON.stringify(config),
          now, utcNow, now, utcNow]
     );
 
@@ -151,7 +200,6 @@ export async function createEmbeddingProviderConfig(
  */
 export async function updateEmbeddingProviderConfig(
     providerId: string,
-    isEnabled?: boolean,
     priority?: number,
     config?: EmbeddingConfig
 ): Promise<boolean> {
@@ -171,11 +219,6 @@ export async function updateEmbeddingProviderConfig(
     // Build update query parts
     const updates = [];
     const params: any[] = [];
-
-    if (isEnabled !== undefined) {
-        updates.push("isEnabled = ?");
-        params.push(isEnabled ? 1 : 0);
-    }
 
     if (priority !== undefined) {
         updates.push("priority = ?");
@@ -256,7 +299,7 @@ export async function initializeDefaultProviders() {
                     model: openaiModel,
                     dimension: 1536,
                     type: 'float32'
-                }, true, 100);
+                }, 100);
             }
         }
 
@@ -285,7 +328,7 @@ export async function initializeDefaultProviders() {
                     model: voyageModel,
                     dimension: 1024,
                     type: 'float32'
-                }, true, 75);
+                }, 75);
             }
         }
 
@@ -322,7 +365,7 @@ export async function initializeDefaultProviders() {
                         model: embeddingModel,
                         dimension: ollamaProvider.getDimension(),
                         type: 'float32'
-                    }, true, 50);
+                    }, 50);
                 }
             } catch (error: any) {
                 log.error(`Error initializing Ollama embedding provider: ${error.message || 'Unknown error'}`);
@@ -347,7 +390,7 @@ export async function initializeDefaultProviders() {
                 model: 'local',
                 dimension: 384,
                 type: 'float32'
-            }, true, 10);
+            }, 10);
         }
     } catch (error: any) {
         log.error(`Error initializing default embedding providers: ${error.message || 'Unknown error'}`);

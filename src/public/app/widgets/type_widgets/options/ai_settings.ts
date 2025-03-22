@@ -74,6 +74,11 @@ interface AnthropicModelResponse {
     }>;
 }
 
+interface ProviderStatusResponse {
+    success: boolean;
+    errors: string[];
+}
+
 export default class AiSettingsWidget extends OptionsWidget {
     private statsRefreshInterval: NodeJS.Timeout | null = null;
     private indexRebuildRefreshInterval: NodeJS.Timeout | null = null;
@@ -81,11 +86,14 @@ export default class AiSettingsWidget extends OptionsWidget {
 
     doRender() {
         this.$widget = $(`
+        <!-- Configuration warning alert at the top -->
+        <div class="provider-validation-warning alert alert-warning mb-4"
+             style="display: none; padding: 12px 15px; border-left: 4px solid #ffc107;
+                    background-color: rgba(255, 248, 230, 0.9); font-size: 14px;">
+        </div>
+
         <div class="options-section">
             <h4>${t("ai_llm.title")}</h4>
-
-            <!-- Add warning alert div -->
-            <div class="provider-validation-warning alert alert-warning" style="display: none;"></div>
 
             <div class="form-group">
                 <label class="tn-checkbox">
@@ -217,6 +225,14 @@ export default class AiSettingsWidget extends OptionsWidget {
                         </div>
                         <div class="card-body">
                             <div class="form-group">
+                                <label class="tn-checkbox">
+                                    <input class="anthropic-embedding-enabled form-check-input" type="checkbox">
+                                    ${t("ai_llm.enable_as_embedding_provider")}
+                                </label>
+                                <div class="form-text">${t("ai_llm.enable_embedding_provider_description")}</div>
+                            </div>
+
+                            <div class="form-group">
                                 <label>${t("ai_llm.api_key")}</label>
                                 <input type="password" class="anthropic-api-key form-control" autocomplete="off">
                                 <div class="form-text">${t("ai_llm.anthropic_api_key_description")}</div>
@@ -247,6 +263,14 @@ export default class AiSettingsWidget extends OptionsWidget {
                             <h5>${t("ai_llm.voyage_configuration")}</h5>
                         </div>
                         <div class="card-body">
+                            <div class="form-group">
+                                <label class="tn-checkbox">
+                                    <input class="voyage-embedding-enabled form-check-input" type="checkbox">
+                                    ${t("ai_llm.enable_as_embedding_provider")}
+                                </label>
+                                <div class="form-text">${t("ai_llm.enable_embedding_provider_description")}</div>
+                            </div>
+
                             <div class="form-group">
                                 <label>${t("ai_llm.api_key")}</label>
                                 <input type="password" class="voyage-api-key form-control" autocomplete="off">
@@ -446,7 +470,8 @@ export default class AiSettingsWidget extends OptionsWidget {
 
         const $ollamaEnabled = this.$widget.find('.ollama-enabled');
         $ollamaEnabled.on('change', async () => {
-            await this.updateOption('ollamaEnabled', $ollamaEnabled.prop('checked') ? "true" : "false");
+            await this.updateOption('ollamaEnabled', $ollamaEnabled.prop('checked'));
+            this.updateAiSectionVisibility();
         });
 
         const $aiProviderPrecedence = this.$widget.find('.ai-provider-precedence');
@@ -911,6 +936,9 @@ export default class AiSettingsWidget extends OptionsWidget {
 
         // Call displayValidationWarnings instead of directly calling validateEmbeddingProviders
         this.displayValidationWarnings();
+
+        // Check for provider errors
+        await this.fetchProviderErrors();
     }
 
     updateAiSectionVisibility() {
@@ -949,6 +977,9 @@ export default class AiSettingsWidget extends OptionsWidget {
 
                 // Also update failed embeddings list periodically
                 await this.updateFailedEmbeddingsList();
+
+                // Check for provider errors
+                await this.fetchProviderErrors();
             }
         }, this.STATS_REFRESH_INTERVAL);
     }
@@ -1318,6 +1349,55 @@ export default class AiSettingsWidget extends OptionsWidget {
                     .html('Retry All');
             }
         });
+    }
+
+    /**
+     * Fetch and display provider errors from server logs
+     */
+    async fetchProviderErrors() {
+        if (!this.$widget) return;
+
+        try {
+            console.log('Fetching provider errors from server...');
+            const response = await server.get('llm/provider-status') as ProviderStatusResponse;
+            console.log('Provider status response:', response);
+
+            // Get the warning div
+            const $warningDiv = this.$widget.find('.provider-validation-warning');
+            console.log('Warning div found:', $warningDiv.length > 0);
+
+            if (response.success && response.errors && response.errors.length > 0) {
+                // Show errors in the warning box with better styling
+                let message = '<strong>Configuration Issues Detected:</strong><br><ul class="mt-2">';
+
+                for (const error of response.errors) {
+                    message += `<li>${error}</li>`;
+                }
+
+                message += '</ul>';
+                console.log('Setting warning message:', message);
+
+                // Make sure the warning is visible with good styling
+                $warningDiv.html(message);
+                $warningDiv.css({
+                    'display': 'block',
+                    'padding': '10px 15px',
+                    'margin-bottom': '20px',
+                    'border-left': '4px solid #ffc107',
+                    'background-color': 'rgba(255, 248, 230, 0.9)'
+                });
+
+                // Make sure it's at the top
+                if ($warningDiv.parent().is(this.$widget)) {
+                    $warningDiv.prependTo(this.$widget);
+                }
+            } else {
+                // No errors, hide the warning
+                $warningDiv.hide();
+            }
+        } catch (error) {
+            console.error("Error fetching provider errors:", error);
+        }
     }
 
     // Replace displayValidationWarnings method with client-side implementation

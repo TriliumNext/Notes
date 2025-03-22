@@ -14,6 +14,7 @@ import sql from "../../services/sql.js";
 // Import the index service for knowledge base management
 import indexService from "../../services/llm/index_service.js";
 import { CONTEXT_PROMPTS } from '../../services/llm/prompts/llm_prompt_constants.js';
+import validationService from "../../services/llm/validation_service.js";
 
 // LLM service constants
 export const LLM_CONSTANTS = {
@@ -550,43 +551,43 @@ async function sendMessage(req: Request, res: Response) {
             content = requestBody.content;
             useAdvancedContext = requestBody.useAdvancedContext || false;
             showThinking = requestBody.showThinking || false;
-            
+
             // Check for agent mode flag
             const useAgentMode = requestBody.useAgentMode || false;
-            
+
             // If agent mode is enabled, use the agent executor to handle the request
             if (useAgentMode && content) {
                 log.info(`Using agent mode for message: sessionId=${req.params.sessionId}, contentLength=${content ? content.length : 0}`);
-                
+
                 // Get session and other required data
                 const sessionId = req.params.sessionId;
                 const session = sessions.get(sessionId);
-                
+
                 if (!session) {
                     throw new Error(`Session ${sessionId} not found`);
                 }
-                
+
                 // Add the user message to the session
                 session.messages.push({
                     role: 'user',
                     content: content,
                     timestamp: new Date()
                 });
-                
+
                 // Update session timestamp
                 session.lastActive = new Date();
-                
+
                 // Get the context note ID if available
                 const contextNoteId = requestBody.contextNoteId || session.noteContext;
-                
+
                 try {
                     // Initialize AI service manager for agent usage
                     const aiManager = aiServiceManagerModule.default;
                     await aiManager.initializeAgentTools();
-                    
+
                     // Make sure we get the chat service without circular imports
                     const chatService = await import('../../services/llm/chat_service.js');
-                    
+
                     // Use the agent chat message method
                     const agentResult = await chatService.default.sendAgentMessage(
                         sessionId,
@@ -597,7 +598,7 @@ async function sendMessage(req: Request, res: Response) {
                             temperature: session.metadata.temperature || 0.7
                         }
                     );
-                    
+
                     // The response will already have been stored in the session by the service
                     // We just need to extract the last message as our response
                     const lastMessage = agentResult.messages[agentResult.messages.length - 1];
@@ -614,7 +615,7 @@ async function sendMessage(req: Request, res: Response) {
                     throw new Error(`Agent error: ${agentError.message}`);
                 }
             }
-            
+
             // If not agent mode, continue with normal flow
             log.info(`LLM POST message: sessionId=${req.params.sessionId}, useAdvancedContext=${useAdvancedContext}, showThinking=${showThinking}, contentLength=${content ? content.length : 0}`);
         } else if (req.method === 'GET') {
@@ -1228,6 +1229,18 @@ async function indexNote(req: Request, res: Response) {
     }
 }
 
+/**
+ * Get validation status of AI providers
+ */
+async function getProviderStatus(req: Request, res: Response) {
+    const errors = await validationService.getValidationErrors();
+
+    return {
+        success: true,
+        errors: errors.map(error => error.message)
+    };
+}
+
 export default {
     // Chat session management
     createSession,
@@ -1245,5 +1258,8 @@ export default {
     retryAllFailedIndexes,
     findSimilarNotes,
     generateQueryContext,
-    indexNote
+    indexNote,
+
+    // AI provider validation
+    getProviderStatus
 };

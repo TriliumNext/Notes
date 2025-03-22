@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS "embedding_queue" (
 CREATE TABLE IF NOT EXISTS "embedding_providers" (
     "providerId" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "isEnabled" INTEGER NOT NULL DEFAULT 0,
     "priority" INTEGER NOT NULL DEFAULT 0,
     "config" TEXT NOT NULL, -- JSON config object
     "dateCreated" TEXT NOT NULL,

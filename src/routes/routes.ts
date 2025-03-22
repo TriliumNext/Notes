@@ -416,6 +416,9 @@ function register(app: express.Application) {
     // Anthropic API endpoints
     route(PST, "/api/anthropic/list-models", [auth.checkApiAuth, csrfMiddleware], anthropicRoute.listModels, apiResultHandler);
 
+    // LLM provider validation
+    apiRoute(GET, "/api/llm/provider-status", llmRoute.getProviderStatus);
+
     // API Documentation
     apiDocsRoute.register(app);
 

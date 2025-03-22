@@ -6,6 +6,9 @@ import becca from "../../becca/becca.js";
 import type { Request, Response } from "express";
 import log from "../../services/log.js";
 import sql from "../../services/sql.js";
+import express from "express";
+
+const router = express.Router();
 
 /**
  * Get similar notes based on note ID
@@ -126,10 +129,10 @@ async function getProviders(req: Request, res: Response) {
  */
 async function updateProvider(req: Request, res: Response) {
     const { providerId } = req.params;
-    const { isEnabled, priority, config } = req.body;
+    const { priority, config } = req.body;
 
     const success = await providerManager.updateEmbeddingProviderConfig(
-        providerId, isEnabled, priority, config
+        providerId, priority, config
     );
 
     if (!success) {
@@ -311,3 +314,5 @@ export default {
     rebuildIndex,
     getIndexRebuildStatus
 };
+
+export { router };
