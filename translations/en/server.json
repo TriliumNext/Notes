@@ -272,7 +272,8 @@
     "bookmarks": "Bookmarks",
     "today": "Open today's journal note",
     "new-note": "New note",
-    "show-windows": "Show windows"
+    "show-windows": "Show windows",
+    "open_new_window": "Open new window"
   },
   "migration": {
     "old_version": "Direct migration from your current version is not supported. Please upgrade to the latest v0.60.4 first and only then to this version.",
