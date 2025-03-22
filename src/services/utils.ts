@@ -363,7 +363,7 @@ export function processStringOrBuffer(data: string | Buffer | null) {
     }
 }
 
-export function safeExtractMessageAndStackFromError(err: unknown) {
+export function safeExtractMessageAndStackFromError(err: unknown): [errMessage: string, errStack: string | undefined] {
     return (err instanceof Error) ? [err.message, err.stack] as const : ["Unknown Error", undefined] as const;
 }
 
