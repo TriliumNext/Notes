@@ -1,0 +1,95 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Relation Map</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Relation Map</h1>
+
+      <div class="ck-content">
+        <p>Relation map is a type of <a href="../Basic%20Concepts/Navigation/Tree%20Concepts.html">note</a> which
+          visualizes notes and their <a href="Attributes.html">relations</a>. See
+          an example:</p>
+        <h2>Development process demo</h2>
+        <p>This is a basic example how you can create simple diagram using relation
+          maps:</p>
+        <p>
+          <img src="../Attachments/relation-map-dev-process.png">
+        </p>
+        <p>And this is how you can create it:</p>
+        <p>
+          <img src="Relation Map_relation-map-.gif">
+        </p>
+        <p>We start completely from scratch by first creating new note called "Development
+          process" and changing its type to "Relation map". After that we create
+          new notes one by one and place them by clicking into the map. We also drag
+          <a
+          href="Attributes.html">relations</a>between notes and name them. That's all!</p>
+        <p>Items on the map - "Specification", "Development", "Testing" and "Demo"
+          are actually notes which have been created under "Development process"
+          note - you can click on them and write some content. Connections between
+          notes are called "<a href="Attributes.html">relations</a>".</p>
+        <h2>Family demo</h2>
+        <p>This is more complicated demo using some advanced concepts. Resulting
+          diagram is here:</p>
+        <p>
+          <img src="../Attachments/relation-map-family.png">
+        </p>
+        <p>This is how you get to it:</p>
+        <p>
+          <img src="../Attachments/relation-map-family-demo.gif">
+        </p>
+        <p>There are several steps here:</p>
+        <ul>
+          <li>we start with empty relation map and two existing notes representing Prince
+            Philip and Queen Elizabeth II. These two notes already have "isPartnerOf"
+            <a
+            href="Attributes.html">relations</a>defined.
+              <ul>
+                <li>There are actually two "inverse" relations (one from Philip to Elizabeth
+                  and one from Elizabeth to Philip)</li>
+              </ul>
+          </li>
+          <li>we drag both notes to relation map and place to suitable position. Notice
+            how the existing "isPartnerOf" relations are displayed.</li>
+          <li>now we create new note - we name it "Prince Charles" and place it on the
+            relation map by clicking on the desired position. The note is by default
+            created under the relation map note (visible in the note tree on the left).</li>
+          <li>we create two new relations "isChildOf" targeting both Philip and Elizabeth
+            <ul>
+              <li>now there's something unexpected - we can also see the relation to display
+                another "hasChild" relation. This is because there's a <a href="Attributes/Promoted%20Attributes.html">relation definition</a> which
+                puts "isChildOf" as an "<a href="Attributes/Promoted%20Attributes.html">inverse</a>"
+                relation of "hasChildOf" (and vice versa) and thus it is created automatically.</li>
+            </ul>
+          </li>
+          <li>we create another note for Princess Diana and create "isPartnerOf" relation
+            from Charles. Again notice how the relation has arrows both ways - this
+            is because "isPartnerOf" definition specifies its inverse relation as again
+            "isPartnerOf" so the opposite relation is created automatically.</li>
+          <li>as the last step we pan &amp; zoom the map to fit better to window dimensions.</li>
+        </ul>
+        <p>Relation definitions mentioned above come from "Person template" note
+          which is assigned to any child of "My Family Tree" relation note. You can
+          play with the whole thing in the <a href="Database.html">demo notes</a>.</p>
+        <h2>Details</h2>
+        <p>You can specify which relations should be displayed with comma delimited
+          names of relations in <code>displayRelations</code> label.</p>
+        <p>Alternatively, you can specify comma delimited list of relation names
+          in <code>hideRelations</code> which will display all relations, except for
+          the ones defined in the label.</p>
+        <h2>See also</h2>
+        <ul>
+          <li><a href="Note%20Map.html">Note map</a> is a similar concept</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

@@ -1,11 +1,10 @@
 "use strict";
 
 import AbstractShacaEntity from "./abstract_shaca_entity.js";
-import { SAttributeRow } from "./rows.js";
-import SNote from "./snote.js";
+import type { SAttributeRow } from "./rows.js";
+import type SNote from "./snote.js";
 
 class SAttribute extends AbstractShacaEntity {
-
     attributeId: string;
     private noteId: string;
     type: string;
@@ -34,8 +33,8 @@ class SAttribute extends AbstractShacaEntity {
             targetNote.targetRelations.push(this);
         }
 
-        if (this.type === 'relation' && this.name === 'imageLink') {
-            const linkedChildNote = this.note.getChildNotes().find(childNote => childNote.noteId === this.value);
+        if (this.type === "relation" && this.name === "imageLink") {
+            const linkedChildNote = this.note.getChildNotes().find((childNote) => childNote.noteId === this.value);
 
             if (linkedChildNote) {
                 const branch = this.shaca.getBranchFromChildAndParent(linkedChildNote.noteId, this.noteId);
@@ -44,30 +43,30 @@ class SAttribute extends AbstractShacaEntity {
             }
         }
 
-        if (this.type === 'label' && this.name === 'shareAlias' && this.value.trim()) {
+        if (this.type === "label" && this.name === "shareAlias" && this.value.trim()) {
             this.shaca.aliasToNote[this.value.trim()] = this.note;
         }
 
-        if (this.type === 'label' && this.name === 'shareRoot') {
+        if (this.type === "label" && this.name === "shareRoot") {
             this.shaca.shareRootNote = this.note;
         }
 
-        if (this.type === 'label' && this.name === 'shareIndex') {
+        if (this.type === "label" && this.name === "shareIndex") {
             this.shaca.shareIndexEnabled = true;
         }
     }
 
     get isAffectingSubtree() {
-        return this.isInheritable
-            || (this.type === 'relation' && ['template', 'inherit'].includes(this.name));
+        return this.isInheritable || (this.type === "relation" && ["template", "inherit"].includes(this.name));
     }
 
-    get targetNoteId() { // alias
-        return this.type === 'relation' ? this.value : undefined;
+    get targetNoteId() {
+        // alias
+        return this.type === "relation" ? this.value : undefined;
     }
 
     isAutoLink() {
-        return this.type === 'relation' && ['internalLink', 'imageLink', 'relationMapLink', 'includeNoteLink'].includes(this.name);
+        return this.type === "relation" && ["internalLink", "imageLink", "relationMapLink", "includeNoteLink"].includes(this.name);
     }
 
     get note(): SNote {
@@ -75,7 +74,7 @@ class SAttribute extends AbstractShacaEntity {
     }
 
     get targetNote(): SNote | null | undefined {
-        if (this.type === 'relation') {
+        if (this.type === "relation") {
             return this.shaca.notes[this.value];
         }
     }
@@ -85,7 +84,7 @@ class SAttribute extends AbstractShacaEntity {
     }
 
     getTargetNote(): SNote | null {
-        if (this.type !== 'relation') {
+        if (this.type !== "relation") {
             throw new Error(`Attribute '${this.attributeId}' is not relation`);
         }
 

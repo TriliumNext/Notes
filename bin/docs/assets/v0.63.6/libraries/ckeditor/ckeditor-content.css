@@ -1,6 +1,8 @@
 /* !!!!!! TRILIUM CUSTOM CHANGES !!!!!! */
 
-.printed-content .ck-widget__selection-handle, .printed-content .ck-widget__type-around { /* gets rid of triangles: https://github.com/zadam/trilium/issues/1129 */
+.printed-content .ck-widget__selection-handle,
+.printed-content .ck-widget__type-around {
+    /* gets rid of triangles: https://github.com/zadam/trilium/issues/1129 */
     display: none;
 }
 
@@ -59,7 +61,7 @@
 .ck-content .table table td,
 .ck-content .table table th {
     min-width: 2em;
-    padding: .4em;
+    padding: 0.4em;
     border: 1px solid hsl(0, 0%, 75%);
 }
 /* @ckeditor/ckeditor5-table/theme/table.css */
@@ -83,8 +85,8 @@
     text-align: center;
     color: var(--ck-color-selector-caption-text);
     background-color: var(--ck-color-selector-caption-background);
-    padding: .6em;
-    font-size: .75em;
+    padding: 0.6em;
+    font-size: 0.75em;
     outline-offset: -1px;
 }
 /* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
@@ -98,7 +100,7 @@
 }
 /* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
 .ck-content .page-break::after {
-    content: '';
+    content: "";
     position: absolute;
     border-bottom: 2px dashed hsl(0, 0%, 77%);
     width: 100%;
@@ -107,7 +109,7 @@
 .ck-content .page-break__label {
     position: relative;
     z-index: 1;
-    padding: .3em .6em;
+    padding: 0.3em 0.6em;
     display: block;
     text-transform: uppercase;
     border: 1px solid hsl(0, 0%, 77%);
@@ -158,7 +160,7 @@
     margin-left: 0;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-content[dir=rtl] .todo-list .todo-list__label > input {
+.ck-content[dir="rtl"] .todo-list .todo-list__label > input {
     left: 0;
     margin-right: 0;
     right: -25px;
@@ -169,7 +171,7 @@
     display: block;
     position: absolute;
     box-sizing: border-box;
-    content: '';
+    content: "";
     width: 100%;
     height: 100%;
     border: 1px solid hsl(0, 0%, 20%);
@@ -182,14 +184,14 @@
     position: absolute;
     box-sizing: content-box;
     pointer-events: none;
-    content: '';
-    left: calc( var(--ck-todo-list-checkmark-size) / 3 );
-    top: calc( var(--ck-todo-list-checkmark-size) / 5.3 );
-    width: calc( var(--ck-todo-list-checkmark-size) / 5.3 );
-    height: calc( var(--ck-todo-list-checkmark-size) / 2.6 );
+    content: "";
+    left: calc(var(--ck-todo-list-checkmark-size) / 3);
+    top: calc(var(--ck-todo-list-checkmark-size) / 5.3);
+    width: calc(var(--ck-todo-list-checkmark-size) / 5.3);
+    height: calc(var(--ck-todo-list-checkmark-size) / 2.6);
     border-style: solid;
     border-color: transparent;
-    border-width: 0 calc( var(--ck-todo-list-checkmark-size) / 8 ) calc( var(--ck-todo-list-checkmark-size) / 8 ) 0;
+    border-width: 0 calc(var(--ck-todo-list-checkmark-size) / 8) calc(var(--ck-todo-list-checkmark-size) / 8) 0;
     transform: rotate(45deg);
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
@@ -206,20 +208,21 @@
     vertical-align: middle;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-content .todo-list .todo-list__label.todo-list__label_without-description input[type=checkbox] {
+.ck-content .todo-list .todo-list__label.todo-list__label_without-description input[type="checkbox"] {
     position: absolute;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
 .ck-editor__editable.ck-content .todo-list .todo-list__label > input,
-.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input {
     cursor: pointer;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label > input:hover::before, .ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input:hover::before {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > input:hover::before,
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input:hover::before {
     box-shadow: 0 0 0 5px hsla(0, 0%, 0%, 0.1);
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input {
     -webkit-appearance: none;
     display: inline-block;
     position: relative;
@@ -233,18 +236,18 @@
     margin-left: 0;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content[dir=rtl] .todo-list .todo-list__label > span[contenteditable=false] > input {
+.ck-editor__editable.ck-content[dir="rtl"] .todo-list .todo-list__label > span[contenteditable="false"] > input {
     left: 0;
     margin-right: 0;
     right: -25px;
     margin-left: -15px;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input::before {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input::before {
     display: block;
     position: absolute;
     box-sizing: border-box;
-    content: '';
+    content: "";
     width: 100%;
     height: 100%;
     border: 1px solid hsl(0, 0%, 20%);
@@ -252,32 +255,32 @@
     transition: 250ms ease-in-out box-shadow;
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input::after {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input::after {
     display: block;
     position: absolute;
     box-sizing: content-box;
     pointer-events: none;
-    content: '';
-    left: calc( var(--ck-todo-list-checkmark-size) / 3 );
-    top: calc( var(--ck-todo-list-checkmark-size) / 5.3 );
-    width: calc( var(--ck-todo-list-checkmark-size) / 5.3 );
-    height: calc( var(--ck-todo-list-checkmark-size) / 2.6 );
+    content: "";
+    left: calc(var(--ck-todo-list-checkmark-size) / 3);
+    top: calc(var(--ck-todo-list-checkmark-size) / 5.3);
+    width: calc(var(--ck-todo-list-checkmark-size) / 5.3);
+    height: calc(var(--ck-todo-list-checkmark-size) / 2.6);
     border-style: solid;
     border-color: transparent;
-    border-width: 0 calc( var(--ck-todo-list-checkmark-size) / 8 ) calc( var(--ck-todo-list-checkmark-size) / 8 ) 0;
+    border-width: 0 calc(var(--ck-todo-list-checkmark-size) / 8) calc(var(--ck-todo-list-checkmark-size) / 8) 0;
     transform: rotate(45deg);
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input[checked]::before {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input[checked]::before {
     background: hsl(126, 64%, 41%);
     border-color: hsl(126, 64%, 41%);
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable=false] > input[checked]::after {
+.ck-editor__editable.ck-content .todo-list .todo-list__label > span[contenteditable="false"] > input[checked]::after {
     border-color: hsl(0, 0%, 100%);
 }
 /* @ckeditor/ckeditor5-list/theme/todolist.css */
-.ck-editor__editable.ck-content .todo-list .todo-list__label.todo-list__label_without-description input[type=checkbox] {
+.ck-editor__editable.ck-content .todo-list .todo-list__label.todo-list__label_without-description input[type="checkbox"] {
     position: absolute;
 }
 /* @ckeditor/ckeditor5-list/theme/list.css */
@@ -379,8 +382,8 @@
     word-break: break-word;
     color: var(--ck-color-image-caption-text);
     background-color: var(--ck-color-image-caption-background);
-    padding: .6em;
-    font-size: .75em;
+    padding: 0.6em;
+    font-size: 0.75em;
     outline-offset: -1px;
 }
 /* @ckeditor/ckeditor5-image/theme/imagestyle.css */
@@ -488,16 +491,16 @@
 /* @ckeditor/ckeditor5-basic-styles/theme/code.css */
 .ck-content code {
     background-color: hsla(0, 0%, 78%, 0.3);
-    padding: .15em;
+    padding: 0.15em;
     border-radius: 2px;
 }
 /* @ckeditor/ckeditor5-font/theme/fontsize.css */
 .ck-content .text-tiny {
-    font-size: .7em;
+    font-size: 0.7em;
 }
 /* @ckeditor/ckeditor5-font/theme/fontsize.css */
 .ck-content .text-small {
-    font-size: .85em;
+    font-size: 0.85em;
 }
 /* @ckeditor/ckeditor5-font/theme/fontsize.css */
 .ck-content .text-big {

@@ -1,0 +1,65 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Sorting Notes</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Sorting Notes</h1>
+
+      <div class="ck-content">
+        <h2>Sorting Notes</h2>
+        <p>You can sort notes by right-clicking the parent note in the note tree
+          and selecting Advanced -&gt; Sort notes by ... This will sort existing
+          notes, but will not automatically sort future notes added to this parent
+          note</p>
+        <h2>Automatic/Permanent Sorting</h2>
+        <p>Child notes can be automatically sorted by attaching specific <a href="../../Advanced%20Usage/Attributes.html">labels</a> to
+          the parent note:</p>
+        <ul>
+          <li><code>#sorted</code>: Enables sorting. Can optionally include the name
+            of the note's property/label for sorting criteria (details below).</li>
+          <li><code>#sortDirection</code>: By default, sorting is ascending. Set this
+            to <code>desc</code> to sort in descending order.</li>
+          <li><code>#sortFoldersFirst</code>: Notes with children will be sorted to
+            the top.</li>
+        </ul>
+        <p>Sorting is done by comparing note properties or specific labels on child
+          notes. There are four sorting levels, with the first having the highest
+          priority. Lower priority levels are applied only if higher priority comparisons
+          result in equality.</p>
+        <ol>
+          <li><strong>Top Label Sorting</strong>: Child notes with the <code>#top</code> label
+            will appear at the top of the folder.</li>
+          <li><strong>Bottom Label Sorting</strong>: (Introduced in Trilium 0.62) Child
+            notes with the <code>#bottom</code> label will appear at the bottom of the
+            folder.</li>
+          <li><strong>Property/Label-Based Sorting</strong>: Sorting is based on the
+            parent note's <code>#sorted</code> label:
+            <ul>
+              <li><strong>Default Sorting</strong>: If <code>#sorted</code> has no value,
+                notes are sorted alphabetically.</li>
+              <li><strong>Property Sorting</strong>: If <code>#sorted</code> is set to <code>title</code>, <code>dateModified</code>,
+                or <code>dateCreated</code>, notes are sorted based on the specified property.</li>
+              <li><strong>Label Sorting</strong>: If <code>#sorted</code> has any other value,
+                this value is treated as the name of a child note's label, and sorting
+                is based on the values of this label. For example, setting <code>#sorted=myOrder</code> on
+                the parent note and using <code>#myOrder=001</code>, <code>#myOrder=002</code>,
+                etc., on child notes.</li>
+            </ul>
+          </li>
+          <li><strong>Alphabetical Sorting</strong>: Used as a last resort when other
+            criteria result in equality.</li>
+        </ol>
+        <p>All comparisons are made string-wise (e.g., "1" &lt; "2" or "2020-10-10"
+          &lt; "2021-01-15", but also "2" &gt; "10").</p>
+      </div>
+    </div>
+  </body>
+
+</html>

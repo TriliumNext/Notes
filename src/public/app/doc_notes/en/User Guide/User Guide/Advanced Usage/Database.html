@@ -1,0 +1,74 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Database</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Database</h1>
+
+      <div class="ck-content">
+        <p>Your Trilium data is stored in a <a href="https://www.sqlite.org">SQLite</a> database
+          which contains all notes, tree structure, metadata, and most of the configuration.
+          The database file is named <code>document.db</code> and is stored in the
+          application's default <a href="../Installation%20%26%20Setup/Data%20directory.html">Data directory</a>.</p>
+        <h2>Demo Notes</h2>
+        <p>When you run Trilium for the first time, it will generate a new database
+          containing demo notes. These notes showcase its many features, such as:</p>
+        <ul>
+          <li><a href="Relation%20Map.html">Relation Map</a>
+          </li>
+          <li><a href="Advanced%20Showcases/Day%20Notes.html">Day Notes</a>
+          </li>
+          <li><a href="Advanced%20Showcases/Weight%20Tracker.html">Weight Tracker</a>
+          </li>
+          <li><a href="Advanced%20Showcases/Task%20Manager.html">Task Manager</a>
+          </li>
+          <li><a href="../Basic%20Concepts/Themes.html">Custom CSS Themes</a>
+          </li>
+        </ul>
+        <h3>Restoring Demo Notes</h3>
+        <p>There are some cases in which you may want to restore the original demo
+          notes. For example, if you experimented with some of the more advanced
+          features and want to see the original reference, or if you simply want
+          to explore the latest version of the demo notes, which might showcase new
+          features.</p>
+        <p>You can easily restore the demo notes by using Trilium's built-in import
+          feature by importing them:</p>
+        <ul>
+          <li>Download <a href="https://github.com/TriliumNext/Notes/raw/develop/db/demo.zip">this .zip archive</a> with
+            the latest version of the demo notes</li>
+          <li>Right click on any note in your tree under which you would like the demo
+            notes to be imported</li>
+          <li>Click "Import into note"</li>
+          <li>Select the .zip archive to import it</li>
+        </ul>
+        <h2>Manually Modifying the Database</h2>
+        <p>Trilium provides a lot of flexibility, and with it, opportunities for
+          advanced users to tweak it. If you need to explore or modify the database
+          directly, you can use a tool such as <a href="https://sqlitebrowser.org/">SQLite Browser</a> to
+          work directly on the database file.</p>
+        <p>See <a href="Database/Manually%20altering%20the%20database.html">Manually altering the database</a> for
+          more information.</p>
+        <h2>How to Reset the Database</h2>
+        <p>If you are experimenting with Trilium and want to return it to its original
+          state, you can do that by deleting the current database. When you restart
+          the application, it will generate a new database containing the original
+          demo notes.</p>
+        <p>To delete the database, simply go to the <a href="../Installation%20%26%20Setup/Data%20directory.html">data directory</a> and
+          delete the <code>document.db</code> file (and any other files starting with <code>document.db</code>).</p>
+        <p>If you do not need to preserve any configurations that might be stored
+          in the <code>config.ini</code> file, you can just delete all of the <a href="../Installation%20%26%20Setup/Data%20directory.html">data directory's</a> contents
+          to fully restore the application to its original state. You can also review
+          the <a href="Configuration%20(config.ini%20or%20e.html">configuration</a> file
+          to provide all <code>config.ini</code> values as environment variables instead.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

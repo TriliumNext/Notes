@@ -4,13 +4,12 @@ import Expression from "./expression.js";
 import NoteSet from "../note_set.js";
 import log from "../../log.js";
 import becca from "../../../becca/becca.js";
-import SearchContext from "../search_context.js";
+import type SearchContext from "../search_context.js";
 
 class AncestorExp extends Expression {
-
     private ancestorNoteId: string;
     private ancestorDepthComparator;
-    
+
     ancestorDepth?: string;
 
     constructor(ancestorNoteId: string, ancestorDepth?: string) {
@@ -59,15 +58,12 @@ class AncestorExp extends Expression {
         const comparedDepth = parseInt(depthCondition.substr(2));
 
         if (depthCondition.startsWith("eq")) {
-            return depth => depth === comparedDepth;
-        }
-        else if (depthCondition.startsWith("gt")) {
-            return depth => depth > comparedDepth;
-        }
-        else if (depthCondition.startsWith("lt")) {
-            return depth => depth < comparedDepth;
-        }
-        else {
+            return (depth) => depth === comparedDepth;
+        } else if (depthCondition.startsWith("gt")) {
+            return (depth) => depth > comparedDepth;
+        } else if (depthCondition.startsWith("lt")) {
+            return (depth) => depth < comparedDepth;
+        } else {
             log.error(`Unrecognized depth condition value ${depthCondition}`);
             return null;
         }

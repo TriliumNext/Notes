@@ -1,0 +1,99 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Docker Server Installation</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Docker Server Installation</h1>
+
+      <div class="ck-content">
+        <p>Official docker images are published on docker hub for <strong>AMD64</strong>, <strong>ARMv7</strong> and <strong>ARM64/v8</strong>:
+          <a
+          href="https://hub.docker.com/r/triliumnext/notes/">https://hub.docker.com/r/triliumnext/notes/</a>
+        </p>
+        <h2>Prerequisites</h2>
+        <p>Ensure Docker is installed on your system.</p>
+        <p>If you need help installing Docker, reference the <a href="https://docs.docker.com/engine/install/">Docker Installation Docs</a>
+        </p>
+        <p><strong>Note:</strong> Trilium's Docker container requires root privileges
+          to operate correctly.</p>
+        <aside class="admonition warning">
+          <p>If you're using a SMB/CIFS share or folder as your Trilium data directory,
+            <a
+            href="https://github.com/TriliumNext/Notes/issues/415#issuecomment-2344824400">you'll need</a>to add the mount options of <code>nobrl</code> and <code>noperm</code> when
+              mounting your SMB share.</p>
+        </aside>
+        <h2>Running with Docker Compose</h2>
+        <h3>Grab the latest docker-compose.yml:</h3><pre><code class="language-text-x-trilium-auto">wget https://raw.githubusercontent.com/TriliumNext/Notes/master/docker-compose.yml</code></pre>
+        <p>Optionally, edit the <code>docker-compose.yml</code> file to configure the
+          container settings prior to starting it. Unless configured otherwise, the
+          data directory will be <code>~/trilium-data</code> and the container will
+          be accessible at port 8080.</p>
+        <h3>Start the container:</h3>
+        <p>Run the following command to start the container in the background:</p><pre><code class="language-text-x-trilium-auto">docker compose up -d</code></pre>
+        <h2>Running without Docker Compose / Further Configuration</h2>
+        <h3>Pulling the Docker Image</h3>
+        <p>To pull the image, use the following command, replacing <code>[VERSION]</code> with
+          the desired version or tag, such as <code>v0.91.6</code> or just <code>latest</code>.
+          (See published tag names at <a href="https://hub.docker.com/r/triliumnext/notes/tags">https://hub.docker.com/r/triliumnext/notes/tags</a>.):</p><pre><code class="language-text-x-trilium-auto">docker pull triliumnext/notes:v0.91.6</code></pre>
+        <p><strong>Warning:</strong> Avoid using the "latest" tag, as it may automatically
+          upgrade your instance to a new minor version, potentially disrupting sync
+          setups or causing other issues.</p>
+        <h3>Preparing the Data Directory</h3>
+        <p>Trilium requires a directory on the host system to store its data. This
+          directory must be mounted into the Docker container with write permissions.</p>
+        <h3>Running the Docker Container</h3>
+        <h4>Local Access Only</h4>
+        <p>Run the container to make it accessible only from the localhost. This
+          setup is suitable for testing or when using a proxy server like Nginx or
+          Apache.</p><pre><code class="language-text-x-trilium-auto">sudo docker run -t -i -p 127.0.0.1:8080:8080 -v ~/trilium-data:/home/node/trilium-data triliumnext/notes:[VERSION]</code></pre>
+        <ol>
+          <li>Verify the container is running using <code>docker ps</code>.</li>
+          <li>Access Trilium via a web browser at <code>127.0.0.1:8080</code>.</li>
+        </ol>
+        <h4>Local Network Access</h4>
+        <p>To make the container accessible only on your local network, first create
+          a new Docker network:</p><pre><code class="language-text-x-trilium-auto">docker network create -d macvlan -o parent=eth0 --subnet 192.168.2.0/24 --gateway 192.168.2.254 --ip-range 192.168.2.252/27 mynet</code></pre>
+        <p>Then, run the container with the network settings:</p><pre><code class="language-text-x-trilium-auto">docker run --net=mynet -d -p 127.0.0.1:8080:8080 -v ~/trilium-data:/home/node/trilium-data triliumnext/notes:-latest</code></pre>
+        <p>To set a different user ID (UID) and group ID (GID) for the saved data,
+          use the <code>USER_UID</code> and <code>USER_GID</code> environment variables:</p><pre><code class="language-text-x-trilium-auto">docker run --net=mynet -d -p 127.0.0.1:8080:8080 -e "USER_UID=1001" -e "USER_GID=1001" -v ~/trilium-data:/home/node/trilium-data triliumnext/notes:-latest</code></pre>
+        <p>Find the local IP address using <code>docker inspect [container_name]</code> and
+          access the service from devices on the local network.</p><pre><code class="language-text-x-trilium-auto">docker ps
+docker inspect [container_name]</code></pre>
+        <h4>Global Access</h4>
+        <p>To allow access from any IP address, run the container as follows:</p><pre><code class="language-text-x-trilium-auto">docker run -d -p 0.0.0.0:8080:8080 -v ~/trilium-data:/home/node/trilium-data triliumnext/notes:[VERSION]</code></pre>
+        <p>Stop the container with <code>docker stop &lt;CONTAINER ID&gt;</code>,
+          where the container ID is obtained from <code>docker ps</code>.</p>
+        <h3>Custom Data Directory</h3>
+        <p>For a custom data directory, use:</p><pre><code class="language-text-x-trilium-auto">-v ~/YourOwnDirectory:/home/node/trilium-data triliumnext/notes:[VERSION]</code></pre>
+        <p>If you want to run your instance in a non-default way, please use the
+          volume switch as follows: <code>-v ~/YourOwnDirectory:/home/node/trilium-data triliumnext/notes:&lt;VERSION&gt;</code>.
+          It is important to be aware of how Docker works for volumes, with the first
+          path being your own and the second the one to virtually bind to. <a href="https://docs.docker.com/storage/volumes/">https://docs.docker.com/storage/volumes/</a> The
+          path before the colon is the host directory, and the path after the colon
+          is the container's path. More details can be found in the <a href="https://docs.docker.com/storage/volumes/">Docker Volumes Documentation</a>.</p>
+        <h2>Reverse Proxy</h2>
+        <ol>
+          <li><a href="../2.%20Reverse%20proxy/Nginx.html">Nginx</a>
+          </li>
+          <li><a href="../2.%20Reverse%20proxy/Apache.html">Apache</a>
+          </li>
+        </ol>
+        <h3>Note on --user Directive</h3>
+        <p>The <code>--user</code> directive is unsupported. Instead, use the <code>USER_UID</code> and <code>USER_GID</code> environment
+          variables to set the appropriate user and group IDs.</p>
+        <h3>Note on timezones</h3>
+        <p>If you are having timezone issues and you are not using docker-compose,
+          you may need to add a <code>TZ</code> environment variable with the <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">TZ identifier</a> of
+          your local timezone.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

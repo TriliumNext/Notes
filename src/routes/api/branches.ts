@@ -11,7 +11,7 @@ import branchService from "../../services/branches.js";
 import log from "../../services/log.js";
 import ValidationError from "../../errors/validation_error.js";
 import eventService from "../../services/events.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 /**
  * Code in this file deals with moving and cloning branches. The relationship between note and parent note is unique
@@ -19,7 +19,7 @@ import { Request } from 'express';
  */
 
 function moveBranchToParent(req: Request) {
-    const {branchId, parentBranchId} = req.params;
+    const { branchId, parentBranchId } = req.params;
 
     const branchToMove = becca.getBranch(branchId);
     const targetParentBranch = becca.getBranch(parentBranchId);
@@ -32,7 +32,7 @@ function moveBranchToParent(req: Request) {
 }
 
 function moveBranchBeforeNote(req: Request) {
-    const {branchId, beforeBranchId} = req.params;
+    const { branchId, beforeBranchId } = req.params;
 
     const branchToMove = becca.getBranchOrThrow(branchId);
     const beforeBranch = becca.getBranchOrThrow(beforeBranchId);
@@ -48,8 +48,7 @@ function moveBranchBeforeNote(req: Request) {
     // we don't change utcDateModified, so other changes are prioritized in case of conflict
     // also we would have to sync all those modified branches otherwise hash checks would fail
 
-    sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition >= ? AND isDeleted = 0",
-        [beforeBranch.parentNoteId, originalBeforeNotePosition]);
+    sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition >= ? AND isDeleted = 0", [beforeBranch.parentNoteId, originalBeforeNotePosition]);
 
     // also need to update becca positions
     const parentNote = becca.getNoteOrThrow(beforeBranch.parentNoteId);
@@ -63,8 +62,7 @@ function moveBranchBeforeNote(req: Request) {
     if (branchToMove.parentNoteId === beforeBranch.parentNoteId) {
         branchToMove.notePosition = originalBeforeNotePosition;
         branchToMove.save();
-    }
-    else {
+    } else {
         const newBranch = branchToMove.createClone(beforeBranch.parentNoteId, originalBeforeNotePosition);
         newBranch.save();
 
@@ -82,7 +80,7 @@ function moveBranchBeforeNote(req: Request) {
 }
 
 function moveBranchAfterNote(req: Request) {
-    const {branchId, afterBranchId} = req.params;
+    const { branchId, afterBranchId } = req.params;
 
     const branchToMove = becca.getBranchOrThrow(branchId);
     const afterNote = becca.getBranchOrThrow(afterBranchId);
@@ -97,8 +95,7 @@ function moveBranchAfterNote(req: Request) {
 
     // we don't change utcDateModified, so other changes are prioritized in case of conflict
     // also we would have to sync all those modified branches otherwise hash checks would fail
-    sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition > ? AND isDeleted = 0",
-        [afterNote.parentNoteId, originalAfterNotePosition]);
+    sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition > ? AND isDeleted = 0", [afterNote.parentNoteId, originalAfterNotePosition]);
 
     // also need to update becca positions
     const parentNote = becca.getNoteOrThrow(afterNote.parentNoteId);
@@ -114,8 +111,7 @@ function moveBranchAfterNote(req: Request) {
     if (branchToMove.parentNoteId === afterNote.parentNoteId) {
         branchToMove.notePosition = movedNotePosition;
         branchToMove.save();
-    }
-    else {
+    } else {
         const newBranch = branchToMove.createClone(afterNote.parentNoteId, movedNotePosition);
         newBranch.save();
 
@@ -133,10 +129,10 @@ function moveBranchAfterNote(req: Request) {
 }
 
 function setExpanded(req: Request) {
-    const {branchId} = req.params;
+    const { branchId } = req.params;
     const expanded = parseInt(req.params.expanded);
 
-    if (branchId !== 'none_root') {
+    if (branchId !== "none_root") {
         sql.execute("UPDATE branches SET isExpanded = ? WHERE branchId = ?", [expanded, branchId]);
         // we don't sync expanded label
         // also this does not trigger updates to the frontend, this would trigger too many reloads
@@ -148,17 +144,18 @@ function setExpanded(req: Request) {
         }
 
         eventService.emit(eventService.ENTITY_CHANGED, {
-            entityName: 'branches',
+            entityName: "branches",
             entity: branch
         });
     }
 }
 
 function setExpandedForSubtree(req: Request) {
-    const {branchId} = req.params;
+    const { branchId } = req.params;
     const expanded = parseInt(req.params.expanded);
 
-    let branchIds = sql.getColumn<string>(`
+    let branchIds = sql.getColumn<string>(
+        `
         WITH RECURSIVE
         tree(branchId, noteId) AS (
             SELECT branchId, noteId FROM branches WHERE branchId = ?
@@ -167,10 +164,12 @@ function setExpandedForSubtree(req: Request) {
                 JOIN tree ON branches.parentNoteId = tree.noteId
             WHERE branches.isDeleted = 0
         )
-        SELECT branchId FROM tree`, [branchId]);
+        SELECT branchId FROM tree`,
+        [branchId]
+    );
 
     // root is always expanded
-    branchIds = branchIds.filter(branchId => branchId !== 'none_root');
+    branchIds = branchIds.filter((branchId) => branchId !== "none_root");
 
     sql.executeMany(`UPDATE branches SET isExpanded = ${expanded} WHERE branchId IN (???)`, branchIds);
 
@@ -187,12 +186,57 @@ function setExpandedForSubtree(req: Request) {
     };
 }
 
+/**
+ * @swagger
+ * /api/branches/{branchId}:
+ *   delete:
+ *     summary: Delete branch (note clone)
+ *     operationId: branches-delete
+ *     parameters:
+ *       - name: branchId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: "#/components/schemas/BranchId"
+ *       - name: taskId
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Task group identifier
+ *       - name: eraseNotes
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         required: false
+ *         description: Whether to erase the note immediately
+ *       - name: last
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         required: true
+ *         description: Whether this is the last request of this task group
+ *     responses:
+ *       '200':
+ *         description: Branch successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 noteDeleted:
+ *                   type: boolean
+ *                   description: Whether the last note clone was deleted
+ *     security:
+ *       - session: []
+ *     tags: ["data"]
+ */
 function deleteBranch(req: Request) {
-    const last = req.query.last === 'true';
-    const eraseNotes = req.query.eraseNotes === 'true';
+    const last = req.query.last === "true";
+    const eraseNotes = req.query.eraseNotes === "true";
     const branch = becca.getBranchOrThrow(req.params.branchId);
 
-    const taskContext = TaskContext.getInstance(req.query.taskId as string, 'deleteNotes');
+    const taskContext = TaskContext.getInstance(req.query.taskId as string, "deleteNotes");
 
     const deleteId = utils.randomString(10);
     let noteDeleted;
@@ -217,6 +261,7 @@ function deleteBranch(req: Request) {
 
 function setPrefix(req: Request) {
     const branchId = req.params.branchId;
+    //TriliumNextTODO: req.body arrives as string, so req.body.prefix will be undefined – did the code below ever even work?
     const prefix = utils.isEmptyOrWhitespace(req.body.prefix) ? null : req.body.prefix;
 
     const branch = becca.getBranchOrThrow(branchId);

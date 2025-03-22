@@ -1,0 +1,40 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>ETAPI (REST API)</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>ETAPI (REST API)</h1>
+
+      <div class="ck-content">
+        <p>ETAPI is Trilium's public/external REST API. It is available since Trilium
+          v0.50.</p>
+        <p>The documentation is in OpenAPI format, available <a href="https://github.com/TriliumNext/Notes/blob/master/src/etapi/etapi.openapi.yaml">here</a>.</p>
+        <p><a href="https://github.com/Nriver/trilium-py">trilium-py</a> is a third-party
+          Python implementation for ETAPI client, you can use Python to communicate
+          with Trilium.</p>
+        <h2>Authentication</h2>
+        <p>All operations have to be authenticated using a token. You can get this
+          token either from Options -&gt; ETAPI or programmatically using the <code>/auth/login</code> REST
+          call (see the <a href="https://github.com/TriliumNext/Notes/blob/master/src/etapi/etapi.openapi.yaml">spec</a>):</p><pre><code class="language-text-x-trilium-auto">GET https://myserver.com/etapi/app-info
+Authorization: ETAPITOKEN</code></pre>
+        <p>Alternatively, since 0.56 you can also use basic auth format:</p><pre><code class="language-text-x-trilium-auto">GET https://myserver.com/etapi/app-info
+Authorization: Basic BATOKEN</code></pre>
+        <ul>
+          <li>Where <code>BATOKEN = BASE64(username + ':' + password)</code> - this is
+            a standard Basic Auth serialization</li>
+          <li>Where <code>username</code> is "etapi"</li>
+          <li>And <code>password</code> is the generated ETAPI token described above.</li>
+        </ul>
+        <p>Basic Auth is meant to be used with tools which support only basic auth.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

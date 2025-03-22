@@ -1,0 +1,662 @@
+/*
+ * Command buttons (.btn-primary / .btn-secondary / .btn-sm / .btn-success)
+ */
+
+button.btn.btn-primary,
+button.btn.btn-secondary,
+button.btn.btn-sm:not(.select-button),
+button.btn.btn-success {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    box-shadow: 1px 1px 1px var(--cmd-button-shadow-color);
+    border: unset;
+    border-radius: 6px;
+    padding: 4px 16px;
+    background: var(--cmd-button-background-color);
+    color: var(--cmd-button-text-color);
+}
+
+button.btn.btn-primary:hover,
+button.btn.btn-secondary:hover,
+button.btn.btn-sm:not(.select-button):hover,
+button.btn.btn-success:hover {
+    background: var(--cmd-button-hover-background-color);
+    color: var(--cmd-button-hover-text-color);
+}
+
+button.btn.btn-primary:active,
+button.btn.btn-secondary:active,
+button.btn.btn-sm:not(.select-button):active,
+button.btn.btn-success:active {
+    opacity: 0.85;
+    box-shadow: unset;
+    background: var(--cmd-button-background-color) !important;
+    color: var(--cmd-button-text-color) !important;
+    transform: scale(0.95);
+}
+
+button.btn.btn-primary:disabled,
+button.btn.btn-secondary:disabled,
+button.btn.btn-sm:not(.select-button):disabled,
+button.btn.btn-success:disabled {
+    opacity: var(--cmd-button-disabled-opacity);
+}
+
+button.btn.btn-primary:focus-visible,
+button.btn.btn-secondary:focus-visible,
+button.btn.btn-sm:not(.select-button):focus-visible,
+button.btn.btn-success:focus-visible {
+    outline: 2px solid var(--input-focus-outline-color);
+}
+
+/* Button's icon */
+button.btn.btn-primary span.bx,
+button.btn.btn-secondary span.bx,
+button.btn.btn-sm span.bx,
+button.btn.btn-success span.bx {
+    color: var(--cmd-button-icon-color);
+    padding-right: 0.35em;
+    font-size: 1.2em;
+}
+
+/* Button's keyboard shortcut */
+button.btn.btn-primary kbd,
+button.btn.btn-secondary kbd,
+button.btn.btn-sm kbd,
+button.btn.btn-success kbd {
+    margin-left: 0.5em;
+    background: var(--cmd-button-keyboard-shortcut-background);
+    color: var(--cmd-button-keyboard-shortcut-color);
+    font-size: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+}
+
+/*
+ * Icon buttons
+ */
+
+:root .icon-action:not(.global-menu-button),
+:root .tn-tool-button,
+:root .btn-group .tn-tool-button:not(:last-child),
+:root .btn-group .tn-tool-button:last-child {
+    width: var(--icon-button-size);
+    height: var(--icon-button-size);
+    border: unset !important;
+    border-radius: 8px;
+    padding: 0;
+    text-align: center;
+    color: var(--icon-button-color);
+}
+
+.btn-group .tn-tool-button + .tn-tool-button {
+    margin-left: 4px !important;
+}
+
+/* The "x" icon button */
+:root .icon-action.bx-x,
+:root .tn-tool-button.bx-x {
+    --icon-button-hover-background: var(--tab-close-button-hover-background);
+    --icon-button-hover-color: var(--tab-close-button-hover-color);
+    --icon-button-size: 24px;
+    --icon-button-icon-ratio: 0.8;
+
+    border-radius: 50%;
+}
+
+/* The icon */
+:root .icon-action:not(.global-menu-button)::before,
+:root .tn-tool-button::before {
+    display: block;
+    line-height: var(--icon-button-size);
+    font-size: calc(var(--icon-button-size) * var(--icon-button-icon-ratio));
+}
+
+:root .icon-action:not(.global-menu-button):hover,
+:root .icon-action:not(.global-menu-button).show,
+:root .tn-tool-button:hover,
+:root .tn-tool-button.show {
+    background: var(--icon-button-hover-background);
+    color: var(--icon-button-hover-color);
+}
+
+:root .icon-action:not(.global-menu-button):active::before,
+:root .tn-tool-button:active::before {
+    transform: scale(0.85);
+}
+
+:root .icon-action:not(.global-menu-button):focus-visible,
+:root .tn-tool-button:focus-visible {
+    outline: 2px solid var(--input-focus-outline-color);
+}
+
+/* 
+ * Input boxes
+ */
+
+input:disabled {
+    opacity: 0.33;
+}
+
+/* Text boxes */
+
+input:not([type]),
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea.form-control,
+textarea,
+.tn-input-field {
+    outline: 3px solid transparent;
+    outline-offset: 6px;
+    border: unset;
+    border-radius: var(--bs-border-radius);
+    background: var(--input-background-color);
+    color: var(--input-text-color);
+}
+
+input:not([type]):hover,
+input[type="text"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
+input[type="date"]:hover,
+input[type="time"]:hover,
+input[type="datetime-local"]:hover,
+textarea.form-control:hover,
+textarea:hover,
+.tn-input-field:hover {
+    background: var(--input-hover-background);
+    color: var(--input-hover-color);
+}
+
+input:not([type]):focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+textarea.form-control:focus,
+textarea:focus,
+.tn-input-field:focus,
+.tn-input-field:focus-within {
+    box-shadow: unset;
+    outline: 3px solid var(--input-focus-outline-color);
+    outline-offset: 0;
+    background: var(--input-focus-background);
+    color: var(--input-focus-color);
+    transition:
+        outline-color 50ms linear,
+        outline-offset 200ms ease-out;
+}
+
+input::placeholder,
+.form-control::placeholder {
+    --muted-text-color: var(--input-placeholder-color);
+}
+
+input::selection,
+.form-control::selection {
+    background: var(--input-selection-background);
+    color: var(--input-selection-text-color);
+}
+
+.form-text {
+    color: var(--main-text-color);
+    opacity: 0.8;
+}
+
+/* Input groups */
+
+.input-group {
+    outline: 3px solid transparent;
+    outline-offset: 6px;
+    background: var(--input-background-color);
+    border-radius: 6px;
+    padding-right: 8px;
+    color: var(--quick-search-color);
+    flex-wrap: nowrap;
+}
+
+.input-group:hover {
+    background: var(--input-hover-background);
+}
+
+.input-group:focus-within {
+    outline: 3px solid var(--input-focus-outline-color);
+    outline-offset: 0;
+    background: var(--input-focus-background);
+    transition:
+        outline-color 50ms linear,
+        outline-offset 200ms ease-out;
+}
+
+.input-group input .input-group input:hover,
+.input-group input:focus,
+.input-group .form-control,
+.input-group .form-control:hover,
+.input-group .form-control:focus {
+    /* Ignore the focus outline for the inputs that are children of an input group */
+    outline: unset;
+
+    background: transparent;
+}
+
+.input-group button,
+.input-group a {
+    display: flex;
+    align-items: center;
+    --bs-border-width: 0;
+    --accented-background-color: transparent;
+    background: transparent;
+    padding: 0 4px;
+
+    /* Workaround to set the "color" property. */
+    --muted-text-color: var(--input-action-button-color);
+}
+
+.input-group button:hover,
+.input-group a:hover {
+    --muted-text-color: var(--input-action-button-hover);
+    color: var(--input-action-button-hover);
+}
+
+.input-group button:focus-visible,
+.input-group a:focus-visible {
+    box-shadow: unset;
+    outline: transparent;
+    border: transparent;
+    text-shadow: 0 0 3px var(--input-action-button-hover);
+}
+
+.input-group button:active {
+    background: transparent !important;
+}
+
+.input-group a.disabled {
+    opacity: 0.5;
+    /* Workaround to set the "background" property. */
+    --button-disabled-background-color: transparent;
+    --button-disabled-text-color: var(--input-action-button-color);
+}
+
+.input-group .input-clearer-button {
+    background: transparent !important;
+}
+
+.input-group .input-group-text {
+    /* Background color hijack */
+    --accented-background-color: transparent;
+
+    border: none;
+    color: var(--input-placeholder-color);
+    user-select: none;
+    cursor: default;
+}
+
+.input-group .input-group-text:not(button):not(a):not(.bx) {
+    font-style: italic;
+}
+
+/*
+    Numeric input with measurement unit as a sufix
+
+    <label class="input-group tn-number-unit-pair">
+        <input ... >
+        <span class="input-group-text">meters</span>
+    </label>
+*/
+
+label.input-group.tn-number-unit-pair {
+    width: fit-content;
+}
+
+label.input-group.tn-number-unit-pair input {
+    width: 120px !important;
+    padding-inline-end: 0;
+}
+
+/* Combo box-like dropdown buttons */
+
+.select-button.dropdown-toggle::after {
+    /* Remove the original arrow */
+    content: unset;
+}
+
+/* Combo boxes and combo box-like dropdown buttons */
+
+select,
+select.form-select,
+select.form-control,
+.select-button.dropdown-toggle.btn {
+    --dropdown-arrow: var(--select-arrow-svg) right 0.75rem center/15px 20px no-repeat;
+
+    outline: 3px solid transparent;
+    outline-offset: 6px;
+    padding-right: calc(15px + 1.5rem);
+    background: var(--input-background-color) var(--dropdown-arrow);
+    color: var(--input-text-color);
+    border: unset;
+    border-radius: 0.375rem;
+}
+
+select:hover,
+select.form-select:hover,
+select.form-control:hover,
+.select-button.dropdown-toggle.btn:hover {
+    background: var(--input-hover-background) var(--dropdown-arrow);
+    color: var(--input-hover-color);
+}
+
+button.select-button.dropdown-toggle.btn:active {
+    background-color: transparent;
+    color: var(--select-focus-text-color);
+}
+
+select:focus,
+select.form-select:focus,
+select.form-control:focus,
+.select-button.dropdown-toggle.btn:focus {
+    box-shadow: unset;
+    outline: 3px solid var(--input-focus-outline-color);
+    outline-offset: 0;
+    background: var(--select-focus-background) var(--dropdown-arrow);
+    color: var(--select-focus-text-color);
+    transition:
+        outline-color 50ms linear,
+        outline-offset 200ms ease-out;
+}
+
+option {
+    color: var(--select-dropdown-text-color);
+}
+
+optgroup {
+    color: var(--select-group-heading-text-color);
+    font-size: 0.75em;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 40px;
+}
+
+/* 
+ * File input
+ *
+ * <label class="tn-file-input tn-input-field">
+ *     <input type="file" />
+ * </label>
+ */
+
+.tn-file-input {
+    position: relative;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+}
+
+.tn-file-input input[type="file"] {
+    background: transparent;
+}
+
+.tn-file-input input[type="file"]::file-selector-button {
+    /* Hide the "Browse..." button */
+    display: none;
+}
+
+.tn-file-input:hover input[type="file"] {
+    color: var(--input-hover-color);
+}
+
+.tn-file-input input[type="file"]:focus,
+.tn-file-input input[type="file"]:active {
+    outline: none;
+    color: var(--input-focus-color);
+}
+
+/* The browse icon */
+.tn-file-input::before {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    content: "\eae1";
+    width: 2em;
+    height: 100%;
+    right: 0;
+    top: 0;
+    font-size: 1.2em;
+    font-family: boxicons;
+}
+
+/* Check boxes and radio buttons */
+
+@supports selector(label:has(*)) {
+    /* Check box & radio button commons */
+
+    /* The parent label */
+    label.tn-radio,
+    label.tn-checkbox {
+        --box-size: 1em;
+        --box-label-gap: 0.5em;
+
+        position: relative;
+        padding-left: calc(var(--box-size) + var(--box-label-gap)) !important;
+        user-select: none;
+    }
+
+    /* The original input */
+    label.tn-radio > input[type="radio"],
+    label.tn-checkbox > input[type="checkbox"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--box-size);
+        height: 100%;
+        opacity: 0 !important;
+    }
+
+    label.tn-radio::before,
+    label.tn-radio::after,
+    label.tn-checkbox::before,
+    label.tn-checkbox::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        translate: 0 -50%;
+        width: var(--box-size);
+        height: var(--box-size);
+    }
+
+    label.tn-radio:has(> input[type="radio"]:focus-visible)::before,
+    label.tn-checkbox:has(> input[type="checkbox"]:focus-visible)::before {
+        outline: 2px solid var(--input-focus-outline-color);
+    }
+
+    /* Check boxes */
+
+    /* The check box background */
+    label.tn-checkbox::before {
+        border-radius: 3px;
+        background: var(--radio-checkbox-background);
+    }
+
+    label.tn-checkbox:has(> input[type="checkbox"]:not(:disabled)):hover:before {
+        background: var(--radio-checkbox-hover-background);
+    }
+
+    @keyframes checkbox-checked {
+        from {
+            transform: scale(2);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+
+    /* The tick mark */
+    label.tn-checkbox::after {
+        mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3ctitle%3echeck-bold%3c/title%3e%3cpath d='M9%2c20.42L2.79%2c14.21L5.62%2c11.38L9%2c14.77L18.88%2c4.88L21.71%2c7.71L9%2c20.42Z' /%3e%3c/svg%3e");
+        mask-position: center center;
+        mask-size: 0.95em;
+        background-color: var(--radio-checkbox-indicator-color);
+        transform: scale(0);
+        opacity: 0;
+        transition:
+            transform 300ms ease-out,
+            opacity 300ms linear;
+    }
+
+    label.tn-checkbox:has(> input[type="checkbox"]:checked)::after {
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity 100ms ease-in-out;
+        animation: checkbox-checked 150ms ease-out;
+    }
+
+    /* Radio buttons */
+
+    label.tn-radio::before,
+    label.tn-radio::after {
+        border-radius: 50%;
+    }
+
+    /* The outer circle */
+    label.tn-radio::before {
+        background: var(--radio-checkbox-background);
+    }
+
+    label.tn-radio:has(> input[type="radio"]:not(:disabled)):hover::before {
+        background: var(--radio-checkbox-hover-background);
+    }
+
+    @keyframes radio-checked {
+        from {
+            transform: scale(1.5);
+        }
+        to {
+            transform: scale(0.5);
+        }
+    }
+
+    /* The inner circle */
+    label.tn-radio::after {
+        background: var(--radio-checkbox-indicator-color);
+        transform: scale(0);
+        opacity: 0;
+        transition:
+            opacity 300ms linear,
+            transform 300ms ease-in;
+    }
+
+    label.tn-radio:has(> input[type="radio"]:checked)::after {
+        transform: scale(0.5);
+        opacity: 1;
+        transition: opacity 150ms linear;
+        animation: radio-checked 200ms ease-out;
+    }
+
+    /* Disabled check boxes and radio buttons */
+
+    label.tn-radio:has(> input[type="radio"]:disabled)::before,
+    label.tn-radio:has(> input[type="radio"]:disabled)::after,
+    label.tn-checkbox:has(> input[type="checkbox"]:disabled)::before,
+    label.tn-checkbox:has(> input[type="checkbox"]:disabled)::after {
+        opacity: 0.5;
+    }
+}
+
+/* Switches */
+
+.switch-widget.component,
+.note-language-container {
+    --icon-button-size: 28px;
+}
+
+div.switch-widget {
+    --switch-off-track-background: var(--cmd-button-background-color);
+    --switch-on-track-background: var(--cmd-button-text-color);
+
+    --switch-off-thumb-background: var(--cmd-button-text-color);
+    --switch-on-thumb-background: var(--main-background-color);
+}
+
+/* Links */
+
+body a.tn-link,
+body a.tn-link:visited,
+.use-tn-links a,
+.use-tn-links a:visited {
+    --background: transparent;
+
+    box-shadow: 0 0 0 0 var(--background);
+    border-radius: 4px;
+    background: var(--background);
+    color: currentColor;
+    font-weight: normal;
+    text-decoration: underline;
+
+    transition:
+        background-color 200ms ease-out,
+        box-shadow 200ms ease-out,
+        color 300ms ease-out;
+}
+
+body a.tn-link:focus-visible,
+.use-tn-links a:focus-visible {
+    outline: 2px solid var(--input-focus-outline-color);
+    outline-offset: 2px;
+}
+
+body a.tn-link:hover,
+.use-tn-links a:hover {
+    box-shadow: 0 0 0 4px var(--link-hover-background);
+    --background: var(--link-hover-background);
+    color: var(--link-hover-color);
+
+    transition:
+        background-color 100ms ease-in,
+        box-shadow 100ms ease-in,
+        color 150ms ease-in;
+}
+
+a.tn-link.external:not(.no-arrow)::after,
+a.tn-link[href^="http://"]:not(.no-arrow)::after,
+a.tn-link[href^="https://"]:not(.no-arrow)::after,
+.use-tn-links a.external:not(.no-arrow)::after,
+.use-tn-links a[href^="http://"]:not(.no-arrow)::after,
+.use-tn-links a[href^="https://"]:not(.no-arrow)::after
+{
+    display: inline-block;
+    opacity: 0.5;
+}
+
+@keyframes link-arrow-blink {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.5;
+    }
+}
+
+a.tn-link:hover.external:not(.no-arrow)::after,
+a.tn-link:hover[href^="http://"]:not(.no-arrow)::after,
+a.tn-link:hover[href^="https://"]:not(.no-arrow)::after,
+.use-tn-links a:hover.external:not(.no-arrow)::after,
+.use-tn-links a:hover[href^="http://"]:not(.no-arrow)::after,
+.use-tn-links a:hover[href^="https://"]:not(.no-arrow)::after
+{
+    animation: link-arrow-blink 500ms linear alternate infinite;
+}
+
+/*
+ * Range inputs (sliders)
+ */
+
+input[type="range"] {
+    background: transparent;
+}

@@ -1,11 +1,11 @@
 "use strict";
 
-import NoteSet from "../note_set.js";
-import SearchContext from "../search_context.js";
+import type NoteSet from "../note_set.js";
+import type SearchContext from "../search_context.js";
 import Expression from "./expression.js";
 
 class NotExp extends Expression {
-    private subExpression: Expression;
+    subExpression: Expression;
 
     constructor(subExpression: Expression) {
         super();

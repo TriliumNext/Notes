@@ -44,7 +44,7 @@ Trilium предоставляется в виде десктопного при
 
 ```shell
 npm install
-npm run start-server
+npm run server:start
 ```
 
 ## 👏 Благодарности

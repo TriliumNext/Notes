@@ -2,13 +2,12 @@
 
 import passwordService from "../../services/encryption/password.js";
 import ValidationError from "../../errors/validation_error.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 function changePassword(req: Request) {
     if (passwordService.isPasswordSet()) {
         return passwordService.changePassword(req.body.current_password, req.body.new_password);
-    }
-    else {
+    } else {
         return passwordService.setPassword(req.body.new_password);
     }
 }

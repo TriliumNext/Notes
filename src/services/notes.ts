@@ -6,7 +6,7 @@ import eventService from "./events.js";
 import cls from "../services/cls.js";
 import protectedSessionService from "../services/protected_session.js";
 import log from "../services/log.js";
-import utils from "../services/utils.js";
+import { newEntityId, unescapeHtml, quoteRegex, toMap } from "../services/utils.js";
 import revisionService from "./revisions.js";
 import request from "./request.js";
 import path from "path";
@@ -23,14 +23,15 @@ import noteTypesService from "./note_types.js";
 import fs from "fs";
 import ws from "./ws.js";
 import html2plaintext from "html2plaintext";
-import { AttachmentRow, AttributeRow, BranchRow, NoteRow, NoteType } from '../becca/entities/rows.js';
-import TaskContext from "./task_context.js";
-import { NoteParams } from './note-interface.js';
+import type { AttachmentRow, AttributeRow, BranchRow, NoteRow } from "../becca/entities/rows.js";
+import type TaskContext from "./task_context.js";
+import type { NoteParams } from "./note-interface.js";
 import imageService from "./image.js";
+import { t } from "i18next";
 
 interface FoundLink {
-    name: "imageLink" | "internalLink" | "includeNoteLink" | "relationMapLink",
-    value: string
+    name: "imageLink" | "internalLink" | "includeNoteLink" | "relationMapLink";
+    value: string;
 }
 
 interface Attachment {
@@ -39,15 +40,17 @@ interface Attachment {
 }
 
 function getNewNotePosition(parentNote: BNote) {
-    if (parentNote.isLabelTruthy('newNotesOnTop')) {
-        const minNotePos = parentNote.getChildBranches()
-            .filter(branch => branch?.noteId !== '_hidden') // has "always last" note position
+    if (parentNote.isLabelTruthy("newNotesOnTop")) {
+        const minNotePos = parentNote
+            .getChildBranches()
+            .filter((branch) => branch?.noteId !== "_hidden") // has "always last" note position
             .reduce((min, note) => Math.min(min, note?.notePosition || 0), 0);
 
         return minNotePos - 10;
     } else {
-        const maxNotePos = parentNote.getChildBranches()
-            .filter(branch => branch?.noteId !== '_hidden') // has "always last" note position
+        const maxNotePos = parentNote
+            .getChildBranches()
+            .filter((branch) => branch?.noteId !== "_hidden") // has "always last" note position
             .reduce((max, note) => Math.max(max, note?.notePosition || 0), 0);
 
         return maxNotePos + 10;
@@ -74,9 +77,9 @@ function copyChildAttributes(parentNote: BNote, childNote: BNote) {
     for (const attr of parentNote.getAttributes()) {
         if (attr.name.startsWith("child:")) {
             const name = attr.name.substr(6);
-            const hasAlreadyTemplate = childNote.hasRelation('template');
+            const hasAlreadyTemplate = childNote.hasRelation("template");
 
-            if (hasAlreadyTemplate && attr.type === 'relation' && name === 'template') {
+            if (hasAlreadyTemplate && attr.type === "relation" && name === "template") {
                 // if the note already has a template, it means the template was chosen by the user explicitly
                 // in the menu. In that case, we should override the default templates defined in the child: attrs
                 continue;
@@ -95,9 +98,9 @@ function copyChildAttributes(parentNote: BNote, childNote: BNote) {
 }
 
 function getNewNoteTitle(parentNote: BNote) {
-    let title = "new note";
+    let title = t("notes.new-note");
 
-    const titleTemplate = parentNote.getLabelValue('titleTemplate');
+    const titleTemplate = parentNote.getLabelValue("titleTemplate");
 
     if (titleTemplate !== null) {
         try {
@@ -134,19 +137,19 @@ function getAndValidateParent(params: GetValidateParams) {
         throw new ValidationError(`Parent note '${params.parentNoteId}' was not found.`);
     }
 
-    if (parentNote.type === 'launcher' && parentNote.noteId !== '_lbBookmarks') {
+    if (parentNote.type === "launcher" && parentNote.noteId !== "_lbBookmarks") {
         throw new ValidationError(`Creating child notes into launcher notes is not allowed.`);
     }
 
-    if (['_lbAvailableLaunchers', '_lbVisibleLaunchers'].includes(params.parentNoteId) && params.type !== 'launcher') {
+    if (["_lbAvailableLaunchers", "_lbVisibleLaunchers"].includes(params.parentNoteId) && params.type !== "launcher") {
         throw new ValidationError(`Only 'launcher' notes can be created in parent '${params.parentNoteId}'`);
     }
 
     if (!params.ignoreForbiddenParents) {
-        if (['_lbRoot', '_hidden'].includes(parentNote.noteId)
-            || parentNote.noteId.startsWith("_lbTpl")
-            || parentNote.isOptions()) {
-
+        if (["_lbRoot", "_hidden"].includes(parentNote.noteId)
+                || parentNote.noteId.startsWith("_lbTpl")
+                || parentNote.noteId.startsWith("_help")
+                || parentNote.isOptions()) {
             throw new ValidationError(`Creating child notes into '${parentNote.noteId}' is not allowed.`);
         }
     }
@@ -169,11 +172,11 @@ function createNewNote(params: NoteParams): {
     }
 
     let error;
-    if (error = dateUtils.validateLocalDateTime(params.dateCreated)) {
+    if ((error = dateUtils.validateLocalDateTime(params.dateCreated))) {
         throw new Error(error);
     }
 
-    if (error = dateUtils.validateUtcDateTime(params.utcDateCreated)) {
+    if ((error = dateUtils.validateUtcDateTime(params.utcDateCreated))) {
         throw new Error(error);
     }
 
@@ -211,8 +214,7 @@ function createNewNote(params: NoteParams): {
                 prefix: params.prefix || "",
                 isExpanded: !!params.isExpanded
             }).save();
-        }
-        finally {
+        } finally {
             if (!isEntityEventsDisabled) {
                 // re-enable entity events only if they were previously enabled
                 // (they can be disabled in case of import)
@@ -227,20 +229,20 @@ function createNewNote(params: NoteParams): {
                 throw new Error(`Template note '${params.templateNoteId}' does not exist.`);
             }
 
-            note.addRelation('template', params.templateNoteId);
+            note.addRelation("template", params.templateNoteId);
 
             // no special handling for ~inherit since it doesn't matter if it's assigned with the note creation or later
         }
 
         copyChildAttributes(parentNote, note);
 
-        eventService.emit(eventService.ENTITY_CREATED, { entityName: 'notes', entity: note });
-        eventService.emit(eventService.ENTITY_CHANGED, { entityName: 'notes', entity: note });
+        eventService.emit(eventService.ENTITY_CREATED, { entityName: "notes", entity: note });
+        eventService.emit(eventService.ENTITY_CHANGED, { entityName: "notes", entity: note });
         triggerNoteTitleChanged(note);
         // blobs entity doesn't use "created" event
-        eventService.emit(eventService.ENTITY_CHANGED, { entityName: 'blobs', entity: note });
-        eventService.emit(eventService.ENTITY_CREATED, { entityName: 'branches', entity: branch });
-        eventService.emit(eventService.ENTITY_CHANGED, { entityName: 'branches', entity: branch });
+        eventService.emit(eventService.ENTITY_CHANGED, { entityName: "blobs", entity: note });
+        eventService.emit(eventService.ENTITY_CREATED, { entityName: "branches", entity: branch });
+        eventService.emit(eventService.ENTITY_CHANGED, { entityName: "branches", entity: branch });
         eventService.emit(eventService.CHILD_NOTE_CREATED, { childNote: note, parentNote: parentNote });
 
         log.info(`Created new note '${note.noteId}', branch '${branch.branchId}' of type '${note.type}', mime '${note.mime}'`);
@@ -252,24 +254,22 @@ function createNewNote(params: NoteParams): {
     });
 }
 
-function createNewNoteWithTarget(target: ("into" | "after"), targetBranchId: string | undefined, params: NoteParams) {
+function createNewNoteWithTarget(target: "into" | "after", targetBranchId: string | undefined, params: NoteParams) {
     if (!params.type) {
         const parentNote = becca.notes[params.parentNoteId];
 
         // code note type can be inherited, otherwise "text" is the default
-        params.type = parentNote.type === 'code' ? 'code' : 'text';
-        params.mime = parentNote.type === 'code' ? parentNote.mime : 'text/html';
+        params.type = parentNote.type === "code" ? "code" : "text";
+        params.mime = parentNote.type === "code" ? parentNote.mime : "text/html";
     }
 
-    if (target === 'into') {
+    if (target === "into") {
         return createNewNote(params);
-    }
-    else if (target === 'after' && targetBranchId) {
+    } else if (target === "after" && targetBranchId) {
         const afterBranch = becca.branches[targetBranchId];
 
         // not updating utcDateModified to avoid having to sync whole rows
-        sql.execute('UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition > ? AND isDeleted = 0',
-            [params.parentNoteId, afterBranch.notePosition]);
+        sql.execute("UPDATE branches SET notePosition = notePosition + 10 WHERE parentNoteId = ? AND notePosition > ? AND isDeleted = 0", [params.parentNoteId, afterBranch.notePosition]);
 
         params.notePosition = afterBranch.notePosition + 10;
 
@@ -278,8 +278,7 @@ function createNewNoteWithTarget(target: ("into" | "after"), targetBranchId: str
         entityChangesService.putNoteReorderingEntityChange(params.parentNoteId);
 
         return retObject;
-    }
-    else {
+    } else {
         throw new Error(`Unknown target '${target}'`);
     }
 }
@@ -317,17 +316,15 @@ function protectNote(note: BNote, protect: boolean) {
                     const content = attachment.getContent();
 
                     attachment.isProtected = protect;
-                    attachment.setContent(content, {forceSave: true});
-                }
-                catch (e) {
+                    attachment.setContent(content, { forceSave: true });
+                } catch (e) {
                     log.error(`Could not un/protect attachment '${attachment.attachmentId}'`);
 
                     throw e;
                 }
             }
         }
-    }
-    catch (e) {
+    } catch (e) {
         log.error(`Could not un/protect note '${note.noteId}'`);
 
         throw e;
@@ -339,12 +336,12 @@ function checkImageAttachments(note: BNote, content: string) {
     let match;
 
     const imgRegExp = /src="[^"]*api\/attachments\/([a-zA-Z0-9_]+)\/image/g;
-    while (match = imgRegExp.exec(content)) {
+    while ((match = imgRegExp.exec(content))) {
         foundAttachmentIds.add(match[1]);
     }
 
     const linkRegExp = /href="[^"]+attachmentId=([a-zA-Z0-9_]+)/g;
-    while (match = linkRegExp.exec(content)) {
+    while ((match = linkRegExp.exec(content))) {
         foundAttachmentIds.add(match[1]);
     }
 
@@ -362,14 +359,14 @@ function checkImageAttachments(note: BNote, content: string) {
         }
     }
 
-    const existingAttachmentIds = new Set<string | undefined>(attachments.map(att => att.attachmentId));
-    const unknownAttachmentIds = Array.from(foundAttachmentIds).filter(foundAttId => !existingAttachmentIds.has(foundAttId));
+    const existingAttachmentIds = new Set<string | undefined>(attachments.map((att) => att.attachmentId));
+    const unknownAttachmentIds = Array.from(foundAttachmentIds).filter((foundAttId) => !existingAttachmentIds.has(foundAttId));
     const unknownAttachments = becca.getAttachments(unknownAttachmentIds);
 
     for (const unknownAttachment of unknownAttachments) {
         // the attachment belongs to a different note (was copy-pasted). Attachments can be linked only from the note
         // which owns it, so either find an existing attachment having the same content or make a copy.
-        let localAttachment = note.getAttachments().find(att => att.role === unknownAttachment.role && att.blobId === unknownAttachment.blobId);
+        let localAttachment = note.getAttachments().find((att) => att.role === unknownAttachment.role && att.blobId === unknownAttachment.blobId);
 
         if (localAttachment) {
             if (localAttachment.utcDateScheduledForErasureSince) {
@@ -378,21 +375,25 @@ function checkImageAttachments(note: BNote, content: string) {
                 localAttachment.save();
             }
 
-            log.info(`Found equivalent attachment '${localAttachment.attachmentId}' of note '${note.noteId}' for the linked foreign attachment '${unknownAttachment.attachmentId}' of note '${unknownAttachment.ownerId}'`);
+            log.info(
+                `Found equivalent attachment '${localAttachment.attachmentId}' of note '${note.noteId}' for the linked foreign attachment '${unknownAttachment.attachmentId}' of note '${unknownAttachment.ownerId}'`
+            );
         } else {
             localAttachment = unknownAttachment.copy();
             localAttachment.ownerId = note.noteId;
-            localAttachment.setContent(unknownAttachment.getContent(), {forceSave: true});
+            localAttachment.setContent(unknownAttachment.getContent(), { forceSave: true });
 
-            ws.sendMessageToAllClients({ type: 'toast', message: `Attachment '${localAttachment.title}' has been copied to note '${note.title}'.`});
+            ws.sendMessageToAllClients({ type: "toast", message: `Attachment '${localAttachment.title}' has been copied to note '${note.title}'.` });
             log.info(`Copied attachment '${unknownAttachment.attachmentId}' of note '${unknownAttachment.ownerId}' to new '${localAttachment.attachmentId}' of note '${note.noteId}'`);
         }
 
         // replace image links
         content = content.replace(`api/attachments/${unknownAttachment.attachmentId}/image`, `api/attachments/${localAttachment.attachmentId}/image`);
         // replace reference links
-        content = content.replace(new RegExp(`href="[^"]+attachmentId=${unknownAttachment.attachmentId}[^"]*"`, "g"),
-            `href="#root/${localAttachment.ownerId}?viewMode=attachments&amp;attachmentId=${localAttachment.attachmentId}"`);
+        content = content.replace(
+            new RegExp(`href="[^"]+attachmentId=${unknownAttachment.attachmentId}[^"]*"`, "g"),
+            `href="#root/${localAttachment.ownerId}?viewMode=attachments&amp;attachmentId=${localAttachment.attachmentId}"`
+        );
     }
 
     return {
@@ -405,9 +406,9 @@ function findImageLinks(content: string, foundLinks: FoundLink[]) {
     const re = /src="[^"]*api\/images\/([a-zA-Z0-9_]+)\//g;
     let match;
 
-    while (match = re.exec(content)) {
+    while ((match = re.exec(content))) {
         foundLinks.push({
-            name: 'imageLink',
+            name: "imageLink",
             value: match[1]
         });
     }
@@ -421,9 +422,9 @@ function findInternalLinks(content: string, foundLinks: FoundLink[]) {
     const re = /href="[^"]*#root[a-zA-Z0-9_\/]*\/([a-zA-Z0-9_]+)\/?"/g;
     let match;
 
-    while (match = re.exec(content)) {
+    while ((match = re.exec(content))) {
         foundLinks.push({
-            name: 'internalLink',
+            name: "internalLink",
             value: match[1]
         });
     }
@@ -436,9 +437,9 @@ function findIncludeNoteLinks(content: string, foundLinks: FoundLink[]) {
     const re = /<section class="include-note[^>]+data-note-id="([a-zA-Z0-9_]+)"[^>]*>/g;
     let match;
 
-    while (match = re.exec(content)) {
+    while ((match = re.exec(content))) {
         foundLinks.push({
-            name: 'includeNoteLink',
+            name: "includeNoteLink",
             value: match[1]
         });
     }
@@ -452,7 +453,7 @@ function findRelationMapLinks(content: string, foundLinks: FoundLink[]) {
 
         for (const note of obj.notes) {
             foundLinks.push({
-                name: 'relationMapLink',
+                name: "relationMapLink",
                 value: note.noteId
             });
         }
@@ -464,7 +465,7 @@ function findRelationMapLinks(content: string, foundLinks: FoundLink[]) {
 const imageUrlToAttachmentIdMapping: Record<string, string> = {};
 
 async function downloadImage(noteId: string, imageUrl: string) {
-    const unescapedUrl = utils.unescapeHtml(imageUrl);
+    const unescapedUrl = unescapeHtml(imageUrl);
 
     try {
         let imageBuffer: Buffer;
@@ -489,7 +490,7 @@ async function downloadImage(noteId: string, imageUrl: string) {
         const title = path.basename(parsedUrl.pathname || "");
 
         const attachment = imageService.saveImageToAttachment(noteId, imageBuffer, title, true, true);
-        
+
         if (attachment.attachmentId) {
             imageUrlToAttachmentIdMapping[imageUrl] = attachment.attachmentId;
         } else {
@@ -497,8 +498,7 @@ async function downloadImage(noteId: string, imageUrl: string) {
         }
 
         log.info(`Download of '${imageUrl}' succeeded and was saved as image attachment '${attachment.attachmentId}' of note '${noteId}'`);
-    }
-    catch (e: any) {
+    } catch (e: any) {
         log.error(`Download of '${imageUrl}' for note '${noteId}' failed with error: ${e.message} ${e.stack}`);
     }
 }
@@ -507,33 +507,34 @@ async function downloadImage(noteId: string, imageUrl: string) {
 const downloadImagePromises: Record<string, Promise<void>> = {};
 
 function replaceUrl(content: string, url: string, attachment: Attachment) {
-    const quotedUrl = utils.quoteRegex(url);
+    const quotedUrl = quoteRegex(url);
 
     return content.replace(new RegExp(`\\s+src=[\"']${quotedUrl}[\"']`, "ig"), ` src="api/attachments/${attachment.attachmentId}/image/${encodeURIComponent(attachment.title)}"`);
 }
 
 function downloadImages(noteId: string, content: string) {
-    const imageRe = /<img[^>]*?\ssrc=['"]([^'">]+)['"]/ig;
+    const imageRe = /<img[^>]*?\ssrc=['"]([^'">]+)['"]/gi;
     let imageMatch;
 
-    while (imageMatch = imageRe.exec(content)) {
+    while ((imageMatch = imageRe.exec(content))) {
         const url = imageMatch[1];
         const inlineImageMatch = /^data:image\/[a-z]+;base64,/.exec(url);
 
         if (inlineImageMatch) {
             const imageBase64 = url.substr(inlineImageMatch[0].length);
-            const imageBuffer = Buffer.from(imageBase64, 'base64');
+            const imageBuffer = Buffer.from(imageBase64, "base64");
 
             const attachment = imageService.saveImageToAttachment(noteId, imageBuffer, "inline image", true, true);
 
             const encodedTitle = encodeURIComponent(attachment.title);
 
             content = `${content.substr(0, imageMatch.index)}<img src="api/attachments/${attachment.attachmentId}/image/${encodedTitle}"${content.substr(imageMatch.index + imageMatch[0].length)}`;
-        }
-        else if (!url.includes('api/images/') && !/api\/attachments\/.+\/image\/?.*/.test(url)
+        } else if (
+            !url.includes("api/images/") &&
+            !/api\/attachments\/.+\/image\/?.*/.test(url) &&
             // this is an exception for the web clipper's "imageId"
-            && (url.length !== 20 || url.toLowerCase().startsWith('http'))) {
-
+            (url.length !== 20 || url.toLowerCase().startsWith("http"))
+        ) {
             if (!optionService.getOptionBool("downloadImagesAutomatically")) {
                 continue;
             }
@@ -543,8 +544,7 @@ function downloadImages(noteId: string, content: string) {
 
                 if (!attachment) {
                     delete imageUrlToAttachmentIdMapping[url];
-                }
-                else {
+                } else {
                     content = replaceUrl(content, url, attachment);
                     continue;
                 }
@@ -590,7 +590,7 @@ function downloadImages(noteId: string, content: string) {
                 }
 
                 for (const url in imageUrlToAttachmentIdMapping) {
-                    const imageNote = imageNotes.find(note => note.noteId === imageUrlToAttachmentIdMapping[url]);
+                    const imageNote = imageNotes.find((note) => note.noteId === imageUrlToAttachmentIdMapping[url]);
 
                     if (imageNote) {
                         updatedContent = replaceUrl(updatedContent, url, imageNote);
@@ -613,19 +613,19 @@ function downloadImages(noteId: string, content: string) {
 }
 
 function saveAttachments(note: BNote, content: string) {
-    const inlineAttachmentRe = /<a[^>]*?\shref=['"]data:([^;'">]+);base64,([^'">]+)['"][^>]*>(.*?)<\/a>/igm;
+    const inlineAttachmentRe = /<a[^>]*?\shref=['"]data:([^;'">]+);base64,([^'">]+)['"][^>]*>(.*?)<\/a>/gim;
     let attachmentMatch;
 
-    while (attachmentMatch = inlineAttachmentRe.exec(content)) {
+    while ((attachmentMatch = inlineAttachmentRe.exec(content))) {
         const mime = attachmentMatch[1].toLowerCase();
 
         const base64data = attachmentMatch[2];
-        const buffer = Buffer.from(base64data, 'base64');
+        const buffer = Buffer.from(base64data, "base64");
 
         const title = html2plaintext(attachmentMatch[3]);
 
         const attachment = note.saveAttachment({
-            role: 'file',
+            role: "file",
             mime: mime,
             title: title,
             content: buffer
@@ -642,8 +642,7 @@ function saveAttachments(note: BNote, content: string) {
 }
 
 function saveLinks(note: BNote, content: string | Buffer) {
-    if ((note.type !== 'text' && note.type !== 'relationMap')
-        || (note.isProtected && !protectedSessionService.isProtectedSessionAvailable())) {
+    if ((note.type !== "text" && note.type !== "relationMap") || (note.isProtected && !protectedSessionService.isProtectedSessionAvailable())) {
         return {
             forceFrontendReload: false,
             content
@@ -653,7 +652,7 @@ function saveLinks(note: BNote, content: string | Buffer) {
     const foundLinks: FoundLink[] = [];
     let forceFrontendReload = false;
 
-    if (note.type === 'text' && typeof content === "string") {
+    if (note.type === "text" && typeof content === "string") {
         content = downloadImages(note.noteId, content);
         content = saveAttachments(note, content);
 
@@ -661,17 +660,14 @@ function saveLinks(note: BNote, content: string | Buffer) {
         content = findInternalLinks(content, foundLinks);
         content = findIncludeNoteLinks(content, foundLinks);
 
-        ({forceFrontendReload, content} = checkImageAttachments(note, content));
-    }
-    else if (note.type === 'relationMap' && typeof content === "string") {
+        ({ forceFrontendReload, content } = checkImageAttachments(note, content));
+    } else if (note.type === "relationMap" && typeof content === "string") {
         findRelationMapLinks(content, foundLinks);
-    }
-    else {
+    } else {
         throw new Error(`Unrecognized type '${note.type}'`);
     }
 
-    const existingLinks = note.getRelations().filter(rel =>
-        ['internalLink', 'imageLink', 'relationMapLink', 'includeNoteLink'].includes(rel.name));
+    const existingLinks = note.getRelations().filter((rel) => ["internalLink", "imageLink", "relationMapLink", "includeNoteLink"].includes(rel.name));
 
     for (const foundLink of foundLinks) {
         const targetNote = becca.notes[foundLink.value];
@@ -679,16 +675,14 @@ function saveLinks(note: BNote, content: string | Buffer) {
             continue;
         }
 
-        const existingLink = existingLinks.find(existingLink =>
-            existingLink.value === foundLink.value
-            && existingLink.name === foundLink.name);
+        const existingLink = existingLinks.find((existingLink) => existingLink.value === foundLink.value && existingLink.name === foundLink.name);
 
         if (!existingLink) {
             const newLink = new BAttribute({
                 noteId: note.noteId,
-                type: 'relation',
+                type: "relation",
                 name: foundLink.name,
-                value: foundLink.value,
+                value: foundLink.value
             }).save();
 
             existingLinks.push(newLink);
@@ -697,9 +691,7 @@ function saveLinks(note: BNote, content: string | Buffer) {
     }
 
     // marking links as deleted if they are not present on the page anymore
-    const unusedLinks = existingLinks.filter(existingLink => !foundLinks.some(foundLink =>
-                                    existingLink.value === foundLink.value
-                                    && existingLink.name === foundLink.name));
+    const unusedLinks = existingLinks.filter((existingLink) => !foundLinks.some((foundLink) => existingLink.value === foundLink.value && existingLink.name === foundLink.name));
 
     for (const unusedLink of unusedLinks) {
         unusedLink.markAsDeleted();
@@ -710,17 +702,16 @@ function saveLinks(note: BNote, content: string | Buffer) {
 
 function saveRevisionIfNeeded(note: BNote) {
     // files and images are versioned separately
-    if (note.type === 'file' || note.type === 'image' || note.isLabelTruthy('disableVersioning')) {
+    if (note.type === "file" || note.type === "image" || note.isLabelTruthy("disableVersioning")) {
         return;
     }
 
     const now = new Date();
-    const revisionSnapshotTimeInterval = parseInt(optionService.getOption('revisionSnapshotTimeInterval'));
+    const revisionSnapshotTimeInterval = parseInt(optionService.getOption("revisionSnapshotTimeInterval"));
 
     const revisionCutoff = dateUtils.utcDateTimeStr(new Date(now.getTime() - revisionSnapshotTimeInterval * 1000));
 
-    const existingRevisionId = sql.getValue(
-        "SELECT revisionId FROM revisions WHERE noteId = ? AND utcDateCreated >= ?", [note.noteId, revisionCutoff]);
+    const existingRevisionId = sql.getValue("SELECT revisionId FROM revisions WHERE noteId = ? AND utcDateCreated >= ?", [note.noteId, revisionCutoff]);
 
     const msSinceDateCreated = now.getTime() - dateUtils.parseDateTime(note.utcDateCreated).getTime();
 
@@ -743,18 +734,18 @@ function updateNoteData(noteId: string, content: string, attachments: Attachment
     note.setContent(newContent, { forceFrontendReload });
 
     if (attachments?.length > 0) {
-        const existingAttachmentsByTitle = utils.toMap(note.getAttachments({includeContentLength: false}), 'title');
+        const existingAttachmentsByTitle = toMap(note.getAttachments({ includeContentLength: false }), "title");
 
-        for (const {attachmentId, role, mime, title, position, content} of attachments) {
-            if (attachmentId || !(title in existingAttachmentsByTitle)) {
-                note.saveAttachment({attachmentId, role, mime, title, content, position});
+        for (const { attachmentId, role, mime, title, position, content } of attachments) {
+            const existingAttachment = existingAttachmentsByTitle.get(title);
+            if (attachmentId || !existingAttachment) {
+                note.saveAttachment({ attachmentId, role, mime, title, content, position });
             } else {
-                const existingAttachment = existingAttachmentsByTitle[title];
                 existingAttachment.role = role;
                 existingAttachment.mime = mime;
                 existingAttachment.position = position;
                 if (content) {
-                    existingAttachment.setContent(content, {forceSave: true});
+                    existingAttachment.setContent(content, { forceSave: true });
                 }
             }
         }
@@ -782,7 +773,7 @@ function undeleteNote(noteId: string, taskContext: TaskContext) {
 }
 
 function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskContext) {
-    const branchRow = sql.getRow<BranchRow>("SELECT * FROM branches WHERE branchId = ?", [branchId])
+    const branchRow = sql.getRow<BranchRow>("SELECT * FROM branches WHERE branchId = ?", [branchId]);
 
     if (!branchRow.isDeleted) {
         return;
@@ -808,34 +799,43 @@ function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskCon
         noteEntity.updateFromRow(noteRow);
         noteEntity.save();
 
-        const attributeRows = sql.getRows<AttributeRow>(`
-                SELECT * FROM attributes 
-                WHERE isDeleted = 1 
-                  AND deleteId = ? 
-                  AND (noteId = ? 
-                           OR (type = 'relation' AND value = ?))`, [deleteId, noteRow.noteId, noteRow.noteId]);
+        const attributeRows = sql.getRows<AttributeRow>(
+            `
+                SELECT * FROM attributes
+                WHERE isDeleted = 1
+                AND deleteId = ?
+                AND (noteId = ?
+                            OR (type = 'relation' AND value = ?))`,
+            [deleteId, noteRow.noteId, noteRow.noteId]
+        );
 
         for (const attributeRow of attributeRows) {
             // relation might point to a note which hasn't been undeleted yet and would thus throw up
-            new BAttribute(attributeRow).save({skipValidation: true});
+            new BAttribute(attributeRow).save({ skipValidation: true });
         }
 
-        const attachmentRows = sql.getRows<AttachmentRow>(`
+        const attachmentRows = sql.getRows<AttachmentRow>(
+            `
             SELECT * FROM attachments
             WHERE isDeleted = 1
-              AND deleteId = ?
-              AND ownerId = ?`, [deleteId, noteRow.noteId]);
+            AND deleteId = ?
+            AND ownerId = ?`,
+            [deleteId, noteRow.noteId]
+        );
 
         for (const attachmentRow of attachmentRows) {
             new BAttachment(attachmentRow).save();
         }
 
-        const childBranchIds = sql.getColumn<string>(`
+        const childBranchIds = sql.getColumn<string>(
+            `
             SELECT branches.branchId
             FROM branches
             WHERE branches.isDeleted = 1
-              AND branches.deleteId = ?
-              AND branches.parentNoteId = ?`, [deleteId, noteRow.noteId]);
+            AND branches.deleteId = ?
+            AND branches.parentNoteId = ?`,
+            [deleteId, noteRow.noteId]
+        );
 
         for (const childBranchId of childBranchIds) {
             undeleteBranch(childBranchId, deleteId, taskContext);
@@ -847,18 +847,21 @@ function undeleteBranch(branchId: string, deleteId: string, taskContext: TaskCon
  * @returns return deleted branchIds of an undeleted parent note
  */
 function getUndeletedParentBranchIds(noteId: string, deleteId: string) {
-    return sql.getColumn<string>(`
+    return sql.getColumn<string>(
+        `
                     SELECT branches.branchId
                     FROM branches
                     JOIN notes AS parentNote ON parentNote.noteId = branches.parentNoteId
                     WHERE branches.noteId = ?
-                      AND branches.isDeleted = 1
-                      AND branches.deleteId = ?
-                      AND parentNote.isDeleted = 0`, [noteId, deleteId]);
+                    AND branches.isDeleted = 1
+                    AND branches.deleteId = ?
+                    AND parentNote.isDeleted = 0`,
+        [noteId, deleteId]
+    );
 }
 
 function scanForLinks(note: BNote, content: string | Buffer) {
-    if (!note || !['text', 'relationMap'].includes(note.type)) {
+    if (!note || !["text", "relationMap"].includes(note.type)) {
         return;
     }
 
@@ -870,8 +873,7 @@ function scanForLinks(note: BNote, content: string | Buffer) {
                 note.setContent(newContent, { forceFrontendReload });
             }
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         log.error(`Could not scan for links note '${note.noteId}': ${e.message} ${e.stack}`);
     }
 }
@@ -885,7 +887,7 @@ async function asyncPostProcessContent(note: BNote, content: string | Buffer) {
         return;
     }
 
-    if (note.hasStringContent() && !utils.isString(content)) {
+    if (note.hasStringContent() && typeof content !== "string") {
         content = content.toString();
     }
 
@@ -898,21 +900,21 @@ function replaceByMap(str: string, mapObj: Record<string, string>) {
         return str;
     }
 
-    const re = new RegExp(Object.keys(mapObj).join("|"),"g");
+    const re = new RegExp(Object.keys(mapObj).join("|"), "g");
 
-    return str.replace(re, matched => mapObj[matched]);
+    return str.replace(re, (matched) => mapObj[matched]);
 }
 
 function duplicateSubtree(origNoteId: string, newParentNoteId: string) {
-    if (origNoteId === 'root') {
-        throw new Error('Duplicating root is not possible');
+    if (origNoteId === "root") {
+        throw new Error("Duplicating root is not possible");
     }
 
     log.info(`Duplicating '${origNoteId}' subtree into '${newParentNoteId}'`);
 
     const origNote = becca.notes[origNoteId];
     // might be null if orig note is not in the target newParentNoteId
-    const origBranch = origNote.getParentBranches().find(branch => branch.parentNoteId === newParentNoteId);
+    const origBranch = origNote.getParentBranches().find((branch) => branch.parentNoteId === newParentNoteId);
 
     const noteIdMapping = getNoteIdMapping(origNote);
 
@@ -922,8 +924,10 @@ function duplicateSubtree(origNoteId: string, newParentNoteId: string) {
 
     const res = duplicateSubtreeInner(origNote, origBranch, newParentNoteId, noteIdMapping);
 
-    if (!res.note.title.endsWith('(dup)')) {
-        res.note.title += " (dup)";
+    const duplicateNoteSuffix = t("notes.duplicate-note-suffix");
+
+    if (!res.note.title.endsWith(duplicateNoteSuffix) && !res.note.title.startsWith(duplicateNoteSuffix)) {
+        res.note.title = t("notes.duplicate-note-title", { noteTitle: res.note.title, duplicateNoteSuffix: duplicateNoteSuffix });
     }
 
     res.note.save();
@@ -932,15 +936,15 @@ function duplicateSubtree(origNoteId: string, newParentNoteId: string) {
 }
 
 function duplicateSubtreeWithoutRoot(origNoteId: string, newNoteId: string) {
-    if (origNoteId === 'root') {
-        throw new Error('Duplicating root is not possible');
+    if (origNoteId === "root") {
+        throw new Error("Duplicating root is not possible");
     }
 
     const origNote = becca.getNote(origNoteId);
     if (origNote == null) {
         throw new Error("Unable to find note to duplicate.");
     }
-    
+
     const noteIdMapping = getNoteIdMapping(origNote);
     for (const childBranch of origNote.getChildBranches()) {
         if (childBranch) {
@@ -975,7 +979,7 @@ function duplicateSubtreeInner(origNote: BNote, origBranch: BBranch, newParentNo
 
         let content = origNote.getContent();
 
-        if (typeof content === "string" && ['text', 'relationMap', 'search'].includes(origNote.type)) {
+        if (typeof content === "string" && ["text", "relationMap", "search"].includes(origNote.type)) {
             // fix links in the content
             content = replaceByMap(content, noteIdMapping);
         }
@@ -991,12 +995,12 @@ function duplicateSubtreeInner(origNote: BNote, origBranch: BBranch, newParentNo
 
             // if relation points to within the duplicated tree then replace the target to the duplicated note
             // if it points outside of duplicated tree then keep the original target
-            if (attr.type === 'relation' && attr.value in noteIdMapping) {
+            if (attr.type === "relation" && attr.value in noteIdMapping) {
                 attr.value = noteIdMapping[attr.value];
             }
 
             // the relation targets may not be created yet, the mapping is pre-generated
-            attr.save({skipValidation: true});
+            attr.save({ skipValidation: true });
         }
 
         for (const childBranch of origNote.getChildBranches()) {
@@ -1010,20 +1014,20 @@ function duplicateSubtreeInner(origNote: BNote, origBranch: BBranch, newParentNo
 
     const existingNote = becca.notes[newNoteId];
 
-    if (existingNote && existingNote.title !== undefined) { // checking that it's not just note's skeleton created because of Branch above
+    if (existingNote && existingNote.title !== undefined) {
+        // checking that it's not just note's skeleton created because of Branch above
         // note has multiple clones and was already created from another placement in the tree,
         // so a branch is all we need for this clone
         return {
             note: existingNote,
             branch: createDuplicatedBranch()
-        }
-    }
-    else {
+        };
+    } else {
         return {
             // order here is important, note needs to be created first to not mess up the becca
             note: createDuplicatedNote(),
             branch: createDuplicatedBranch()
-        }
+        };
     }
 }
 
@@ -1032,7 +1036,7 @@ function getNoteIdMapping(origNote: BNote) {
 
     // pregenerate new noteIds since we'll need to fix relation references even for not yet created notes
     for (const origNoteId of origNote.getDescendantNoteIds()) {
-        noteIdMapping[origNoteId] = utils.newEntityId();
+        noteIdMapping[origNoteId] = newEntityId();
     }
 
     return noteIdMapping;

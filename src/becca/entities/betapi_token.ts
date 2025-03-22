@@ -1,6 +1,6 @@
 "use strict";
 
-import { EtapiTokenRow } from "./rows.js";
+import type { EtapiTokenRow } from "./rows.js";
 
 import dateUtils from "../../services/date_utils.js";
 import AbstractBeccaEntity from "./abstract_becca_entity.js";
@@ -15,9 +15,15 @@ import AbstractBeccaEntity from "./abstract_becca_entity.js";
  * from tokenHash and token.
  */
 class BEtapiToken extends AbstractBeccaEntity<BEtapiToken> {
-    static get entityName() { return "etapi_tokens"; }
-    static get primaryKeyName() { return "etapiTokenId"; }
-    static get hashedProperties() { return ["etapiTokenId", "name", "tokenHash", "utcDateCreated", "utcDateModified", "isDeleted"]; }
+    static get entityName() {
+        return "etapi_tokens";
+    }
+    static get primaryKeyName() {
+        return "etapiTokenId";
+    }
+    static get hashedProperties() {
+        return ["etapiTokenId", "name", "tokenHash", "utcDateCreated", "utcDateModified", "isDeleted"];
+    }
 
     etapiTokenId?: string;
     name!: string;
@@ -66,7 +72,7 @@ class BEtapiToken extends AbstractBeccaEntity<BEtapiToken> {
             utcDateCreated: this.utcDateCreated,
             utcDateModified: this.utcDateModified,
             isDeleted: this.isDeleted
-        }
+        };
     }
 
     beforeSaving() {

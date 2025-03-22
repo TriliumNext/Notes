@@ -4,9 +4,9 @@ import log from "../services/log.js";
 import becca from "../becca/becca.js";
 import etapiTokenService from "../services/etapi_tokens.js";
 import config from "../services/config.js";
-import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
-import { ValidatorMap } from './etapi-interface.js';
-import { ApiRequestHandler } from "../routes/routes.js";
+import type { NextFunction, Request, RequestHandler, Response, Router } from "express";
+import type { ValidatorMap } from "./etapi-interface.js";
+import type { ApiRequestHandler } from "../routes/routes.js";
 const GENERIC_CODE = "GENERIC";
 
 type HttpMethod = "all" | "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
@@ -30,20 +30,21 @@ class EtapiError extends Error {
 
 function sendError(res: Response, statusCode: number, code: string, message: string) {
     return res
-        .set('Content-Type', 'application/json')
+        .set("Content-Type", "application/json")
         .status(statusCode)
-        .send(JSON.stringify({
-            "status": statusCode,
-            "code": code,
-            "message": message
-        }));
+        .send(
+            JSON.stringify({
+                status: statusCode,
+                code: code,
+                message: message
+            })
+        );
 }
 
 function checkEtapiAuth(req: Request, res: Response, next: NextFunction) {
     if (noAuthentication || etapiTokenService.isValidAuthHeader(req.headers.authorization)) {
         next();
-    }
-    else {
+    } else {
         sendError(res, 401, "NOT_AUTHENTICATED", "Not authenticated");
     }
 }
@@ -54,8 +55,8 @@ function processRequest(req: Request, res: Response, routeHandler: ApiRequestHan
         cls.namespace.bindEmitter(res);
 
         cls.init(() => {
-            cls.set('componentId', "etapi");
-            cls.set('localNowDateTime', req.headers['trilium-local-now-datetime']);
+            cls.set("componentId", "etapi");
+            cls.set("localNowDateTime", req.headers["trilium-local-now-datetime"]);
 
             const cb = () => routeHandler(req, res, next);
 
@@ -85,19 +86,17 @@ function getAndCheckNote(noteId: string) {
 
     if (note) {
         return note;
-    }
-    else {
+    } else {
         throw new EtapiError(404, "NOTE_NOT_FOUND", `Note '${noteId}' not found.`);
     }
 }
 
 function getAndCheckAttachment(attachmentId: string) {
-    const attachment = becca.getAttachment(attachmentId, {includeContentLength: true});
+    const attachment = becca.getAttachment(attachmentId, { includeContentLength: true });
 
     if (attachment) {
         return attachment;
-    }
-    else {
+    } else {
         throw new EtapiError(404, "ATTACHMENT_NOT_FOUND", `Attachment '${attachmentId}' not found.`);
     }
 }
@@ -107,8 +106,7 @@ function getAndCheckBranch(branchId: string) {
 
     if (branch) {
         return branch;
-    }
-    else {
+    } else {
         throw new EtapiError(404, "BRANCH_NOT_FOUND", `Branch '${branchId}' not found.`);
     }
 }
@@ -118,8 +116,7 @@ function getAndCheckAttribute(attributeId: string) {
 
     if (attribute) {
         return attribute;
-    }
-    else {
+    } else {
         throw new EtapiError(404, "ATTRIBUTE_NOT_FOUND", `Attribute '${attributeId}' not found.`);
     }
 }
@@ -128,8 +125,7 @@ function validateAndPatch(target: any, source: any, allowedProperties: Validator
     for (const key of Object.keys(source)) {
         if (!(key in allowedProperties)) {
             throw new EtapiError(400, "PROPERTY_NOT_ALLOWED", `Property '${key}' is not allowed for this method.`);
-        }
-        else {
+        } else {
             for (const validator of allowedProperties[key]) {
                 const validationResult = validator(source[key]);
 
@@ -157,4 +153,4 @@ export default {
     getAndCheckBranch,
     getAndCheckAttribute,
     getAndCheckAttachment
-}
+};

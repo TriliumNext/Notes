@@ -1,0 +1,6 @@
+*.html
+*.md
+*.yml
+libraries/*
+docs/*
+src/public/app/doc_notes/**/*

@@ -1,7 +1,14 @@
-import AttachmentMeta from "./attachment_meta.js";
-import AttributeMeta from "./attribute_meta.js";
+import type { NoteType } from "../../becca/entities/rows.js";
+import type AttachmentMeta from "./attachment_meta.js";
+import type AttributeMeta from "./attribute_meta.js";
 
-interface NoteMeta {
+export interface NoteMetaFile {
+    formatVersion: number;
+    appVersion: string;
+    files: NoteMeta[];
+}
+
+export default interface NoteMeta {
     noteId?: string;
     notePath?: string[];
     isClone?: boolean;
@@ -9,11 +16,11 @@ interface NoteMeta {
     notePosition?: number;
     prefix?: string | null;
     isExpanded?: boolean;
-    type?: string;
+    type?: NoteType;
     mime?: string;
     /** 'html' or 'markdown', applicable to text notes only */
     format?: "html" | "markdown";
-    dataFileName: string;
+    dataFileName?: string;
     dirFileName?: string;
     /** this file should not be imported (e.g., HTML navigation) */
     noImport?: boolean;
@@ -22,5 +29,3 @@ interface NoteMeta {
     attachments?: AttachmentMeta[];
     children?: NoteMeta[];
 }
-
-export default NoteMeta;

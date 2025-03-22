@@ -1,10 +1,10 @@
 import treeService from "./tree.js";
 import sql from "./sql.js";
-import BBranch from "../becca/entities/bbranch.js";
+import type BBranch from "../becca/entities/bbranch.js";
 
 function moveBranchToNote(branchToMove: BBranch, targetParentNoteId: string) {
     if (branchToMove.parentNoteId === targetParentNoteId) {
-        return {success: true}; // no-op
+        return { success: true }; // no-op
     }
 
     const validationResult = treeService.validateParentChild(targetParentNoteId, branchToMove.noteId, branchToMove.branchId);
@@ -13,7 +13,7 @@ function moveBranchToNote(branchToMove: BBranch, targetParentNoteId: string) {
         return [200, validationResult];
     }
 
-    const maxNotePos = sql.getValue<number | null>('SELECT MAX(notePosition) FROM branches WHERE parentNoteId = ? AND isDeleted = 0', [targetParentNoteId]);
+    const maxNotePos = sql.getValue<number | null>("SELECT MAX(notePosition) FROM branches WHERE parentNoteId = ? AND isDeleted = 0", [targetParentNoteId]);
     const newNotePos = !maxNotePos ? 0 : maxNotePos + 10;
 
     const newBranch = branchToMove.createClone(targetParentNoteId, newNotePos);

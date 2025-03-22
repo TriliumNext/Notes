@@ -2,16 +2,15 @@ import log from "./log.js";
 import becca from "../becca/becca.js";
 import cloningService from "./cloning.js";
 import branchService from "./branches.js";
-import utils from "./utils.js";
+import { randomString } from "./utils.js";
 import eraseService from "./erase.js";
-import BNote from "../becca/entities/bnote.js";
+import type BNote from "../becca/entities/bnote.js";
 
 interface Action {
     labelName: string;
     labelValue: string;
     oldLabelName: string;
     newLabelName: string;
-
 
     relationName: string;
     oldRelationName: string;
@@ -32,13 +31,14 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
         note.addRelation(action.relationName, action.targetNoteId);
     },
     deleteNote: (action, note) => {
-        const deleteId = `searchbulkaction-${utils.randomString(10)}`;
+        const deleteId = `searchbulkaction-${randomString(10)}`;
 
         note.deleteNote(deleteId);
     },
     deleteRevisions: (action, note) => {
-        const revisionIds = note.getRevisions()
-            .map(rev => rev.revisionId)
+        const revisionIds = note
+            .getRevisions()
+            .map((rev) => rev.revisionId)
             .filter((rev) => !!rev) as string[];
         eraseService.eraseRevisions(revisionIds);
     },
@@ -66,7 +66,7 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
     renameLabel: (action, note) => {
         for (const label of note.getOwnedLabels(action.oldLabelName)) {
             // attribute name is immutable, renaming means delete old + create new
-            const newLabel = label.createClone('label', action.newLabelName, label.value);
+            const newLabel = label.createClone("label", action.newLabelName, label.value);
 
             newLabel.save();
             label.markAsDeleted();
@@ -75,7 +75,7 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
     renameRelation: (action, note) => {
         for (const relation of note.getOwnedRelations(action.oldRelationName)) {
             // attribute name is immutable, renaming means delete old + create new
-            const newRelation = relation.createClone('relation', action.newRelationName, relation.value);
+            const newRelation = relation.createClone("relation", action.newRelationName, relation.value);
 
             newRelation.save();
             relation.markAsDeleted();
@@ -106,8 +106,7 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
 
         if (note.getParentBranches().length > 1) {
             res = cloningService.cloneNoteToParentNote(note.noteId, action.targetParentNoteId);
-        }
-        else {
+        } else {
             res = branchService.moveBranchToNote(note.getParentBranches()[0], action.targetParentNoteId);
         }
 
@@ -117,7 +116,7 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
     },
     executeScript: (action, note) => {
         if (!action.script || !action.script.trim()) {
-            log.info("Ignoring executeScript since the script is empty.")
+            log.info("Ignoring executeScript since the script is empty.");
             return;
         }
 
@@ -129,8 +128,9 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
 };
 
 function getActions(note: BNote) {
-    return note.getLabels('action')
-        .map(actionLabel => {
+    return note
+        .getLabels("action")
+        .map((actionLabel) => {
             let action;
 
             try {
@@ -147,7 +147,7 @@ function getActions(note: BNote) {
 
             return action;
         })
-        .filter(a => !!a);
+        .filter((a) => !!a);
 }
 
 function executeActions(note: BNote, searchResultNoteIds: string[] | Set<string>) {

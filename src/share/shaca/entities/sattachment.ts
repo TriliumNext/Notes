@@ -3,9 +3,9 @@
 import sql from "../../sql.js";
 import utils from "../../../services/utils.js";
 import AbstractShacaEntity from "./abstract_shaca_entity.js";
-import SNote from "./snote.js";
-import { Blob } from '../../../services/blob-interface.js';
-import { SAttachmentRow } from './rows.js';
+import type SNote from "./snote.js";
+import type { Blob } from "../../../services/blob-interface.js";
+import type { SAttachmentRow } from "./rows.js";
 
 class SAttachment extends AbstractShacaEntity {
     private attachmentId: string;
@@ -42,8 +42,7 @@ class SAttachment extends AbstractShacaEntity {
         if (!row) {
             if (silentNotFoundError) {
                 return undefined;
-            }
-            else {
+            } else {
                 throw new Error(`Cannot find blob for attachment '${this.attachmentId}', blob '${this.blobId}'`);
             }
         }
@@ -51,18 +50,15 @@ class SAttachment extends AbstractShacaEntity {
         let content = row.content;
 
         if (this.hasStringContent()) {
-            return content === null
-                ? ""
-                : content.toString("utf-8");
-        }
-        else {
+            return content === null ? "" : content.toString("utf-8");
+        } else {
             return content;
         }
     }
 
     /** @returns true if the attachment has string content (not binary) */
     hasStringContent() {
-        return utils.isStringNote(null, this.mime);
+        return utils.isStringNote(undefined, this.mime);
     }
 
     getPojo() {

@@ -1,0 +1,14 @@
+---
+title: Interfaces for B
+---
+flowchart LR
+A-->|"Guarantee"|B
+C-->|"User attributes"|B
+C-.->|"Master data"|B
+C-->|"Exchange Rate"|B
+C-->|"Profit Centers"|B
+C-->|"Vendor Partners"|B
+C-->|"Work Situation"|B
+C-->|"Customer"|B
+C-->|"Profit Centers"|B
+B-->|"Guarantee"|C

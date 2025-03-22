@@ -2,10 +2,9 @@
 
 import Expression from "./expression.js";
 import NoteSet from "../note_set.js";
-import SearchContext from "../search_context.js";
+import type SearchContext from "../search_context.js";
 
 class ChildOfExp extends Expression {
-
     private subExpression: Expression;
 
     constructor(subExpression: Expression) {

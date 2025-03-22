@@ -20,35 +20,33 @@ function getInboxNote(date: string) {
     let inbox;
 
     if (!workspaceNote.isRoot()) {
-        inbox = workspaceNote.searchNoteInSubtree('#workspaceInbox');
+        inbox = workspaceNote.searchNoteInSubtree("#workspaceInbox");
 
         if (!inbox) {
-            inbox = workspaceNote.searchNoteInSubtree('#inbox');
+            inbox = workspaceNote.searchNoteInSubtree("#inbox");
         }
 
         if (!inbox) {
             inbox = workspaceNote;
         }
-    }
-    else {
-        inbox = attributeService.getNoteWithLabel('inbox')
-            || dateNoteService.getDayNote(date);
+    } else {
+        inbox = attributeService.getNoteWithLabel("inbox") || dateNoteService.getDayNote(date);
     }
 
     return inbox;
 }
 
 function createSqlConsole() {
-    const {note} = noteService.createNewNote({
-        parentNoteId: getMonthlyParentNoteId('_sqlConsole', 'sqlConsole'),
-        title: 'SQL Console - ' + dateUtils.localNowDate(),
+    const { note } = noteService.createNewNote({
+        parentNoteId: getMonthlyParentNoteId("_sqlConsole", "sqlConsole"),
+        title: "SQL Console - " + dateUtils.localNowDate(),
         content: "SELECT title, isDeleted, isProtected FROM notes WHERE noteId = ''\n\n\n\n",
-        type: 'code',
-        mime: 'text/x-sqlite;schema=trilium'
+        type: "code",
+        mime: "text/x-sqlite;schema=trilium"
     });
 
-    note.setLabel('iconClass', 'bx bx-data');
-    note.setLabel('keepCurrentHoisting');
+    note.setLabel("iconClass", "bx bx-data");
+    note.setLabel("keepCurrentHoisting");
 
     return note;
 }
@@ -58,14 +56,12 @@ function saveSqlConsole(sqlConsoleNoteId: string) {
     if (!sqlConsoleNote) throw new Error(`Unable to find SQL console note ID: ${sqlConsoleNoteId}`);
     const today = dateUtils.localNowDate();
 
-    const sqlConsoleHome =
-        attributeService.getNoteWithLabel('sqlConsoleHome')
-        || dateNoteService.getDayNote(today);
+    const sqlConsoleHome = attributeService.getNoteWithLabel("sqlConsoleHome") || dateNoteService.getDayNote(today);
 
     const result = sqlConsoleNote.cloneTo(sqlConsoleHome.noteId);
 
     for (const parentBranch of sqlConsoleNote.getParentBranches()) {
-        if (parentBranch.parentNote?.hasAncestor('_hidden')) {
+        if (parentBranch.parentNote?.hasAncestor("_hidden")) {
             parentBranch.markAsDeleted();
         }
     }
@@ -74,19 +70,19 @@ function saveSqlConsole(sqlConsoleNoteId: string) {
 }
 
 function createSearchNote(searchString: string, ancestorNoteId: string) {
-    const {note} = noteService.createNewNote({
-        parentNoteId: getMonthlyParentNoteId('_search', 'search'),
+    const { note } = noteService.createNewNote({
+        parentNoteId: getMonthlyParentNoteId("_search", "search"),
         title: `${t("special_notes.search_prefix")} ${searchString}`,
         content: "",
-        type: 'search',
-        mime: 'application/json'
+        type: "search",
+        mime: "application/json"
     });
 
-    note.setLabel('searchString', searchString);
-    note.setLabel('keepCurrentHoisting');
+    note.setLabel("searchString", searchString);
+    note.setLabel("keepCurrentHoisting");
 
     if (ancestorNoteId) {
-        note.setRelation('ancestor', ancestorNoteId);
+        note.setRelation("ancestor", ancestorNoteId);
     }
 
     return note;
@@ -99,14 +95,11 @@ function getSearchHome() {
     }
 
     if (!workspaceNote.isRoot()) {
-        return workspaceNote.searchNoteInSubtree('#workspaceSearchHome')
-            || workspaceNote.searchNoteInSubtree('#searchHome')
-            || workspaceNote;
+        return workspaceNote.searchNoteInSubtree("#workspaceSearchHome") || workspaceNote.searchNoteInSubtree("#searchHome") || workspaceNote;
     } else {
         const today = dateUtils.localNowDate();
 
-        return workspaceNote.searchNoteInSubtree('#searchHome')
-            || dateNoteService.getDayNote(today);
+        return workspaceNote.searchNoteInSubtree("#searchHome") || dateNoteService.getDayNote(today);
     }
 }
 
@@ -121,7 +114,7 @@ function saveSearchNote(searchNoteId: string) {
     const result = searchNote.cloneTo(searchHome.noteId);
 
     for (const parentBranch of searchNote.getParentBranches()) {
-        if (parentBranch.parentNote?.hasAncestor('_hidden')) {
+        if (parentBranch.parentNote?.hasAncestor("_hidden")) {
             parentBranch.markAsDeleted();
         }
     }
@@ -133,17 +126,16 @@ function getMonthlyParentNoteId(rootNoteId: string, prefix: string) {
     const month = dateUtils.localNowDate().substring(0, 7);
     const labelName = `${prefix}MonthNote`;
 
-    let monthNote = searchService.findFirstNoteWithQuery(`#${labelName}="${month}"`,
-        new SearchContext({ancestorNoteId: rootNoteId}));
+    let monthNote = searchService.findFirstNoteWithQuery(`#${labelName}="${month}"`, new SearchContext({ ancestorNoteId: rootNoteId }));
 
     if (!monthNote) {
         monthNote = noteService.createNewNote({
             parentNoteId: rootNoteId,
             title: month,
-            content: '',
+            content: "",
             isProtected: false,
-            type: 'book'
-        }).note
+            type: "book"
+        }).note;
 
         monthNote.addLabel(labelName, month);
     }
@@ -155,57 +147,59 @@ function createScriptLauncher(parentNoteId: string, forceNoteId?: string) {
     const note = noteService.createNewNote({
         noteId: forceNoteId,
         title: "Script Launcher",
-        type: 'launcher',
-        content: '',
+        type: "launcher",
+        content: "",
         parentNoteId: parentNoteId
     }).note;
 
-    note.addRelation('template', LBTPL_SCRIPT);
+    note.addRelation("template", LBTPL_SCRIPT);
     return note;
 }
 
+export type LauncherType = "launcher" | "note" | "script" | "customWidget" | "spacer";
+
 interface LauncherConfig {
     parentNoteId: string;
-    launcherType: string;
+    launcherType: LauncherType;
     noteId?: string;
 }
 
 function createLauncher({ parentNoteId, launcherType, noteId }: LauncherConfig) {
     let note;
 
-    if (launcherType === 'note') {
+    if (launcherType === "note") {
         note = noteService.createNewNote({
             noteId: noteId,
             title: "Note Launcher",
-            type: 'launcher',
-            content: '',
+            type: "launcher",
+            content: "",
             parentNoteId: parentNoteId
         }).note;
 
-        note.addRelation('template', LBTPL_NOTE_LAUNCHER);
-    } else if (launcherType === 'script') {
+        note.addRelation("template", LBTPL_NOTE_LAUNCHER);
+    } else if (launcherType === "script") {
         note = createScriptLauncher(parentNoteId, noteId);
-    } else if (launcherType === 'customWidget') {
+    } else if (launcherType === "customWidget") {
         note = noteService.createNewNote({
             noteId: noteId,
             title: "Widget Launcher",
-            type: 'launcher',
-            content: '',
+            type: "launcher",
+            content: "",
             parentNoteId: parentNoteId
         }).note;
 
-        note.addRelation('template', LBTPL_CUSTOM_WIDGET);
-    } else if (launcherType === 'spacer') {
+        note.addRelation("template", LBTPL_CUSTOM_WIDGET);
+    } else if (launcherType === "spacer") {
         note = noteService.createNewNote({
             noteId: noteId,
             branchId: noteId,
             title: "Spacer",
-            type: 'launcher',
-            content: '',
+            type: "launcher",
+            content: "",
             parentNoteId: parentNoteId
         }).note;
 
-        note.addRelation('template', LBTPL_SPACER);
+        note.addRelation("template", LBTPL_SPACER);
     } else {
         throw new Error(`Unrecognized launcher type '${launcherType}'`);
     }
@@ -221,7 +215,7 @@ function resetLauncher(noteId: string) {
 
     if (note?.isLaunchBarConfig()) {
         if (note) {
-            if (noteId === '_lbRoot') {
+            if (noteId === "_lbRoot" || noteId === "_lbMobileRoot") {
                 // deleting hoisted notes are not allowed, so we just reset the children
                 for (const childNote of note.getChildNotes()) {
                     childNote.deleteNote();
@@ -247,42 +241,35 @@ function resetLauncher(noteId: string) {
  * Another use case was for script-packages (e.g. demo Task manager) which could this way register automatically/easily
  * into the launchbar - for this it's recommended to use backend API's createOrUpdateLauncher()
  */
-function createOrUpdateScriptLauncherFromApi(opts: {
-    id: string;
-    title: string;
-    action: string;
-    icon?: string;
-    shortcut?: string;
-}) {
+function createOrUpdateScriptLauncherFromApi(opts: { id: string; title: string; action: string; icon?: string; shortcut?: string }) {
     if (opts.id && !/^[a-z0-9]+$/i.test(opts.id)) {
         throw new Error(`Launcher ID can be alphanumeric only, '${opts.id}' given`);
     }
 
-    const launcherId = opts.id || (`tb_${opts.title.toLowerCase().replace(/[^[a-z0-9]/gi, "")}`);
+    const launcherId = opts.id || `tb_${opts.title.toLowerCase().replace(/[^[a-z0-9]/gi, "")}`;
 
     if (!opts.title) {
         throw new Error("Title is mandatory property to create or update a launcher.");
     }
 
-    const launcherNote = becca.getNote(launcherId)
-        || createScriptLauncher('_lbVisibleLaunchers', launcherId);
+    const launcherNote = becca.getNote(launcherId) || createScriptLauncher("_lbVisibleLaunchers", launcherId);
 
     launcherNote.title = opts.title;
     launcherNote.setContent(`(${opts.action})()`);
-    launcherNote.setLabel('scriptInLauncherContent'); // there's no target note, the script is in the launcher's content
-    launcherNote.mime = 'application/javascript;env=frontend';
+    launcherNote.setLabel("scriptInLauncherContent"); // there's no target note, the script is in the launcher's content
+    launcherNote.mime = "application/javascript;env=frontend";
     launcherNote.save();
 
     if (opts.shortcut) {
-        launcherNote.setLabel('keyboardShortcut', opts.shortcut);
+        launcherNote.setLabel("keyboardShortcut", opts.shortcut);
     } else {
-        launcherNote.removeLabel('keyboardShortcut');
+        launcherNote.removeLabel("keyboardShortcut");
     }
 
     if (opts.icon) {
-        launcherNote.setLabel('iconClass', `bx bx-${opts.icon}`);
+        launcherNote.setLabel("iconClass", `bx bx-${opts.icon}`);
     } else {
-        launcherNote.removeLabel('iconClass');
+        launcherNote.removeLabel("iconClass");
     }
 
     return launcherNote;

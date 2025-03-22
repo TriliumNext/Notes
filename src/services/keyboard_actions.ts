@@ -2,18 +2,15 @@
 
 import optionService from "./options.js";
 import log from "./log.js";
-import utils from "./utils.js";
-import { KeyboardShortcut } from './keyboard_actions_interface.js';
+import { isElectron, isMac } from "./utils.js";
+import type { KeyboardShortcut } from "./keyboard_actions_interface.js";
 import { t } from "i18next";
-
-const isMac = process.platform === "darwin";
-const isElectron = utils.isElectron();
 
 function getDefaultKeyboardActions() {
     if (!t("keyboard_actions.note-navigation")) {
         throw new Error("Keyboard actions loaded before translations.");
     }
-    
+
     const DEFAULT_KEYBOARD_ACTIONS: KeyboardShortcut[] = [
         {
             separator: t("keyboard_actions.note-navigation")
@@ -76,8 +73,7 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.sort-child-notes"),
             scope: "note-tree"
         },
-    
-    
+
         {
             separator: t("keyboard_actions.creating-and-moving-notes")
         },
@@ -149,11 +145,11 @@ function getDefaultKeyboardActions() {
             defaultShortcuts: ["CommandOrControl+Shift+X"],
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.note-clipboard")
         },
-    
+
         {
             actionName: "copyNotesToClipboard",
             defaultShortcuts: ["CommandOrControl+C"],
@@ -196,8 +192,7 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.duplicate-subtree"),
             scope: "note-tree"
         },
-    
-    
+
         {
             separator: t("keyboard_actions.tabs-and-windows")
         },
@@ -241,6 +236,12 @@ function getDefaultKeyboardActions() {
             actionName: "toggleTray",
             defaultShortcuts: [],
             description: t("keyboard_actions.toggle-tray"),
+            scope: "window"
+        },
+        {
+            actionName: "toggleZenMode",
+            defaultShortcuts: ["Alt+Z"],
+            description: t("keyboard_actions.toggle-zen-mode"),
             scope: "window"
         },
         {
@@ -303,8 +304,7 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.last-tab"),
             scope: "window"
         },
-    
-    
+
         {
             separator: t("keyboard_actions.dialogs")
         },
@@ -350,12 +350,17 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.show-help"),
             scope: "window"
         },
-    
-    
+        {
+            actionName: "showCheatsheet",
+            defaultShortcuts: ["Shift+F1"],
+            description: t("keyboard_actions.show-cheatsheet"),
+            scope: "window"
+        },
+
         {
             separator: t("keyboard_actions.text-note-operations")
         },
-    
+
         {
             actionName: "addLinkToText",
             defaultShortcuts: ["CommandOrControl+L"],
@@ -398,11 +403,11 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.edit-readonly-note"),
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.attributes-labels-and-relations")
         },
-    
+
         {
             actionName: "addNewLabel",
             defaultShortcuts: ["Alt+L"],
@@ -415,11 +420,11 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.create-new-relation"),
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.ribbon-tabs")
         },
-    
+
         {
             actionName: "toggleRibbonTabClassicEditor",
             defaultShortcuts: [],
@@ -462,6 +467,7 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.toggle-inherited-attributes"),
             scope: "window"
         },
+        // TODO: Remove or change since promoted attributes have been changed.
         {
             actionName: "toggleRibbonTabPromotedAttributes",
             defaultShortcuts: [],
@@ -492,11 +498,11 @@ function getDefaultKeyboardActions() {
             description: t("keyboard_actions.toggle-similar-notes"),
             scope: "window"
         },
-    
+
         {
             separator: t("keyboard_actions.other")
         },
-    
+
         {
             actionName: "toggleRightPane",
             defaultShortcuts: [],
@@ -507,6 +513,12 @@ function getDefaultKeyboardActions() {
             actionName: "printActiveNote",
             defaultShortcuts: [],
             description: t("keyboard_actions.print-active-note"),
+            scope: "window"
+        },
+        {
+            actionName: "exportAsPdf",
+            defaultShortcuts: [],
+            description: t("keyboard_actions.export-as-pdf"),
             scope: "window"
         },
         {
@@ -603,11 +615,11 @@ function getDefaultKeyboardActions() {
     /*
      * Apply macOS-specific tweaks.
      */
-    const platformModifier = isMac ? 'Meta' : 'Ctrl';
-    
+    const platformModifier = isMac ? "Meta" : "Ctrl";
+
     for (const action of DEFAULT_KEYBOARD_ACTIONS) {
         if (action.defaultShortcuts) {
-            action.defaultShortcuts = action.defaultShortcuts.map(shortcut => shortcut.replace("CommandOrControl", platformModifier));
+            action.defaultShortcuts = action.defaultShortcuts.map((shortcut) => shortcut.replace("CommandOrControl", platformModifier));
         }
     }
 
@@ -622,21 +634,19 @@ function getKeyboardActions() {
     }
 
     for (const option of optionService.getOptions()) {
-        if (option.name.startsWith('keyboardShortcuts')) {
+        if (option.name.startsWith("keyboardShortcuts")) {
             let actionName = option.name.substring(17);
             actionName = actionName.charAt(0).toLowerCase() + actionName.slice(1);
 
-            const action = actions.find(ea => ea.actionName === actionName);
+            const action = actions.find((ea) => ea.actionName === actionName);
 
             if (action) {
                 try {
                     action.effectiveShortcuts = JSON.parse(option.value);
-                }
-                catch (e) {
+                } catch (e) {
                     log.error(`Could not parse shortcuts for action ${actionName}`);
                 }
-            }
-            else {
+            } else {
                 log.info(`Keyboard action ${actionName} found in database, but not in action definition.`);
             }
         }

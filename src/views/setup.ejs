@@ -3,7 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta id="syncInProgress" content="<%= syncInProgress ? 1 : 0 %>" />
     <title><%= t("setup.title") %></title>
+
+    <% // TriliumNextTODO: move the css file to ${assetPath}/stylesheets/  %>
+    <link rel="stylesheet" href="<%= appPath %>/setup.css">
 
     <style>
         .lds-ring {
@@ -53,20 +57,31 @@
         </div>
 
         <div id="setup-type" data-bind="visible: step() == 'setup-type'" style="margin-top: 20px;">
+            <form data-bind="submit: selectSetupType">
+
             <div class="radio" style="margin-bottom: 15px;">
-                <label><input type="radio" name="setup-type" value="new-document" data-bind="checked: setupType">
-                    <%= t("setup.new-document") %></label>
-            </div>
-            <div class="radio" style="margin-bottom: 15px;">
-                <label><input type="radio" name="setup-type" value="sync-from-desktop" data-bind="checked: setupType">
-                    <%= t("setup.sync-from-desktop") %></label>
-            </div>
-            <div class="radio" style="margin-bottom: 15px;">
-                <label><input type="radio" name="setup-type" value="sync-from-server" data-bind="checked: setupType">
-                    <%= t("setup.sync-from-server") %></label>
+                <label class="tn-radio">
+                    <input type="radio" name="setup-type" value="new-document" data-bind="checked: setupType">
+                    <%= t("setup.new-document") %>
+                </label>
             </div>
 
-            <button type="button" data-bind="disable: !setupTypeSelected(), click: selectSetupType" class="btn btn-primary"><%= t("setup.next") %></button>
+            <div class="radio" style="margin-bottom: 15px;">
+                <label class="tn-radio">
+                    <input type="radio" name="setup-type" value="sync-from-desktop" data-bind="checked: setupType">
+                    <%= t("setup.sync-from-desktop") %>
+                </label>
+            </div>
+
+            <div class="radio" style="margin-bottom: 15px;">
+                <label class="tn-radio">
+                    <input type="radio" name="setup-type" value="sync-from-server" data-bind="checked: setupType">
+                    <%= t("setup.sync-from-server") %>
+                </label>
+            </div>
+
+              <button type="submit" data-bind="disable: !setupTypeSelected()" class="btn btn-primary"><%= t("setup.next") %></button>
+            </form>
         </div>
 
         <div data-bind="visible: step() == 'new-document-in-progress'">
@@ -104,6 +119,8 @@
         </div>
 
         <div data-bind="visible: step() == 'sync-from-server'">
+          <form data-bind="submit: finish">
+
             <h2><%= t("setup_sync-from-server.heading") %></h2>
 
             <p><%= t("setup_sync-from-server.instructions") %></p>
@@ -118,16 +135,16 @@
 
                 <p><strong><%= t("setup_sync-from-server.note") %></strong> <%= t("setup_sync-from-server.proxy-instruction") %></p>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 8px;">
                 <label for="password"><%= t("setup_sync-from-server.password") %></label>
                 <input type="password" id="password" class="form-control" data-bind="value: password" placeholder="<%= t("setup_sync-from-server.password-placeholder") %>">
             </div>
 
             <button type="button" data-bind="click: back" class="btn btn-secondary"><%= t("setup_sync-from-server.back") %></button>
 
-            &nbsp;
+            <button type="submit" class="btn btn-primary"><%= t("setup_sync-from-server.finish-setup") %></button>
+          </form>
 
-            <button type="button" data-bind="click: finish" class="btn btn-primary"><%= t("setup_sync-from-server.finish-setup") %></button>
         </div>
 
         <div data-bind="visible: step() == 'sync-in-progress'">
@@ -146,8 +163,6 @@
     window.glob = {
         componentId: ''
     };
-
-    window.syncInProgress = <%= syncInProgress ? 'true' : 'false' %>;
 </script>
 
 <!-- Required for correct loading of scripts in Electron -->
@@ -155,11 +170,6 @@
 
 <script src="<%= assetPath %>/node_modules/jquery/dist/jquery.min.js"></script>
 <script src="<%= assetPath %>/node_modules/jquery-hotkeys/jquery-hotkeys.js"></script>
-
-<link href="<%= assetPath %>/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="<%= assetPath %>/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="<%= assetPath %>/node_modules/knockout/build/output/knockout-latest.js"></script>
 
 <script src="<%= appPath %>/setup.js" crossorigin type="module"></script>
 <link href="<%= assetPath %>/stylesheets/theme-light.css" rel="stylesheet" />

@@ -1,0 +1,33 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Synchronization fails with 504 Gateway Timeout</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Synchronization fails with 504 Gateway Timeout</h1>
+
+      <div class="ck-content">
+        <p>Synchronization can sometimes take a long amount of time in order to compute
+          the items that require update. When running behind a reverse proxy, the
+          request can time out.</p>
+        <p>The solution is to increase the timeout at proxy level.</p>
+        <h2>Nginx</h2>
+        <p>Add the following to the configuration file:</p><pre><code class="language-text-x-nginx-conf">proxy_connect_timeout 300;
+proxy_send_timeout 300;
+proxy_read_timeout 300;
+send_timeout 300;</code></pre>
+        <p>And restart the server.</p>
+        <p>See <a href="../Installation%20%26%20Setup/Server%20Installation/2.%20Reverse%20proxy/Nginx.html">Nginx Proxy Setup</a> for
+          more information about the Nginx setup.</p>
+        <p>If it still doesn't work, try increasing the timeout.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

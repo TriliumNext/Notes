@@ -4,15 +4,11 @@ import fs from "fs";
 function getBuildDate() {
     const now = new Date();
     now.setMilliseconds(0);
-    return now
-        .toISOString()
-        .replace(".000", "");
+    return now.toISOString().replace(".000", "");
 }
 
 function getGitRevision() {
-    return child_process.execSync('git log -1 --format="%H"')
-        .toString("utf-8")
-        .trimEnd();
+    return child_process.execSync('git log -1 --format="%H"').toString("utf-8").trimEnd();
 }
 
 const output = `\

@@ -58,11 +58,8 @@ function touchProtectedSession() {
 }
 
 function checkProtectedSessionExpiration() {
-    const protectedSessionTimeout = options.getOptionInt('protectedSessionTimeout');
-    if (isProtectedSessionAvailable()
-        && lastProtectedSessionOperationDate
-        && Date.now() - lastProtectedSessionOperationDate > protectedSessionTimeout * 1000) {
-
+    const protectedSessionTimeout = options.getOptionInt("protectedSessionTimeout");
+    if (isProtectedSessionAvailable() && lastProtectedSessionOperationDate && Date.now() - lastProtectedSessionOperationDate > protectedSessionTimeout * 1000) {
         resetDataKey();
 
         log.info("Expiring protected session");

@@ -3,9 +3,9 @@
 import dateNoteService from "../../services/date_notes.js";
 import sql from "../../services/sql.js";
 import cls from "../../services/cls.js";
-import specialNotesService from "../../services/special_notes.js";
+import specialNotesService, { type LauncherType } from "../../services/special_notes.js";
 import becca from "../../becca/becca.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 function getInboxNote(req: Request) {
     return specialNotesService.getInboxNote(req.params.date);
@@ -29,8 +29,8 @@ function getYearNote(req: Request) {
 
 function getDayNotesForMonth(req: Request) {
     const month = req.params.month;
-
-    return sql.getMap(`
+    const calendarRoot = req.query.calendarRoot;
+    const query = `\
         SELECT
             attr.value AS date,
             notes.noteId
@@ -40,7 +40,22 @@ function getDayNotesForMonth(req: Request) {
             AND attr.isDeleted = 0
             AND attr.type = 'label'
             AND attr.name = 'dateNote'
-            AND attr.value LIKE '${month}%'`);
+            AND attr.value LIKE '${month}%'`;
+
+    if (calendarRoot) {
+        const rows = sql.getRows<{ date: string; noteId: string }>(query);
+        const result: Record<string, string> = {};
+        for (const { date, noteId } of rows) {
+            const note = becca.getNote(noteId);
+            if (note?.hasAncestor(String(calendarRoot))) {
+                result[date] = noteId;
+            }
+        }
+
+        return result;
+    } else {
+        return sql.getMap(query);
+    }
 }
 
 function saveSqlConsole(req: Request) {
@@ -70,7 +85,8 @@ function getHoistedNote() {
 function createLauncher(req: Request) {
     return specialNotesService.createLauncher({
         parentNoteId: req.params.parentNoteId,
-        launcherType: req.params.launcherType
+        // TODO: Validate the parameter
+        launcherType: req.params.launcherType as LauncherType
     });
 }
 

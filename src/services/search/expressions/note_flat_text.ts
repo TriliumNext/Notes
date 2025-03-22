@@ -1,16 +1,16 @@
 "use strict";
 
-import BNote from "../../../becca/entities/bnote.js";
-import SearchContext from "../search_context.js";
+import type BNote from "../../../becca/entities/bnote.js";
+import type SearchContext from "../search_context.js";
 
 import Expression from "./expression.js";
 import NoteSet from "../note_set.js";
 import becca from "../../../becca/becca.js";
-import utils from "../../utils.js";
+import { normalize } from "../../utils.js";
 import beccaService from "../../../becca/becca_service.js";
 
 class NoteFlatTextExp extends Expression {
-    private tokens: string[];
+    tokens: string[];
 
     constructor(tokens: string[]) {
         super();
@@ -47,7 +47,7 @@ class NoteFlatTextExp extends Expression {
                 return;
             }
 
-            if (note.parents.length === 0 || note.noteId === 'root') {
+            if (note.parents.length === 0 || note.noteId === "root") {
                 // we've reached root, but there are still remaining tokens -> this candidate note produced no result
                 return;
             }
@@ -61,8 +61,8 @@ class NoteFlatTextExp extends Expression {
             }
 
             for (const attribute of note.getOwnedAttributes()) {
-                const normalizedName = utils.normalize(attribute.name);
-                const normalizedValue = utils.normalize(attribute.value);
+                const normalizedName = normalize(attribute.name);
+                const normalizedValue = normalize(attribute.value);
 
                 for (const token of remainingTokens) {
                     if (normalizedName.includes(token) || normalizedValue.includes(token)) {
@@ -72,7 +72,7 @@ class NoteFlatTextExp extends Expression {
             }
 
             for (const parentNote of note.parents) {
-                const title = utils.normalize(beccaService.getNoteTitle(note.noteId, parentNote.noteId));
+                const title = normalize(beccaService.getNoteTitle(note.noteId, parentNote.noteId));
                 const foundTokens = foundAttrTokens.slice();
 
                 for (const token of remainingTokens) {
@@ -82,15 +82,14 @@ class NoteFlatTextExp extends Expression {
                 }
 
                 if (foundTokens.length > 0) {
-                    const newRemainingTokens = remainingTokens.filter(token => !foundTokens.includes(token));
+                    const newRemainingTokens = remainingTokens.filter((token) => !foundTokens.includes(token));
 
                     searchPathTowardsRoot(parentNote, newRemainingTokens, [note.noteId, ...takenPath]);
-                }
-                else {
+                } else {
                     searchPathTowardsRoot(parentNote, remainingTokens, [note.noteId, ...takenPath]);
                 }
             }
-        }
+        };
 
         const candidateNotes = this.getCandidateNotes(inputNoteSet);
 
@@ -109,16 +108,14 @@ class NoteFlatTextExp extends Expression {
                 }
 
                 for (const attribute of note.ownedAttributes) {
-                    if (utils.normalize(attribute.name).includes(token)
-                        || utils.normalize(attribute.value).includes(token)) {
-
+                    if (normalize(attribute.name).includes(token) || normalize(attribute.value).includes(token)) {
                         foundAttrTokens.push(token);
                     }
                 }
             }
 
             for (const parentNote of note.parents) {
-                const title = utils.normalize(beccaService.getNoteTitle(note.noteId, parentNote.noteId));
+                const title = normalize(beccaService.getNoteTitle(note.noteId, parentNote.noteId));
                 const foundTokens = foundAttrTokens.slice();
 
                 for (const token of this.tokens) {
@@ -128,7 +125,7 @@ class NoteFlatTextExp extends Expression {
                 }
 
                 if (foundTokens.length > 0) {
-                    const remainingTokens = this.tokens.filter(token => !foundTokens.includes(token));
+                    const remainingTokens = this.tokens.filter((token) => !foundTokens.includes(token));
 
                     searchPathTowardsRoot(parentNote, remainingTokens, [note.noteId]);
                 }

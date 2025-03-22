@@ -9,7 +9,7 @@ import cls from "../../services/cls.js";
 import log from "../../services/log.js";
 import protectedSessionService from "../../services/protected_session.js";
 import blobService from "../../services/blob.js";
-import Becca, { ConstructorData } from '../becca-interface.js';
+import type { default as Becca, ConstructorData } from "../becca-interface.js";
 import becca from "../becca.js";
 
 interface ContentOpts {
@@ -19,15 +19,14 @@ interface ContentOpts {
 
 /**
  * Base class for all backend entities.
- * 
+ *
  * @type T the same entity type needed for self-reference in {@link ConstructorData}.
  */
 abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
-
     utcDateModified?: string;
     dateCreated?: string;
     dateModified?: string;
-    
+
     utcDateCreated!: string;
 
     isProtected?: boolean;
@@ -35,7 +34,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     blobId?: string;
 
     protected beforeSaving(opts?: {}) {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         if (!(this as any)[constructorData.primaryKeyName]) {
             (this as any)[constructorData.primaryKeyName] = utils.newEntityId();
         }
@@ -50,19 +49,19 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     protected putEntityChange(isDeleted: boolean) {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         entityChangesService.putEntityChange({
             entityName: constructorData.entityName,
             entityId: (this as any)[constructorData.primaryKeyName],
             hash: this.generateHash(isDeleted),
             isErased: false,
             utcDateChanged: this.getUtcDateChanged(),
-            isSynced: constructorData.entityName !== 'options' || !!this.isSynced
+            isSynced: constructorData.entityName !== "options" || !!this.isSynced
         });
     }
 
     generateHash(isDeleted?: boolean): string {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         let contentToHash = "";
 
         for (const propertyName of constructorData.hashedProperties) {
@@ -102,12 +101,12 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
      * Saves entity - executes SQL, but doesn't commit the transaction on its own
      */
     save(opts?: {}): this {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         const entityName = constructorData.entityName;
         const primaryKeyName = constructorData.primaryKeyName;
 
         const isNewEntity = !(this as any)[primaryKeyName];
-        
+
         this.beforeSaving(opts);
 
         const pojo = this.getPojoToSave();
@@ -115,7 +114,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         sql.transactional(() => {
             sql.upsert(entityName, primaryKeyName, pojo);
 
-            if (entityName === 'recent_notes') {
+            if (entityName === "recent_notes") {
                 return;
             }
 
@@ -144,7 +143,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         opts.forceFrontendReload = !!opts.forceFrontendReload;
 
         if (content === null || content === undefined) {
-            const constructorData = (this.constructor as unknown as ConstructorData<T>);
+            const constructorData = this.constructor as unknown as ConstructorData<T>;
             throw new Error(`Cannot set null content to ${constructorData.primaryKeyName} '${(this as any)[constructorData.primaryKeyName]}'`);
         }
 
@@ -160,7 +159,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
             if (protectedSessionService.isProtectedSessionAvailable()) {
                 const encryptedContent = protectedSessionService.encrypt(content);
                 if (!encryptedContent) {
-                    throw new Error(`Unable to encrypt the content of the entity.`);    
+                    throw new Error(`Unable to encrypt the content of the entity.`);
                 }
                 content = encryptedContent;
             } else {
@@ -206,9 +205,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         if (this.isProtected) {
             // a "random" prefix makes sure that the calculated hash/blobId is different for a decrypted/encrypted content
             const encryptedPrefixSuffix = "t$[nvQg7q)&_ENCRYPTED_?M:Bf&j3jr_";
-            return Buffer.isBuffer(unencryptedContent)
-                ? Buffer.concat([Buffer.from(encryptedPrefixSuffix), unencryptedContent])
-                : `${encryptedPrefixSuffix}${unencryptedContent}`;
+            return Buffer.isBuffer(unencryptedContent) ? Buffer.concat([Buffer.from(encryptedPrefixSuffix), unencryptedContent]) : `${encryptedPrefixSuffix}${unencryptedContent}`;
         } else {
             return unencryptedContent;
         }
@@ -222,7 +219,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
          * notes/attachments), but the trade-off comes out clearly positive.
          */
         const newBlobId = utils.hashedBlobId(unencryptedContentForHashCalculation);
-        const blobNeedsInsert = !sql.getValue('SELECT 1 FROM blobs WHERE blobId = ?', [newBlobId]);
+        const blobNeedsInsert = !sql.getValue("SELECT 1 FROM blobs WHERE blobId = ?", [newBlobId]);
 
         if (!blobNeedsInsert) {
             return newBlobId;
@@ -242,7 +239,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         const hash = blobService.calculateContentHash(pojo);
 
         entityChangesService.putEntityChange({
-            entityName: 'blobs',
+            entityName: "blobs",
             entityId: newBlobId,
             hash: hash,
             isErased: false,
@@ -254,18 +251,18 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         });
 
         eventService.emit(eventService.ENTITY_CHANGED, {
-            entityName: 'blobs',
+            entityName: "blobs",
             entity: this
         });
 
         return newBlobId;
     }
 
-    protected _getContent(): string | Buffer {        
+    protected _getContent(): string | Buffer {
         const row = sql.getRow<{ content: string | Buffer }>(`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
 
         if (!row) {
-            const constructorData = (this.constructor as unknown as ConstructorData<T>);
+            const constructorData = this.constructor as unknown as ConstructorData<T>;
             throw new Error(`Cannot find content for ${constructorData.primaryKeyName} '${(this as any)[constructorData.primaryKeyName]}', blobId '${this.blobId}'`);
         }
 
@@ -278,21 +275,22 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
      * This is a low-level method, for notes and branches use `note.deleteNote()` and 'branch.deleteBranch()` instead.
      */
     markAsDeleted(deleteId: string | null = null) {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         const entityId = (this as any)[constructorData.primaryKeyName];
         const entityName = constructorData.entityName;
 
         this.utcDateModified = dateUtils.utcNowDateTime();
 
-        sql.execute(`UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
-                           WHERE ${constructorData.primaryKeyName} = ?`,
-            [deleteId, this.utcDateModified, entityId]);
+        sql.execute(
+            `UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
+                            WHERE ${constructorData.primaryKeyName} = ?`,
+            [deleteId, this.utcDateModified, entityId]
+        );
 
         if (this.dateModified) {
             this.dateModified = dateUtils.localNowDateTime();
 
-            sql.execute(`UPDATE ${entityName} SET dateModified = ? WHERE ${constructorData.primaryKeyName} = ?`,
-                [this.dateModified, entityId]);
+            sql.execute(`UPDATE ${entityName} SET dateModified = ? WHERE ${constructorData.primaryKeyName} = ?`, [this.dateModified, entityId]);
         }
 
         log.info(`Marking ${entityName} ${entityId} as deleted`);
@@ -303,15 +301,17 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     markAsDeletedSimple() {
-        const constructorData = (this.constructor as unknown as ConstructorData<T>);
+        const constructorData = this.constructor as unknown as ConstructorData<T>;
         const entityId = (this as any)[constructorData.primaryKeyName];
         const entityName = constructorData.entityName;
 
         this.utcDateModified = dateUtils.utcNowDateTime();
 
-        sql.execute(`UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
-                           WHERE ${constructorData.primaryKeyName} = ?`,
-            [this.utcDateModified, entityId]);
+        sql.execute(
+            `UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
+                            WHERE ${constructorData.primaryKeyName} = ?`,
+            [this.utcDateModified, entityId]
+        );
 
         log.info(`Marking ${entityName} ${entityId} as deleted`);
 

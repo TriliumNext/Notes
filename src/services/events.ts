@@ -21,7 +21,7 @@ const eventListeners: Record<string, EventListener[]> = {};
  */
 function subscribe(eventTypes: EventType, listener: EventListener) {
     if (!Array.isArray(eventTypes)) {
-        eventTypes = [ eventTypes ];
+        eventTypes = [eventTypes];
     }
 
     for (const eventType of eventTypes) {
@@ -32,7 +32,7 @@ function subscribe(eventTypes: EventType, listener: EventListener) {
 
 function subscribeBeccaLoader(eventTypes: EventType, listener: EventListener) {
     if (!Array.isArray(eventTypes)) {
-        eventTypes = [ eventTypes ];
+        eventTypes = [eventTypes];
     }
 
     for (const eventType of eventTypes) {
@@ -50,8 +50,7 @@ function emit(eventType: string, data?: any) {
         for (const listener of listeners) {
             try {
                 listener(data);
-            }
-            catch (e: any) {
+            } catch (e: any) {
                 log.error(`Listener threw error: ${e.message}, stack: ${e.stack}`);
                 // we won't stop execution because of listener
             }

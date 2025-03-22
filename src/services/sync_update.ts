@@ -4,12 +4,12 @@ import entityChangesService from "./entity_changes.js";
 import eventService from "./events.js";
 import entityConstructor from "../becca/entity_constructor.js";
 import ws from "./ws.js";
-import { EntityChange, EntityChangeRecord, EntityRow } from './entity_changes_interface.js';
+import type { EntityChange, EntityChangeRecord, EntityRow } from "./entity_changes_interface.js";
 
 interface UpdateContext {
     alreadyErased: number;
     erased: number;
-    updated: Record<string, string[]>
+    updated: Record<string, string[]>;
 }
 
 function updateEntities(entityChanges: EntityChangeRecord[], instanceId: string) {
@@ -25,9 +25,8 @@ function updateEntities(entityChanges: EntityChangeRecord[], instanceId: string)
         alreadyErased: 0
     };
 
-    for (const {entityChange, entity} of entityChanges) {
-        const changeAppliedAlready = entityChange.changeId
-            && !!sql.getValue("SELECT 1 FROM entity_changes WHERE changeId = ?", [entityChange.changeId]);
+    for (const { entityChange, entity } of entityChanges) {
+        const changeAppliedAlready = entityChange.changeId && !!sql.getValue("SELECT 1 FROM entity_changes WHERE changeId = ?", [entityChange.changeId]);
 
         if (changeAppliedAlready) {
             updateContext.alreadyUpdated++;
@@ -35,7 +34,8 @@ function updateEntities(entityChanges: EntityChangeRecord[], instanceId: string)
             continue;
         }
 
-        if (!atLeastOnePullApplied) { // avoid spamming and send only for first
+        if (!atLeastOnePullApplied) {
+            // avoid spamming and send only for first
             ws.syncPullInProgress();
 
             atLeastOnePullApplied = true;
@@ -48,13 +48,11 @@ function updateEntities(entityChanges: EntityChangeRecord[], instanceId: string)
 }
 
 function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undefined, instanceId: string, updateContext: UpdateContext) {
-    if (!remoteEntityRow && remoteEC.entityName === 'options') {
+    if (!remoteEntityRow && remoteEC.entityName === "options") {
         return; // can be undefined for options with isSynced=false
     }
 
-    const updated = remoteEC.entityName === 'note_reordering'
-        ? updateNoteReordering(remoteEC, remoteEntityRow, instanceId)
-        : updateNormalEntity(remoteEC, remoteEntityRow, instanceId, updateContext);
+    const updated = remoteEC.entityName === "note_reordering" ? updateNoteReordering(remoteEC, remoteEntityRow, instanceId) : updateNormalEntity(remoteEC, remoteEntityRow, instanceId, updateContext);
 
     if (updated) {
         if (remoteEntityRow?.isDeleted) {
@@ -62,8 +60,7 @@ function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undef
                 entityName: remoteEC.entityName,
                 entityId: remoteEC.entityId
             });
-        }
-        else if (!remoteEC.isErased) {
+        } else if (!remoteEC.isErased) {
             eventService.emit(eventService.ENTITY_CHANGE_SYNCED, {
                 entityName: remoteEC.entityName,
                 entityRow: remoteEntityRow
@@ -74,9 +71,7 @@ function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undef
 
 function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undefined, instanceId: string, updateContext: UpdateContext) {
     const localEC = sql.getRow<EntityChange | undefined>(`SELECT * FROM entity_changes WHERE entityName = ? AND entityId = ?`, [remoteEC.entityName, remoteEC.entityId]);
-    const localECIsOlderOrSameAsRemote = (
-            localEC && localEC.utcDateChanged && remoteEC.utcDateChanged &&
-            localEC.utcDateChanged <= remoteEC.utcDateChanged);
+    const localECIsOlderOrSameAsRemote = localEC && localEC.utcDateChanged && remoteEC.utcDateChanged && localEC.utcDateChanged <= remoteEC.utcDateChanged;
 
     if (!localEC || localECIsOlderOrSameAsRemote) {
         if (remoteEC.isErased) {
@@ -100,17 +95,12 @@ function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow |
             updateContext.updated[remoteEC.entityName].push(remoteEC.entityId);
         }
 
-        if (!localEC
-            || localECIsOlderOrSameAsRemote
-            || localEC.hash !== remoteEC.hash
-            || localEC.isErased !== remoteEC.isErased
-        ) {
+        if (!localEC || localECIsOlderOrSameAsRemote || localEC.hash !== remoteEC.hash || localEC.isErased !== remoteEC.isErased) {
             entityChangesService.putEntityChangeWithInstanceId(remoteEC, instanceId);
         }
 
         return true;
-    } else if ((localEC.hash !== remoteEC.hash || localEC.isErased !== remoteEC.isErased)
-                && !localECIsOlderOrSameAsRemote) {
+    } else if ((localEC.hash !== remoteEC.hash || localEC.isErased !== remoteEC.isErased) && !localECIsOlderOrSameAsRemote) {
         // the change on our side is newer than on the other side, so the other side should update
         entityChangesService.putEntityChangeForOtherInstances(localEC);
 
@@ -121,12 +111,12 @@ function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow |
 }
 
 function preProcessContent(remoteEC: EntityChange, remoteEntityRow: EntityRow) {
-    if (remoteEC.entityName === 'blobs' && remoteEntityRow.content !== null) {
+    if (remoteEC.entityName === "blobs" && remoteEntityRow.content !== null) {
         // we always use a Buffer object which is different from normal saving - there we use a simple string type for
         // "string notes". The problem is that in general, it's not possible to detect whether a blob content
         // is string note or note (syncs can arrive out of order)
         if (typeof remoteEntityRow.content === "string") {
-            remoteEntityRow.content = Buffer.from(remoteEntityRow.content, 'base64');
+            remoteEntityRow.content = Buffer.from(remoteEntityRow.content, "base64");
 
             if (remoteEntityRow.content.byteLength === 0) {
                 // there seems to be a bug which causes empty buffer to be stored as NULL which is then picked up as inconsistency
@@ -152,16 +142,9 @@ function updateNoteReordering(remoteEC: EntityChange, remoteEntityRow: EntityRow
 }
 
 function eraseEntity(entityChange: EntityChange) {
-    const {entityName, entityId} = entityChange;
+    const { entityName, entityId } = entityChange;
 
-    const entityNames = [
-        "notes",
-        "branches",
-        "attributes",
-        "revisions",
-        "attachments",
-        "blobs"
-    ];
+    const entityNames = ["notes", "branches", "attributes", "revisions", "attachments", "blobs"];
 
     if (!entityNames.includes(entityName)) {
         log.error(`Cannot erase ${entityName} '${entityId}'.`);
@@ -174,10 +157,7 @@ function eraseEntity(entityChange: EntityChange) {
 }
 
 function logUpdateContext(updateContext: UpdateContext) {
-    const message = JSON.stringify(updateContext)
-        .replaceAll('"', '')
-        .replaceAll(":", ": ")
-        .replaceAll(",", ", ");
+    const message = JSON.stringify(updateContext).replaceAll('"', "").replaceAll(":", ": ").replaceAll(",", ", ");
 
     log.info(message.substr(1, message.length - 2));
 }

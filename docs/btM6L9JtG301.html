@@ -38,7 +38,7 @@
 
         
             <div id="content" class="type-text ck-content">
-                <h3>Run server</h3><p>Run with default settings:</p><pre><code class="language-text-plain">npm run start-server</code></pre><p>Run with custom port:</p><pre><code class="language-text-plain">TRILIUM_PORT=8082 npm run start-server</code></pre><h3>Run Electron</h3><p>Rebuild <code>better-sqlite3</code> dependency:</p><pre><code class="language-text-plain">npm run switch-electron</code></pre><p>Then run Electron:</p><pre><code class="language-text-plain">npm run start-electron</code></pre><p>To run Electron using the same data directory as the production version:</p><pre><code class="language-text-plain">npm run start-electron-no-dir</code></pre><p>When done, switch back the <code>better-sqlite3</code> dependency:</p><pre><code class="language-text-plain">npm run switch-server</code></pre>
+                <h3>Run server</h3><p>Run with default settings:</p><pre><code class="language-text-plain">npm run server:start</code></pre><p>Run with custom port:</p><pre><code class="language-text-plain">TRILIUM_PORT=8082 npm run server:start</code></pre><h3>Run Electron</h3><p>Rebuild <code>better-sqlite3</code> dependency:</p><pre><code class="language-text-plain">npm run electron:switch</code></pre><p>Then run Electron:</p><pre><code class="language-text-plain">npm run electron:start</code></pre><p>To run Electron using the same data directory as the production version:</p><pre><code class="language-text-plain">npm run electron:start-no-dir</code></pre><p>When done, switch back the <code>better-sqlite3</code> dependency:</p><pre><code class="language-text-plain">npm run server:switch</code></pre>
             </div>
         
 

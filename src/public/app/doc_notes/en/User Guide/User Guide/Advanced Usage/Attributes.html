@@ -1,0 +1,139 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Attributes</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Attributes</h1>
+
+      <div class="ck-content">
+        <p>In Trilium, attributes are key-value pairs assigned to notes, providing
+          additional metadata or functionality. There are two primary types of attributes:</p>
+        <ol>
+          <li><strong>Labels</strong>: Simple key-value text records</li>
+          <li><strong>Relations</strong>: Named links to other notes</li>
+        </ol>
+        <p>These attributes play a crucial role in organizing, categorising, and
+          enhancing the functionality of notes.</p>
+        <p>
+          <img src="Attributes_image.png">
+        </p>
+        <h2>Labels</h2>
+        <p>Labels in Trilium can be used for a variety of purposes:</p>
+        <ul>
+          <li><strong>Metadata</strong>: Assign labels with optional values for categorization,
+            such as <code>#year=1999</code>, <code>#genre="sci-fi"</code>, or <code>#author="Neal Stephenson"</code>
+          </li>
+          <li><strong>Configuration</strong>: Labels can configure advanced features
+            or settings</li>
+          <li><strong>Scripts and Plugins</strong>: Used to tag notes with special metadata,
+            such as the "weight" attribute in the <a href="Advanced%20Showcases/Weight%20Tracker.html">Weight Tracker</a>
+          </li>
+        </ul>
+        <p>Labels are also searchable, enhancing note retrieval.</p>
+        <h3>Common Labels for Advanced Configuration</h3>
+        <ul>
+          <li><code>**disableVersioning**</code>: Disables automatic versioning, ideal
+            for large, unimportant notes like script libraries</li>
+          <li><code>**versioningLimit**</code>: Used to limit the number of revisions
+            for a single note</li>
+          <li><code>**calendarRoot**</code>: Marks the note as the root for <a href="Advanced%20Showcases/Day%20Notes.html">day notes</a>.
+            Only one note should carry this label</li>
+          <li><code>**archived**</code>: Hides notes from default search results and
+            dialogs</li>
+          <li><code>**excludeFromExport**</code>: Excludes notes and their subtrees
+            from export operations</li>
+          <li><code>**run**</code>: Specifies events to trigger scripts (e.g., <code>frontendStartup</code>, <code>hourly</code>)</li>
+          <li><code>**runAtHour**</code>: Defines specific hours for scripts to run,
+            used with <code>#run=hourly</code>
+          </li>
+          <li><code>**disableInclusion**</code>: Prevents a script from being included
+            in parent script executions</li>
+          <li><code>**sorted**</code>: Automatically sorts child notes alphabetically
+            by title</li>
+          <li><code>**top**</code>: Keeps the note at the top of its parent's list,
+            useful with <code>sorted</code>
+          </li>
+          <li><code>**hidePromotedAttributes**</code>: Hides certain attributes in the
+            note's display</li>
+          <li><code>**readOnly**</code>: Sets the note to read-only mode, applicable
+            to text and code notes</li>
+          <li><code>**autoReadOnlyDisabled**</code>: Disables automatic read-only mode
+            for large notes</li>
+          <li><code>**appCss**</code>: Marks CSS notes used to modify Trilium’s appearance</li>
+          <li><code>**appTheme**</code>: Marks full CSS themes available in Trilium's
+            options</li>
+          <li><code>**cssClass**</code>: Adds a CSS class to the note's representation
+            in the tree</li>
+          <li><code>**iconClass**</code>: Adds a CSS class to the note's icon, useful
+            for distinguishing notes visually. See <a href="../Basic%20Concepts/Note/Note%20Icons.html">note icons</a>
+          </li>
+          <li><code>**pageSize**</code>: Specifies the number of items per page in note
+            listings</li>
+          <li><code>**customRequestHandler**</code>  <strong>and</strong>  <code>**customResourceProvider**</code>:
+            Refer to <a href="Custom%20Request%20Handler.html">Custom request handler</a>
+          </li>
+          <li><code>**widget**</code>: Marks a note as a custom widget, added to Trilium's
+            component tree</li>
+          <li><code>**workspace**</code>  <strong>and related attributes</strong>: See
+            <a
+            href="../Basic%20Concepts/Navigation/Workspace.html">Workspace</a>for more details</li>
+          <li><code>**searchHome**</code>: Specifies the parent for new search notes</li>
+          <li><code>**inbox**</code>: Designates a default location for new notes created
+            via the sidebar</li>
+          <li><code>**sqlConsoleHome**</code>: Default location for SQL console notes</li>
+          <li><code>**bookmarked**</code>  <strong>and</strong>  <code>**bookmarkFolder**</code>:
+            See <a href="../Basic%20Concepts/Navigation/Bookmarks.html">Bookmarks</a>
+          </li>
+          <li><code>**shareXXX**</code>: See <a href="Sharing.html">Sharing</a>
+          </li>
+          <li><code>**keyboardShortcut**</code>: Assigns a keyboard shortcut to open
+            the note</li>
+          <li><code>**displayRelations**</code>  <strong>and</strong>  <code>**hideRelations**</code>:
+            Manages the display of note relations</li>
+          <li><code>**titleTemplate**</code>: See <a href="Default%20Note%20Title.html">Default note title</a>
+          </li>
+          <li><code>**template**</code>: Makes the note available as a template</li>
+          <li><code>**toc**</code>: Controls the visibility of the table of contents</li>
+          <li><code>**color**</code>: Defines the color of the note in the tree and
+            links</li>
+          <li><code>**hideChildrenOverview**</code>: Hides child notes in the parent
+            note's editor</li>
+          <li><code>**viewType**</code>: Sets the view of child notes (grid or list)</li>
+        </ul>
+        <h2>Relations</h2>
+        <p>Relations define connections between notes, similar to links.</p>
+        <h3>Uses</h3>
+        <ul>
+          <li><strong>Metadata Relationships</strong>: For example, linking a book note
+            to an author note</li>
+          <li><strong>Scripting</strong>: Attaching scripts to events or conditions
+            related to the note</li>
+        </ul>
+        <h3>Common Relations</h3>
+        <ul>
+          <li><strong>Event-based Relations</strong>: Such as <code>runOnNoteCreation</code> or <code>runOnNoteChange</code>,
+            which trigger scripts on specific actions</li>
+          <li><strong>Other Relations</strong>: Include <code>template</code>, <code>renderNote</code>, <code>widget</code>,
+            and sharing-related relations</li>
+        </ul>
+        <h2>Multiplicity</h2>
+        <p>Attributes in Trilium can be "multivalued", meaning multiple attributes
+          with the same name can coexist.</p>
+        <h2>Attribute Definitions and Promoted Attributes</h2>
+        <p>Special labels create "label/attribute" definitions, enhancing the organization
+          and management of attributes. For more details, see <a href="Attributes/Promoted%20Attributes.html">Promoted attributes</a>.</p>
+        <h2>Attribute Inheritance</h2>
+        <p>Trilium supports attribute inheritance, allowing child notes to inherit
+          attributes from their parents. For more information, see <a href="Attributes/Attribute%20Inheritance.html">Attribute inheritance</a>.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

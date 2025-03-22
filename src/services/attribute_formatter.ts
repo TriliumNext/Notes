@@ -1,28 +1,26 @@
 "use strict";
 
-import { AttributeRow } from "../becca/entities/rows.js";
+import type { AttributeRow } from "../becca/entities/rows.js";
 
 function formatAttrForSearch(attr: AttributeRow, searchWithValue: boolean) {
-    let searchStr = '';
+    let searchStr = "";
 
-    if (attr.type === 'label') {
-        searchStr += '#';
-    }
-    else if (attr.type === 'relation') {
-        searchStr += '~';
-    }
-    else {
+    if (attr.type === "label") {
+        searchStr += "#";
+    } else if (attr.type === "relation") {
+        searchStr += "~";
+    } else {
         throw new Error(`Unrecognized attribute type ${JSON.stringify(attr)}`);
     }
 
     searchStr += attr.name;
 
     if (searchWithValue && attr.value) {
-        if (attr.type === 'relation') {
+        if (attr.type === "relation") {
             searchStr += ".noteId";
         }
 
-        searchStr += '=';
+        searchStr += "=";
         searchStr += formatValue(attr.value);
     }
 
@@ -32,17 +30,13 @@ function formatAttrForSearch(attr: AttributeRow, searchWithValue: boolean) {
 function formatValue(val: string) {
     if (!/[^\w]/.test(val)) {
         return val;
-    }
-    else if (!val.includes('"')) {
+    } else if (!val.includes('"')) {
         return `"${val}"`;
-    }
-    else if (!val.includes("'")) {
+    } else if (!val.includes("'")) {
         return `'${val}'`;
-    }
-    else if (!val.includes("`")) {
+    } else if (!val.includes("`")) {
         return `\`${val}\``;
-    }
-    else {
+    } else {
         return `"${val.replace(/"/g, '\\"')}"`;
     }
 }

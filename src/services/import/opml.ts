@@ -4,8 +4,8 @@ import noteService from "../../services/notes.js";
 import xml2js from "xml2js";
 import protectedSessionService from "../protected_session.js";
 import htmlSanitizer from "../html_sanitizer.js";
-import TaskContext from "../task_context.js";
-import BNote from "../../becca/entities/bnote.js";
+import type TaskContext from "../task_context.js";
+import type BNote from "../../becca/entities/bnote.js";
 const parseString = xml2js.parseString;
 
 interface OpmlXml {
@@ -14,9 +14,9 @@ interface OpmlXml {
 
 interface OpmlBody {
     $: {
-        version: string
-    }
-    body: OpmlOutline[]
+        version: string;
+    };
+    body: OpmlOutline[];
 }
 
 interface OpmlOutline {
@@ -29,19 +29,17 @@ interface OpmlOutline {
 }
 
 async function importOpml(taskContext: TaskContext, fileBuffer: string | Buffer, parentNote: BNote) {
-    const xml = await new Promise<OpmlXml>(function(resolve, reject)
-    {
+    const xml = await new Promise<OpmlXml>(function (resolve, reject) {
         parseString(fileBuffer, function (err: any, result: OpmlXml) {
             if (err) {
                 reject(err);
-            }
-            else {
+            } else {
                 resolve(result);
             }
         });
     });
 
-    if (!['1.0', '1.1', '2.0'].includes(xml.opml.$.version)) {
+    if (!["1.0", "1.1", "2.0"].includes(xml.opml.$.version)) {
         return [400, `Unsupported OPML version ${xml.opml.$.version}, 1.0, 1.1 or 2.0 expected instead.`];
     }
 
@@ -57,30 +55,28 @@ async function importOpml(taskContext: TaskContext, fileBuffer: string | Buffer,
             if (!title || !title.trim()) {
                 // https://github.com/zadam/trilium/issues/1862
                 title = outline.$.text;
-                content = '';
+                content = "";
             }
-        }
-        else if (opmlVersion === 2) {
+        } else if (opmlVersion === 2) {
             title = outline.$.text;
             content = outline.$._note; // _note is already HTML
-        }
-        else {
+        } else {
             throw new Error(`Unrecognized OPML version ${opmlVersion}`);
         }
 
         content = htmlSanitizer.sanitize(content || "");
 
-        const {note} = noteService.createNewNote({
+        const { note } = noteService.createNewNote({
             parentNoteId,
             title,
             content,
-            type: 'text',
+            type: "text",
             isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
         });
 
         taskContext.increaseProgressCount();
 
-        for (const childOutline of (outline.outline || [])) {
+        for (const childOutline of outline.outline || []) {
             importOutline(childOutline, note.noteId);
         }
 
@@ -102,10 +98,10 @@ async function importOpml(taskContext: TaskContext, fileBuffer: string | Buffer,
 
 function toHtml(text: string) {
     if (!text) {
-        return '';
+        return "";
     }
 
-    return `<p>${text.replace(/(?:\r\n|\r|\n)/g, '</p><p>')}</p>`;
+    return `<p>${text.replace(/(?:\r\n|\r|\n)/g, "</p><p>")}</p>`;
 }
 
 export default {

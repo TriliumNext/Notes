@@ -5,7 +5,7 @@ import log from "./log.js";
 import BBranch from "../becca/entities/bbranch.js";
 import entityChangesService from "./entity_changes.js";
 import becca from "../becca/becca.js";
-import BNote from "../becca/entities/bnote.js";
+import type BNote from "../becca/entities/bnote.js";
 
 interface ValidationResponse {
     branch: BBranch | null;
@@ -14,11 +14,11 @@ interface ValidationResponse {
 }
 
 function validateParentChild(parentNoteId: string, childNoteId: string, branchId: string | null = null): ValidationResponse {
-    if (['root', '_hidden', '_share', '_lbRoot', '_lbAvailableLaunchers', '_lbVisibleLaunchers'].includes(childNoteId)) {
+    if (["root", "_hidden", "_share", "_lbRoot", "_lbAvailableLaunchers", "_lbVisibleLaunchers"].includes(childNoteId)) {
         return { branch: null, success: false, message: `Cannot change this note's location.` };
     }
 
-    if (parentNoteId === 'none') {
+    if (parentNoteId === "none") {
         // this shouldn't happen
         return { branch: null, success: false, message: `Cannot move anything into 'none' parent.` };
     }
@@ -40,15 +40,15 @@ function validateParentChild(parentNoteId: string, childNoteId: string, branchId
         return {
             branch: null,
             success: false,
-            message: 'Moving/cloning note here would create cycle.'
+            message: "Moving/cloning note here would create cycle."
         };
     }
 
-    if (parentNoteId !== '_lbBookmarks' && becca.getNote(parentNoteId)?.type === 'launcher') {
+    if (parentNoteId !== "_lbBookmarks" && becca.getNote(parentNoteId)?.type === "launcher") {
         return {
             branch: null,
             success: false,
-            message: 'Launcher note cannot have any children.'
+            message: "Launcher note cannot have any children."
         };
     }
 
@@ -74,16 +74,16 @@ function wouldAddingBranchCreateCycle(parentNoteId: string, childNoteId: string)
     const childSubtreeNoteIds = new Set(childNote.getSubtreeNoteIds());
     const parentAncestorNoteIds = parentNote.getAncestorNoteIds();
 
-    return parentAncestorNoteIds.some(parentAncestorNoteId => childSubtreeNoteIds.has(parentAncestorNoteId));
+    return parentAncestorNoteIds.some((parentAncestorNoteId) => childSubtreeNoteIds.has(parentAncestorNoteId));
 }
 
-function sortNotes(parentNoteId: string, customSortBy: string = 'title', reverse = false, foldersFirst = false, sortNatural = false, _sortLocale?: string | null) {
+function sortNotes(parentNoteId: string, customSortBy: string = "title", reverse = false, foldersFirst = false, sortNatural = false, _sortLocale?: string | null) {
     if (!customSortBy) {
-        customSortBy = 'title';
+        customSortBy = "title";
     }
 
     // sortLocale can not be empty string or null value, default value must be set to undefined.
-    const sortLocale = (_sortLocale || undefined);
+    const sortLocale = _sortLocale || undefined;
 
     sql.transactional(() => {
         const note = becca.getNote(parentNoteId);
@@ -92,7 +92,7 @@ function sortNotes(parentNoteId: string, customSortBy: string = 'title', reverse
         }
 
         const notes = note.getChildNotes();
-        const normalize = (obj: any) => (obj && typeof obj === 'string') ? obj.toLowerCase() : obj;
+        const normalize = (obj: any) => (obj && typeof obj === "string" ? obj.toLowerCase() : obj);
 
         notes.sort((a, b) => {
             if (foldersFirst) {
@@ -108,14 +108,12 @@ function sortNotes(parentNoteId: string, customSortBy: string = 'title', reverse
             function fetchValue(note: BNote, key: string) {
                 let rawValue;
 
-                if (key === 'title') {
-                    const branch = note.getParentBranches().find(branch => branch.parentNoteId === parentNoteId);
+                if (key === "title") {
+                    const branch = note.getParentBranches().find((branch) => branch.parentNoteId === parentNoteId);
                     const prefix = branch?.prefix;
                     rawValue = prefix ? `${prefix} - ${note.title}` : note.title;
                 } else {
-                    rawValue = ['dateCreated', 'dateModified'].includes(key)
-                        ? (note as any)[key]
-                        : note.getLabelValue(key);
+                    rawValue = ["dateCreated", "dateModified"].includes(key) ? (note as any)[key] : note.getLabelValue(key);
                 }
 
                 return normalize(rawValue);
@@ -127,35 +125,35 @@ function sortNotes(parentNoteId: string, customSortBy: string = 'title', reverse
                     return b === null || b === undefined || a < b ? -1 : 1;
                 } else {
                     // natural sort
-                    return a.localeCompare(b, sortLocale, {numeric: true, sensitivity: 'base'});
+                    return a.localeCompare(b, sortLocale, { numeric: true, sensitivity: "base" });
                 }
             }
 
-            const topAEl = fetchValue(a, 'top');
-            const topBEl = fetchValue(b, 'top');
+            const topAEl = fetchValue(a, "top");
+            const topBEl = fetchValue(b, "top");
 
             if (topAEl !== topBEl) {
                 // since "top" should not be reversible, we'll reverse it once more to nullify this effect
                 return compare(topAEl, topBEl) * (reverse ? -1 : 1);
             }
 
-            const bottomAEl = fetchValue(a, 'bottom');
-            const bottomBEl = fetchValue(b, 'bottom');
+            const bottomAEl = fetchValue(a, "bottom");
+            const bottomBEl = fetchValue(b, "bottom");
 
             if (bottomAEl !== bottomBEl) {
                 // since "bottom" should not be reversible, we'll reverse it once more to nullify this effect
                 return compare(bottomBEl, bottomAEl) * (reverse ? -1 : 1);
             }
 
-            const customAEl = fetchValue(a, customSortBy);
-            const customBEl = fetchValue(b, customSortBy);
+            const customAEl = fetchValue(a, customSortBy) ?? fetchValue(a, "title");
+            const customBEl = fetchValue(b, customSortBy) ?? fetchValue(b, "title");
 
             if (customAEl !== customBEl) {
                 return compare(customAEl, customBEl);
             }
 
-            const titleAEl = fetchValue(a, 'title');
-            const titleBEl = fetchValue(b, 'title');
+            const titleAEl = fetchValue(a, "title");
+            const titleBEl = fetchValue(b, "title");
 
             return compare(titleAEl, titleBEl);
         });
@@ -168,16 +166,17 @@ function sortNotes(parentNoteId: string, customSortBy: string = 'title', reverse
         let someBranchUpdated = false;
 
         for (const note of notes) {
-            const branch = note.getParentBranches().find(b => b.parentNoteId === parentNoteId);
-            if (!branch) { continue; }
+            const branch = note.getParentBranches().find((b) => b.parentNoteId === parentNoteId);
+            if (!branch) {
+                continue;
+            }
 
-            if (branch.noteId === '_hidden') {
+            if (branch.noteId === "_hidden") {
                 position = 999_999_999;
             }
 
             if (branch.notePosition !== position) {
-                sql.execute("UPDATE branches SET notePosition = ? WHERE branchId = ?",
-                    [position, branch.branchId]);
+                sql.execute("UPDATE branches SET notePosition = ? WHERE branchId = ?", [position, branch.branchId]);
 
                 branch.notePosition = position;
                 someBranchUpdated = true;
@@ -198,16 +197,16 @@ function sortNotesIfNeeded(parentNoteId: string) {
         return;
     }
 
-    const sortedLabel = parentNote.getLabel('sorted');
+    const sortedLabel = parentNote.getLabel("sorted");
 
-    if (!sortedLabel || sortedLabel.value === 'off') {
+    if (!sortedLabel || sortedLabel.value === "off") {
         return;
     }
 
-    const sortReversed = parentNote.getLabelValue('sortDirection')?.toLowerCase() === "desc";
-    const sortFoldersFirst = parentNote.isLabelTruthy('sortFoldersFirst');
-    const sortNatural = parentNote.isLabelTruthy('sortNatural');
-    const sortLocale = parentNote.getLabelValue('sortLocale');
+    const sortReversed = parentNote.getLabelValue("sortDirection")?.toLowerCase() === "desc";
+    const sortFoldersFirst = parentNote.isLabelTruthy("sortFoldersFirst");
+    const sortNatural = parentNote.isLabelTruthy("sortNatural");
+    const sortLocale = parentNote.getLabelValue("sortLocale");
 
     sortNotes(parentNoteId, sortedLabel.value, sortReversed, sortFoldersFirst, sortNatural, sortLocale);
 }
@@ -232,15 +231,13 @@ function setNoteToParent(noteId: string, prefix: string, parentNoteId: string) {
             log.info(`Removing note '${noteId}' from parent '${parentNoteId}'`);
 
             branch.markAsDeleted();
-        }
-        else {
+        } else {
             const newBranch = branch.createClone(parentNoteId);
             newBranch.save();
 
             branch.markAsDeleted();
         }
-    }
-    else if (parentNoteId) {
+    } else if (parentNoteId) {
         const note = becca.getNote(noteId);
         if (!note) {
             throw new Error(`Cannot find note '${noteId}.`);
@@ -250,14 +247,13 @@ function setNoteToParent(noteId: string, prefix: string, parentNoteId: string) {
             throw new Error(`Cannot create a branch for '${noteId}' which is deleted.`);
         }
 
-        const branchId = sql.getValue<string>('SELECT branchId FROM branches WHERE isDeleted = 0 AND noteId = ? AND parentNoteId = ?', [noteId, parentNoteId]);
+        const branchId = sql.getValue<string>("SELECT branchId FROM branches WHERE isDeleted = 0 AND noteId = ? AND parentNoteId = ?", [noteId, parentNoteId]);
         const branch = becca.getBranch(branchId);
 
         if (branch) {
             branch.prefix = prefix;
             branch.save();
-        }
-        else {
+        } else {
             new BBranch({
                 noteId: noteId,
                 parentNoteId: parentNoteId,

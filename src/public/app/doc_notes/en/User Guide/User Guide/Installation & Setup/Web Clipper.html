@@ -1,0 +1,62 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Web Clipper</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Web Clipper</h1>
+
+      <div class="ck-content">
+        <p>
+          <img src="Web Clipper_image.png">
+        </p>
+        <p>Trilium Web Clipper is a web browser extension which allows user to clip
+          text, screenshots, whole pages and short notes and save them directly to
+          Trilium Notes.</p>
+        <p>Project is hosted <a href="https://github.com/TriliumNext/web-clipper">here</a>.</p>
+        <p>Firefox and Chrome are supported browsers, but the chrome build should
+          work on other chromium based browsers as well.</p>
+        <h2>Functionality</h2>
+        <ul>
+          <li>select text and clip it with the right-click context menu</li>
+          <li>click on an image or link and save it through context menu</li>
+          <li>save whole page from the popup or context menu</li>
+          <li>save screenshot (with crop tool) from either popup or context menu</li>
+          <li>create short text note from popup</li>
+        </ul>
+        <p>Trilium will save these clippings as a new child note under a "clipper
+          inbox" note.</p>
+        <p>By default, that's the <a href="../Advanced%20Usage/Advanced%20Showcases/Day%20Notes.html">day note</a> but
+          you can override that by setting the <a href="../Advanced%20Usage/Attributes.html">label</a>  <code>clipperInbox</code>,
+          on any other note.</p>
+        <p>If there's multiple clippings from the same page (and on the same day),
+          then they will be added to the same note.</p>
+        <p><strong>Extension is available from:</strong>
+        </p>
+        <ul>
+          <li><a href="https://github.com/TriliumNext/web-clipper/releases">Project release page</a> -
+            .xpi for Firefox and .zip for Chromium based browsers.</li>
+          <li><a href="https://chromewebstore.google.com/detail/trilium-web-clipper/dfhgmnfclbebfobmblelddiejjcijbjm">Chrome Web Store</a>
+          </li>
+        </ul>
+        <h2>Configuration</h2>
+        <p>The extension needs to connect to a running Trilium instance. By default,
+          it scans a port range on the local computer to find a desktop Trilium instance.</p>
+        <p>It's also possible to configure the <a href="Server%20Installation.html">server</a> address
+          if you don't run the desktop application, or want it to work without the
+          desktop application running.</p>
+        <h2>Username</h2>
+        <p>Older versions of Trilium (before 0.50) required username &amp; password
+          to authenticate, but this is no longer the case. You may enter anything
+          in that field, it will not have any effect.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

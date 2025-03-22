@@ -9,7 +9,7 @@ import SAttribute from "./entities/sattribute.js";
 import SAttachment from "./entities/sattachment.js";
 import shareRoot from "../share_root.js";
 import eventService from "../../services/events.js";
-import { SAttachmentRow, SAttributeRow, SBranchRow, SNoteRow } from './entities/rows.js';
+import type { SAttachmentRow, SAttributeRow, SBranchRow, SNoteRow } from "./entities/rows.js";
 
 function load() {
     const start = Date.now();
@@ -17,16 +17,19 @@ function load() {
 
     // using a raw query and passing arrays to avoid allocating new objects
 
-    const noteIds = sql.getColumn(`
+    const noteIds = sql.getColumn(
+        `
         WITH RECURSIVE
         tree(noteId) AS (
             SELECT ?
             UNION
             SELECT branches.noteId FROM branches
-              JOIN tree ON branches.parentNoteId = tree.noteId
+            JOIN tree ON branches.parentNoteId = tree.noteId
             WHERE branches.isDeleted = 0
         )
-        SELECT noteId FROM tree`, [shareRoot.SHARE_ROOT_NOTE_ID]);
+        SELECT noteId FROM tree`,
+        [shareRoot.SHARE_ROOT_NOTE_ID]
+    );
 
     if (noteIds.length === 0) {
         shaca.loaded = true;
@@ -34,23 +37,23 @@ function load() {
         return;
     }
 
-    const noteIdStr = noteIds.map(noteId => `'${noteId}'`).join(",");
+    const noteIdStr = noteIds.map((noteId) => `'${noteId}'`).join(",");
 
     const rawNoteRows = sql.getRawRows<SNoteRow>(`
         SELECT noteId, title, type, mime, blobId, utcDateModified, isProtected
-        FROM notes 
-        WHERE isDeleted = 0 
-          AND noteId IN (${noteIdStr})`);
+        FROM notes
+        WHERE isDeleted = 0
+        AND noteId IN (${noteIdStr})`);
 
     for (const row of rawNoteRows) {
         new SNote(row);
     }
 
     const rawBranchRows = sql.getRawRows<SBranchRow>(`
-        SELECT branchId, noteId, parentNoteId, prefix, isExpanded, utcDateModified 
-        FROM branches 
-        WHERE isDeleted = 0 
-          AND parentNoteId IN (${noteIdStr}) 
+        SELECT branchId, noteId, parentNoteId, prefix, isExpanded, utcDateModified
+        FROM branches
+        WHERE isDeleted = 0
+        AND parentNoteId IN (${noteIdStr})
         ORDER BY notePosition`);
 
     for (const row of rawBranchRows) {
@@ -58,20 +61,20 @@ function load() {
     }
 
     const rawAttributeRows = sql.getRawRows<SAttributeRow>(`
-        SELECT attributeId, noteId, type, name, value, isInheritable, position, utcDateModified 
-        FROM attributes 
-        WHERE isDeleted = 0 
-          AND noteId IN (${noteIdStr})`);
+        SELECT attributeId, noteId, type, name, value, isInheritable, position, utcDateModified
+        FROM attributes
+        WHERE isDeleted = 0
+        AND noteId IN (${noteIdStr})`);
 
     for (const row of rawAttributeRows) {
         new SAttribute(row);
     }
 
     const rawAttachmentRows = sql.getRawRows<SAttachmentRow>(`
-        SELECT attachmentId, ownerId, role, mime, title, blobId, utcDateModified 
-        FROM attachments 
-        WHERE isDeleted = 0 
-          AND ownerId IN (${noteIdStr})`);
+        SELECT attachmentId, ownerId, role, mime, title, blobId, utcDateModified
+        FROM attachments
+        WHERE isDeleted = 0
+        AND ownerId IN (${noteIdStr})`);
 
     for (const row of rawAttachmentRows) {
         new SAttachment(row);
@@ -88,9 +91,12 @@ function ensureLoad() {
     }
 }
 
-eventService.subscribe([eventService.ENTITY_CREATED, eventService.ENTITY_CHANGED, eventService.ENTITY_DELETED, eventService.ENTITY_CHANGE_SYNCED, eventService.ENTITY_DELETE_SYNCED], ({ entityName, entity }) => {
-    shaca.reset();
-});
+eventService.subscribe(
+    [eventService.ENTITY_CREATED, eventService.ENTITY_CHANGED, eventService.ENTITY_DELETED, eventService.ENTITY_CHANGE_SYNCED, eventService.ENTITY_DELETE_SYNCED],
+    ({ entityName, entity }) => {
+        shaca.reset();
+    }
+);
 
 export default {
     load,

@@ -4,7 +4,7 @@ import sqlInit from "../../services/sql_init.js";
 import setupService from "../../services/setup.js";
 import log from "../../services/log.js";
 import appInfo from "../../services/app_info.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 function getStatus() {
     return {
@@ -32,9 +32,12 @@ function saveSyncSeed(req: Request) {
 
         log.error(message);
 
-        return [400, {
-            error: message
-        }]
+        return [
+            400,
+            {
+                error: message
+            }
+        ];
     }
 
     log.info("Saved sync seed.");
@@ -42,6 +45,34 @@ function saveSyncSeed(req: Request) {
     sqlInit.createDatabaseForSync(options);
 }
 
+/**
+ * @swagger
+ * /api/setup/sync-seed:
+ *   get:
+ *     tags:
+ *       - auth
+ *     summary: Sync documentSecret value
+ *     description: First step to logging in.
+ *     operationId: setup-sync-seed
+ *     responses:
+ *       '200':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 syncVersion:
+ *                   type: integer
+ *                   example: 34
+ *                 options:
+ *                   type: object
+ *                   properties:
+ *                     documentSecret:
+ *                       type: string
+ *     security:
+ *       - user-password: []
+ */
 function getSyncSeed() {
     log.info("Serving sync seed.");
 

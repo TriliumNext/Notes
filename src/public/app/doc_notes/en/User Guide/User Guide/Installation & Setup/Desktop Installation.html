@@ -1,0 +1,52 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Desktop Installation</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Desktop Installation</h1>
+
+      <div class="ck-content">
+        <p>To install Trilium on your desktop, follow these steps:</p>
+        <ol>
+          <li><strong>Download the Latest Release</strong>: Obtain the appropriate binary
+            release for your operating system from the <a href="https://github.com/TriliumNext/Notes/releases/latest">latest release page</a> on
+            GitHub.</li>
+          <li><strong>Extract the Package</strong>: Unzip the downloaded package to
+            a location of your choice.</li>
+          <li><strong>Run the Application</strong>: Launch Trilium by executing the <code>trilium</code> executable
+            found within the unzipped folder.</li>
+        </ol>
+        <h2>Startup Scripts</h2>
+        <p>Trilium offers various startup scripts to customize your experience:</p>
+        <ul>
+          <li><code>**trilium-no-cert-check**</code>: Starts Trilium without validating
+            <a
+            href="Server%20Installation/TLS%20Configuration.html">TLS certificates</a>, useful if connecting to a server with a self-signed
+              certificate.
+              <ul>
+                <li>Alternatively, set the <code>NODE_TLS_REJECT_UNAUTHORIZED=0</code> environment
+                  variable before starting Trilium.</li>
+              </ul>
+          </li>
+          <li><code>**trilium-portable**</code>: Launches Trilium in portable mode,
+            where the <a href="Data%20directory.html">data directory</a> is created within
+            the application's directory, making it easy to move the entire setup.</li>
+          <li><code>**trilium-safe-mode**</code>: Boots Trilium in "safe mode," disabling
+            any startup scripts that might cause the application to crash.</li>
+        </ul>
+        <h2>Synchronization</h2>
+        <p>For Trilium desktp users who wish to synchronize their data with a server
+          instance, refer to the <a href="Synchronization.html">Synchronization Guide</a> for
+          detailed instructions.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

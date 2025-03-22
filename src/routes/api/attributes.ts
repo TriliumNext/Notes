@@ -6,7 +6,7 @@ import attributeService from "../../services/attributes.js";
 import BAttribute from "../../becca/entities/battribute.js";
 import becca from "../../becca/becca.js";
 import ValidationError from "../../errors/validation_error.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 function getEffectiveNoteAttributes(req: Request) {
     const note = becca.getNote(req.params.noteId);
@@ -26,13 +26,10 @@ function updateNoteAttribute(req: Request) {
             throw new ValidationError(`Attribute '${body.attributeId}' is not owned by ${noteId}`);
         }
 
-        if (body.type !== attribute.type
-            || body.name !== attribute.name
-            || (body.type === 'relation' && body.value !== attribute.value)) {
-
+        if (body.type !== attribute.type || body.name !== attribute.name || (body.type === "relation" && body.value !== attribute.value)) {
             let newAttribute;
 
-            if (body.type !== 'relation' || !!body.value.trim()) {
+            if (body.type !== "relation" || !!body.value.trim()) {
                 newAttribute = attribute.createClone(body.type, body.name, body.value);
                 newAttribute.save();
             }
@@ -43,9 +40,8 @@ function updateNoteAttribute(req: Request) {
                 attributeId: newAttribute ? newAttribute.attributeId : null
             };
         }
-    }
-    else {
-        if (body.type === 'relation' && !body.value?.trim()) {
+    } else {
+        if (body.type === "relation" && !body.value?.trim()) {
             return {};
         }
 
@@ -56,10 +52,9 @@ function updateNoteAttribute(req: Request) {
         });
     }
 
-    if (attribute.type === 'label' || body.value.trim()) {
+    if (attribute.type === "label" || body.value.trim()) {
         attribute.value = body.value;
-    }
-    else {
+    } else {
         // relations should never have empty target
         attribute.markAsDeleted();
     }
@@ -85,7 +80,7 @@ function setNoteAttribute(req: Request) {
         attr.value = body.value;
         attr.save();
     } else {
-        const params = {...body};
+        const params = { ...body };
         params.noteId = noteId; // noteId must be set before calling constructor for proper initialization
 
         new BAttribute(params).save();
@@ -96,7 +91,7 @@ function addNoteAttribute(req: Request) {
     const noteId = req.params.noteId;
     const body = req.body;
 
-    new BAttribute({...body, noteId}).save();
+    new BAttribute({ ...body, noteId }).save();
 }
 
 function deleteNoteAttribute(req: Request) {
@@ -132,14 +127,10 @@ function updateNoteAttributes(req: Request) {
 
         const value = incAttr.value || "";
 
-        const perfectMatchAttr = existingAttrs.find(attr =>
-            attr.type === incAttr.type &&
-            attr.name === incAttr.name &&
-            attr.isInheritable === incAttr.isInheritable &&
-            attr.value === value);
+        const perfectMatchAttr = existingAttrs.find((attr) => attr.type === incAttr.type && attr.name === incAttr.name && attr.isInheritable === incAttr.isInheritable && attr.value === value);
 
         if (perfectMatchAttr) {
-            existingAttrs = existingAttrs.filter(attr => attr.attributeId !== perfectMatchAttr.attributeId);
+            existingAttrs = existingAttrs.filter((attr) => attr.attributeId !== perfectMatchAttr.attributeId);
 
             if (perfectMatchAttr.position !== position) {
                 perfectMatchAttr.position = position;
@@ -149,7 +140,7 @@ function updateNoteAttributes(req: Request) {
             continue; // nothing to update
         }
 
-        if (incAttr.type === 'relation') {
+        if (incAttr.type === "relation") {
             const targetNote = becca.getNote(incAttr.value);
 
             if (!targetNote) {
@@ -158,17 +149,14 @@ function updateNoteAttributes(req: Request) {
             }
         }
 
-        const matchedAttr = existingAttrs.find(attr =>
-                attr.type === incAttr.type &&
-                attr.name === incAttr.name &&
-                attr.isInheritable === incAttr.isInheritable);
+        const matchedAttr = existingAttrs.find((attr) => attr.type === incAttr.type && attr.name === incAttr.name && attr.isInheritable === incAttr.isInheritable);
 
         if (matchedAttr) {
             matchedAttr.value = incAttr.value;
             matchedAttr.position = position;
             matchedAttr.save();
 
-            existingAttrs = existingAttrs.filter(attr => attr.attributeId !== matchedAttr.attributeId);
+            existingAttrs = existingAttrs.filter((attr) => attr.attributeId !== matchedAttr.attributeId);
             continue;
         }
 
@@ -208,14 +196,18 @@ function createRelation(req: Request) {
     const targetNoteId = req.params.targetNoteId;
     const name = req.params.name;
 
-    const attributeId = sql.getValue<string>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [sourceNoteId, name, targetNoteId]);
+    const attributeId = sql.getValue<string>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [
+        sourceNoteId,
+        name,
+        targetNoteId
+    ]);
     let attribute = becca.getAttribute(attributeId);
 
     if (!attribute) {
         attribute = new BAttribute({
             noteId: sourceNoteId,
             name: name,
-            type: 'relation',
+            type: "relation",
             value: targetNoteId
         }).save();
     }
@@ -228,7 +220,11 @@ function deleteRelation(req: Request) {
     const targetNoteId = req.params.targetNoteId;
     const name = req.params.name;
 
-    const attributeId = sql.getValue<string | null>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [sourceNoteId, name, targetNoteId]);
+    const attributeId = sql.getValue<string | null>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [
+        sourceNoteId,
+        name,
+        targetNoteId
+    ]);
 
     if (attributeId) {
         const attribute = becca.getAttribute(attributeId);

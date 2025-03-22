@@ -1,14 +1,22 @@
 "use strict";
 
+import { unescapeHtml } from "../utils.js";
+
 function handleH1(content: string, title: string) {
-    content = content.replace(/<h1[^>]*>([^<]*)<\/h1>/gi, (match, text) => {
-        if (title.trim() === text.trim()) {
-            return ""; // remove whole H1 tag
-        } else {
-            return `<h2>${text}</h2>`;
+    let isFirstH1Handled = false;
+
+    return content.replace(/<h1[^>]*>([^<]*)<\/h1>/gi, (match, text) => {
+        text = unescapeHtml(text);
+        const convertedContent = `<h2>${text}</h2>`;
+
+        // strip away very first found h1 tag, if it matches the title
+        if (!isFirstH1Handled) {
+            isFirstH1Handled = true;
+            return title.trim() === text.trim() ? "" : convertedContent;
         }
+
+        return convertedContent;
     });
-    return content;
 }
 
 function extractHtmlTitle(content: string): string | null {

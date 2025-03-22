@@ -1,9 +1,10 @@
 "use strict";
 
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import fs from "fs";
 import dataDir from "./data_dir.js";
 import cls from "./cls.js";
+import { isWindows } from "./utils.js";
 
 if (!fs.existsSync(dataDir.LOG_DIR)) {
     fs.mkdirSync(dataDir.LOG_DIR, 0o700);
@@ -16,7 +17,7 @@ const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-const NEW_LINE = process.platform === "win32" ? '\r\n' : '\n';
+const NEW_LINE = isWindows ? "\r\n" : "\n";
 
 let todaysMidnight!: Date;
 
@@ -37,7 +38,7 @@ function initLogFile() {
         logFile.end();
     }
 
-    logFile = fs.createWriteStream(path, {flags: 'a'});
+    logFile = fs.createWriteStream(path, { flags: "a" });
 }
 
 function checkDate(millisSinceMidnight: number) {
@@ -74,7 +75,7 @@ function error(message: string | Error) {
     log(`ERROR: ${message}`);
 }
 
-const requestBlacklist = [ "/libraries", "/app", "/images", "/stylesheets", "/api/recent-notes" ];
+const requestBlacklist = ["/libraries", "/app", "/images", "/stylesheets", "/api/recent-notes"];
 
 function request(req: Request, res: Response, timeMs: number, responseLength: number | string = "?") {
     for (const bl of requestBlacklist) {
@@ -87,24 +88,21 @@ function request(req: Request, res: Response, timeMs: number, responseLength: nu
         return;
     }
 
-    info((timeMs >= 10 ? "Slow " : "") +
-        `${res.statusCode} ${req.method} ${req.url} with ${responseLength} bytes took ${timeMs}ms`);
+    info((timeMs >= 10 ? "Slow " : "") + `${res.statusCode} ${req.method} ${req.url} with ${responseLength} bytes took ${timeMs}ms`);
 }
 
 function pad(num: number) {
     num = Math.floor(num);
 
-    return num < 10 ? (`0${num}`) : num.toString();
+    return num < 10 ? `0${num}` : num.toString();
 }
 
 function padMilli(num: number) {
     if (num < 10) {
         return `00${num}`;
-    }
-    else if (num < 100) {
+    } else if (num < 100) {
         return `0${num}`;
-    }
-    else {
+    } else {
         return num.toString();
     }
 }

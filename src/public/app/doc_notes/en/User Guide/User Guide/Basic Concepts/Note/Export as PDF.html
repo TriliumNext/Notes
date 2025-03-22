@@ -1,0 +1,52 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Export as PDF</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Export as PDF</h1>
+
+      <div class="ck-content">
+        <p>
+          <img src="Export as PDF_image.png">
+        </p>
+        <p>Screenshot of the note contextual menu indicating the “Export as PDF”
+          option.</p>
+        <p>On the desktop application of Trilium it is possible to export a note
+          as PDF. On the server or PWA (mobile), the option is not available due
+          to technical constraints and it will be hidden.</p>
+        <p>To print a note, select the
+          <img src="1_Export as PDF_image.png">button to the right of the note and select <em>Export as PDF</em>.</p>
+        <p>Afterwards you will be prompted to select where to save the PDF file.
+          Upon confirmation, the resulting PDF will be opened automatically using
+          the default/system application configured for PDFs.</p>
+        <p>Should you encounter any visual issues in the resulting PDF file (e.g.
+          a table does not fit properly, there is cut off text, etc.) feel free to
+          <a
+          href="#root/OeKBfN6JbMIq/jRV1MPt4mNSP/hrC6xn7hnDq5">report the issue</a>. In this case, it's best to offer a sample note (click
+            on the
+            <img src="1_Export as PDF_image.png">button, select Export note → This note and all of its descendants → HTML
+            in ZIP archive). Make sure not to accidentally leak any personal information.</p>
+        <h2>Landscape mode</h2>
+        <p>When exporting to PDF, there are no customizable settings such as page
+          orientation, size, etc. However, it is possible to specify a given note
+          to be printed as a PDF in landscape mode by adding the <code>#printLandscape</code> attribute
+          to it (see <a href="#root/9QRytp0ZYFIf/PnO38wN0ffOA">[missing note]</a>).</p>
+        <h2>Page size</h2>
+        <p>By default, the resulting PDF will be in Letter format. It is possible
+          to adjust it to another page size via the <code>#printPageSize</code> attribute,
+          with one of the following values: <code>A0</code>, <code>A1</code>, <code>A2</code>, <code>A3</code>, <code>A4</code>, <code>A5</code>, <code>A6</code>, <code>Legal</code>, <code>Letter</code>, <code>Tabloid</code>, <code>Ledger</code>.</p>
+        <h2>Keyboard shortcut</h2>
+        <p>It's possible to trigger the export to PDF from the keyboard by going
+          to <em>Keyboard shortcuts</em> and assigning a key combination for the <code>exportAsPdf</code> action.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

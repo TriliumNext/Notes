@@ -1,9 +1,9 @@
 "use strict";
 
-import NoteSet from "../note_set.js";
-import SearchContext from "../search_context.js";
+import type NoteSet from "../note_set.js";
+import type SearchContext from "../search_context.js";
 
-abstract class Expression {
+export default abstract class Expression {
     name: string;
 
     constructor() {
@@ -12,5 +12,3 @@ abstract class Expression {
 
     abstract execute(inputNoteSet: NoteSet, executionContext: {}, searchContext: SearchContext): NoteSet;
 }
-
-export default Expression;

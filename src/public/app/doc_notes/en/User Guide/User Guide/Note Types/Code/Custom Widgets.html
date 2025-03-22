@@ -1,0 +1,113 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Custom Widgets</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Custom Widgets</h1>
+
+      <div class="ck-content">
+        <p>It's possible to create custom widget in three possible locations where
+          you can display your custom content.</p>
+        <p>Positions are:</p>
+        <ul>
+          <li><code>left-pane</code>
+          </li>
+          <li><code>center-pane</code>
+          </li>
+          <li><code>note-detail-pane</code> - located within <code>center-pane</code>,
+            but specific to note (split)</li>
+          <li><code>right-pane</code>
+          </li>
+        </ul>
+        <h2>Example - word count widget</h2>
+        <p>Create a code note of type JS frontend and <strong>give it a</strong>  <code>**#widget**</code>  <strong>label</strong>.</p><pre><code class="language-text-x-trilium-auto">/*
+ * This defines a custom widget which displays number of words and characters in a current text note.
+ * To be activated for a given note, add label 'wordCount' to the note, you can also make it inheritable and thus activate it for the whole subtree.
+ * 
+ * See it in action in "Books" and its subtree.
+ */
+const TPL = `
+    Word count: 
+    
+
+     
+
+    Character count: 
+    
+`;
+
+class WordCountWidget extends api.NoteContextAwareWidget {
+    static get parentWidget() { return 'center-pane'; }
+
+    get position() { return 100; } // higher value means position towards the bottom/right
+
+    isEnabled() {
+        return super.isEnabled()
+            &amp;&amp; this.note.type === 'text'
+            &amp;&amp; this.note.hasLabel('wordCount');
+    }
+
+    doRender() {
+        this.$widget = $(TPL);
+        this.$wordCount = this.$widget.find('.word-count');
+        this.$characterCount = this.$widget.find('.character-count');
+        return this.$widget;
+    }
+
+    async refreshWithNote(note) {
+        const {content} = await note.getNoteComplement();
+
+        const text = $(content).text(); // get plain text only
+
+        const counts = this.getCounts(text);
+
+        this.$wordCount.text(counts.words);
+        this.$characterCount.text(counts.characters);
+    }
+
+    getCounts(text) {
+        const chunks = text
+            .split(/[\s-+:,/\\]+/)
+            .filter(chunk =&gt; chunk !== '');
+
+        let words;
+
+        if (chunks.length === 1 &amp;&amp; chunks[0] === '') {
+            words = 0;
+        }
+        else {
+            words = chunks.length;
+        }
+
+        const characters = chunks.join('').length;
+
+        return {words, characters};
+    }
+
+    async entitiesReloadedEvent({loadResults}) {
+        if (loadResults.isNoteContentReloaded(this.noteId)) {
+            this.refresh();
+        }
+    }
+}
+
+module.exports = WordCountWidget;</code></pre>
+        <p>After you make changes it is necessary to restart Trilium so that the
+          layout can be rebuilt.</p>
+        <h3>Example screenshot</h3>
+        <p>On the bottom you can see the resulting widget:</p>
+        <p>
+          <img src="../../Attachments/Custom-widget%20image.png">
+        </p>
+      </div>
+    </div>
+  </body>
+
+</html>

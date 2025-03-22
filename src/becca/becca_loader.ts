@@ -11,8 +11,8 @@ import BOption from "./entities/boption.js";
 import BEtapiToken from "./entities/betapi_token.js";
 import cls from "../services/cls.js";
 import entityConstructor from "../becca/entity_constructor.js";
-import { AttributeRow, BranchRow, EtapiTokenRow, NoteRow, OptionRow } from './entities/rows.js';
-import AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
+import type { AttributeRow, BranchRow, EtapiTokenRow, NoteRow, OptionRow } from "./entities/rows.js";
+import type AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
 import ws from "../services/ws.js";
 
 const beccaLoaded = new Promise<void>(async (res, rej) => {
@@ -119,13 +119,13 @@ eventService.subscribeBeccaLoader(eventService.ENTITY_CHANGED, ({ entityName, en
  *                    It should be therefore treated as a row.
  */
 function postProcessEntityUpdate(entityName: string, entityRow: any) {
-    if (entityName === 'notes') {
+    if (entityName === "notes") {
         noteUpdated(entityRow);
-    } else if (entityName === 'branches') {
+    } else if (entityName === "branches") {
         branchUpdated(entityRow);
-    } else if (entityName === 'attributes') {
+    } else if (entityName === "attributes") {
         attributeUpdated(entityRow);
-    } else if (entityName === 'note_reordering') {
+    } else if (entityName === "note_reordering") {
         noteReorderingUpdated(entityRow);
     }
 }
@@ -135,13 +135,13 @@ eventService.subscribeBeccaLoader([eventService.ENTITY_DELETED, eventService.ENT
         return;
     }
 
-    if (entityName === 'notes') {
+    if (entityName === "notes") {
         noteDeleted(entityId);
-    } else if (entityName === 'branches') {
+    } else if (entityName === "branches") {
         branchDeleted(entityId);
-    } else if (entityName === 'attributes') {
+    } else if (entityName === "attributes") {
         attributeDeleted(entityId);
-    } else if (entityName === 'etapi_tokens') {
+    } else if (entityName === "etapi_tokens") {
         etapiTokenDeleted(entityId);
     }
 });
@@ -162,9 +162,8 @@ function branchDeleted(branchId: string) {
     const childNote = becca.notes[branch.noteId];
 
     if (childNote) {
-        childNote.parents = childNote.parents.filter(parent => parent.noteId !== branch.parentNoteId);
-        childNote.parentBranches = childNote.parentBranches
-            .filter(parentBranch => parentBranch.branchId !== branch.branchId);
+        childNote.parents = childNote.parents.filter((parent) => parent.noteId !== branch.parentNoteId);
+        childNote.parentBranches = childNote.parentBranches.filter((parentBranch) => parentBranch.branchId !== branch.branchId);
 
         if (childNote.parents.length > 0) {
             // subtree notes might lose some inherited attributes
@@ -175,7 +174,7 @@ function branchDeleted(branchId: string) {
     const parentNote = becca.notes[branch.parentNoteId];
 
     if (parentNote) {
-        parentNote.children = parentNote.children.filter(child => child.noteId !== branch.noteId);
+        parentNote.children = parentNote.children.filter((child) => child.noteId !== branch.noteId);
     }
 
     delete becca.childParentToBranch[`${branch.noteId}-${branch.parentNoteId}`];
@@ -230,12 +229,12 @@ function attributeDeleted(attributeId: string) {
             note.invalidateThisCache();
         }
 
-        note.ownedAttributes = note.ownedAttributes.filter(attr => attr.attributeId !== attribute.attributeId);
+        note.ownedAttributes = note.ownedAttributes.filter((attr) => attr.attributeId !== attribute.attributeId);
 
         const targetNote = attribute.targetNote;
 
         if (targetNote) {
-            targetNote.targetRelations = targetNote.targetRelations.filter(rel => rel.attributeId !== attribute.attributeId);
+            targetNote.targetRelations = targetNote.targetRelations.filter((rel) => rel.attributeId !== attribute.attributeId);
         }
     }
 
@@ -244,7 +243,7 @@ function attributeDeleted(attributeId: string) {
     const key = `${attribute.type}-${attribute.name.toLowerCase()}`;
 
     if (key in becca.attributeIndex) {
-        becca.attributeIndex[key] = becca.attributeIndex[key].filter(attr => attr.attributeId !== attribute.attributeId);
+        becca.attributeIndex[key] = becca.attributeIndex[key].filter((attr) => attr.attributeId !== attribute.attributeId);
     }
 }
 
@@ -282,8 +281,7 @@ function etapiTokenDeleted(etapiTokenId: string) {
 eventService.subscribeBeccaLoader(eventService.ENTER_PROTECTED_SESSION, () => {
     try {
         becca.decryptProtectedNotes();
-    }
-    catch (e: any) {
+    } catch (e: any) {
         log.error(`Could not decrypt protected notes: ${e.message} ${e.stack}`);
     }
 });

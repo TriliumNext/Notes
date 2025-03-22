@@ -1,0 +1,66 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Default Note Title</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Default Note Title</h1>
+
+      <div class="ck-content">
+        <p>When a new note is created, its name is by default "new note". In some
+          cases, it can be desirable to have a different or even a dynamic default
+          note title.</p>
+        <p>For this use case, Trilium (since v0.52) supports <code>#titleTemplate</code> 
+          <a
+          href="Attributes.html">label</a>. You can create such a label for a given note, assign it a value,
+            and this value will be used as a default title when creating child notes.
+            As with other labels, you can make it inheritable to apply recursively,
+            and you can even place it on the root note to have it applied globally
+            everywhere.</p>
+        <p>As an example use case, imagine you collect books you've read in a given
+          year like this:</p>
+        <ul>
+          <li>2022 Books
+            <ul>
+              <li>Neal Stephenson: Anathem, 2008</li>
+              <li>Franz Kafka: Die Verwandlung, 1915</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Now, to the parent note "2022 Books" you can assign label <code>#titleTemplate="[Author name]: [Book title], [Publication year]"</code>.</p>
+        <p>And all children of "2022 Books" will be created with initial title "[Author
+          name]: [Book title], [Publication year]". There's no artificial intelligence
+          here, the idea is to just prompt you to manually fill in the pieces of
+          information into the note title by yourself.</p>
+        <h2>Dynamic value</h2>
+        <p>The value of <code>#titleTemplate</code> is evaluated at the point of note's
+          creation as a JavaScript string, which means it can be enriched with the
+          help of JS string interpolation with dynamic data.</p>
+        <p>As an example, imagine you collect server outage incidents and write some
+          notes. It looks like this:</p>
+        <ul>
+          <li>Incidents
+            <ul>
+              <li>2022-05-09: System crash</li>
+              <li>2022-05-15: Backup delay</li>
+            </ul>
+          </li>
+        </ul>
+        <p>You can automatize the date assignment by assigning a label <code>#titleTemplate="${now.format('YYYY-MM-DD')}: "</code> to
+          the parent note "Incidents". Whenever a new child note is created, the
+          title template is evaluated with the injected <a href="https://day.js.org/docs/en/display/format">now</a> object.</p>
+        <p>Second variable injected is <a href="https://triliumnext.github.io/Notes/backend_api/BNote.html">parentNote</a>,
+          an example could be <code>#titleTemplate="${parentNote.getLabelValue('authorName')}'s literary works"</code>.</p>
+        <p>See also [[<a href="Attributes/Template.html">template</a>]] which provides
+          similar capabilities, including default note's content.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

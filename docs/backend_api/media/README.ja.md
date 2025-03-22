@@ -54,7 +54,7 @@ Trilium は Flatpak としても提供されます：
 
 ```shell
 npm install
-npm run start-server
+npm run server:start
 ```
 
 ## 📢 シャウトアウト

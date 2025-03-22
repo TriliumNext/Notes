@@ -1,10 +1,9 @@
-import SAttachment from "./entities/sattachment.js";
-import SAttribute from "./entities/sattribute.js";
-import SBranch from "./entities/sbranch.js";
-import SNote from "./entities/snote.js";
+import type SAttachment from "./entities/sattachment.js";
+import type SAttribute from "./entities/sattribute.js";
+import type SBranch from "./entities/sbranch.js";
+import type SNote from "./entities/snote.js";
 
 export default class Shaca {
-
     notes!: Record<string, SNote>;
     branches!: Record<string, SBranch>;
     childParentToBranch!: Record<string, SBranch>;
@@ -84,12 +83,7 @@ export default class Shaca {
             return null;
         }
 
-        const camelCaseEntityName = entityName.toLowerCase().replace(/(_[a-z])/g,
-            group =>
-                group
-                    .toUpperCase()
-                    .replace('_', '')
-        );
+        const camelCaseEntityName = entityName.toLowerCase().replace(/(_[a-z])/g, (group) => group.toUpperCase().replace("_", ""));
 
         return (this as any)[camelCaseEntityName][entityId];
     }

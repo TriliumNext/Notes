@@ -8,20 +8,29 @@ import protectedSessionService from "./protected_session.js";
 import searchService from "../services/search/services/search.js";
 import SearchContext from "../services/search/search_context.js";
 import hoistedNoteService from "./hoisted_note.js";
-import BNote from "../becca/entities/bnote.js";
+import type BNote from "../becca/entities/bnote.js";
 import { t } from "i18next";
 
-const CALENDAR_ROOT_LABEL = 'calendarRoot';
-const YEAR_LABEL = 'yearNote';
-const MONTH_LABEL = 'monthNote';
-const DATE_LABEL = 'dateNote';
+const CALENDAR_ROOT_LABEL = "calendarRoot";
+const YEAR_LABEL = "yearNote";
+const MONTH_LABEL = "monthNote";
+const DATE_LABEL = "dateNote";
 
-const WEEKDAY_TRANSLATION_IDS = [
-    "weekdays.sunday", "weekdays.monday", "weekdays.tuesday", "weekdays.wednesday", "weekdays.thursday", "weekdays.friday", "weekdays.saturday", "weekdays.sunday"
-];
+const WEEKDAY_TRANSLATION_IDS = ["weekdays.sunday", "weekdays.monday", "weekdays.tuesday", "weekdays.wednesday", "weekdays.thursday", "weekdays.friday", "weekdays.saturday", "weekdays.sunday"];
 
 const MONTH_TRANSLATION_IDS = [
-    "months.january", "months.february", "months.march", "months.april", "months.may", "months.june", "months.july", "months.august", "months.september", "months.october", "months.november", "months.december"
+    "months.january",
+    "months.february",
+    "months.march",
+    "months.april",
+    "months.may",
+    "months.june",
+    "months.july",
+    "months.august",
+    "months.september",
+    "months.october",
+    "months.november",
+    "months.december"
 ];
 
 type StartOfWeek = "monday" | "sunday";
@@ -30,9 +39,9 @@ function createNote(parentNote: BNote, noteTitle: string) {
     return noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title: noteTitle,
-        content: '',
+        content: "",
         isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
-        type: 'text'
+        type: "text"
     }).note;
 }
 
@@ -42,7 +51,7 @@ function getRootCalendarNote(): BNote {
     const workspaceNote = hoistedNoteService.getWorkspaceNote();
 
     if (!workspaceNote || !workspaceNote.isRoot()) {
-        rootNote = searchService.findFirstNoteWithQuery('#workspaceCalendarRoot', new SearchContext({ignoreHoistedNote: false}));
+        rootNote = searchService.findFirstNoteWithQuery("#workspaceCalendarRoot", new SearchContext({ ignoreHoistedNote: false }));
     }
 
     if (!rootNote) {
@@ -52,16 +61,16 @@ function getRootCalendarNote(): BNote {
     if (!rootNote) {
         sql.transactional(() => {
             rootNote = noteService.createNewNote({
-                parentNoteId: 'root',
-                title: 'Calendar',
-                target: 'into',
+                parentNoteId: "root",
+                title: "Calendar",
+                target: "into",
                 isProtected: false,
-                type: 'text',
-                content: ''
+                type: "text",
+                content: ""
             }).note;
 
             attributeService.createLabel(rootNote.noteId, CALENDAR_ROOT_LABEL);
-            attributeService.createLabel(rootNote.noteId, 'sorted');
+            attributeService.createLabel(rootNote.noteId, "sorted");
         });
     }
 
@@ -73,8 +82,7 @@ function getYearNote(dateStr: string, _rootNote: BNote | null = null): BNote {
 
     const yearStr = dateStr.trim().substr(0, 4);
 
-    let yearNote = searchService.findFirstNoteWithQuery(`#${YEAR_LABEL}="${yearStr}"`,
-            new SearchContext({ancestorNoteId: rootNote.noteId}));
+    let yearNote = searchService.findFirstNoteWithQuery(`#${YEAR_LABEL}="${yearStr}"`, new SearchContext({ ancestorNoteId: rootNote.noteId }));
 
     if (yearNote) {
         return yearNote;
@@ -84,12 +92,12 @@ function getYearNote(dateStr: string, _rootNote: BNote | null = null): BNote {
         yearNote = createNote(rootNote, yearStr);
 
         attributeService.createLabel(yearNote.noteId, YEAR_LABEL, yearStr);
-        attributeService.createLabel(yearNote.noteId, 'sorted');
+        attributeService.createLabel(yearNote.noteId, "sorted");
 
-        const yearTemplateAttr = rootNote.getOwnedAttribute('relation', 'yearTemplate');
+        const yearTemplateAttr = rootNote.getOwnedAttribute("relation", "yearTemplate");
 
         if (yearTemplateAttr) {
-            attributeService.createRelation(yearNote.noteId, 'template', yearTemplateAttr.value);
+            attributeService.createRelation(yearNote.noteId, "template", yearTemplateAttr.value);
         }
     });
 
@@ -101,8 +109,8 @@ function getMonthNoteTitle(rootNote: BNote, monthNumber: string, dateObj: Date) 
     const monthName = t(MONTH_TRANSLATION_IDS[dateObj.getMonth()]);
 
     return pattern
-        .replace(/{shortMonth3}/g, monthName.slice(0,3))
-        .replace(/{shortMonth4}/g, monthName.slice(0,4))
+        .replace(/{shortMonth3}/g, monthName.slice(0, 3))
+        .replace(/{shortMonth4}/g, monthName.slice(0, 4))
         .replace(/{monthNumberPadded}/g, monthNumber)
         .replace(/{month}/g, monthName);
 }
@@ -113,8 +121,7 @@ function getMonthNote(dateStr: string, _rootNote: BNote | null = null): BNote {
     const monthStr = dateStr.substr(0, 7);
     const monthNumber = dateStr.substr(5, 2);
 
-    let monthNote = searchService.findFirstNoteWithQuery(`#${MONTH_LABEL}="${monthStr}"`,
-        new SearchContext({ancestorNoteId: rootNote.noteId}));
+    let monthNote = searchService.findFirstNoteWithQuery(`#${MONTH_LABEL}="${monthStr}"`, new SearchContext({ ancestorNoteId: rootNote.noteId }));
 
     if (monthNote) {
         return monthNote;
@@ -130,12 +137,12 @@ function getMonthNote(dateStr: string, _rootNote: BNote | null = null): BNote {
         monthNote = createNote(yearNote, noteTitle);
 
         attributeService.createLabel(monthNote.noteId, MONTH_LABEL, monthStr);
-        attributeService.createLabel(monthNote.noteId, 'sorted');
+        attributeService.createLabel(monthNote.noteId, "sorted");
 
-        const monthTemplateAttr = rootNote.getOwnedAttribute('relation', 'monthTemplate');
+        const monthTemplateAttr = rootNote.getOwnedAttribute("relation", "monthTemplate");
 
         if (monthTemplateAttr) {
-            attributeService.createRelation(monthNote.noteId, 'template', monthTemplateAttr.value);
+            attributeService.createRelation(monthNote.noteId, "template", monthTemplateAttr.value);
         }
     });
 
@@ -168,8 +175,7 @@ function getDayNote(dateStr: string, _rootNote: BNote | null = null): BNote {
 
     dateStr = dateStr.trim().substr(0, 10);
 
-    let dateNote = searchService.findFirstNoteWithQuery(`#${DATE_LABEL}="${dateStr}"`,
-        new SearchContext({ancestorNoteId: rootNote.noteId}));
+    let dateNote = searchService.findFirstNoteWithQuery(`#${DATE_LABEL}="${dateStr}"`, new SearchContext({ ancestorNoteId: rootNote.noteId }));
 
     if (dateNote) {
         return dateNote;
@@ -187,10 +193,10 @@ function getDayNote(dateStr: string, _rootNote: BNote | null = null): BNote {
 
         attributeService.createLabel(dateNote.noteId, DATE_LABEL, dateStr.substr(0, 10));
 
-        const dateTemplateAttr = rootNote.getOwnedAttribute('relation', 'dateTemplate');
+        const dateTemplateAttr = rootNote.getOwnedAttribute("relation", "dateTemplate");
 
         if (dateTemplateAttr) {
-            attributeService.createRelation(dateNote.noteId, 'template', dateTemplateAttr.value);
+            attributeService.createRelation(dateNote.noteId, "template", dateTemplateAttr.value);
         }
     });
 
@@ -205,13 +211,11 @@ function getStartOfTheWeek(date: Date, startOfTheWeek: StartOfWeek) {
     const day = date.getDay();
     let diff;
 
-    if (startOfTheWeek === 'monday') {
+    if (startOfTheWeek === "monday") {
         diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-    }
-    else if (startOfTheWeek === 'sunday') {
+    } else if (startOfTheWeek === "sunday") {
         diff = date.getDate() - day;
-    }
-    else {
+    } else {
         throw new Error(`Unrecognized start of the week ${startOfTheWeek}`);
     }
 
@@ -219,7 +223,7 @@ function getStartOfTheWeek(date: Date, startOfTheWeek: StartOfWeek) {
 }
 
 interface WeekNoteOpts {
-    startOfTheWeek?: StartOfWeek
+    startOfTheWeek?: StartOfWeek;
 }
 
 function getWeekNote(dateStr: string, options: WeekNoteOpts = {}, rootNote: BNote | null = null) {

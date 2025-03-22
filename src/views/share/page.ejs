@@ -37,7 +37,7 @@
     <div id="main">
         <% if (note.parents[0].noteId !== '_share' && note.parents.length !== 0) { %>
             <nav id="parentLink">
-                <%= t("share_page.parent") %> <a href="<%= note.parents[0].shareId %>"
+                <%= t("share_page.parent") %> <a href="./<%= note.parents[0].shareId %>"
                                      class="type-<%= note.parents[0].type %>"><%= note.parents[0].title %></a>
             </nav>
         <% } %>
@@ -88,5 +88,10 @@
         </nav>
     <% } %>
 </div>
+<footer>
+    <% if (showLoginInShareTheme === 'true') { %>
+        <p><a href="/login" class="login-link">Login</a></p>
+    <% } %>
+</footer>
 </body>
 </html>

@@ -16,7 +16,7 @@ chcp 65001
 :: Get Current Trilium executable directory and compute data directory
 SET DIR=%~dp0
 SET TRILIUM_SAFE_MODE=1
-cd %DIR%
+cd "%DIR%"
 start trilium.exe --disable-gpu
 GOTO END
 

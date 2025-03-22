@@ -90,7 +90,10 @@
     "unhoist": "Defocalizează complet",
     "zoom-in": "Mărește zoom-ul",
     "zoom-out": "Micșorează zoom-ul",
-    "toggle-classic-editor-toolbar": "Comută tab-ul „Formatare” pentru editorul cu bară fixă"
+    "toggle-classic-editor-toolbar": "Comută tab-ul „Formatare” pentru editorul cu bară fixă",
+    "export-as-pdf": "Exportă notița curentă ca PDF",
+    "show-cheatsheet": "Afișează o fereastră cu scurtături de la tastatură comune",
+    "toggle-zen-mode": "Activează/dezactivează modul zen (o interfață minimală, fără distrageri)"
   },
   "login": {
     "button": "Autentifică",
@@ -101,6 +104,7 @@
     "title": "Autentificare"
   },
   "set_password": {
+    "title": "Setare parolă",
     "heading": "Setare parolă",
     "button": "Setează parola",
     "description": "Înainte de a putea utiliza Trilium din navigator, trebuie mai întâi setată o parolă. Ulterior această parolă va fi folosită la autentificare.",
@@ -239,6 +243,43 @@
     "sql-console-history-title": "Istoricul consolei SQL",
     "go-to-next-note-title": "Mergi la notița următoare",
     "launch-bar-templates-title": "Șabloane bară de lansare",
-    "visible-launchers-title": "Lansatoare vizibile"
+    "visible-launchers-title": "Lansatoare vizibile",
+    "user-guide": "Ghidul de utilizare"
+  },
+  "notes": {
+    "new-note": "Notiță nouă"
+  },
+  "backend_log": {
+    "log-does-not-exist": "Fișierul de loguri de backend „{{ fileName }}” nu există (încă).",
+    "reading-log-failed": "Nu s-a putut citi fișierul de loguri de backend „{{fileName}}”."
+  },
+  "geo-map": {
+    "create-child-note-instruction": "Clic pe hartă pentru a crea o nouă notiță la acea poziție sau apăsați Escape pentru a renunța."
+  },
+  "content_renderer": {
+    "note-cannot-be-displayed": "Acest tip de notiță nu poate fi afișat."
+  },
+  "pdf": {
+    "export_filter": "Document PDF (*.pdf)",
+    "unable-to-export-message": "Notița curentă nu a putut fi exportată ca PDF.",
+    "unable-to-export-title": "Nu s-a putut exporta ca PDF",
+    "unable-to-save-message": "Nu s-a putut scrie fișierul selectat. Încercați din nou sau selectați altă destinație."
+  },
+  "tray": {
+    "bookmarks": "Semne de carte",
+    "close": "Închide Trilium",
+    "new-note": "Notiță nouă",
+    "recents": "Notițe recente",
+    "today": "Mergi la notița de astăzi",
+    "tooltip": "TriliumNext Notes",
+    "show-windows": "Afișează ferestrele"
+  },
+  "migration": {
+    "error_message": "Eroare la migrarea către versiunea {{version}}: {{stack}}",
+    "old_version": "Nu se poate migra la ultima versiune direct de la versiunea dvs. Actualizați mai întâi la versiunea v0.60.4 și ulterior la această versiune.",
+    "wrong_db_version": "Versiunea actuală a bazei de date ({{version}}) este mai nouă decât versiunea de bază de date suportată de aplicație ({{targetVersion}}), ceea ce înseamnă că a fost creată de către o versiune mai nouă de Trilium. Actualizați aplicația la ultima versiune pentru a putea continua."
+  },
+  "modals": {
+    "error_title": "Eroare"
   }
 }

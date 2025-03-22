@@ -4,73 +4,81 @@ import optionService from "../../services/options.js";
 import log from "../../services/log.js";
 import searchService from "../../services/search/services/search.js";
 import ValidationError from "../../errors/validation_error.js";
-import { Request } from 'express';
-import { changeLanguage } from "../../services/i18n.js";
+import type { Request } from "express";
+import { changeLanguage, getLocales } from "../../services/i18n.js";
 import { listSyntaxHighlightingThemes } from "../../services/code_block_theme.js";
+import type { OptionNames } from "../../services/options_interface.js";
 
 // options allowed to be updated directly in the Options dialog
 const ALLOWED_OPTIONS = new Set([
-    'eraseEntitiesAfterTimeInSeconds',
-    'protectedSessionTimeout',
-    'revisionSnapshotTimeInterval',
-    'revisionSnapshotNumberLimit',
-    'zoomFactor',
-    'theme',
-    'codeBlockTheme',
+    "eraseEntitiesAfterTimeInSeconds",
+    "eraseEntitiesAfterTimeScale",
+    "protectedSessionTimeout",
+    "protectedSessionTimeoutTimeScale",
+    "revisionSnapshotTimeInterval",
+    "revisionSnapshotTimeIntervalTimeScale",
+    "revisionSnapshotNumberLimit",
+    "zoomFactor",
+    "theme",
+    "codeBlockTheme",
     "codeBlockWordWrap",
-    'syncServerHost',
-    'syncServerTimeout',
-    'syncProxy',
-    'hoistedNoteId',
-    'mainFontSize',
-    'mainFontFamily',
-    'treeFontSize',
-    'treeFontFamily',
-    'detailFontSize',
-    'detailFontFamily',
-    'monospaceFontSize',
-    'monospaceFontFamily',
-    'openNoteContexts',
-    'vimKeymapEnabled',
-    'codeLineWrapEnabled',
-    'codeNotesMimeTypes',
-    'spellCheckEnabled',
-    'spellCheckLanguageCode',
-    'imageMaxWidthHeight',
-    'imageJpegQuality',
-    'leftPaneWidth',
-    'rightPaneWidth',
-    'leftPaneVisible',
-    'rightPaneVisible',
-    'nativeTitleBarVisible',
-    'headingStyle',
-    'autoCollapseNoteTree',
-    'autoReadonlySizeText',
-    'autoReadonlySizeCode',
-    'overrideThemeFonts',
-    'dailyBackupEnabled',
-    'weeklyBackupEnabled',
-    'monthlyBackupEnabled',
-    'maxContentWidth',
-    'compressImages',
-    'downloadImagesAutomatically',
-    'minTocHeadings',
-    'highlightsList',
-    'checkForUpdates',
-    'disableTray',
-    'eraseUnusedAttachmentsAfterSeconds',
-    'disableTray',
-    'customSearchEngineName',
-    'customSearchEngineUrl',
-    'promotedAttributesOpenInRibbon',
-    'editedNotesOpenInRibbon',
-    'locale',
-    'firstDayOfWeek',
-    'textNoteEditorType',
-    'textNoteEditorMultilineToolbar',
-    'layoutOrientation',
-    'backgroundEffects',
-    'allowedHtmlTags' // Allow configuring HTML import tags
+    "syncServerHost",
+    "syncServerTimeout",
+    "syncProxy",
+    "hoistedNoteId",
+    "mainFontSize",
+    "mainFontFamily",
+    "treeFontSize",
+    "treeFontFamily",
+    "detailFontSize",
+    "detailFontFamily",
+    "monospaceFontSize",
+    "monospaceFontFamily",
+    "openNoteContexts",
+    "vimKeymapEnabled",
+    "codeLineWrapEnabled",
+    "codeNotesMimeTypes",
+    "spellCheckEnabled",
+    "spellCheckLanguageCode",
+    "imageMaxWidthHeight",
+    "imageJpegQuality",
+    "leftPaneWidth",
+    "rightPaneWidth",
+    "leftPaneVisible",
+    "rightPaneVisible",
+    "nativeTitleBarVisible",
+    "headingStyle",
+    "autoCollapseNoteTree",
+    "autoReadonlySizeText",
+    "autoReadonlySizeCode",
+    "overrideThemeFonts",
+    "dailyBackupEnabled",
+    "weeklyBackupEnabled",
+    "monthlyBackupEnabled",
+    "maxContentWidth",
+    "compressImages",
+    "downloadImagesAutomatically",
+    "minTocHeadings",
+    "highlightsList",
+    "checkForUpdates",
+    "disableTray",
+    "eraseUnusedAttachmentsAfterSeconds",
+    "eraseUnusedAttachmentsAfterTimeScale",
+    "disableTray",
+    "customSearchEngineName",
+    "customSearchEngineUrl",
+    "promotedAttributesOpenInRibbon",
+    "editedNotesOpenInRibbon",
+    "locale",
+    "firstDayOfWeek",
+    "languages",
+    "textNoteEditorType",
+    "textNoteEditorMultilineToolbar",
+    "layoutOrientation",
+    "backgroundEffects",
+    "allowedHtmlTags",
+    "redirectBareDomain",
+    "showLoginInShareTheme"
 ]);
 
 function getOptions() {
@@ -79,17 +87,17 @@ function getOptions() {
 
     for (const optionName in optionMap) {
         if (isAllowed(optionName)) {
-            resultMap[optionName] = optionMap[optionName];
+            resultMap[optionName] = optionMap[optionName as OptionNames];
         }
     }
 
-    resultMap['isPasswordSet'] = optionMap['passwordVerificationHash'] ? 'true' : 'false';
+    resultMap["isPasswordSet"] = optionMap["passwordVerificationHash"] ? "true" : "false";
 
     return resultMap;
 }
 
 function updateOption(req: Request) {
-    const {name, value} = req.params;
+    const { name, value } = req.params;
 
     if (!update(name, value)) {
         throw new ValidationError("not allowed option to change");
@@ -111,11 +119,11 @@ function update(name: string, value: string) {
         return false;
     }
 
-    if (name !== 'openNoteContexts') {
+    if (name !== "openNoteContexts") {
         log.info(`Updating option '${name}' to '${value}'`);
     }
 
-    optionService.setOption(name, value);
+    optionService.setOption(name as OptionNames, value);
 
     if (name === "locale") {
         // This runs asynchronously, so it's not perfect, but it does the trick for now.
@@ -126,14 +134,14 @@ function update(name: string, value: string) {
 }
 
 function getUserThemes() {
-    const notes = searchService.searchNotes("#appTheme", {ignoreHoistedNote: true});
+    const notes = searchService.searchNotes("#appTheme", { ignoreHoistedNote: true });
     const ret = [];
 
     for (const note of notes) {
-        let value = note.getOwnedLabelValue('appTheme');
+        let value = note.getOwnedLabelValue("appTheme");
 
         if (!value) {
-            value = note.title.toLowerCase().replace(/[^a-z0-9]/gi, '-');
+            value = note.title.toLowerCase().replace(/[^a-z0-9]/gi, "-");
         }
 
         ret.push({
@@ -151,44 +159,11 @@ function getSyntaxHighlightingThemes() {
 }
 
 function getSupportedLocales() {
-    // TODO: Currently hardcoded, needs to read the list of available languages.
-    return [
-        {
-            "id": "en",
-            "name": "English"
-        },
-        {
-            "id": "de",
-            "name": "Deutsch"
-        },
-        {
-            "id": "es",
-            "name": "Español"
-        },
-        {
-            "id": "fr",
-            "name": "Français"
-        },
-        {
-            "id": "cn",
-            "name": "简体中文"
-        },
-        {
-            "id": "tw",
-            "name": "繁體中文"
-        },
-        {
-            "id": "ro",
-            "name": "Română"
-        }
-    ];
+    return getLocales();
 }
 
 function isAllowed(name: string) {
-    return ALLOWED_OPTIONS.has(name)
-        || name.startsWith("keyboardShortcuts")
-        || name.endsWith("Collapsed")
-        || name.startsWith("hideArchivedNotes");
+    return ALLOWED_OPTIONS.has(name) || name.startsWith("keyboardShortcuts") || name.endsWith("Collapsed") || name.startsWith("hideArchivedNotes");
 }
 
 export default {

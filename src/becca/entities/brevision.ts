@@ -7,7 +7,7 @@ import becca from "../becca.js";
 import AbstractBeccaEntity from "./abstract_becca_entity.js";
 import sql from "../../services/sql.js";
 import BAttachment from "./battachment.js";
-import { AttachmentRow, RevisionRow } from './rows.js';
+import type { AttachmentRow, NoteType, RevisionRow } from "./rows.js";
 import eraseService from "../../services/erase.js";
 
 interface ContentOpts {
@@ -24,14 +24,19 @@ interface GetByIdOpts {
  * It's used for seamless note versioning.
  */
 class BRevision extends AbstractBeccaEntity<BRevision> {
-    static get entityName() { return "revisions"; }
-    static get primaryKeyName() { return "revisionId"; }
-    static get hashedProperties() { return ["revisionId", "noteId", "title", "isProtected", "dateLastEdited", "dateCreated",
-                                            "utcDateLastEdited", "utcDateCreated", "utcDateModified", "blobId"]; }
+    static get entityName() {
+        return "revisions";
+    }
+    static get primaryKeyName() {
+        return "revisionId";
+    }
+    static get hashedProperties() {
+        return ["revisionId", "noteId", "title", "isProtected", "dateLastEdited", "dateCreated", "utcDateLastEdited", "utcDateCreated", "utcDateModified", "blobId"];
+    }
 
     revisionId?: string;
     noteId!: string;
-    type!: string;
+    type!: NoteType;
     mime!: string;
     title!: string;
     dateLastEdited?: string;
@@ -75,9 +80,11 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     }
 
     isContentAvailable() {
-        return !this.revisionId // new note which was not encrypted yet
-            || !this.isProtected
-            || protectedSessionService.isProtectedSessionAvailable()
+        return (
+            !this.revisionId || // new note which was not encrypted yet
+            !this.isProtected ||
+            protectedSessionService.isProtectedSessionAvailable()
+        );
     }
 
     /*
@@ -108,8 +115,7 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     getJsonContentSafely(): {} | null {
         try {
             return this.getJsonContent();
-        }
-        catch (e) {
+        } catch (e) {
             return null;
         }
     }
@@ -119,12 +125,16 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
     }
 
     getAttachments(): BAttachment[] {
-        return sql.getRows<AttachmentRow>(`
+        return sql
+            .getRows<AttachmentRow>(
+                `
                 SELECT attachments.*
-                FROM attachments 
-                WHERE ownerId = ? 
-                  AND isDeleted = 0`, [this.revisionId])
-            .map(row => new BAttachment(row));
+                FROM attachments
+                WHERE ownerId = ?
+                AND isDeleted = 0`,
+                [this.revisionId]
+            )
+            .map((row) => new BAttachment(row));
     }
 
     getAttachmentById(attachmentId: String, opts: GetByIdOpts = {}): BAttachment | null {
@@ -132,29 +142,32 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
 
         const query = opts.includeContentLength
             ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
-               FROM attachments 
-               JOIN blobs USING (blobId) 
-               WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
+                FROM attachments
+                JOIN blobs USING (blobId)
+                WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
             : `SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
 
-        return sql.getRows<AttachmentRow>(query, [this.revisionId, attachmentId])
-            .map(row => new BAttachment(row))[0];
+        return sql.getRows<AttachmentRow>(query, [this.revisionId, attachmentId]).map((row) => new BAttachment(row))[0];
     }
 
     getAttachmentsByRole(role: string): BAttachment[] {
-        return sql.getRows<AttachmentRow>(`
+        return sql
+            .getRows<AttachmentRow>(
+                `
                 SELECT attachments.*
-                FROM attachments 
-                WHERE ownerId = ? 
-                  AND role = ?
-                  AND isDeleted = 0
-                ORDER BY position`, [this.revisionId, role])
-            .map(row => new BAttachment(row));
+                FROM attachments
+                WHERE ownerId = ?
+                AND role = ?
+                AND isDeleted = 0
+                ORDER BY position`,
+                [this.revisionId, role]
+            )
+            .map((row) => new BAttachment(row));
     }
 
     getAttachmentByTitle(title: string): BAttachment {
         // cannot use SQL to filter by title since it can be encrypted
-        return this.getAttachments().filter(attachment => attachment.title === title)[0];
+        return this.getAttachments().filter((attachment) => attachment.title === title)[0];
     }
 
     /**
@@ -199,8 +212,7 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
         if (pojo.isProtected) {
             if (protectedSessionService.isProtectedSessionAvailable()) {
                 pojo.title = protectedSessionService.encrypt(this.title) || undefined;
-            }
-            else {
+            } else {
                 // updating protected note outside of protected session means we will keep original ciphertexts
                 delete pojo.title;
             }

@@ -1,7 +1,6 @@
 type Updater = () => void;
 
 class SpacedUpdate {
-
     private updater: Updater;
     private lastUpdated: number;
     private changed: boolean;
@@ -29,8 +28,7 @@ class SpacedUpdate {
 
             try {
                 await this.updater();
-            }
-            catch (e) {
+            } catch (e) {
                 this.changed = true;
 
                 throw e;
@@ -55,8 +53,7 @@ class SpacedUpdate {
             this.updater();
             this.lastUpdated = Date.now();
             this.changed = false;
-        }
-        else {
+        } else {
             // update isn't triggered but changes are still pending, so we need to schedule another check
             this.scheduleUpdate();
         }
@@ -67,8 +64,7 @@ class SpacedUpdate {
 
         try {
             await callback();
-        }
-        finally {
+        } finally {
             this.changeForbidden = false;
         }
     }

@@ -1,7 +1,7 @@
 "use strict";
 
 import BAttribute from "../../becca/entities/battribute.js";
-import utils from "../../services/utils.js";
+import { removeTextFileExtension, newEntityId, getNoteTitle, processStringOrBuffer, unescapeHtml } from "../../services/utils.js";
 import log from "../../services/log.js";
 import noteService from "../../services/notes.js";
 import attributeService from "../../services/attributes.js";
@@ -15,18 +15,22 @@ import htmlSanitizer from "../html_sanitizer.js";
 import becca from "../../becca/becca.js";
 import BAttachment from "../../becca/entities/battachment.js";
 import markdownService from "./markdown.js";
-import TaskContext from "../task_context.js";
-import BNote from "../../becca/entities/bnote.js";
-import NoteMeta from "../meta/note_meta.js";
-import AttributeMeta from "../meta/attribute_meta.js";
-import { Stream } from 'stream';
-import { ALLOWED_NOTE_TYPES, NoteType } from '../../becca/entities/rows.js';
+import type TaskContext from "../task_context.js";
+import type BNote from "../../becca/entities/bnote.js";
+import type NoteMeta from "../meta/note_meta.js";
+import type AttributeMeta from "../meta/attribute_meta.js";
+import type { Stream } from "stream";
+import { ALLOWED_NOTE_TYPES, type NoteType } from "../../becca/entities/rows.js";
 
 interface MetaFile {
-    files: NoteMeta[]
+    files: NoteMeta[];
 }
 
-async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRootNote: BNote): Promise<BNote> {
+interface ImportZipOpts {
+    preserveIds?: boolean;
+}
+
+async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRootNote: BNote, opts?: ImportZipOpts): Promise<BNote> {
     /** maps from original noteId (in ZIP file) to newly generated noteId */
     const noteIdMap: Record<string, string> = {};
     /** type maps from original attachmentId (in ZIP file) to newly generated attachmentId */
@@ -34,7 +38,7 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
     const attributes: AttributeMeta[] = [];
     // path => noteId, used only when meta file is not available
     /** path => noteId | attachmentId */
-    const createdPaths: Record<string, string> = { '/': importRootNote.noteId, '\\': importRootNote.noteId };
+    const createdPaths: Record<string, string> = { "/": importRootNote.noteId, "\\": importRootNote.noteId };
     let metaFile: MetaFile | null = null;
     let firstNote: BNote | null = null;
     const createdNoteIds = new Set<string>();
@@ -45,26 +49,30 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
             return "empty_note_id";
         }
 
-        if (origNoteId === 'root' || origNoteId.startsWith("_")) {
+        if (origNoteId === "root" || origNoteId.startsWith("_") || opts?.preserveIds) {
             // these "named" noteIds don't differ between Trilium instances
             return origNoteId;
         }
 
         if (!noteIdMap[origNoteId]) {
-            noteIdMap[origNoteId] = utils.newEntityId();
+            noteIdMap[origNoteId] = newEntityId();
         }
 
         return noteIdMap[origNoteId];
     }
 
     function getNewAttachmentId(origAttachmentId: string) {
+        if (opts?.preserveIds) {
+            return origAttachmentId;
+        }
+
         if (!origAttachmentId.trim()) {
             // this probably shouldn't happen, but still good to have this precaution
             return "empty_attachment_id";
         }
 
         if (!attachmentIdMap[origAttachmentId]) {
-            attachmentIdMap[origAttachmentId] = utils.newEntityId();
+            attachmentIdMap[origAttachmentId] = newEntityId();
         }
 
         return attachmentIdMap[origAttachmentId];
@@ -101,14 +109,15 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
 
         let parent: NoteMeta | undefined = undefined;
 
-        for (const segment of pathSegments) {
+        for (let segment of pathSegments) {
             if (!cursor?.children?.length) {
                 return {};
             }
 
+            segment = unescapeHtml(segment);
             parent = cursor;
             if (parent.children) {
-                cursor = parent.children.find(file => file.dataFileName === segment || file.dirFileName === segment);
+                cursor = parent.children.find((file) => file.dataFileName === segment || file.dirFileName === segment);
             }
 
             if (!cursor) {
@@ -128,11 +137,10 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
 
         if (parentNoteMeta?.noteId) {
             parentNoteId = parentNoteMeta.isImportRoot ? importRootNote.noteId : getNewNoteId(parentNoteMeta.noteId);
-        }
-        else {
+        } else {
             const parentPath = path.dirname(filePath);
 
-            if (parentPath === '.') {
+            if (parentPath === ".") {
                 parentNoteId = importRootNote.noteId;
             } else if (parentPath in createdPaths) {
                 parentNoteId = createdPaths[parentPath];
@@ -152,13 +160,13 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
 
         // in case we lack metadata, we treat e.g. "Programming.html" and "Programming" as the same note
         // (one data file, the other directory for children)
-        const filePathNoExt = utils.removeTextFileExtension(filePath);
+        const filePathNoExt = removeTextFileExtension(filePath);
 
         if (filePathNoExt in createdPaths) {
             return createdPaths[filePathNoExt];
         }
 
-        const noteId = utils.newEntityId();
+        const noteId = newEntityId();
 
         createdPaths[filePathNoExt] = noteId;
 
@@ -180,12 +188,11 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
         for (const attr of noteMeta.attributes || []) {
             attr.noteId = note.noteId;
 
-            if (attr.type === 'label-definition') {
-                attr.type = 'label';
+            if (attr.type === "label-definition") {
+                attr.type = "label";
                 attr.name = `label:${attr.name}`;
-            }
-            else if (attr.type === 'relation-definition') {
-                attr.type = 'label';
+            } else if (attr.type === "relation-definition") {
+                attr.type = "label";
                 attr.name = `relation:${attr.name}`;
             }
 
@@ -194,12 +201,12 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
                 continue;
             }
 
-            if (attr.type === 'relation' && ['internalLink', 'imageLink', 'relationMapLink', 'includeNoteLink'].includes(attr.name)) {
+            if (attr.type === "relation" && ["internalLink", "imageLink", "relationMapLink", "includeNoteLink"].includes(attr.name)) {
                 // these relations are created automatically and as such don't need to be duplicated in the import
                 continue;
             }
 
-            if (attr.type === 'relation') {
+            if (attr.type === "relation") {
                 attr.value = getNewNoteId(attr.value);
             }
 
@@ -225,24 +232,24 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
             return;
         }
 
-        const noteTitle = utils.getNoteTitle(filePath, !!taskContext.data?.replaceUnderscoresWithSpaces, noteMeta);
+        const noteTitle = getNoteTitle(filePath, !!taskContext.data?.replaceUnderscoresWithSpaces, noteMeta);
         const parentNoteId = getParentNoteId(filePath, parentNoteMeta);
 
         if (!parentNoteId) {
             throw new Error("Missing parent note ID.");
         }
 
-        const {note} = noteService.createNewNote({
+        const { note } = noteService.createNewNote({
             parentNoteId: parentNoteId,
             title: noteTitle || "",
-            content: '',
+            content: "",
             noteId: noteId,
             type: resolveNoteType(noteMeta?.type),
-            mime: noteMeta ? noteMeta.mime : 'text/html',
-            prefix: noteMeta?.prefix || '',
+            mime: noteMeta ? noteMeta.mime : "text/html",
+            prefix: noteMeta?.prefix || "",
             isExpanded: !!noteMeta?.isExpanded,
-            notePosition: (noteMeta && firstNote) ? noteMeta.notePosition : undefined,
-            isProtected: importRootNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+            notePosition: noteMeta && firstNote ? noteMeta.notePosition : undefined,
+            isProtected: importRootNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
         });
 
         createdNoteIds.add(note.noteId);
@@ -267,11 +274,11 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
             url = url.substr(3);
         }
 
-        if (absUrl === '.') {
-            absUrl = '';
+        if (absUrl === ".") {
+            absUrl = "";
         }
 
-        absUrl += `${absUrl.length > 0 ? '/' : ''}${url}`;
+        absUrl += `${absUrl.length > 0 ? "/" : ""}${url}`;
 
         const { noteMeta, attachmentMeta } = getMeta(absUrl);
 
@@ -280,7 +287,8 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
                 attachmentId: getNewAttachmentId(attachmentMeta.attachmentId),
                 noteId: getNewNoteId(noteMeta.noteId)
             };
-        } else { // don't check for noteMeta since it's not mandatory for notes
+        } else {
+            // don't check for noteMeta since it's not mandatory for notes
             return {
                 noteId: getNoteId(noteMeta, absUrl)
             };
@@ -345,8 +353,10 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
                 return `href="${url}"`;
             }
 
-            if (url.startsWith('#') // already a note path (probably)
-                || isUrlAbsolute(url)) {
+            if (
+                url.startsWith("#") || // already a note path (probably)
+                isUrlAbsolute(url)
+            ) {
                 return match;
             }
 
@@ -362,8 +372,7 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
         });
 
         if (noteMeta) {
-            const includeNoteLinks = (noteMeta.attributes || [])
-                .filter(attr => attr.type === 'relation' && attr.name === 'includeNoteLink');
+            const includeNoteLinks = (noteMeta.attributes || []).filter((attr) => attr.type === "relation" && attr.name === "includeNoteLink");
 
             for (const link of includeNoteLinks) {
                 // no need to escape the regexp find string since it's a noteId which doesn't contain any special characters
@@ -377,31 +386,25 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
     }
 
     function removeTriliumTags(content: string) {
-        const tagsToRemove = [
-            '<h1 data-trilium-h1>([^<]*)<\/h1>',
-            '<title data-trilium-title>([^<]*)<\/title>'
-        ]
+        const tagsToRemove = ["<h1 data-trilium-h1>([^<]*)<\/h1>", "<title data-trilium-title>([^<]*)<\/title>"];
         for (const tag of tagsToRemove) {
             let re = new RegExp(tag, "gi");
-            content = content.replace(re, '');
+            content = content.replace(re, "");
         }
         return content;
     }
 
     function processNoteContent(noteMeta: NoteMeta | undefined, type: string, mime: string, content: string | Buffer, noteTitle: string, filePath: string) {
-        if ((noteMeta?.format === 'markdown'
-            || (!noteMeta && taskContext.data?.textImportedAsText && ['text/markdown', 'text/x-markdown'].includes(mime)))
-            && typeof content === "string") {
+        if ((noteMeta?.format === "markdown" || (!noteMeta && taskContext.data?.textImportedAsText && ["text/markdown", "text/x-markdown", "text/mdx"].includes(mime))) && typeof content === "string") {
             content = markdownService.renderToHtml(content, noteTitle);
         }
 
-        if (type === 'text' && typeof content === "string") {
+        if (type === "text" && typeof content === "string") {
             content = processTextNoteContent(content, noteTitle, filePath, noteMeta);
         }
 
-        if (type === 'relationMap' && noteMeta && typeof content === "string") {
-            const relationMapLinks = (noteMeta.attributes || [])
-                .filter(attr => attr.type === 'relation' && attr.name === 'relationMapLink');
+        if (type === "relationMap" && noteMeta && typeof content === "string") {
+            const relationMapLinks = (noteMeta.attributes || []).filter((attr) => attr.type === "relation" && attr.name === "relationMapLink");
 
             // this will replace relation map links
             for (const link of relationMapLinks) {
@@ -462,11 +465,11 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
             throw new Error("Unable to resolve mime type.");
         }
 
-        if (type !== 'file' && type !== 'image') {
-            content = content.toString("utf-8");
+        if (type !== "file" && type !== "image") {
+            content = processStringOrBuffer(content);
         }
 
-        const noteTitle = utils.getNoteTitle(filePath, taskContext.data?.replaceUnderscoresWithSpaces || false, noteMeta);
+        const noteTitle = getNoteTitle(filePath, taskContext.data?.replaceUnderscoresWithSpaces || false, noteMeta);
 
         content = processNoteContent(noteMeta, type, mime, content, noteTitle || "", filePath);
 
@@ -496,21 +499,24 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
                     notePosition: noteMeta?.notePosition
                 }).save();
             }
-        }
-        else {
-            ({note} = noteService.createNewNote({
+
+            if (opts?.preserveIds) {
+                firstNote = firstNote || note;
+            }
+        } else {
+            ({ note } = noteService.createNewNote({
                 parentNoteId: parentNoteId,
                 title: noteTitle || "",
                 content: content,
                 noteId,
                 type,
                 mime,
-                prefix: noteMeta?.prefix || '',
+                prefix: noteMeta?.prefix || "",
                 isExpanded: !!noteMeta?.isExpanded,
                 // root notePosition should be ignored since it relates to the original document
                 // now import root should be placed after existing notes into new parent
-                notePosition: (noteMeta && firstNote) ? noteMeta.notePosition : undefined,
-                isProtected: isProtected,
+                notePosition: noteMeta && firstNote ? noteMeta.notePosition : undefined,
+                isProtected: isProtected
             }));
 
             createdNoteIds.add(note.noteId);
@@ -520,11 +526,11 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
             firstNote = firstNote || note;
         }
 
-        if (!noteMeta && (type === 'file' || type === 'image')) {
+        if (!noteMeta && (type === "file" || type === "image")) {
             attributes.push({
                 noteId,
-                type: 'label',
-                name: 'originalFileName',
+                type: "label",
+                name: "originalFileName",
                 value: path.basename(filePath)
             });
         }
@@ -535,7 +541,7 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
     await readZipFile(fileBuffer, async (zipfile: yauzl.ZipFile, entry: yauzl.Entry) => {
         const filePath = normalizeFilePath(entry.fileName);
 
-        if (filePath === '!!!meta.json') {
+        if (filePath === "!!!meta.json") {
             const content = await readContent(zipfile, entry);
 
             metaFile = JSON.parse(content.toString("utf-8"));
@@ -549,8 +555,7 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
 
         if (/\/$/.test(entry.fileName)) {
             saveDirectory(filePath);
-        }
-        else if (filePath !== '!!!meta.json') {
+        } else if (filePath !== "!!!meta.json") {
             const content = await readContent(zipfile, entry);
 
             saveNote(filePath, content);
@@ -568,7 +573,7 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
         if (!metaFile) {
             // if there's no meta file, then the notes are created based on the order in that zip file but that
             // is usually quite random, so we sort the notes in the way they would appear in the file manager
-            treeService.sortNotes(noteId, 'title', false, true);
+            treeService.sortNotes(noteId, "title", false, true);
         }
 
         taskContext.increaseProgressCount();
@@ -577,10 +582,9 @@ async function importZip(taskContext: TaskContext, fileBuffer: Buffer, importRoo
     // we're saving attributes and links only now so that all relation and link target notes
     // are already in the database (we don't want to have "broken" relations, not even transitionally)
     for (const attr of attributes) {
-        if (attr.type !== 'relation' || attr.value in becca.notes) {
+        if (attr.type !== "relation" || attr.value in becca.notes) {
             new BAttribute(attr).save();
-        }
-        else {
+        } else {
             log.info(`Relation not imported since the target note doesn't exist: ${JSON.stringify(attr)}`);
         }
     }
@@ -609,14 +613,14 @@ function normalizeFilePath(filePath: string): string {
 
 function streamToBuffer(stream: Stream): Promise<Buffer> {
     const chunks: Uint8Array[] = [];
-    stream.on('data', chunk => chunks.push(chunk));
+    stream.on("data", (chunk) => chunks.push(chunk));
 
-    return new Promise((res, rej) => stream.on('end', () => res(Buffer.concat(chunks))));
+    return new Promise((res, rej) => stream.on("end", () => res(Buffer.concat(chunks))));
 }
 
-function readContent(zipfile: yauzl.ZipFile, entry: yauzl.Entry): Promise<Buffer> {
+export function readContent(zipfile: yauzl.ZipFile, entry: yauzl.Entry): Promise<Buffer> {
     return new Promise((res, rej) => {
-        zipfile.openReadStream(entry, function(err, readStream) {
+        zipfile.openReadStream(entry, function (err, readStream) {
             if (err) rej(err);
             if (!readStream) throw new Error("Unable to read content.");
 
@@ -625,14 +629,14 @@ function readContent(zipfile: yauzl.ZipFile, entry: yauzl.Entry): Promise<Buffer
     });
 }
 
-function readZipFile(buffer: Buffer, processEntryCallback: (zipfile: yauzl.ZipFile, entry: yauzl.Entry) => void) {
-    return new Promise((res, rej) => {
-        yauzl.fromBuffer(buffer, {lazyEntries: true, validateEntrySizes: false}, function(err, zipfile) {
+export function readZipFile(buffer: Buffer, processEntryCallback: (zipfile: yauzl.ZipFile, entry: yauzl.Entry) => Promise<void>) {
+    return new Promise<void>((res, rej) => {
+        yauzl.fromBuffer(buffer, { lazyEntries: true, validateEntrySizes: false }, function (err, zipfile) {
             if (err) rej(err);
             if (!zipfile) throw new Error("Unable to read zip file.");
 
             zipfile.readEntry();
-            zipfile.on("entry", async entry => {
+            zipfile.on("entry", async (entry) => {
                 try {
                     await processEntryCallback(zipfile, entry);
                 } catch (e) {
@@ -645,13 +649,13 @@ function readZipFile(buffer: Buffer, processEntryCallback: (zipfile: yauzl.ZipFi
 }
 
 function resolveNoteType(type: string | undefined): NoteType {
-    // BC for ZIPs created in Triliun 0.57 and older
-    if (type === 'relation-map') {
-        return 'relationMap';
-    } else if (type === 'note-map') {
-        return 'noteMap';
-    } else if (type === 'web-view') {
-        return 'webView';
+    // BC for ZIPs created in Trilium 0.57 and older
+    if (type === "relation-map") {
+        return "relationMap";
+    } else if (type === "note-map") {
+        return "noteMap";
+    } else if (type === "web-view") {
+        return "webView";
     }
 
     if (type && (ALLOWED_NOTE_TYPES as readonly string[]).includes(type)) {

@@ -1,5 +1,5 @@
 import becca from "../becca/becca.js";
-import utils from "./utils.js";
+import { fromBase64, randomSecureToken } from "./utils.js";
 import BEtapiToken from "../becca/entities/betapi_token.js";
 import crypto from "crypto";
 
@@ -8,11 +8,11 @@ function getTokens() {
 }
 
 function getTokenHash(token: crypto.BinaryLike) {
-    return crypto.createHash('sha256').update(token).digest('base64');
+    return crypto.createHash("sha256").update(token).digest("base64");
 }
 
 function createToken(tokenName: string) {
-    const token = utils.randomSecureToken(32);
+    const token = randomSecureToken(32);
     const tokenHash = getTokenHash(token);
 
     const etapiToken = new BEtapiToken({
@@ -34,7 +34,7 @@ function parseAuthToken(auth: string | undefined) {
         // allow also basic auth format for systems which allow this type of authentication
         // expect ETAPI token in the password field, require "etapi" username
         // https://github.com/zadam/trilium/issues/3181
-        const basicAuthStr = utils.fromBase64(auth.substring(6)).toString("utf-8");
+        const basicAuthStr = fromBase64(auth.substring(6)).toString("utf-8");
         const basicAuthChunks = basicAuthStr.split(":");
 
         if (basicAuthChunks.length !== 2) {
@@ -52,14 +52,12 @@ function parseAuthToken(auth: string | undefined) {
 
     if (chunks.length === 1) {
         return { token: auth }; // legacy format without etapiTokenId
-    }
-    else if (chunks.length === 2) {
+    } else if (chunks.length === 2) {
         return {
             etapiTokenId: chunks[0],
             token: chunks[1]
-        }
-    }
-    else {
+        };
+    } else {
         return null; // wrong format
     }
 }
@@ -81,8 +79,7 @@ function isValidAuthHeader(auth: string | undefined) {
         }
 
         return etapiToken.tokenHash === authTokenHash;
-    }
-    else {
+    } else {
         for (const etapiToken of becca.getEtapiTokens()) {
             if (etapiToken.tokenHash === authTokenHash) {
                 return true;

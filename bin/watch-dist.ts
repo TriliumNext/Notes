@@ -12,7 +12,5 @@ function onFileChanged(sourceFile: string) {
 
 const sourceDir = "src/public";
 
-chokidar
-    .watch(sourceDir)
-    .on("change", onFileChanged);
+chokidar.watch(sourceDir).on("change", onFileChanged);
 console.log(`Watching for changes to ${sourceDir}...`);

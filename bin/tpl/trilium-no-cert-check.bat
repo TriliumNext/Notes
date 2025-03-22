@@ -16,7 +16,7 @@ chcp 65001
 :: Get Current Trilium executable directory and compute data directory
 SET DIR=%~dp0
 set NODE_TLS_REJECT_UNAUTHORIZED=0
-cd %DIR%
+cd "%DIR%"
 start trilium.exe
 GOTO END
 

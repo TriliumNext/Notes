@@ -32,7 +32,8 @@
     "search_note": "按名稱搜尋筆記",
     "link_title_mirrors": "鏈接標題跟隨筆記標題變化",
     "link_title_arbitrary": "鏈接標題可隨意修改",
-    "link_title": "鏈接標題"
+    "link_title": "鏈接標題",
+    "button_add_link": "添加鏈接 <kbd>Enter</kbd>"
   },
   "branch_prefix": {
     "edit_branch_prefix": "編輯分支前綴",
@@ -109,17 +110,17 @@
     "fullDocumentation": "幫助（完整<a class=\"external\" href=\"https://triliumnext.github.io/Docs/\">在線文檔</a>)",
     "close": "關閉",
     "noteNavigation": "筆記導航",
-    "goUpDown": "在筆記列表中向上/向下移動",
-    "collapseExpand": "折疊/展開節點",
+    "goUpDown": "<kbd>UP</kbd>, <kbd>DOWN</kbd> - 在筆記列表中向上/向下移動",
+    "collapseExpand": "<kbd>LEFT</kbd>, <kbd>RIGHT</kbd> - 折疊/展開節點",
     "notSet": "未設定",
     "goBackForwards": "在歷史記錄中前後移動",
     "showJumpToNoteDialog": "顯示<a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">\"跳轉到\" 對話框</a>",
     "scrollToActiveNote": "滾動到活動筆記",
-    "jumpToParentNote": "跳轉到上級筆記",
+    "jumpToParentNote": "<kbd>Backspace</kbd> - 跳轉到上級筆記",
     "collapseWholeTree": "折疊整個筆記樹",
     "collapseSubTree": "折疊子樹",
     "tabShortcuts": "標籤快捷鍵",
-    "newTabNoteLink": "在筆記鏈接上使用CTRL+點擊（或中鍵點擊）在新標籤中打開筆記",
+    "newTabNoteLink": "<kbd>CTRL+click</kbd> - 在筆記鏈接上使用CTRL+點擊（或中鍵點擊）在新標籤中打開筆記",
     "onlyInDesktop": "僅在桌面版（電子構建）中",
     "openEmptyTab": "打開空白標籤頁",
     "closeActiveTab": "關閉活動標籤頁",
@@ -134,23 +135,23 @@
     "moveNoteUpHierarchy": "在層級結構中向上移動筆記",
     "multiSelectNote": "多選上/下筆記",
     "selectAllNotes": "選擇當前級別的所有筆記",
-    "selectNote": "選擇筆記",
+    "selectNote": "<kbd>Shift+Click</kbd> - 選擇筆記",
     "copyNotes": "將活動筆記（或當前選擇）複製到剪貼簿（用於<a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/cloning-notes.html#cloning-notes\">複製</a>）",
     "cutNotes": "將當前筆記（或當前選擇）剪下到剪貼簿（用於移動筆記）",
     "pasteNotes": "將筆記貼上為活動筆記的子筆記（根據是複製還是剪下到剪貼簿來決定是移動還是複製）",
     "deleteNotes": "刪除筆記/子樹",
     "editingNotes": "編輯筆記",
     "editNoteTitle": "在樹形筆記樹中，焦點會從筆記樹切換到筆記標題。按下 Enter 鍵會將焦點從筆記標題切換到文字編輯器。按下 <kbd>Ctrl+.</kbd> 會將焦點從編輯器切換回筆記樹。",
-    "createEditLink": "新增/編輯外部鏈接",
+    "createEditLink": "<kbd>Ctrl+K</kbd> - 新增/編輯外部鏈接",
     "createInternalLink": "新增內部鏈接",
     "followLink": "跟隨遊標下的鏈接",
     "insertDateTime": "在插入點插入當前日期和時間",
     "jumpToTreePane": "跳轉到樹面板並滾動到活動筆記",
     "markdownAutoformat": "類Markdown自動格式化",
-    "headings": " 等，後跟空格，自動轉換為標題",
-    "bulletList": "<kbd>*</kbd> 或 <kbd>-</kbd> 後跟空格，自動轉換為項目符號列表",
-    "numberedList": "<kbd>1.</kbd> or <kbd>1)</kbd> 後跟空格，自動轉換為編號列表",
-    "blockQuote": "一行以 <kbd>></kbd> 開頭並後跟空格，自動轉換為塊引用",
+    "headings": "<code>##</code>, <code>###</code>, <code>####</code>  等，後跟空格，自動轉換為標題",
+    "bulletList": "<code>*</code> 或 <code>-</code> 後跟空格，自動轉換為項目符號列表",
+    "numberedList": "<code>1.</code> or <code>1)</code> 後跟空格，自動轉換為編號列表",
+    "blockQuote": "一行以 <code>></code> 開頭並後跟空格，自動轉換為塊引用",
     "troubleshooting": "故障排除",
     "reloadFrontend": "重新加載Trilium前端",
     "showDevTools": "顯示開發者工具",
@@ -185,7 +186,7 @@
     "box_size_small": "小型 (顯示大約10行)",
     "box_size_medium": "中型 (顯示大約30行)",
     "box_size_full": "完整顯示（完整文字框）",
-    "button_include": "包含筆記"
+    "button_include": "包含筆記 <kbd>Enter</kbd>"
   },
   "info": {
     "modalTitle": "資訊消息",
@@ -247,12 +248,12 @@
     "delete_all_button": "刪除所有歷史版本",
     "help_title": "關於筆記歷史版本的幫助",
     "revision_last_edited": "此歷史版本上次編輯於 {{date}}",
-    "confirm_delete_all": "您是否要刪除此筆記的所有歷史版本？此操作將擦除歷史版本的標題和內容，但仍將保留歷史版本的元數據。",
+    "confirm_delete_all": "您是否要刪除此筆記的所有歷史版本？",
     "no_revisions": "此筆記暫無歷史版本...",
     "restore_button": "恢復此歷史版本",
     "confirm_restore": "您是否要恢復此歷史版本？這將使用此歷史版本覆蓋筆記的當前標題和內容。",
     "delete_button": "刪除此歷史版本",
-    "confirm_delete": "您是否要刪除此歷史版本？此操作將刪除歷史版本的標題和內容，但仍將保留歷史版本的元數據。",
+    "confirm_delete": "您是否要刪除此歷史版本？",
     "revisions_deleted": "已刪除筆記歷史版本。",
     "revision_restored": "已恢復筆記歷史版本。",
     "revision_deleted": "已刪除筆記歷史版本。",
@@ -280,7 +281,7 @@
     "sort_with_respect_to_different_character_sorting": "根據不同語言或地區的字符排序和排序規則排序。",
     "natural_sort_language": "自然排序語言",
     "the_language_code_for_natural_sort": "自然排序的語言程式碼，例如繁體中文的 \"zh-TW\"。",
-    "sort": "排序"
+    "sort": "排序 <kbd>Enter</kbd>"
   },
   "upload_attachments": {
     "upload_attachments_to_note": "上傳附件到筆記",
@@ -816,8 +817,7 @@
     "debug": "除錯",
     "debug_description": "除錯將打印額外的除錯資訊到控制台，以幫助除錯複雜查詢",
     "action": "操作",
-    "search": "搜尋",
-    "enter": "輸入",
+    "search_button": "搜尋 <kbd>Enter</kbd>",
     "search_execute": "搜尋並執行操作",
     "save_to_note": "保存到筆記",
     "search_parameters": "搜尋參數",
@@ -935,7 +935,7 @@
   },
   "protected_session": {
     "enter_password_instruction": "顯示受保護的筆記需要輸入您的密碼：",
-    "start_session_button": "開始受保護的會話",
+    "start_session_button": "開始受保護的會話 <kbd>Enter</kbd>",
     "started": "已啓動受保護的會話。",
     "wrong_password": "密碼錯誤。",
     "protecting-finished-successfully": "已成功完成保護操作。",
@@ -970,9 +970,7 @@
   "web_view": {
     "web_view": "網頁視圖",
     "embed_websites": "網頁視圖類型的筆記允許您將網站嵌入到 Trilium 中。",
-    "create_label": "首先，請新增一個帶有您要嵌入的 URL 地址的標籤，例如 #webViewSrc=\"https://www.bing.com\"",
-    "disclaimer": "實驗性功能免責聲明",
-    "experimental_note": "網頁視圖是一種實驗性的筆記類型，將來可能會被移除或大幅更改。網頁視圖只在桌面端有效。"
+    "create_label": "首先，請新增一個帶有您要嵌入的 URL 地址的標籤，例如 #webViewSrc=\"https://www.bing.com\""
   },
   "backend_log": {
     "refresh": "刷新"
@@ -1068,7 +1066,7 @@
     "layout-horizontal-title": "水平",
     "layout-vertical-description": "啓動欄位於左側（默認）",
     "layout-horizontal-description": "啓動欄位於標籤欄下方，標籤欄現在是全寬的。"
- },
+  },
   "zoom_factor": {
     "title": "縮放系數（僅桌面客戶端有效）",
     "description": "縮放也可以通過 CTRL+- 和 CTRL+= 快捷鍵進行控制。"
@@ -1100,7 +1098,7 @@
   "attachment_erasure_timeout": {
     "attachment_erasure_timeout": "附件清理超時",
     "attachment_auto_deletion_description": "如果附件在一段時間後不再被筆記引用，它們將自動被刪除（並被清理）。",
-    "erase_attachments_after_x_seconds": "在附件在筆記中未被使用 X 秒後清理",
+    "erase_attachments_after": "",
     "manual_erasing_description": "您還可以手動觸發清理（而不考慮上述定義的超時時間）：",
     "erase_unused_attachments_now": "立即清理未使用的附件筆記",
     "unused_attachments_erased": "未使用的附件已被刪除。"
@@ -1112,15 +1110,15 @@
   "note_erasure_timeout": {
     "note_erasure_timeout_title": "筆記清理超時",
     "note_erasure_description": "被刪除的筆記（以及屬性、歷史版本等）最初僅被標記為「刪除」，可以從「最近修改」對話框中恢復它們。經過一段時間後，已刪除的筆記會被「清理」，這意味著它們的內容將無法恢復。此設定允許您設定從刪除到清除筆記之間的時間長度。",
-    "erase_notes_after_x_seconds": "在筆記刪除 X 秒後清理",
+    "erase_notes_after": "",
     "manual_erasing_description": "您還可以手動觸發清理（不考慮上述定義的超時）：",
     "erase_deleted_notes_now": "立即清理已刪除的筆記",
     "deleted_notes_erased": "已刪除的筆記已被清理。"
   },
   "revisions_snapshot_interval": {
-    "note_revisions_snapshot_interval_title": "筆記修改快照間隔",
-    "note_revisions_snapshot_description": "筆記修改快照時間間隔是指經過多少秒後會為筆記新增新的修改歷史。更多資訊請參見<a href=\"https://triliumnext.github.io/Docs/Wiki/note-revisions.html\" class=\"external\">wiki</a>。",
-    "snapshot_time_interval_label": "筆記修改快照時間間隔（單位:秒）"
+    "note_revisions_snapshot_interval_title": "",
+    "note_revisions_snapshot_description": "",
+    "snapshot_time_interval_label": ""
   },
   "revisions_snapshot_limit": {
     "note_revisions_snapshot_limit_title": "筆記歷史快照限制",
@@ -1195,16 +1193,16 @@
     "existing_backups": "現有備份",
     "date-and-time": "日期和時間",
     "path": "路徑",
-    "database_backed_up_to": "資料庫已備份到",
+    "database_backed_up_to": "資料庫已備份到 {{backupFilePath}}",
     "no_backup_yet": "尚無備份"
   },
   "etapi": {
     "title": "ETAPI",
     "description": "ETAPI 是一個 REST API，用於以編程方式訪問 Trilium 實例，而無需 UI。",
-    "see_more": "更多詳情見",
+    "see_more": "",
     "wiki": "維基",
-    "and": "和",
     "openapi_spec": "ETAPI OpenAPI 規範",
+    "swagger_ui": "",
     "create_token": "新增新的 ETAPI 令牌",
     "existing_tokens": "現有令牌",
     "no_tokens_yet": "目前還沒有令牌。點擊上面的按鈕新增一個。",
@@ -1239,7 +1237,7 @@
     "protected_session_timeout_description": "保護會話超時是一個時間段，超時後保護會話會從瀏覽器內存中清除。這是從最後一次與保護筆記的交互開始計時的。更多資訊請見",
     "wiki": "維基",
     "for_more_info": "更多資訊。",
-    "protected_session_timeout_label": "保護會話超時（秒）",
+    "protected_session_timeout_label": "",
     "reset_confirmation": "重置密碼將永久喪失對所有現受保護筆記的訪問。您真的要重置密碼嗎？",
     "reset_success_message": "密碼已重置。請設定新密碼",
     "change_password_heading": "更改密碼",
@@ -1315,7 +1313,7 @@
     "button-tree-map": "樹形地圖"
   },
   "tree-context-menu": {
-    "open-in-a-new-tab": "在新標籤頁中打開",
+    "open-in-a-new-tab": "在新標籤頁中打開 <kbd>Ctrl+Click</kbd>",
     "open-in-a-new-split": "在新分欄中打開",
     "insert-note-after": "在後面插入筆記",
     "insert-child-note": "插入子筆記",
@@ -1510,11 +1508,11 @@
     "add-script-launcher": "添加腳本啓動器",
     "add-custom-widget": "添加自定義小部件",
     "add-spacer": "添加間隔",
-    "delete": "刪除",
+    "delete": "刪除  <kbd data-command=\"deleteNotes\">",
     "reset": "重置",
     "move-to-visible-launchers": "移動到可見啓動器",
     "move-to-available-launchers": "移動到可用啓動器",
-    "duplicate-launcher": "複製啓動器"
+    "duplicate-launcher": "複製啓動器 <kbd data-command=\"duplicateSubtree\">"
   },
   "editable-text": {
     "auto-detect-language": "自動檢測"

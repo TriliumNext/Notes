@@ -1,27 +1,30 @@
 {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "files.eol": "\n",
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "i18n-ally.sourceLanguage": "en",
-    "i18n-ally.keystyle": "nested",
-    "i18n-ally.localesPaths": [
-        "./src/public/translations",
-        "./translations"
-    ],
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "[javascript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "github-actions.workflows.pinned.workflows": [
-        ".github/workflows/nightly.yml"
-    ],
-    "[css]": {
-        "editor.defaultFormatter": "vscode.css-language-features"
-    },
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.eol": "\n",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "i18n-ally.sourceLanguage": "en",
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.localesPaths": ["./src/public/translations", "./translations"],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "github-actions.workflows.pinned.workflows": [".github/workflows/nightly.yml"],
+  "[css]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "npm.exclude": [
+    "**/build",
+    "**/dist",
+    "**/out/**"
+  ],
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }

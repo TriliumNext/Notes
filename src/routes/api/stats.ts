@@ -1,19 +1,22 @@
 import sql from "../../services/sql.js";
 import becca from "../../becca/becca.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
 function getNoteSize(req: Request) {
-    const {noteId} = req.params;
+    const { noteId } = req.params;
 
-    const blobSizes = sql.getMap<string, number>(`
+    const blobSizes = sql.getMap<string, number>(
+        `
         SELECT blobs.blobId, LENGTH(content)
         FROM blobs
         LEFT JOIN notes ON notes.blobId = blobs.blobId AND notes.noteId = ? AND notes.isDeleted = 0
         LEFT JOIN attachments ON attachments.blobId = blobs.blobId AND attachments.ownerId = ? AND attachments.isDeleted = 0
         LEFT JOIN revisions ON revisions.blobId = blobs.blobId AND revisions.noteId = ?
-        WHERE notes.noteId IS NOT NULL 
-           OR attachments.attachmentId IS NOT NULL
-           OR revisions.revisionId IS NOT NULL`, [noteId, noteId, noteId]);
+        WHERE notes.noteId IS NOT NULL
+            OR attachments.attachmentId IS NOT NULL
+            OR revisions.revisionId IS NOT NULL`,
+        [noteId, noteId, noteId]
+    );
 
     const noteSize = Object.values(blobSizes).reduce((acc, blobSize) => acc + blobSize, 0);
 

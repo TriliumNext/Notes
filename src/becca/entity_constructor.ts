@@ -1,5 +1,5 @@
-import { ConstructorData } from './becca-interface.js';
-import AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
+import type { ConstructorData } from "./becca-interface.js";
+import type AbstractBeccaEntity from "./entities/abstract_becca_entity.js";
 import BAttachment from "./entities/battachment.js";
 import BAttribute from "./entities/battribute.js";
 import BBlob from "./entities/bblob.js";
@@ -13,15 +13,15 @@ import BRevision from "./entities/brevision.js";
 type EntityClass = new (row?: any) => AbstractBeccaEntity<any>;
 
 const ENTITY_NAME_TO_ENTITY: Record<string, ConstructorData<any> & EntityClass> = {
-    "attachments": BAttachment,
-    "attributes": BAttribute,
-    "blobs": BBlob,
-    "branches": BBranch,
-    "etapi_tokens": BEtapiToken,
-    "notes": BNote,
-    "options": BOption,
-    "recent_notes": BRecentNote,
-    "revisions": BRevision
+    attachments: BAttachment,
+    attributes: BAttribute,
+    blobs: BBlob,
+    branches: BBranch,
+    etapi_tokens: BEtapiToken,
+    notes: BNote,
+    options: BOption,
+    recent_notes: BRecentNote,
+    revisions: BRevision
 };
 
 function getEntityFromEntityName(entityName: keyof typeof ENTITY_NAME_TO_ENTITY) {

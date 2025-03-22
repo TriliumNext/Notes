@@ -1,32 +1,33 @@
 "use strict";
 
-import BNote from "../../becca/entities/bnote.js";
-import TaskContext from "../task_context.js";
+import type BNote from "../../becca/entities/bnote.js";
+import type TaskContext from "../task_context.js";
 
 import noteService from "../../services/notes.js";
 import imageService from "../../services/image.js";
 import protectedSessionService from "../protected_session.js";
 import markdownService from "./markdown.js";
 import mimeService from "./mime.js";
-import utils from "../../services/utils.js";
+import { getNoteTitle, processStringOrBuffer } from "../../services/utils.js";
 import importUtils from "./utils.js";
 import htmlSanitizer from "../html_sanitizer.js";
-import { File } from "./common.js";
+import type { File } from "./common.js";
+import type { NoteType } from "../../becca/entities/rows.js";
 
 function importSingleFile(taskContext: TaskContext, file: File, parentNote: BNote) {
     const mime = mimeService.getMime(file.originalname) || file.mimetype;
 
     if (taskContext?.data?.textImportedAsText) {
-        if (mime === 'text/html') {
+        if (mime === "text/html") {
             return importHtml(taskContext, file, parentNote);
-        } else if (['text/markdown', 'text/x-markdown'].includes(mime)) {
+        } else if (["text/markdown", "text/x-markdown", "text/mdx"].includes(mime)) {
             return importMarkdown(taskContext, file, parentNote);
-        } else if (mime === 'text/plain') {
+        } else if (mime === "text/plain") {
             return importPlainText(taskContext, file, parentNote);
         }
     }
 
-    if (taskContext?.data?.codeImportedAsCode && mimeService.getType(taskContext.data, mime) === 'code') {
+    if (taskContext?.data?.codeImportedAsCode && mimeService.getType(taskContext.data, mime) === "code") {
         return importCodeNote(taskContext, file, parentNote);
     }
 
@@ -41,7 +42,7 @@ function importImage(file: File, parentNote: BNote, taskContext: TaskContext) {
     if (typeof file.buffer === "string") {
         throw new Error("Invalid file content for image.");
     }
-    const {note} = imageService.saveImage(parentNote.noteId, file.buffer, file.originalname, !!taskContext.data?.shrinkImages);
+    const { note } = imageService.saveImage(parentNote.noteId, file.buffer, file.originalname, !!taskContext.data?.shrinkImages);
 
     taskContext.increaseProgressCount();
 
@@ -51,12 +52,12 @@ function importImage(file: File, parentNote: BNote, taskContext: TaskContext) {
 function importFile(taskContext: TaskContext, file: File, parentNote: BNote) {
     const originalName = file.originalname;
 
-    const {note} = noteService.createNewNote({
+    const { note } = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title: originalName,
         content: file.buffer,
         isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
-        type: 'file',
+        type: "file",
         mime: mimeService.getMime(originalName) || file.mimetype
     });
 
@@ -68,16 +69,21 @@ function importFile(taskContext: TaskContext, file: File, parentNote: BNote) {
 }
 
 function importCodeNote(taskContext: TaskContext, file: File, parentNote: BNote) {
-    const title = utils.getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
-    const content = file.buffer.toString("utf-8");
+    const title = getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
+    const content = processStringOrBuffer(file.buffer);
     const detectedMime = mimeService.getMime(file.originalname) || file.mimetype;
     const mime = mimeService.normalizeMimeType(detectedMime);
+
+    let type: NoteType = "code";
+    if (file.originalname.endsWith(".excalidraw")) {
+        type = "canvas";
+    }
 
     const { note } = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title,
         content,
-        type: 'code',
+        type,
         mime: mime,
         isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
     });
@@ -88,17 +94,17 @@ function importCodeNote(taskContext: TaskContext, file: File, parentNote: BNote)
 }
 
 function importPlainText(taskContext: TaskContext, file: File, parentNote: BNote) {
-    const title = utils.getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
-    const plainTextContent = file.buffer.toString("utf-8");
+    const title = getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
+    const plainTextContent = processStringOrBuffer(file.buffer);
     const htmlContent = convertTextToHtml(plainTextContent);
 
-    const {note} = noteService.createNewNote({
+    const { note } = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title,
         content: htmlContent,
-        type: 'text',
-        mime: 'text/html',
-        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+        type: "text",
+        mime: "text/html",
+        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
     });
 
     taskContext.increaseProgressCount();
@@ -108,9 +114,7 @@ function importPlainText(taskContext: TaskContext, file: File, parentNote: BNote
 
 function convertTextToHtml(text: string) {
     // 1: Plain Text Search
-    text = text.replace(/&/g, "&amp;").
-    replace(/</g, "&lt;").
-    replace(/>/g, "&gt;");
+    text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     // 2: Line Breaks
     text = text.replace(/\r\n?|\n/g, "<br>");
@@ -125,22 +129,22 @@ function convertTextToHtml(text: string) {
 }
 
 function importMarkdown(taskContext: TaskContext, file: File, parentNote: BNote) {
-    const title = utils.getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
+    const title = getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
 
-    const markdownContent = file.buffer.toString("utf-8");
+    const markdownContent = processStringOrBuffer(file.buffer);
     let htmlContent = markdownService.renderToHtml(markdownContent, title);
 
     if (taskContext.data?.safeImport) {
         htmlContent = htmlSanitizer.sanitize(htmlContent);
     }
 
-    const {note} = noteService.createNewNote({
+    const { note } = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title,
         content: htmlContent,
-        type: 'text',
-        mime: 'text/html',
-        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+        type: "text",
+        mime: "text/html",
+        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
     });
 
     taskContext.increaseProgressCount();
@@ -149,31 +153,30 @@ function importMarkdown(taskContext: TaskContext, file: File, parentNote: BNote)
 }
 
 function importHtml(taskContext: TaskContext, file: File, parentNote: BNote) {
-    let content = file.buffer.toString("utf-8");
+    let content = processStringOrBuffer(file.buffer);
 
     // Try to get title from HTML first, fall back to filename
     // We do this before sanitization since that turns all <h1>s into <h2>
     const htmlTitle = importUtils.extractHtmlTitle(content);
-    const title = htmlTitle || utils.getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
+    const title = htmlTitle || getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
 
     content = importUtils.handleH1(content, title);
 
     if (taskContext?.data?.safeImport) {
         content = htmlSanitizer.sanitize(content);
-    }    
+    }
 
-    
-    const {note} = noteService.createNewNote({
+    const { note } = noteService.createNewNote({
         parentNoteId: parentNote.noteId,
         title,
         content,
-        type: 'text',
-        mime: 'text/html',
-        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable(),
+        type: "text",
+        mime: "text/html",
+        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
     });
-    
+
     taskContext.increaseProgressCount();
-    
+
     return note;
 }
 
@@ -188,7 +191,7 @@ function importAttachment(taskContext: TaskContext, file: File, parentNote: BNot
         parentNote.saveAttachment({
             title: file.originalname,
             content: file.buffer,
-            role: 'file',
+            role: "file",
             mime: mime
         });
 

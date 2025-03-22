@@ -3,7 +3,12 @@
 <head>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="favicon.ico">
+    <meta name="mobile-web-app-capable" content="yes">
+	  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
     <link rel="manifest" crossorigin="use-credentials" href="manifest.webmanifest">
+    <% // TriliumNextTODO: move the css file to ${assetPath}/stylesheets/  %>
+    <link rel="stylesheet" href="<%= appPath %>/desktop.css">
     <title>TriliumNext Notes</title>
 </head>
 <body class="desktop heading-style-<%= headingStyle %> layout-<%= layoutOrientation %> platform-<%= platform %> <%= isElectron ? 'electron' : '' %> <%= hasNativeTitleBar ? 'native-titlebar' : '' %> <%= hasBackgroundEffects ? 'background-effects' : '' %>">
@@ -18,29 +23,7 @@
 
 <div class="dropdown-menu dropdown-menu-sm" id="context-menu-container"></div>
 
-<script type="text/javascript">
-    global = globalThis; /* fixes https://github.com/webpack/webpack/issues/10035 */
-
-    window.glob = {
-        device: "desktop",
-        baseApiUrl: 'api/',
-        activeDialog: null,
-        maxEntityChangeIdAtLoad: <%= maxEntityChangeIdAtLoad %>,
-        maxEntityChangeSyncIdAtLoad: <%= maxEntityChangeSyncIdAtLoad %>,
-        instanceName: '<%= instanceName %>',
-        csrfToken: '<%= csrfToken %>',
-        isDev: <%= isDev %>,
-        appCssNoteIds: <%- JSON.stringify(appCssNoteIds) %>,
-        isMainWindow: <%= isMainWindow %>,
-        isProtectedSessionAvailable: <%= isProtectedSessionAvailable %>,
-        triliumVersion: "<%= triliumVersion %>",
-        assetPath: "<%= assetPath %>",
-        appPath: "<%= appPath %>",
-        platform: "<%= platform %>",
-        hasNativeTitleBar: <%= hasNativeTitleBar %>,
-        TRILIUM_SAFE_MODE: <%= !!process.env.TRILIUM_SAFE_MODE %>
-    };
-</script>
+<%- include("./partials/windowGlobal.ejs", locals) %>
 
 <style>
     .note-split {
@@ -53,8 +36,6 @@
 
 <script src="<%= assetPath %>/node_modules/jquery/dist/jquery.min.js"></script>
 
-<link href="<%= assetPath %>/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="<%= assetPath %>/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Include Fancytree library and skip -->
 <link href="<%= assetPath %>/stylesheets/tree.css" rel="stylesheet">
@@ -64,10 +45,6 @@
 
 <script src="<%= assetPath %>/node_modules/autocomplete.js/dist/autocomplete.jquery.min.js"></script>
 
-<script src="<%= assetPath %>/node_modules/dayjs/dayjs.min.js"></script>
-
-<script src="<%= assetPath %>/node_modules/split.js/dist/split.min.js"></script>
-
 <link href="<%= assetPath %>/stylesheets/ckeditor-theme.css" rel="stylesheet">
 <link href="api/fonts" rel="stylesheet">
 <link href="<%= assetPath %>/stylesheets/theme-light.css" rel="stylesheet">
@@ -76,11 +53,16 @@
 <link href="<%= themeCssUrl %>" rel="stylesheet">
 <% } %>
 
-<% if (themeUseNextAsBase) { %>
-<link href="<%= assetPath %>/stylesheets/theme-next.css" rel="stylesheet">
+<% if (themeUseNextAsBase === "next") { %>
+  <link href="<%= assetPath %>/stylesheets/theme-next.css" rel="stylesheet">
+<% } else if (themeUseNextAsBase === "next-dark") { %>
+  <link href="<%= assetPath %>/stylesheets/theme-next-dark.css" rel="stylesheet">
+<% } else if (themeUseNextAsBase === "next-light") { %>
+  <link href="<%= assetPath %>/stylesheets/theme-next-light.css" rel="stylesheet">
 <% } %>
 
 <link href="<%= assetPath %>/stylesheets/style.css" rel="stylesheet">
+<link href="<%= assetPath %>/stylesheets/print.css" rel="stylesheet" media="print">
 
 <script>
     $("body").show();

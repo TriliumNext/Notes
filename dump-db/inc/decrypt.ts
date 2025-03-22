@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
 function decryptString(dataKey: any, cipherText: any) {
     const buffer = decrypt(dataKey, cipherText);
@@ -7,16 +7,16 @@ function decryptString(dataKey: any, cipherText: any) {
         return null;
     }
 
-    const str = buffer.toString('utf-8');
+    const str = buffer.toString("utf-8");
 
-    if (str === 'false') {
+    if (str === "false") {
         throw new Error("Could not decrypt string.");
     }
 
     return str;
 }
 
-function decrypt(key: any, cipherText: any, ivLength = 13) {
+function decrypt(key: any, cipherText: any) {
     if (cipherText === null) {
         return null;
     }
@@ -26,12 +26,14 @@ function decrypt(key: any, cipherText: any, ivLength = 13) {
     }
 
     try {
-        const cipherTextBufferWithIv = Buffer.from(cipherText.toString(), 'base64');
+        const cipherTextBufferWithIv = Buffer.from(cipherText.toString(), "base64");
+        // old encrypted data can have IV of length 13, see some details here: https://github.com/zadam/trilium/issues/3017
+        const ivLength = cipherTextBufferWithIv.length % 16 === 0 ? 16 : 13;
         const iv = cipherTextBufferWithIv.slice(0, ivLength);
 
         const cipherTextBuffer = cipherTextBufferWithIv.slice(ivLength);
 
-        const decipher = crypto.createDecipheriv('aes-128-cbc', pad(key), pad(iv));
+        const decipher = crypto.createDecipheriv("aes-128-cbc", pad(key), pad(iv));
 
         const decryptedBytes = Buffer.concat([decipher.update(cipherTextBuffer), decipher.final()]);
 
@@ -45,14 +47,12 @@ function decrypt(key: any, cipherText: any, ivLength = 13) {
         }
 
         return payload;
-    }
-    catch (e: any) {
+    } catch (e: any) {
         // recovery from https://github.com/zadam/trilium/issues/510
         if (e.message?.includes("WRONG_FINAL_BLOCK_LENGTH") || e.message?.includes("wrong final block length")) {
             console.log("Caught WRONG_FINAL_BLOCK_LENGTH, returning cipherText instead");
             return cipherText;
-        }
-        else {
+        } else {
             throw e;
         }
     }
@@ -61,8 +61,7 @@ function decrypt(key: any, cipherText: any, ivLength = 13) {
 function pad(data: any) {
     if (data.length > 16) {
         data = data.slice(0, 16);
-    }
-    else if (data.length < 16) {
+    } else if (data.length < 16) {
         const zeros = Array(16 - data.length).fill(0);
 
         data = Buffer.concat([data, Buffer.from(zeros)]);
@@ -82,7 +81,7 @@ function arraysIdentical(a: any, b: any) {
 
 function shaArray(content: any) {
     // we use this as simple checksum and don't rely on its security so SHA-1 is good enough
-    return crypto.createHash('sha1').update(content).digest();
+    return crypto.createHash("sha1").update(content).digest();
 }
 
 export default {

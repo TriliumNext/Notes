@@ -8,26 +8,26 @@ function getRegex(str: string) {
     return cachedRegexes[str];
 }
 
-type Comparator<T> = (comparedValue: T) => ((val: string) => boolean);
+type Comparator<T> = (comparedValue: T) => (val: string) => boolean;
 
 const stringComparators: Record<string, Comparator<string>> = {
-    "=": comparedValue => (val => val === comparedValue),
-    "!=": comparedValue => (val => val !== comparedValue),
-    ">": comparedValue => (val => val > comparedValue),
-    ">=": comparedValue => (val => val >= comparedValue),
-    "<": comparedValue => (val => val < comparedValue),
-    "<=": comparedValue => (val => val <= comparedValue),
-    "*=": comparedValue => (val => !!val && val.endsWith(comparedValue)),
-    "=*": comparedValue => (val => !!val && val.startsWith(comparedValue)),
-    "*=*": comparedValue => (val => !!val && val.includes(comparedValue)),
-    "%=": comparedValue => (val => !!val && !!getRegex(comparedValue).test(val)),
+    "=": (comparedValue) => (val) => val === comparedValue,
+    "!=": (comparedValue) => (val) => val !== comparedValue,
+    ">": (comparedValue) => (val) => val > comparedValue,
+    ">=": (comparedValue) => (val) => val >= comparedValue,
+    "<": (comparedValue) => (val) => val < comparedValue,
+    "<=": (comparedValue) => (val) => val <= comparedValue,
+    "*=": (comparedValue) => (val) => !!val && val.endsWith(comparedValue),
+    "=*": (comparedValue) => (val) => !!val && val.startsWith(comparedValue),
+    "*=*": (comparedValue) => (val) => !!val && val.includes(comparedValue),
+    "%=": (comparedValue) => (val) => !!val && !!getRegex(comparedValue).test(val)
 };
 
 const numericComparators: Record<string, Comparator<number>> = {
-    ">": comparedValue => (val => parseFloat(val) > comparedValue),
-    ">=": comparedValue => (val => parseFloat(val) >= comparedValue),
-    "<": comparedValue => (val => parseFloat(val) < comparedValue),
-    "<=": comparedValue => (val => parseFloat(val) <= comparedValue)
+    ">": (comparedValue) => (val) => parseFloat(val) > comparedValue,
+    ">=": (comparedValue) => (val) => parseFloat(val) >= comparedValue,
+    "<": (comparedValue) => (val) => parseFloat(val) < comparedValue,
+    "<=": (comparedValue) => (val) => parseFloat(val) <= comparedValue
 };
 
 function buildComparator(operator: string, comparedValue: string) {

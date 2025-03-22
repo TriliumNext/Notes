@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import sql from './sql.js';
-import decryptService from './decrypt.js';
+import crypto from "crypto";
+import sql from "./sql.js";
+import decryptService from "./decrypt.js";
 
 function getDataKey(password: any) {
     if (!password) {
@@ -10,26 +10,24 @@ function getDataKey(password: any) {
     try {
         const passwordDerivedKey = getPasswordDerivedKey(password);
 
-        const encryptedDataKey = getOption('encryptedDataKey');
+        const encryptedDataKey = getOption("encryptedDataKey");
 
-        const decryptedDataKey = decryptService.decrypt(passwordDerivedKey, encryptedDataKey, 16);
+        const decryptedDataKey = decryptService.decrypt(passwordDerivedKey, encryptedDataKey);
 
         return decryptedDataKey;
-    }
-    catch (e: any) {
+    } catch (e: any) {
         throw new Error(`Cannot read data key, the entered password might be wrong. The underlying error: '${e.message}', stack:\n${e.stack}`);
     }
 }
 
 function getPasswordDerivedKey(password: any) {
-    const salt = getOption('passwordDerivedKeySalt');
+    const salt = getOption("passwordDerivedKeySalt");
 
     return getScryptHash(password, salt);
 }
 
 function getScryptHash(password: any, salt: any) {
-    const hashed = crypto.scryptSync(password, salt, 32,
-        { N: 16384, r: 8, p: 1 });
+    const hashed = crypto.scryptSync(password, salt, 32, { N: 16384, r: 8, p: 1 });
 
     return hashed;
 }

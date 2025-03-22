@@ -1,0 +1,283 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Geo map</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Geo map</h1>
+
+      <div class="ck-content">
+        <h2>Creating a new geo map</h2>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>
+                <img src="8_Geo map_image.png">
+              </td>
+              <td>Right click on any note on the note tree and select <em>Insert child note</em> → <em>Geo Map (beta)</em>.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>
+                <img src="10_Geo map_image.png">
+              </td>
+              <td>By default the map will be empty and will show the entire world.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+<h2>Repositioning the map</h2>
+        <ul>
+          <li>Click and drag the map in order to move across the map.</li>
+          <li>Use the mouse wheel, two-finger gesture on a touchpad or the +/- buttons
+            on the top-left to adjust the zoom.</li>
+        </ul>
+        <p>The position on the map and the zoom are saved inside the map note and
+          restored when visiting again the note.</p>
+        <h2>Adding a marker using the map</h2>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td></td>
+              <td>To create a marker, first navigate to the desired point on the map. Then
+                press the
+                <img src="15_Geo map_image.png">button on the top-right of the map. 
+                <br>
+                <br>If the button is not visible, make sure the button section is visible
+                by pressing the chevron button (
+                <img src="2_Geo map_image.png">) in the top-right of the map.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>
+                <img src="3_Geo map_image.png">
+              </td>
+              <td>Once pressed, the map will enter in the insert mode, as illustrated by
+                the notification. 
+                <br>
+                <br>Simply click the point on the map where to place the marker, or the Escape
+                key to cancel.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>
+                <img src="9_Geo map_image.png">
+              </td>
+              <td>Enter the name of the marker/note to be created.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>
+                <img src="16_Geo map_image.png">
+              </td>
+              <td>Once confirmed, the marker will show up on the map and it will also be
+                displayed as a child note of the map.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+<h2>How the location of the markers is stored</h2>
+        <p>The location of a marker is stored in the <code>#geolocation</code> attribute
+          of the child notes:</p>
+        <p>
+          <img src="17_Geo map_image.png">
+        </p>
+        <p>This value can be added manually if needed. The value of the attribute
+          is made up of the latitude and longitude separated by a comma.</p>
+        <h2>Repositioning markers</h2>
+        <p>It's possible to reposition existing markers by simply drag and dropping
+          them to the new destination.</p>
+        <p>As soon as the mouse is released, the new position is saved.</p>
+        <p>If moved by mistake, there is currently no way to undo the change. If
+          the mouse was not yet released, it's possible to force a refresh of the
+          page (<kbd>Ctrl</kbd>+<kbd>R</kbd> ) to cancel it.</p>
+        <h2>Interaction with the markers</h2>
+        <ul>
+          <li>Hovering over a marker will display the content of the note it belongs
+            to.
+            <ul>
+              <li>Clicking on the note title in the tooltip will navigate to the note in
+                the current view.</li>
+            </ul>
+          </li>
+          <li>Middle-clicking the marker will open the note in a new tab.</li>
+          <li>Right-clicking the marker will open a contextual menu allowing:
+            <ul>
+              <li>Opening the note in a new tab, split or window.</li>
+              <li>Opening the location using an external application (if the operating system
+                supports it).</li>
+              <li>Removing the marker from the map, which will remove the <code>#geolocation</code> attribute
+                of the note. To add it back again, the coordinates have to be manually
+                added back in.</li>
+            </ul>
+          </li>
+        </ul>
+        <h2>Icon and color of the markers</h2>
+        <p>![image](8_Geo map_image.png)</p>
+        <p>The markers will have the same icon as the note.</p>
+        <p>It's possible to add a custom color to a marker by assigning them a <code>#color</code> attribute
+          such as <code>#color=green</code>.</p>
+        <h2>Adding the coordinates manually</h2>
+        <p>In a nutshell, create a child note and set the <code>#geolocation</code> attribute
+          to the coordinates.</p>
+        <p>The value of the attribute is made up of the latitude and longitude separated
+          by a comma.</p>
+        <h3>Adding from Google Maps</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>
+                <img src="12_Geo map_image.png">
+              </td>
+              <td>Go to Google Maps on the web and look for a desired location, right click
+                on it and a context menu will show up. 
+                <br>
+                <br>Simply click on the first item displaying the coordinates and they will
+                be copied to clipboard. 
+                <br>
+                <br>Then paste the value inside the text box into the <code>#geolocation</code> attribute
+                of a child note of the map (don't forget to surround the value with a <code>"</code> character).</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>
+                <img src="5_Geo map_image.png">
+              </td>
+              <td>In Trilium, create a child note under the map.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>
+                <img src="11_Geo map_image.png">
+              </td>
+              <td>And then go to Owned Attributes and type <code>#geolocation="</code>, then
+                paste from the clipboard as-is and then add the ending <code>"</code> character.
+                Press Enter to confirm and the map should now be updated to contain the
+                new note.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+<h3>Adding from OpenStreetMap</h3>
+        <p>Similarly to the Google Maps approach:</p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>
+                <img src="1_Geo map_image.png">
+              </td>
+              <td>Go to any location on openstreetmap.org and right click to bring up the
+                context menu. Select the “Show address” item.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>
+                <img src="Geo map_image.png">
+              </td>
+              <td>The address will be visible in the top-left of the screen, in the place
+                of the search bar. 
+                <br>
+                <br>Select the coordinates and copy them into the clipboard.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>
+                <img src="6_Geo map_image.png">
+              </td>
+              <td>Simply paste the value inside the text box into the <code>#geolocation</code> attribute
+                of a child note of the map and then it should be displayed on the map.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+<h2>Adding GPS tracks (.gpx)</h2>
+        <p>Trilium has basic support for displaying GPS tracks on the geo map.</p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>
+                <img src="4_Geo map_image.png">
+              </td>
+              <td>To add a track, simply drag &amp; drop a .gpx file inside the geo map
+                in the note tree.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>
+                <img src="14_Geo map_image.png">
+              </td>
+              <td>In order for the file to be recognized as a GPS track, it needs to show
+                up as <code>application/gpx+xml</code> in the <em>File type</em> field.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>
+                <img src="7_Geo map_image.png">
+              </td>
+              <td>When going back to the map, the track should now be visible. 
+                <br>
+                <br>The start and end points of the track are indicated by the two blue markers.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+<h2>Troubleshooting</h2>
+        <p>
+          <img src="13_Geo map_image.png">
+        </p>
+        <h3>Grid-like artifacts on the map</h3>
+        <p>This occurs if the application is not at 100% zoom which causes the pixels
+          of the map to not render correctly due to fractional scaling. The only
+          possible solution is to set the UI zoom at 100% (default keyboard shortcut
+          is <kbd>Ctrl</kbd>+<kbd>0</kbd>).</p>
+      </div>
+    </div>
+  </body>
+
+</html>

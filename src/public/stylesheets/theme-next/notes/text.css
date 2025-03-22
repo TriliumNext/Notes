@@ -6,12 +6,17 @@
  * Code Blocks 
  */
 
- .ck-content pre {
+.attachment-content-wrapper pre,
+.ck-content pre,
+.ck-mermaid__editing-view {
     border: 0;
     border-radius: 6px;
     box-shadow: var(--code-block-box-shadow);
     padding: 0 !important;
     margin-top: 2px !important;
+}
+
+.ck-content pre {
     overflow: unset;
 }
 
@@ -21,16 +26,19 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
 }
 
 .ck.ck-editor__editable pre[data-language]::after {
-    --ck-color-code-block-label-background: rgba(128, 128, 128, .5);
+    --ck-color-code-block-label-background: rgba(128, 128, 128, 0.5);
     border-radius: 0 0 5px 5px;
     padding: 0px 10px;
-    letter-spacing: .5px;
+    letter-spacing: 0.5px;
     font-weight: bold;
+    top: 0;
 }
 
-.ck-content pre code {
+.attachment-content-wrapper pre code,
+.ck-content pre code,
+.ck-mermaid__editing-view {
     display: block;
-    padding: 1em;
+    padding: 1em !important;
     overflow: auto;
 }
 
@@ -44,7 +52,8 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
     background: gray !important;
 }
 
-.ck-content pre code::-webkit-scrollbar-track, ::-webkit-scrollbar-thumb {
+.ck-content pre code::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
     cursor: default;
 }
 
@@ -77,7 +86,7 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
 
 .ck-content blockquote:after {
     content: "”";
-    right: 0.35em;            
+    right: 0.35em;
 }
 
 .ck-content h2,
@@ -95,11 +104,13 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
     opacity: 1;
 }
 
-.ck-content p code {
-    border: 1px solid var(--card-border-color);
-    box-shadow: var(--card-box-shadow);
-    border-radius: 6px;
-    background-color: var(--card-background-color);
+@media (screen) {
+    .ck-content p code {
+        border: 1px solid var(--card-border-color);
+        box-shadow: var(--card-box-shadow);
+        border-radius: 6px;
+        background-color: var(--card-background-color);
+    }
 }
 
 .note-detail-printable:not(.word-wrap) pre code {
@@ -109,4 +120,16 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
 
 .code-sample-wrapper .hljs {
     transition: background-color linear 100ms;
+}
+
+.ck-content .footnote-section {
+    border: 0 !important;
+    border-top: 1px solid var(--main-border-color) !important;
+}
+
+/* Table caption */
+
+.ck-content .table > figcaption {
+    background: var(--accented-background-color);
+    color: var(--main-text-color);
 }

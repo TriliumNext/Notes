@@ -1,10 +1,10 @@
-import { Request } from 'express';
+import type { Request } from "express";
 import etapiTokenService from "../../services/etapi_tokens.js";
 
 function getTokens() {
     const tokens = etapiTokenService.getTokens();
 
-    tokens.sort((a, b) => a.utcDateCreated < b.utcDateCreated ? -1 : 1);
+    tokens.sort((a, b) => (a.utcDateCreated < b.utcDateCreated ? -1 : 1));
 
     return tokens;
 }

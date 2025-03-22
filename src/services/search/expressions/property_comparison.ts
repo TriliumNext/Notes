@@ -9,31 +9,31 @@ import buildComparator from "../services/build_comparator.js";
  * we need the case-sensitive form, so we have this translation object.
  */
 const PROP_MAPPING: Record<string, string> = {
-    "noteid": "noteId",
-    "title": "title",
-    "type": "type",
-    "mime": "mime",
-    "isprotected": "isProtected",
-    "isarchived": "isArchived",
-    "datecreated": "dateCreated",
-    "datemodified": "dateModified",
-    "utcdatecreated": "utcDateCreated",
-    "utcdatemodified": "utcDateModified",
-    "parentcount": "parentCount",
-    "childrencount": "childrenCount",
-    "attributecount": "attributeCount",
-    "labelcount": "labelCount",
-    "ownedlabelcount": "ownedLabelCount",
-    "relationcount": "relationCount",
-    "ownedrelationcount": "ownedRelationCount",
-    "relationcountincludinglinks": "relationCountIncludingLinks",
-    "ownedrelationcountincludinglinks": "ownedRelationCountIncludingLinks",
-    "targetrelationcount": "targetRelationCount",
-    "targetrelationcountincludinglinks": "targetRelationCountIncludingLinks",
-    "contentsize": "contentSize",
-    "contentandattachmentssize": "contentAndAttachmentsSize",
-    "contentandattachmentsandrevisionssize": "contentAndAttachmentsAndRevisionsSize",
-    "revisioncount": "revisionCount"
+    noteid: "noteId",
+    title: "title",
+    type: "type",
+    mime: "mime",
+    isprotected: "isProtected",
+    isarchived: "isArchived",
+    datecreated: "dateCreated",
+    datemodified: "dateModified",
+    utcdatecreated: "utcDateCreated",
+    utcdatemodified: "utcDateModified",
+    parentcount: "parentCount",
+    childrencount: "childrenCount",
+    attributecount: "attributeCount",
+    labelcount: "labelCount",
+    ownedlabelcount: "ownedLabelCount",
+    relationcount: "relationCount",
+    ownedrelationcount: "ownedRelationCount",
+    relationcountincludinglinks: "relationCountIncludingLinks",
+    ownedrelationcountincludinglinks: "ownedRelationCountIncludingLinks",
+    targetrelationcount: "targetRelationCount",
+    targetrelationcountincludinglinks: "targetRelationCountIncludingLinks",
+    contentsize: "contentSize",
+    contentandattachmentssize: "contentAndAttachmentsSize",
+    contentandattachmentsandrevisionssize: "contentAndAttachmentsAndRevisionsSize",
+    revisioncount: "revisionCount"
 };
 
 interface SearchContext {
@@ -41,10 +41,9 @@ interface SearchContext {
 }
 
 class PropertyComparisonExp extends Expression {
-
-    private propertyName: string;
-    private operator: string;
-    private comparedValue: string;
+    propertyName: string;
+    operator: string;
+    comparedValue: string;
     private comparator;
 
     static isProperty(name: string) {
@@ -59,7 +58,7 @@ class PropertyComparisonExp extends Expression {
         this.comparedValue = comparedValue; // for DEBUG mode
         this.comparator = buildComparator(operator, comparedValue);
 
-        if (['contentsize', 'contentandattachmentssize', 'contentandattachmentsandrevisionssize', 'revisioncount'].includes(this.propertyName)) {
+        if (["contentsize", "contentandattachmentssize", "contentandattachmentsandrevisionssize", "revisioncount"].includes(this.propertyName)) {
             searchContext.dbLoadNeeded = true;
         }
     }
@@ -70,7 +69,7 @@ class PropertyComparisonExp extends Expression {
         for (const note of inputNoteSet.notes) {
             let value = (note as any)[this.propertyName];
 
-            if (value !== undefined && value !== null && typeof value !== 'string') {
+            if (value !== undefined && value !== null && typeof value !== "string") {
                 value = value.toString();
             }
 

@@ -1,4 +1,4 @@
-import { NoteType } from "../becca/entities/rows.js";
+import type { NoteType } from "../becca/entities/rows.js";
 
 export interface NoteParams {
     /** optionally can force specific noteId */

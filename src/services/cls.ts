@@ -1,5 +1,5 @@
 import clsHooked from "cls-hooked";
-import { EntityChange } from './entity_changes_interface.js';
+import type { EntityChange } from "./entity_changes_interface.js";
 const namespace = clsHooked.createNamespace("trilium");
 
 type Callback = (...args: any[]) => any;
@@ -12,11 +12,10 @@ function wrap(callback: Callback) {
     return () => {
         try {
             init(callback);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             console.log(`Error occurred: ${e.message}: ${e.stack}`);
         }
-    }
+    };
 }
 
 function get(key: string) {
@@ -28,64 +27,64 @@ function set(key: string, value: any) {
 }
 
 function getHoistedNoteId() {
-    return namespace.get('hoistedNoteId') || 'root';
+    return namespace.get("hoistedNoteId") || "root";
 }
 
 function getComponentId() {
-    return namespace.get('componentId');
+    return namespace.get("componentId");
 }
 
 function getLocalNowDateTime() {
-    return namespace.get('localNowDateTime');
+    return namespace.get("localNowDateTime");
 }
 
 function disableEntityEvents() {
-    namespace.set('disableEntityEvents', true);
+    namespace.set("disableEntityEvents", true);
 }
 
 function enableEntityEvents() {
-    namespace.set('disableEntityEvents', false);
+    namespace.set("disableEntityEvents", false);
 }
 
 function isEntityEventsDisabled() {
-    return !!namespace.get('disableEntityEvents');
+    return !!namespace.get("disableEntityEvents");
 }
 
 function setMigrationRunning(running: boolean) {
-    namespace.set('migrationRunning', !!running);
+    namespace.set("migrationRunning", !!running);
 }
 
 function isMigrationRunning() {
-    return !!namespace.get('migrationRunning');
+    return !!namespace.get("migrationRunning");
 }
 
 function disableSlowQueryLogging(disable: boolean) {
-    namespace.set('disableSlowQueryLogging', disable);
+    namespace.set("disableSlowQueryLogging", disable);
 }
 
 function isSlowQueryLoggingDisabled() {
-    return !!namespace.get('disableSlowQueryLogging');
+    return !!namespace.get("disableSlowQueryLogging");
 }
 
 function getAndClearEntityChangeIds() {
-    const entityChangeIds = namespace.get('entityChangeIds') || [];
+    const entityChangeIds = namespace.get("entityChangeIds") || [];
 
-    namespace.set('entityChangeIds', []);
+    namespace.set("entityChangeIds", []);
 
     return entityChangeIds;
 }
 
 function putEntityChange(entityChange: EntityChange) {
-    if (namespace.get('ignoreEntityChangeIds')) {
+    if (namespace.get("ignoreEntityChangeIds")) {
         return;
     }
 
-    const entityChangeIds = namespace.get('entityChangeIds') || [];
+    const entityChangeIds = namespace.get("entityChangeIds") || [];
 
     // store only ID since the record can be modified (e.g., in erase)
     entityChangeIds.push(entityChange.id);
 
-    namespace.set('entityChangeIds', entityChangeIds);
+    namespace.set("entityChangeIds", entityChangeIds);
 }
 
 function reset() {
@@ -93,7 +92,7 @@ function reset() {
 }
 
 function ignoreEntityChangeIds() {
-    namespace.set('ignoreEntityChangeIds', true);
+    namespace.set("ignoreEntityChangeIds", true);
 }
 
 export default {

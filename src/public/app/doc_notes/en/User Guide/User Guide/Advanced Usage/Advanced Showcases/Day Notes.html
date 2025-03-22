@@ -1,0 +1,101 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Day Notes</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Day Notes</h1>
+
+      <div class="ck-content">
+        <p>A common pattern in note-taking is that a lot of notes will be centered
+          around a certain date - e.g. you have some tasks which needs to be done
+          on a certain date, you have meeting minutes from a certain date, you have
+          your thoughts etc. and it all revolves around a date on which they occurred.
+          For this reason, it makes sense to create a certain "day workspace" which
+          will centralize all those notes relevant for a certain date.</p>
+        <p>For this, Trilium provides a concept of "day note". Trilium semi-automatically
+          generates a single note for each day. Under this note you can save all
+          those relevant notes.</p>
+        <p>Select an existing day note, and the menubar contains a calendar widget.
+          Select any day to create a note for that day. </p>
+        <p>
+          <img src="1_Day Notes_image.png">
+        </p>
+        <p>This pattern works well also because of <a href="../../Basic%20Concepts/Note/Cloning%20Notes.html">Cloning Notes</a> functionality
+          - note can appear in multiple places in the note tree, so besides appearing
+          under day note, it can also be categorized into other notes.</p>
+        <h2>Demo</h2>
+        <p>
+          <img src="Day Notes_image.png">
+        </p>
+        <p>You can see the structure of day notes appearing under "Journal" note
+          - there's a note for the whole year 2017, under it, you have "12 - December"
+          which then contains "18 - Monday". This is our "day note" which contains
+          some text in its content and also has some child notes (some of them are
+          from <a href="Task%20Manager.html">Task manager</a>).</p>
+        <p>You can also notice how this day note has <a href="../Attributes/Promoted%20Attributes.html">promoted attribute</a> "weight"
+          where you can track your daily weight. This data is then used in <a href="Weight%20Tracker.html">Weight tracker</a>.</p>
+        <h2>Templates</h2>
+        <p>Trilium provides <a href="../Attributes/Template.html">template</a> functionality,
+          and it could be used together with day notes.</p>
+        <p>You can define one of the following relations on the root of the journal
+          (identified by <code>#calendarRoot</code> label):</p>
+        <ul>
+          <li>yearTemplate</li>
+          <li>monthTemplate</li>
+          <li>dateTemplate</li>
+        </ul>
+        <p>All of these are relations. When Trilium creates a new note for year or
+          month or date, it will take a look at the root and attach a corresponding <code>~template</code> relation
+          to the newly created role. Using this, you can e.g. create your daily template
+          with e.g. checkboxes for daily routine etc.</p>
+        <h2>Date pattern</h2>
+        <p>It's possible to customize the title of generated date notes by defining
+          a <code>#datePattern</code> label on a root calendar note (identified by <code>#calendarRoot</code> label).
+          Following are possible values:</p>
+        <ul>
+          <li><code>{dayInMonthPadded} - {weekDay}</code> day notes are named e.g. "24
+            - Monday"</li>
+          <li><code>{dayInMonthPadded}: {weekDay3}</code> day notes are named e.g. "24:
+            Mon"</li>
+          <li><code>{dayInMonthPadded}: {weekDay2}</code> day notes are named e.g. "24:
+            Mo"</li>
+          <li><code>{isoDate} - {weekDay}</code> day notes are named e.g. "2020-12-24
+            - Monday"</li>
+          <li><code>{ordinal}</code> is replaced with the ordinal date (e.g. 1st, 2nd,
+            3rd) etc.</li>
+        </ul>
+        <h2>Month pattern</h2>
+        <p>It is also possible to customize the title of generated month notes through
+          the <code>#monthPattern</code> attribute, much like <code>#datePattern</code>.
+          The options are:</p>
+        <ul>
+          <li><code>{monthNumberPadded}</code> results in a number like <code>09</code> for
+            September, and <code>11</code> for November</li>
+          <li><code>{month}</code> results in the full month name (e.g. <code>September</code> or <code>October</code>)</li>
+          <li><code>{shortMonth3}</code> is replaced with the first 3 letters of the
+            month, e.g. Jan, Feb, etc.</li>
+          <li><code>{shortMonth4}</code> is replaced with the first 4 letters of the
+            month, e.g. Sept, Octo, etc.</li>
+        </ul>
+        <p>The default is <code>{monthNumberPadded} - {month}</code>
+        </p>
+        <h2>Implementation</h2>
+        <p>Trilium has some special support for day notes in the form of <a href="https://triliumnext.github.io/Notes/backend_api/BackendScriptApi.html">backend Script API</a> -
+          see e.g. getDayNote() function.</p>
+        <p>Day (and year, month) notes are created with a label - e.g. <code>#dateNote="2018-08-16"</code> this
+          can then be used by other scripts to add new notes to day note etc.</p>
+        <p>Journal also has relation <code>child:child:child:template=Day template</code> (see
+          [[attribute inheritance]]) which effectively adds [[template]] to day notes
+          (grand-grand-grand children of Journal).</p>
+      </div>
+    </div>
+  </body>
+
+</html>

@@ -21,3 +21,5 @@ services:
       # Unless TRILIUM_DATA_DIR is set, the data will be stored in the "trilium-data" directory in the home directory.
       # This can also be changed with by replacing the line below with `- /path/of/your/choice:/home/node/trilium-data
       - ${TRILIUM_DATA_DIR:-~/trilium-data}:/home/node/trilium-data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

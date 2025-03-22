@@ -1,0 +1,106 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Multi-Factor Authentication</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Multi-Factor Authentication</h1>
+
+      <div class="ck-content">
+        <p><strong>Note: This feature has not been merged yet, so it is not available.</strong>
+        </p>
+        <p>Multi-factor authentication (MFA) is a security process that requires
+          users to provide two or more verification factors to gain access to a system,
+          application, or account. This adds an extra layer of protection beyond
+          just using a password.</p>
+        <p>By requiring more than one verification method, MFA helps reduce the risk
+          of unauthorized access, even if someone has obtained your password. It’s
+          highly recommended for securing sensitive information stored in your notes.</p>
+        <p>Warning! OpenID and TOTP cannot be both used at the same time!</p>
+        <h2>Log in with your Google Account with OpenID!</h2>
+        <p>OpenID is a standardized way to let you log into websites using an account
+          from another service, like Google, to verify your identity.</p>
+        <h2>Why Time-based One Time Passwords?</h2>
+        <p>TOTP (Time-Based One-Time Password) is a security feature that generates
+          a unique, temporary code on your device, like a smartphone, which changes
+          every 30 seconds. You use this code, along with your password, to log into
+          your account, making it much harder for anyone else to access them.</p>
+        <h2>Setup</h2>
+        <h3>TOTP</h3>
+        <ol>
+          <li>
+            <p>Start Trilium Notes normally.</p>
+          </li>
+          <li>
+            <p>Go to "Menu" -&gt; "Options" -&gt; "MFA"</p>
+          </li>
+          <li>
+            <p>Click the "Generate TOTP Secret" button</p>
+          </li>
+          <li>
+            <p>Copy the generated secret to your authentication app/extension</p>
+          </li>
+          <li>
+            <p>Set an environment variable "TOTP_SECRET" as the generated secret. Environment
+              variables can be set with a .env file in the root directory, by defining
+              them in the command line, or with a docker container.</p><pre><code class="language-text-x-trilium-auto"># .env in the project root directory
+TOTP_ENABLED="true"
+TOTP_SECRET="secret"</code></pre><pre><code class="language-text-x-trilium-auto"># Terminal/CLI
+export TOTP_ENABLED="true"
+export TOTP_SECRET="secret"</code></pre><pre><code class="language-text-x-trilium-auto"># Docker
+docker run -p 8080:8080 -v ~/trilium-data:/home/node/trilium-data -e TOTP_ENABLED="true" -e TOTP_SECRET="secret" triliumnext/notes:[VERSION]</code></pre>
+          </li>
+          <li>
+            <p>Restart Trilium</p>
+          </li>
+          <li>
+            <p>Go to "Options" -&gt; "MFA"</p>
+          </li>
+          <li>
+            <p>Click the "Generate Recovery Codes" button</p>
+          </li>
+          <li>
+            <p>Save the recovery codes. Recovery codes can be used once in place of the
+              TOTP if you loose access to your authenticator. After a rerecovery code
+              is used, it will show the unix timestamp when it was used in the MFA options
+              tab.</p>
+          </li>
+          <li>
+            <p>Load the secret into an authentication app like google authenticator</p>
+          </li>
+        </ol>
+        <h3>OpenID</h3>
+        <p><em>Currently only compatible with Google. Other services like Authentik and Auth0 are planned on being added.</em>
+        </p>
+        <p>In order to setup OpenID, you will need to setup a authentication provider.
+          This requires a bit of extra setup. Follow <a href="https://developers.google.com/identity/openid-connect/openid-connect">these instructions</a> to
+          setup an OpenID service through google.</p>
+        <p>Set an environment variable "SSO_ENABLED" to true and add the client ID
+          and secret you obtained from google. Environment variables can be set with
+          a .env file in the root directory, by defining them in the command line,
+          or with a docker container.</p>
+        <h4>.env File</h4><pre><code class="language-text-x-trilium-auto"># .env in the project root directory
+SSO_ENABLED="true"
+BASE_URL="http://localhost:8080"
+CLIENT_ID=
+SECRET=</code></pre>
+        <h4>Environment variable (linux)</h4><pre><code class="language-text-x-trilium-auto">export SSO_ENABLED="true"
+export BASE_URL="http://localhost:8080"
+export CLIENT_ID=
+export SECRET=</code></pre>
+        <h4>Docker</h4><pre><code class="language-text-x-trilium-auto">docker run -d -p 8080:8080 -v ~/trilium-data:/home/node/trilium-data -e SSO_ENABLED="true" -e BASE_URL="http://localhost:8080" -e CLIENT_ID= -e SECRET= triliumnext/notes:[VERSION]</code></pre>
+        <p>After you restart Trilium Notes, you will be redirected to Google's account
+          selection page. Login to an account and Trilium Next will bind to that
+          account, allowing you to login with it.</p>
+        <p>You can now login using your google account.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

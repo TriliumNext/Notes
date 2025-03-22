@@ -1,24 +1,22 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        // nodemon should be installed globally, use npm i -g nodemon
-        {
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "name": "nodemon start-server",
-            "program": "${workspaceFolder}/src/www",
-            "request": "launch",
-            "restart": true,
-            "runtimeExecutable": "nodemon",
-            "env": {
-                "TRILIUM_ENV": "dev",
-                "TRILIUM_DATA_DIR": "./data"
-            },
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "type": "node",
-            "outputCapture": "std",
-        },
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    // nodemon should be installed globally, use npm i -g nodemon
+    {
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "name": "nodemon start-server",
+      "program": "${workspaceFolder}/src/www",
+      "request": "launch",
+      "restart": true,
+      "runtimeExecutable": "nodemon",
+      "env": {
+        "TRILIUM_ENV": "dev",
+        "TRILIUM_DATA_DIR": "./data"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "outputCapture": "std"
+    }
+  ]
 }

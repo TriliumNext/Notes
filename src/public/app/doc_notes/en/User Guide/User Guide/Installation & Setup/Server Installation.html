@@ -1,0 +1,80 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Server Installation</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Server Installation</h1>
+
+      <div class="ck-content">
+        <p>This guide outlines the steps to install Trilium on your own server. You
+          might consider this option if you want to set up <a href="Synchronization.html">synchronization</a> or
+          use Trilium in a browser - accessible from anywhere.</p>
+        <h2>Installation Options</h2>
+        <p>There are several ways to install Trilium on a server, each with its own
+          advantages:</p>
+        <ul>
+          <li><strong>Recommended</strong>: <a href="Server%20Installation/1.%20Installing%20the%20server/Docker%20Server%20Installation.html">Docker Installation</a> -
+            Available for <strong>AMD64</strong> and <strong>ARM</strong> architectures.</li>
+          <li><a href="Server%20Installation/1.%20Installing%20the%20server/Packaged%20server%20installation.html">Packaged Server Installation</a>
+          </li>
+          <li><a href="https://www.pikapods.com/pods?run=trilium-next">PikaPods managed hosting</a>
+          </li>
+          <li><a href="Server%20Installation/1.%20Installing%20the%20server/Manual%20server%20installation.html">Manual Installation</a>
+          </li>
+          <li><a href="Server%20Installation/1.%20Installing%20the%20server/Kubernetes%20server%20installation.html">Kubernetes</a>
+          </li>
+          <li><a href="https://www.cloudron.io/store/com.github.trilium.cloudronapp.html">Cloudron</a>
+          </li>
+          <li><a href="https://homelabos.com/docs/software/trilium/">HomelabOS</a>
+          </li>
+          <li><a href="Server%20Installation/1.%20Installing%20the%20server/NixOS%20server%20installation.html">NixOS Module</a>
+          </li>
+        </ul>
+        <p>The server installation includes both web and <a href="Mobile%20Frontend.html">mobile frontends</a>.</p>
+        <h2>Configuration</h2>
+        <p>After setting up your server installation, you may want to configure settings
+          such as the port or enable <a href="Server%20Installation/TLS%20Configuration.html">TLS</a>.
+          Configuration is managed via the Trilium <code>config.ini</code> file, which
+          is located in the <a href="Data%20directory.html">data directory</a> by default.
+          To begin customizing your setup, copy the provided <code>config-sample.ini</code> file
+          with default values to <code>config.ini</code>.</p>
+        <p>You can also review the <a href="../Advanced%20Usage/Configuration%20(config.ini%20or%20e.html">configuration</a> file
+          to provide all <code>config.ini</code> values as environment variables instead.</p>
+        <h3>Config Location</h3>
+        <p>By default, <code>config.ini</code>, the <a href="../Advanced%20Usage/Database.html">database</a>,
+          and other important Trilium data files are stored in the <a href="Data%20directory.html">data directory</a>.
+          If you prefer a different location, you can change it by setting the <code>TRILIUM_DATA_DIR</code> environment
+          variable:</p><pre><code class="language-text-x-trilium-auto">export TRILIUM_DATA_DIR=/home/myuser/data/my-trilium-data</code></pre>
+        <h3>Disabling Authentication</h3>
+        <p>If you are running Trilium on localhost only or if authentication is handled
+          by another component, you can disable Trilium’s authentication by adding
+          the following to <code>config.ini</code>:</p><pre><code class="language-text-x-trilium-auto">[General]
+noAuthentication=true</code></pre>
+        <h2>Reverse Proxy Setup</h2>
+        <p>To configure a reverse proxy for Trilium, you can use either <strong>nginx</strong> or <strong>Apache</strong>.</p>
+        <h3>nginx</h3>
+        <p>Add the following configuration to your <code>nginx</code> setup to proxy
+          requests to Trilium:</p><pre><code class="language-text-x-trilium-auto">location /trilium/ {
+    proxy_pass http://127.0.0.1:8080/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+}</code></pre>
+        <p>To avoid limiting the size of payloads, include this in the <code>server {}</code> block:</p><pre><code class="language-text-x-trilium-auto"># Set to 0 for unlimited. Default is 1M.
+client_max_body_size 0;</code></pre>
+        <h3>Apache</h3>
+        <p>For an Apache setup, refer to the <a href="Server%20Installation/2.%20Reverse%20proxy/Apache.html">Apache proxy setup</a> guide.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

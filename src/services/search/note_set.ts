@@ -1,17 +1,16 @@
 "use strict";
 
-import BNote from "../../becca/entities/bnote.js";
+import type BNote from "../../becca/entities/bnote.js";
 
 class NoteSet {
-    
     private noteIdSet: Set<string>;
-    
+
     notes: BNote[];
     sorted: boolean;
 
     constructor(notes: BNote[] = []) {
         this.notes = notes;
-        this.noteIdSet = new Set(notes.map(note => note.noteId));
+        this.noteIdSet = new Set(notes.map((note) => note.noteId));
         this.sorted = false;
     }
 

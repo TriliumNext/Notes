@@ -9,10 +9,10 @@ import optionService from "../../services/options.js";
 import contentHashService from "../../services/content_hash.js";
 import log from "../../services/log.js";
 import syncOptions from "../../services/sync_options.js";
-import utils from "../../services/utils.js";
+import utils, { safeExtractMessageAndStackFromError } from "../../services/utils.js";
 import ws from "../../services/ws.js";
-import { Request } from 'express';
-import { EntityChange } from '../../services/entity_changes_interface.js';
+import type { Request } from "express";
+import type { EntityChange } from "../../services/entity_changes_interface.js";
 import ValidationError from "../../errors/validation_error.js";
 import consistencyChecksService from "../../services/consistency_checks.js";
 import { t } from "i18next";
@@ -30,11 +30,11 @@ async function testSync() {
         syncService.sync();
 
         return { success: true, message: t("test_sync.successful") };
-    }
-    catch (e: any) {
+    } catch (e: unknown) {
+        const [errMessage] = safeExtractMessageAndStackFromError(e);
         return {
             success: false,
-            message: e.message
+            error: errMessage
         };
     }
 }
@@ -46,7 +46,7 @@ function getStats() {
     }
 
     const stats = {
-        initialized: sql.getValue("SELECT value FROM options WHERE name = 'initialized'") === 'true',
+        initialized: sql.getValue("SELECT value FROM options WHERE name = 'initialized'") === "true",
         outstandingPullCount: syncService.getOutstandingPullCount()
     };
 
@@ -58,7 +58,7 @@ function getStats() {
 function checkSync() {
     return {
         entityHashes: contentHashService.getEntityHashes(),
-        maxEntityChangeId: sql.getValue('SELECT COALESCE(MAX(id), 0) FROM entity_changes WHERE isSynced = 1')
+        maxEntityChangeId: sql.getValue("SELECT COALESCE(MAX(id), 0) FROM entity_changes WHERE isSynced = 1")
     };
 }
 
@@ -78,8 +78,8 @@ function fillEntityChanges() {
 }
 
 function forceFullSync() {
-    optionService.setOption('lastSyncedPull', 0);
-    optionService.setOption('lastSyncedPush', 0);
+    optionService.setOption("lastSyncedPull", 0);
+    optionService.setOption("lastSyncedPush", 0);
 
     log.info("Forcing full sync.");
 
@@ -87,6 +87,58 @@ function forceFullSync() {
     syncService.sync();
 }
 
+/**
+ * @swagger
+ * /api/sync/changed:
+ *   get:
+ *     summary: Pull sync changes
+ *     operationId: sync-changed
+ *     externalDocs:
+ *       description: Server implementation
+ *       url: https://github.com/TriliumNext/Notes/blob/v0.91.6/src/routes/api/sync.ts
+ *     parameters:
+ *       - in: query
+ *         name: instanceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Local instance ID
+ *       - in: query
+ *         name: lastEntityChangeId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Last locally present change ID
+ *       - in: query
+ *         name: logMarkerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Marker to identify this request in server log
+ *     responses:
+ *       '200':
+ *         description: Sync changes, limited to approximately one megabyte.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 entityChanges:
+ *                   type: list
+ *                   items:
+ *                     $ref: '#/components/schemas/EntityChange'
+ *                 lastEntityChangeId:
+ *                   type: integer
+ *                   description: If `outstandingPullCount > 0`, pass this as parameter in your next request to continue.
+ *                 outstandingPullCount:
+ *                   type: int
+ *                   example: 42
+ *                   description: Number of changes not yet returned by the remote.
+ *     security:
+ *       - session: []
+ *     tags:
+ *       - sync
+ */
 function getChanged(req: Request) {
     const startTime = Date.now();
 
@@ -99,19 +151,22 @@ function getChanged(req: Request) {
     let filteredEntityChanges: EntityChange[] = [];
 
     do {
-        const entityChanges: EntityChange[] = sql.getRows<EntityChange>(`
+        const entityChanges: EntityChange[] = sql.getRows<EntityChange>(
+            `
             SELECT *
             FROM entity_changes
             WHERE isSynced = 1
-              AND id > ?
+            AND id > ?
             ORDER BY id
-            LIMIT 1000`, [lastEntityChangeId]);
+            LIMIT 1000`,
+            [lastEntityChangeId]
+        );
 
         if (entityChanges.length === 0) {
             break;
         }
 
-        filteredEntityChanges = entityChanges.filter(ec => ec.instanceId !== clientInstanceId);
+        filteredEntityChanges = entityChanges.filter((ec) => ec.instanceId !== clientInstanceId);
 
         if (filteredEntityChanges.length === 0) {
             lastEntityChangeId = entityChanges[entityChanges.length - 1].id;
@@ -129,28 +184,88 @@ function getChanged(req: Request) {
     return {
         entityChanges: entityChangeRecords,
         lastEntityChangeId,
-        outstandingPullCount: sql.getValue(`
-            SELECT COUNT(id) 
-            FROM entity_changes 
-            WHERE isSynced = 1 
-              AND instanceId != ?
-              AND id > ?`, [clientInstanceId, lastEntityChangeId])
+        outstandingPullCount: sql.getValue(
+            `
+            SELECT COUNT(id)
+            FROM entity_changes
+            WHERE isSynced = 1
+            AND instanceId != ?
+            AND id > ?`,
+            [clientInstanceId, lastEntityChangeId]
+        )
     };
 }
 
-const partialRequests: Record<string, {
-    createdAt: number,
-    payload: string
-}> = {};
+const partialRequests: Record<
+    string,
+    {
+        createdAt: number;
+        payload: string;
+    }
+> = {};
 
+/**
+ * @swagger
+ * /api/sync/update:
+ *   put:
+ *     summary: Push sync changes
+ *     description:
+ *       "Basic usage: set `pageCount = 1`, `pageIndex = 0`, and omit `requestId`. Supply your entity changes in the request body."
+ *     operationId: sync-update
+ *     externalDocs:
+ *       description: Server implementation
+ *       url: https://github.com/TriliumNext/Notes/blob/v0.91.6/src/routes/api/sync.ts
+ *     parameters:
+ *       - in: header
+ *         name: pageCount
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: pageIndex
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: requestId
+ *         schema:
+ *           type: string
+ *           description: ID to identify paginated requests
+ *       - in: query
+ *         name: logMarkerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Marker to identify this request in server log
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               instanceId:
+ *                 type: string
+ *                 description: Local instance ID
+ *               entities:
+ *                 type: list
+ *                 items:
+ *                   $ref: '#/components/schemas/EntityChange'
+ *     responses:
+ *       '200':
+ *         description: Changes processed successfully
+ *     security:
+ *       - session: []
+ *     tags:
+ *       - sync
+ */
 function update(req: Request) {
     let { body } = req;
 
-    const pageCount = parseInt(req.get('pageCount') as string);
-    const pageIndex = parseInt(req.get('pageIndex') as string);
+    const pageCount = parseInt(req.get("pageCount") as string);
+    const pageIndex = parseInt(req.get("pageIndex") as string);
 
     if (pageCount !== 1) {
-        const requestId = req.get('requestId');
+        const requestId = req.get("requestId");
         if (!requestId) {
             throw new Error("Missing request ID.");
         }
@@ -158,7 +273,7 @@ function update(req: Request) {
         if (pageIndex === 0) {
             partialRequests[requestId] = {
                 createdAt: Date.now(),
-                payload: ''
+                payload: ""
             };
         }
 
@@ -172,8 +287,7 @@ function update(req: Request) {
 
         if (pageIndex !== pageCount - 1) {
             return;
-        }
-        else {
+        } else {
             body = JSON.parse(partialRequests[requestId].payload);
             delete partialRequests[requestId];
         }

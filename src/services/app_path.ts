@@ -1,6 +1,4 @@
 import assetPath from "./asset_path.js";
-import env from "./env.js";
+import { isDev } from "./utils.js";
 
-export default env.isDev()
-    ? assetPath + "/app"
-    : assetPath + "/app-dist";
+export default isDev ? assetPath + "/app" : assetPath + "/app-dist";

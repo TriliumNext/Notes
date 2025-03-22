@@ -1,0 +1,56 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Manually altering the database</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Manually altering the database</h1>
+
+      <div class="ck-content">
+        <p>There are some situations where modifying the SQLite database that Trilium
+          uses is desirable.</p>
+        <p>If you are doing any advanced development or troubleshooting where you
+          manually modify the database, you might want to consider creating backups
+          of your <code>document.db</code> file.</p>
+        <h2>Modifying it internally using the SQL Console</h2>
+        <p>The SQL Console is Trilium's built-in database editor.</p>
+        <p>See <a href="Manually%20altering%20the%20database/SQL%20Console.html">SQL Console</a>.</p>
+        <h2>Externally modifying the database</h2>
+        <p>Sometimes the SQL Console cannot be used (for example if the application
+          cannot start).</p>
+        <p>When making external modifications, consider closing the desktop application.
+          If modifying the server database, then stop the service or Docker container.</p>
+        <h3>Using DB Browser for SQLite</h3>
+        <p>DB Browser for SQLite is a cross-platform editor that can be used to alter
+          the database using a graphical user interface.</p>
+        <p>To do so:</p>
+        <ol>
+          <li>In the main menu, select File → Open database… and navigate to the database
+            in the <a href="../../Installation%20%26%20Setup/Data%20directory.html">Data directory</a>.</li>
+          <li>Select the <em>Execute SQL</em> tab.</li>
+          <li>Type in the desired SQL statement.</li>
+          <li>Press the "Play" button in the toolbar underneath the "Execute SQL" tab
+            (or F5 key).</li>
+          <li>Press "Write Changes" in the main toolbar.</li>
+          <li>Close the application or close the database.</li>
+        </ol>
+        <p>
+          <img src="Manually altering the data.png">
+        </p>
+        <h3>Using the SQLite CLI</h3>
+        <p>First, start the SQLite 3 CLI by specifying the path to the database:</p><pre><code class="language-text-x-trilium-auto">sqlite3 ~/.local/share/trilium-data/document.db</code></pre>
+        <ul>
+          <li>In the prompt simply type the statement and make sure it ends with a <code>;</code> character.</li>
+          <li>To exit, simply type <code>.quit</code> and enter.</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

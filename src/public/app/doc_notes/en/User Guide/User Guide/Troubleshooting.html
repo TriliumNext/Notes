@@ -1,0 +1,80 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Troubleshooting</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Troubleshooting</h1>
+
+      <div class="ck-content">
+        <p>As Trilium is currently in beta, encountering bugs is to be expected.</p>
+        <h2>General Quick Fix</h2>
+        <p>The first step in troubleshooting is often a restart.</p>
+        <p>If you experience an UI issue, the frontend may have entered an inconsistent
+          state. Reload the application by pressing <kbd>Ctrl</kbd> + <kbd>R</kbd>.
+          This will reload the frontend.</p>
+        <p>If the issue persists or appears to be a backend problem, restart the
+          entire application. For the desktop (Electron) build, simply close and
+          reopen the window. If you're using a Docker build, restart the container.</p>
+        <h2>Broken Note Crashes Trilium</h2>
+        <p>Certain problems, such as rendering a note with a faulty script, can cause
+          Trilium to crash. If Trilium attempts to reload the problematic note upon
+          restart, it will continue to crash.</p>
+        <p>To resolve this, use the <code>TRILIUM_START_NOTE_ID</code> environment
+          variable to reset the open tabs to a single specified note ID (e.g., <code>root</code>).
+          In Linux, you can set it as follows:</p><pre><code class="language-text-x-trilium-auto">TRILIUM_START_NOTE_ID=root ./trilium</code></pre>
+        <h2>Broken Script Prevents Application Startup</h2>
+        <p>If a custom script causes Triliumto crash, and it is set as a startup
+          script or in an active <a href="Note%20Types/Code/Custom%20Widgets.html">custom widget</a>,
+          start Triliumin "safe mode" to prevent any custom scripts from executing:</p><pre><code class="language-text-x-trilium-auto">TRILIUM_SAFE_MODE=true ./trilium</code></pre>
+        <p>Depending on your Trilium distribution, you may have pre-made scripts
+          available: <code>trilium-safe-mode.bat</code> and <code>trilium-safe-mode.sh</code>.</p>
+        <p>Once Trilium starts, locate and fix or delete the problematic note.</p>
+        <h2>Sync and Consistency Checks</h2>
+        <p>Trilium periodically verifies the logical consistency of the database
+          (e.g., ensuring every note has a parent). If inconsistencies are detected,
+          you will be notified via the UI.</p>
+        <p>In such cases, file a bug report and attach an <a href="Troubleshooting/Anonymized%20Database.html">anonymized database</a> if
+          necessary.</p>
+        <h2>Restoring Backup</h2>
+        <p>Trilium makes regular automatic backups. If issues become severe, you
+          can <a href="Installation%20%26%20Setup/Backup.html">restore from a backup</a>.</p>
+        <h2>Forgotten Password</h2>
+        <p>If you forget your password:</p>
+        <ul>
+          <li>Protected notes are irretrievable without the password.</li>
+          <li>Unprotected notes can be recovered. Follow these steps:</li>
+        </ul>
+        <p>Access the <a href="Advanced%20Usage/Database.html">database</a> file in
+          the <a href="Installation%20%26%20Setup/Data%20directory.html">data directory</a>.
+          Open the <code>document.db</code> file with an SQLite client (e.g., <a href="https://sqlitebrowser.org/">DB Browser</a>)
+          and execute the following queries:</p><pre><code class="language-text-x-trilium-auto">UPDATE options SET value = '77/twC5O00cuQgNC63VK32qOKKYwj21ev3jZDXoytVU=' WHERE name = 'passwordVerificationSalt';
+UPDATE options SET value = '710BMasZCAgibzIc07X4P9Q4TeBd4ONnqJOho+pWcBM=' WHERE name = 'passwordDerivedKeySalt';
+UPDATE options SET value = 'Eb8af1/T57b89lCRuS97tPEl4CwxsAWAU7YNJ77oY+s=' WHERE name = 'passwordVerificationHash';
+UPDATE options SET value = 'QpC8XoiYYeqHPtHKRtbNxfTHsk+pEBqVBODYp0FkPBa22tlBBKBMigdLu5GNX8Uu' WHERE name = 'encryptedDataKey';</code></pre>
+        <p>After executing the changes, commit/write the changes. <strong>This sets the password to "password," allowing you to log in again.</strong>
+        </p>
+        <p>For pre-existing protected notes (now unrecoverable), consider deleting
+          them or exporting the unprotected notes. Then, delete <code>document.db</code> and
+          start fresh.</p>
+        <p>If you continue using the existing document file, change your password
+          (Options -&gt; Change Password).</p>
+        <h2>Reporting Bugs</h2>
+        <p>Reporting bugs is highly valuable. Here are some tips:</p>
+        <ul>
+          <li>Use GitHub issues for reporting: <a href="https://github.com/TriliumNext/Notes/issues">https://github.com/TriliumNext/Notes/issues</a>
+          </li>
+          <li>Refer to the <a href="Troubleshooting/Error%20logs.html">error logs</a> page
+            for information on providing necessary details.</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

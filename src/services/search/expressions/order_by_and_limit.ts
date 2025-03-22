@@ -1,8 +1,8 @@
 "use strict";
 
-import BNote from "../../../becca/entities/bnote.js";
+import type BNote from "../../../becca/entities/bnote.js";
 import NoteSet from "../note_set.js";
-import SearchContext from "../search_context.js";
+import type SearchContext from "../search_context.js";
 import Expression from "./expression.js";
 
 interface ValueExtractor {
@@ -17,9 +17,8 @@ interface OrderDefinition {
 }
 
 class OrderByAndLimitExp extends Expression {
-
     private orderDefinitions: OrderDefinition[];
-    private limit: number;
+    limit: number;
     subExpression: Expression | null;
 
     constructor(orderDefinitions: Pick<OrderDefinition, "direction" | "valueExtractor">[], limit?: number) {
@@ -42,10 +41,10 @@ class OrderByAndLimitExp extends Expression {
             throw new Error("Missing subexpression");
         }
 
-        let {notes} = this.subExpression.execute(inputNoteSet, executionContext, searchContext);
+        let { notes } = this.subExpression.execute(inputNoteSet, executionContext, searchContext);
 
         notes.sort((a, b) => {
-            for (const {valueExtractor, smaller, larger} of this.orderDefinitions) {
+            for (const { valueExtractor, smaller, larger } of this.orderDefinitions) {
                 let valA: string | number | Date | null = valueExtractor.extract(a);
                 let valB: string | number | Date | null = valueExtractor.extract(b);
 
@@ -60,25 +59,20 @@ class OrderByAndLimitExp extends Expression {
                 if (valA === null && valB === null) {
                     // neither has attribute at all
                     continue;
-                }
-                else if (valB === null) {
+                } else if (valB === null) {
                     return smaller;
-                }
-                else if (valA === null) {
+                } else if (valA === null) {
                     return larger;
                 }
 
-                
                 // if both are dates, then parse them for dates comparison
-                if (typeof valA === "string" && this.isDate(valA) &&
-                    typeof valB === "string" && this.isDate(valB)) {
+                if (typeof valA === "string" && this.isDate(valA) && typeof valB === "string" && this.isDate(valB)) {
                     valA = new Date(valA);
                     valB = new Date(valB);
                 }
 
                 // if both are numbers, then parse them for numerical comparison
-                else if (typeof valA === "string" && this.isNumber(valA) &&
-                    typeof valB === "string" && this.isNumber(valB)) {
+                else if (typeof valA === "string" && this.isNumber(valA) && typeof valB === "string" && this.isNumber(valB)) {
                     valA = parseFloat(valA);
                     valB = parseFloat(valB);
                 }
@@ -108,13 +102,13 @@ class OrderByAndLimitExp extends Expression {
     }
 
     isDate(date: number | string) {
-      return !isNaN(new Date(date).getTime());
+        return !isNaN(new Date(date).getTime());
     }
 
     isNumber(x: number | string) {
-        if (typeof x === 'number') {
+        if (typeof x === "number") {
             return true;
-        } else if (typeof x === 'string') {
+        } else if (typeof x === "string") {
             // isNaN will return false for blank string
             return x.trim() !== "" && !isNaN(parseInt(x, 10));
         } else {

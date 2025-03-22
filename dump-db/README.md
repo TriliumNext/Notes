@@ -14,7 +14,7 @@ npm install
 
 ## Running
 
-See output of `npx esrun dump.ts --help`:
+See output of `npx tsx dump.ts --help`:
 
 ```
 dump-db.ts <path_to_document> <target_directory>

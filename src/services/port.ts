@@ -1,6 +1,5 @@
 import config from "./config.js";
-import utils from "./utils.js";
-import env from "./env.js";
+import { isDev, isElectron } from "./utils.js";
 import dataDir from "./data_dir.js";
 
 function parseAndValidate(portStr: string, source: string) {
@@ -18,10 +17,10 @@ let port: number;
 
 if (process.env.TRILIUM_PORT) {
     port = parseAndValidate(process.env.TRILIUM_PORT, "environment variable TRILIUM_PORT");
-} else if (utils.isElectron()) {
-    port = env.isDev() ? 37740 : 37840;
+} else if (isElectron) {
+    port = isDev ? 37740 : 37840;
 } else {
-    port = parseAndValidate(config['Network']['port'] || '3000', `Network.port in ${dataDir.CONFIG_INI_PATH}`);
+    port = parseAndValidate(config["Network"]["port"] || "3000", `Network.port in ${dataDir.CONFIG_INI_PATH}`);
 }
 
 export default port;

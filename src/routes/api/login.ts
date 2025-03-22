@@ -12,8 +12,70 @@ import sqlInit from "../../services/sql_init.js";
 import sql from "../../services/sql.js";
 import ws from "../../services/ws.js";
 import etapiTokenService from "../../services/etapi_tokens.js";
-import { Request } from 'express';
+import type { Request } from "express";
 
+/**
+ * @swagger
+ * /api/login/sync:
+ *   post:
+ *     tags:
+ *       - auth
+ *     summary: Log in using documentSecret
+ *     description: The `hash` parameter is computed using a HMAC of the `documentSecret` and `timestamp`.
+ *     operationId: login-sync
+ *     externalDocs:
+ *       description: HMAC calculation
+ *       url: https://github.com/TriliumNext/Notes/blob/v0.91.6/src/services/utils.ts#L62-L66
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               timestamp:
+ *                 $ref: '#/components/schemas/UtcDateTime'
+ *               hash:
+ *                 type: string
+ *               syncVersion:
+ *                 type: integer
+ *                 example: 34
+ *     responses:
+ *       '200':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 syncVersion:
+ *                   type: integer
+ *                   example: 34
+ *                 options:
+ *                   type: object
+ *                   properties:
+ *                     documentSecret:
+ *                       type: string
+ *       '400':
+ *         description: Sync version / document secret mismatch
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Non-matching sync versions, local is version ${server syncVersion}, remote is ${requested syncVersion}. It is recommended to run same version of Trilium on both sides of sync"
+ *       '401':
+ *         description: Timestamp mismatch
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Auth request time is out of sync, please check that both client and server have correct time. The difference between clocks has to be smaller than 5 minutes"
+ */
 function loginSync(req: Request) {
     if (!sqlInit.schemaExists()) {
         return [500, { message: "DB schema does not exist, can't sync." }];
@@ -27,16 +89,19 @@ function loginSync(req: Request) {
 
     // login token is valid for 5 minutes
     if (Math.abs(timestamp.getTime() - now.getTime()) > 5 * 60 * 1000) {
-        return [401, { message: 'Auth request time is out of sync, please check that both client and server have correct time. The difference between clocks has to be smaller than 5 minutes.' }];
+        return [401, { message: "Auth request time is out of sync, please check that both client and server have correct time. The difference between clocks has to be smaller than 5 minutes." }];
     }
 
     const syncVersion = req.body.syncVersion;
 
     if (syncVersion !== appInfo.syncVersion) {
-        return [400, { message: `Non-matching sync versions, local is version ${appInfo.syncVersion}, remote is ${syncVersion}. It is recommended to run same version of Trilium on both sides of sync.` }];
+        return [
+            400,
+            { message: `Non-matching sync versions, local is version ${appInfo.syncVersion}, remote is ${syncVersion}. It is recommended to run same version of Trilium on both sides of sync.` }
+        ];
     }
 
-    const documentSecret = options.getOption('documentSecret');
+    const documentSecret = options.getOption("documentSecret");
     const expectedHash = utils.hmac(documentSecret, timestampStr);
 
     const givenHash = req.body.hash;
@@ -68,14 +133,14 @@ function loginToProtectedSession(req: Request) {
         return {
             success: false,
             message: "Unable to obtain data key."
-        }
+        };
     }
 
     protectedSessionService.setDataKey(decryptedDataKey);
 
     eventService.emit(eventService.ENTER_PROTECTED_SESSION);
 
-    ws.sendMessageToAllClients({ type: 'protectedSessionLogin' });
+    ws.sendMessageToAllClients({ type: "protectedSessionLogin" });
 
     return {
         success: true
@@ -87,7 +152,7 @@ function logoutFromProtectedSession() {
 
     eventService.emit(eventService.LEAVE_PROTECTED_SESSION);
 
-    ws.sendMessageToAllClients({ type: 'protectedSessionLogout' });
+    ws.sendMessageToAllClients({ type: "protectedSessionLogout" });
 }
 
 function touchProtectedSession() {
@@ -104,7 +169,7 @@ function token(req: Request) {
     // for backwards compatibility with Sender which does not send the name
     const tokenName = req.body.tokenName || "Trilium Sender / Web Clipper";
 
-    const {authToken} = etapiTokenService.createToken(tokenName);
+    const { authToken } = etapiTokenService.createToken(tokenName);
 
     return { token: authToken };
 }
