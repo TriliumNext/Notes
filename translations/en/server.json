@@ -98,6 +98,7 @@
   "login": {
     "title": "Login",
     "heading": "Trilium Login",
+    "incorrect-totp": "TOTP is incorrect. Please try again.",
     "incorrect-password": "Password is incorrect. Please try again.",
     "password": "Password",
     "remember-me": "Remember me",

@@ -6,6 +6,9 @@ import log from "../services/log.js";
 import express from "express";
 const router = express.Router();
 import auth from "../services/auth.js";
+import openID from '../services/open_id.js';
+import totp from './api/totp.js';
+import recoveryCodes from './api/recovery_codes.js';
 import cls from "../services/cls.js";
 import sql from "../services/sql.js";
 import entityChangesService from "../services/entity_changes.js";
@@ -70,8 +73,8 @@ import etapiNoteRoutes from "../etapi/notes.js";
 import etapiSpecialNoteRoutes from "../etapi/special_notes.js";
 import etapiSpecRoute from "../etapi/spec.js";
 import etapiBackupRoute from "../etapi/backup.js";
-
 import apiDocsRoute from "./api_docs.js";
+
 
 const MAX_ALLOWED_FILE_SIZE_MB = 250;
 const GET = "get",
@@ -114,8 +117,22 @@ function register(app: express.Application) {
     route(PST, "/set-password", [auth.checkAppInitialized, auth.checkPasswordNotSet], loginRoute.setPassword);
     route(GET, "/setup", [], setupRoute.setupPage);
 
-    apiRoute(GET, "/api/tree", treeApiRoute.getTree);
-    apiRoute(PST, "/api/tree/load", treeApiRoute.load);
+
+    apiRoute(GET, '/api/totp/generate', totp.generateSecret);
+    apiRoute(GET, '/api/totp/status', totp.getTOTPStatus);
+    apiRoute(GET, '/api/totp/get', totp.getSecret);
+
+    apiRoute(GET, '/api/oauth/status', openID.getOAuthStatus);
+    apiRoute(GET, '/api/oauth/validate', openID.isTokenValid);
+
+    apiRoute(PST, '/api/totp_recovery/set', recoveryCodes.setRecoveryCodes);
+    apiRoute(PST, '/api/totp_recovery/verify', recoveryCodes.veryifyRecoveryCode);
+    apiRoute(GET, '/api/totp_recovery/generate', recoveryCodes.generateRecoveryCodes);
+    apiRoute(GET, '/api/totp_recovery/enabled', recoveryCodes.checkForRecoveryKeys);
+    apiRoute(GET, '/api/totp_recovery/used', recoveryCodes.getUsedRecoveryCodes);
+
+    apiRoute(GET, '/api/tree', treeApiRoute.getTree);
+    apiRoute(PST, '/api/tree/load', treeApiRoute.load);
 
     apiRoute(GET, "/api/notes/:noteId", notesApiRoute.getNote);
     apiRoute(GET, "/api/notes/:noteId/blob", notesApiRoute.getNoteBlob);
@@ -492,7 +509,7 @@ function handleException(e: unknown | Error, method: HttpMethod, path: string, r
 
     log.error(`${method} ${path} threw exception: '${errMessage}', stack: ${errStack}`);
 
-    const resStatusCode = (e instanceof ValidationError || e instanceof NotFoundError) ?  e.statusCode : 500;
+    const resStatusCode = (e instanceof ValidationError || e instanceof NotFoundError) ? e.statusCode : 500;
 
     res.status(resStatusCode).json({
         message: errMessage

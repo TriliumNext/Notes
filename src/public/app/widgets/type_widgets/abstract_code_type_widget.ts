@@ -50,6 +50,13 @@ export default class AbstractCodeTypeWidget extends TypeWidget {
             matchTags: { bothTags: true },
             highlightSelectionMatches: { showToken: false, annotateScrollbar: false },
             lineNumbers: true,
+            keyMap: "default",
+            lint: false,
+            gutters: [],
+            tabindex: 0,
+            dragDrop: true,
+            placeholder: "",
+            readOnly: false,
             // we line wrap partly also because without it horizontal scrollbar displays only when you scroll
             // all the way to the bottom of the note. With line wrap, there's no horizontal scrollbar so no problem
             lineWrapping: options.is("codeLineWrapEnabled"),

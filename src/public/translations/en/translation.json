@@ -1309,6 +1309,22 @@
     "password_mismatch": "New passwords are not the same.",
     "password_changed_success": "Password has been changed. Trilium will be reloaded after you press OK."
   },
+  "multi_factor_authentication": {
+    "title": "Multi-Factor Authentication",
+    "description": "Multi-Factor Authentication (MFA) adds an extra layer of security to your account. Instead of just entering a password to log in, MFA requires you to provide one or more additional pieces of evidence to verify your identity. This way, even if someone gets hold of your password, they still can't access your account without the second piece of information. It's like adding an extra lock to your door, making it much harder for anyone else to break in.",
+    "oauth_title": "OAuth/OpenID",
+    "oauth_enabled": "OAuth/OpenID Enabled",
+    "oauth_description": "OpenID is a standardized way to let you log into websites using an account from another service, like Google, to verify your identity.",
+    "totp_title": "Time-based One-Time Password",
+    "totp_enabled": "TOTP Enabled",
+    "totp_description": "TOTP (Time-Based One-Time Password) is a security feature that generates a unique, temporary code which changes every 30 seconds. You use this code, along with your password to log into your account, making it much harder for anyone else to access it.",
+    "totp_secret_title": "Generate TOTP Secret",
+    "totp_secret_description": "TOTP Secret Key",
+    "totp_secret_generate": "Generate TOTP Secret",
+    "recovery_keys_title": "Single Sign-on Recovery Keys",
+    "recovery_keys_description": "Single sign-on recovery keys are used to login in the event you cannot access your Authenticator codes. Keep them somewhere safe and secure.",
+    "recovery_keys_description_warning": "After a recovery key is used it cannot be used again."
+  },
   "shortcuts": {
     "keyboard_shortcuts": "Keyboard Shortcuts",
     "multiple_shortcuts": "Multiple shortcuts for the same action can be separated by comma.",

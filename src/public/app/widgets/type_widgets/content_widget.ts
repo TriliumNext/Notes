@@ -32,6 +32,7 @@ import DatabaseAnonymizationOptions from "./options/advanced/database_anonymizat
 import BackendLogWidget from "./content/backend_log.js";
 import AttachmentErasureTimeoutOptions from "./options/other/attachment_erasure_timeout.js";
 import RibbonOptions from "./options/appearance/ribbon.js";
+import MultiFactorAuthenticationOptions from './options/multi_factor_authentication.js';
 import LocalizationOptions from "./options/i18n/i18n.js";
 import CodeBlockOptions from "./options/appearance/code_block.js";
 import EditorOptions from "./options/text_notes/editor.js";
@@ -94,6 +95,7 @@ const CONTENT_WIDGETS: Record<string, (typeof NoteContextAwareWidget)[]> = {
         PasswordOptions,
         ProtectedSessionTimeoutOptions
     ],
+    _optionsMFA: [MultiFactorAuthenticationOptions],
     _optionsEtapi: [
         EtapiOptions
     ],

@@ -8,14 +8,24 @@ import passwordService from "../services/encryption/password.js";
 import assetPath from "../services/asset_path.js";
 import appPath from "../services/app_path.js";
 import ValidationError from "../errors/validation_error.js";
-import type { Request, Response } from "express";
+import type { Request, Response } from 'express';
+import recoveryCodeService from '../services/encryption/recovery_codes.js';
+import openIDService from '../services/open_id.js';
+import openIDEncryption from '../services/encryption/open_id_encryption.js';
+import totp from '../services/totp.js';
+import open_id from '../services/open_id.js';
 
 function loginPage(req: Request, res: Response) {
-    res.render("login", {
-        failedAuth: false,
-        assetPath,
-        appPath
-    });
+    if (open_id.isOpenIDEnabled()) {
+        res.redirect('/authenticate');
+    } else {
+        res.render('login', {
+            failedAuth: false,
+            totpEnabled: totp.isTotpEnabled(),
+            assetPath: assetPath,
+            appPath: appPath,
+        });
+    }
 }
 
 function setPasswordPage(req: Request, res: Response) {
@@ -58,30 +68,43 @@ function setPassword(req: Request, res: Response) {
 }
 
 function login(req: Request, res: Response) {
-    const { password, rememberMe } = req.body;
+    const guessedPassword = req.body.password;
+    const guessedTotp = req.body.token;
 
-    if (!verifyPassword(password)) {
-        // note that logged IP address is usually meaningless since the traffic should come from a reverse proxy
-        log.info(`WARNING: Wrong password from ${req.ip}, rejecting.`);
-
-        return res.status(401).render("login", {
-            failedAuth: true,
-            assetPath,
-            appPath
-        });
-    }
-
-    req.session.regenerate(() => {
-        if (!rememberMe) {
-            // unset default maxAge set by sessionParser
-            // Cookie becomes non-persistent and expires after current browser session (e.g. when browser is closed)
-            req.session.cookie.maxAge = undefined;
+    if (verifyPassword(guessedPassword)) {
+        if (totp.isTotpEnabled()) {
+            if (!verifyTOTP(guessedTotp)) {
+                sendLoginError(req, res);
+                return;
+            }
         }
 
-        req.session.loggedIn = true;
+        const rememberMe = req.body.rememberMe;
 
-        res.redirect(".");
-    });
+        req.session.regenerate(() => {
+            if (rememberMe) {
+                req.session.cookie.maxAge = 21 * 24 * 3600000;  // 3 weeks
+            } else {
+                // unset default maxAge set by sessionParser
+                // Cookie becomes non-persistent and expires after current browser session (e.g. when browser is closed)
+                req.session.cookie.maxAge = undefined;
+            }
+
+            req.session.loggedIn = true;
+            res.redirect('.');
+        });
+    }
+    else {
+        sendLoginError(req, res);
+    }
+}
+
+function verifyTOTP(guessedToken: string) {
+    if (totp.validateTOTP(guessedToken)) return true;
+
+    const recoveryCodeValidates = recoveryCodeService.verifyRecoveryCode(guessedToken);
+
+    return recoveryCodeValidates;
 }
 
 function verifyPassword(guessedPassword: string) {
@@ -92,9 +115,29 @@ function verifyPassword(guessedPassword: string) {
     return guess_hashed.equals(hashed_password);
 }
 
+function sendLoginError(req: Request, res: Response) {
+    // note that logged IP address is usually meaningless since the traffic should come from a reverse proxy
+    if (totp.isTotpEnabled()) {
+        log.info(`WARNING: Wrong password or TOTP from ${req.ip}, rejecting.`);
+    } else {
+        log.info(`WARNING: Wrong password from ${req.ip}, rejecting.`);
+    }
+
+    res.status(401).render('login', {
+        failedAuth: true,
+        totpEnabled: optionService.getOption('totpEnabled') && totp.checkForTotSecret(),
+        assetPath: assetPath,
+    });
+}
+
 function logout(req: Request, res: Response) {
     req.session.regenerate(() => {
         req.session.loggedIn = false;
+
+        if (openIDService.isOpenIDEnabled() && openIDEncryption.isSubjectIdentifierSaved()) {
+            res.oidc.logout({ returnTo: '/authenticate' });
+        } else res.redirect('login');
+
         res.sendStatus(200);
     });
 }

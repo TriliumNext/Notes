@@ -7,6 +7,8 @@ import { isElectron } from "./utils.js";
 import passwordEncryptionService from "./encryption/password_encryption.js";
 import config from "./config.js";
 import passwordService from "./encryption/password.js";
+import openID from './open_id.js';
+import open_id_encryption from './encryption/open_id_encryption.js';
 import options from "./options.js";
 import attributes from "./attributes.js";
 import type { NextFunction, Request, Response } from "express";
@@ -15,7 +17,18 @@ const noAuthentication = config.General && config.General.noAuthentication === t
 
 function checkAuth(req: Request, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {
-        res.redirect("setup");
+        res.redirect('setup');
+    } else if (openID.checkOpenIDRequirements()) {
+        if (
+            req.oidc.isAuthenticated() &&
+            open_id_encryption.verifyOpenIDSubjectIdentifier(req.oidc.user?.sub)
+        ) {
+            req.session.loggedIn = true;
+            next();
+        } else {
+            req.session.loggedIn = false;
+            res.oidc.login({});
+        }
     } else if (!req.session.loggedIn && !isElectron && !noAuthentication) {
         const redirectToShare = options.getOptionBool("redirectBareDomain");
         if (redirectToShare) {
