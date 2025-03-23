@@ -25,6 +25,7 @@ jobs:
           - name: windows
             image: win-signing
             extension: [exe, zip]
+            shell: cmd
     runs-on: ${{ matrix.os.image }}
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +34,6 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        shell: bash
         run: npm ci
       - name: Update nightly version
         run: npm run chore:ci-update-nightly-version
@@ -43,6 +43,7 @@ jobs:
           os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
           extension: ${{ join(matrix.os.extension, ' ') }}
+          shell: ${{ matrix.os.shell }}
         env:
           APPLE_APP_CERTIFICATE_BASE64: ${{ secrets.APPLE_APP_CERTIFICATE_BASE64 }}
           APPLE_APP_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_CERTIFICATE_PASSWORD }}
