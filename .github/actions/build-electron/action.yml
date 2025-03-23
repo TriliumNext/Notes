@@ -14,6 +14,9 @@ inputs:
   shell:
     description: "Which shell to use"
     required: true
+  forge_platform:
+    description: "Which platform to pass to electron forge"
+    required: true
 
 runs:
   using: composite
@@ -72,8 +75,7 @@ runs:
       shell: ${{ inputs.shell }}
       run: npm run chore:update-build-info
 
-    # Critical debugging configuration
-    - name: Run electron-forge build with enhanced logging
+    - name: Run electron-forge build
       shell: ${{ inputs.shell }}
       env:
         # Pass through required environment variables for signing and notarization
@@ -81,18 +83,9 @@ runs:
         APPLE_ID: ${{ env.APPLE_ID }}
         APPLE_ID_PASSWORD: ${{ env.APPLE_ID_PASSWORD }}
       run: |
-        # Map OS names to Electron Forge platform names
-        if [ "${{ inputs.os }}" = "macos" ]; then
-          PLATFORM="darwin"
-        elif [ "${{ inputs.os }}" = "windows" ]; then
-          PLATFORM="win32"
-        else
-          PLATFORM="${{ inputs.os }}"
-        fi
-
         npm run electron-forge:make -- \
           --arch=${{ inputs.arch }} \
-          --platform=$PLATFORM
+          --platform=${{ inputs.forge_platform }}
 
     # Add DMG signing step
     - name: Sign DMG
