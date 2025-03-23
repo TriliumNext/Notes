@@ -23,7 +23,7 @@ jobs:
         arch: [x64]
         os:
           - name: windows
-            image: windows-latest
+            image: win-signing
             extension: [exe, zip]
     runs-on: ${{ matrix.os.image }}
     steps:
