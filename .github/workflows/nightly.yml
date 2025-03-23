@@ -23,7 +23,7 @@ jobs:
         arch: [x64]
         os:
           - name: windows
-            image: win-signing
+            image: windows-latest
             extension: [exe, zip]
             shell: cmd
             forge_platform: win32
