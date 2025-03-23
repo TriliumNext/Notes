@@ -38,7 +38,7 @@
     "electron:switch": "electron-rebuild",
     "docs:edit": "cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_DATA_DIR=./data-docs TRILIUM_ENV=dev TRILIUM_PORT=37741 electron ./electron-docs-main.ts .",
     "docs:edit-nix": "electron-rebuild --version 33.3.1 && cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_DATA_DIR=./data-docs TRILIUM_PORT=37741 TRILIUM_ENV=dev nix-shell -p electron_33 --run \"electron ./electron-docs-main.ts .\"",
-    "electron-forge:prepare": "npm run build:prepare-dist && recursive-copy node_modules ./build",
+    "electron-forge:prepare": "npm run build:prepare-dist",
     "electron-forge:start": "npm run electron-forge:prepare && cd ./build && electron-forge start",
     "electron-forge:make": "npm run electron-forge:prepare && cd ./build && electron-forge make",
     "electron-forge:package": "npm run electron-forge:prepare && cd ./build && electron-forge package",
