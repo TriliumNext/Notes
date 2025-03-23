@@ -6,6 +6,9 @@ on:
   # This can be used to allow manually triggering nightlies from the web interface
   workflow_dispatch:
   push:
+  pull_request:
+    paths:
+      - .github/actions/build-electron/*
 env:
   GITHUB_UPLOAD_URL: https://uploads.github.com/repos/TriliumNext/Notes/releases/179589950/assets{?name,label}
   GITHUB_RELEASE_ID: 179589950
@@ -51,6 +54,7 @@ jobs:
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           make_latest: false
           prerelease: true
@@ -83,6 +87,7 @@ jobs:
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           make_latest: false
           prerelease: true
