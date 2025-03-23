@@ -84,8 +84,7 @@ runs:
         APPLE_ID_PASSWORD: ${{ env.APPLE_ID_PASSWORD }}
       run: |
         npm run electron-forge:make -- \
-          --arch=${{ inputs.arch }} \
-          --platform=${{ inputs.forge_platform }}
+          --arch=${{ inputs.arch }}
 
     # Add DMG signing step
     - name: Sign DMG
