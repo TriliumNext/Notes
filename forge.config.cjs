@@ -26,6 +26,9 @@ module.exports = {
             appleIdPassword: process.env.APPLE_ID_PASSWORD,
             teamId: process.env.APPLE_TEAM_ID
         },
+        windowsSign: {
+            hookModulePath: "bin\\sign-windows.cjs"
+        },
         extraResource: [
             // All resources should stay in Resources directory for macOS
             ...(process.platform === "darwin" ? [] : extraResourcesForPlatform),

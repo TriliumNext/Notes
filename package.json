@@ -166,6 +166,7 @@
     "@electron-forge/maker-zip": "7.7.0",
     "@electron-forge/plugin-auto-unpack-natives": "7.7.0",
     "@electron/rebuild": "3.7.1",
+    "@electron/windows-sign": "1.2.1",
     "@eslint/js": "9.23.0",
     "@fullcalendar/core": "6.1.15",
     "@fullcalendar/daygrid": "6.1.15",
