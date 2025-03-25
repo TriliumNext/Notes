@@ -105,7 +105,7 @@ class SNote extends AbstractShacaEntity {
             }
         }
 
-        let content = row.content;
+        const content = row.content;
 
         if (this.hasStringContent()) {
             return content === null ? "" : content.toString("utf-8");
@@ -212,7 +212,7 @@ class SNote extends AbstractShacaEntity {
     /**
      * @throws Error in case of invalid JSON
      */
-    getJsonContent(): any | null {
+    getJsonContent(): unknown | null {
         const content = this.getContent();
 
         if (typeof content !== "string" || !content || !content.trim()) {

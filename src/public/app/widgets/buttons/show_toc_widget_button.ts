@@ -13,7 +13,7 @@ export default class ShowTocWidgetButton extends OnClickButtonWidget {
     constructor() {
         super();
 
-        this.icon("bx-spreadsheet bx-rotate-180")
+        this.icon("bx-tn-toc")
             .title(t("show_toc_widget_button.show_toc"))
             .titlePlacement("bottom")
             .onClick(() => {

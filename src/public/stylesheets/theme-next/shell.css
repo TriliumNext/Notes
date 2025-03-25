@@ -1305,7 +1305,7 @@ div.promoted-attribute-cell .multiplicity:has(span) {
  /* Floating buttons container */
 div#center-pane .floating-buttons-children {
     opacity: 1;
-    overflow: hidden;
+    min-height: var(--floating-button-height);
     transform-origin: right;
     box-shadow: 1px 1px 1px var(--floating-button-shadow-color);
     background: var(--floating-button-background-color);
@@ -1324,6 +1324,10 @@ div#center-pane .floating-buttons-children {
 }
 
 /* Floating buttons */
+
+.floating-buttons-children {
+    --border-radius-size: 6px;
+}
 
 .floating-buttons-children > * {
     margin: 0 !important;
@@ -1350,6 +1354,12 @@ div.floating-buttons-children .floating-button:hover {
 div.floating-buttons-children > button:active,
 div.floating-buttons-children .floating-button:active {
     font-size: calc(var(--floating-button-icon-size) * 0.85);
+}
+
+/* The first visible floating button */
+div.floating-buttons-children > *:nth-child(1 of .visible) {
+    --border-radius: var(--border-radius-size) 0 0 var(--border-radius-size);
+    border-radius: var(--border-radius);
 }
 
  /* "Show / hide floating buttons" buttons */
@@ -1409,8 +1419,9 @@ div.floating-buttons-children:not(.temporarily-hidden) .close-floating-buttons-b
     animation: floating-buttons-show-hide-button-animation 400ms ease-out;
 }
 
-div.floating-buttons-children .close-floating-buttons-button {
-    border-radius: 0;
+div.floating-buttons-children .close-floating-buttons {
+    border-radius: 0 var(--border-radius-size) var(--border-radius-size) 0;
+    overflow: hidden;
 }
 
 div.floating-buttons-children .close-floating-buttons {
@@ -1426,16 +1437,25 @@ div.floating-buttons-children .close-floating-buttons:has(.close-floating-button
 
 /* Backlink count */
 
-.floating-buttons .backlinks-ticker {
+.backlinks-widget .backlinks-ticker {
     height: 100%;
     padding: 0 10px;
-    border-radius: 0;
+    border-radius: var(--border-radius);
     background: transparent;
     user-select: none;
 }
 
-.floating-buttons .backlinks-ticker:has(.backlinks-count:hover) {
+.backlinks-widget .backlinks-ticker:hover {
     background: var(--floating-button-hover-background);
+}
+
+.backlinks-widget .backlinks-items {
+    --menu-padding-size: 20px;
+}
+
+/* TODO: Restyle the path */
+.backlinks-widget .backlinks-items .note-path {
+    padding-inline-start: 8px;
 }
 
 /* Copy image reference */
@@ -1450,14 +1470,6 @@ div.floating-buttons-children .close-floating-buttons:has(.close-floating-button
 .floating-buttons .code-buttons-widget,
 .floating-buttons .relation-map-buttons {
     gap: 0;
-}
-
-/* Individual icon position / size corrections */
-
-/* Table of contents */
-.floating-buttons .bx-spreadsheet::before {
-    /* Note: since the icon is rotated, a positive top margin will actually shift the icon upwards */
-    margin-top: .1em;
 }
 
 /* The highlight animation */

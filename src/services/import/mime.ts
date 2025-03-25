@@ -3,6 +3,7 @@
 import mimeTypes from "mime-types";
 import path from "path";
 import type { TaskData } from "../task_context_interface.js";
+import type { NoteType } from "../../becca/entities/rows.js";
 
 const CODE_MIME_TYPES = new Set([
     "application/json",
@@ -68,7 +69,9 @@ const EXTENSION_TO_MIME = new Map<string, string>([
     [".scala", "text/x-scala"],
     [".swift", "text/x-swift"],
     [".ts", "text/x-typescript"],
-    [".excalidraw", "application/json"]
+    [".excalidraw", "application/json"],
+    [".mermaid", "text/vnd.mermaid"],
+    [".mmd", "text/vnd.mermaid"]
 ]);
 
 /** @returns false if MIME is not detected */
@@ -85,7 +88,7 @@ function getMime(fileName: string) {
     return mimeFromExt || mimeTypes.lookup(fileNameLc);
 }
 
-function getType(options: TaskData, mime: string) {
+function getType(options: TaskData, mime: string): NoteType {
     const mimeLc = mime?.toLowerCase();
 
     switch (true) {
@@ -97,6 +100,9 @@ function getType(options: TaskData, mime: string) {
 
         case mime.startsWith("image/"):
             return "image";
+
+        case mime === "text/vnd.mermaid":
+            return "mermaid";
 
         default:
             return "file";

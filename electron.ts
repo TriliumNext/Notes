@@ -4,7 +4,6 @@ import electron from "electron";
 import electronDebug from "electron-debug";
 import electronDl from "electron-dl";
 import sqlInit from "./src/services/sql_init.js";
-import appIconService from "./src/services/app_icon.js";
 import windowService from "./src/services/window.js";
 import tray from "./src/services/tray.js";
 
@@ -18,8 +17,6 @@ if ((await import("electron-squirrel-startup")).default) {
 
 // Adds debug features like hotkeys for triggering dev tools and reload
 electronDebug();
-
-appIconService.installLocalAppIcon();
 
 electronDl({ saveAs: true });
 

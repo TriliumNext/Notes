@@ -47,7 +47,7 @@ class SAttachment extends AbstractShacaEntity {
             }
         }
 
-        let content = row.content;
+        const content = row.content;
 
         if (this.hasStringContent()) {
             return content === null ? "" : content.toString("utf-8");

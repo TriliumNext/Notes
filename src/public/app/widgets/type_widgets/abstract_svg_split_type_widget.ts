@@ -1,7 +1,9 @@
 import type { EventData } from "../../components/app_context.js";
 import type FNote from "../../entities/fnote.js";
+import { t } from "../../services/i18n.js";
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
+import OnClickButtonWidget from "../buttons/onclick_button.js";
 import AbstractSplitTypeWidget from "./abstract_split_type_widget.js";
 
 /**
@@ -48,11 +50,20 @@ export default abstract class AbstractSvgSplitTypeWidget extends AbstractSplitTy
         const blob = await note?.getBlob();
         const content = blob?.content || "";
         this.onContentChanged(content, true);
+
+        // Save the SVG when entering a note only when it does not have an attachment.
+        this.note?.getAttachments().then((attachments) => {
+            const attachmentName = `${this.attachmentName}.svg`;
+            if (!attachments.find((a) => a.title === attachmentName)) {
+                this.#saveSvg();
+            }
+        });
     }
 
     getData(): { content: string; } {
         const data = super.getData();
         this.onContentChanged(data.content, false);
+        this.#saveSvg();
         return data;
     }
 
@@ -70,24 +81,22 @@ export default abstract class AbstractSvgSplitTypeWidget extends AbstractSplitTy
         let svg: string = "";
         try {
             svg = await this.renderSvg(content);
+
+            // Rendering was succesful.
+            this.setError(null);
+
+            if (svg === this.svg) {
+                return;
+            }
+
+            this.svg = svg;
+            this.$renderContainer.html(svg);
         } catch (e: unknown) {
             // Rendering failed.
             this.setError((e as Error)?.message);
-            return;
         }
 
-        // Rendering was succesful.
-        this.setError(null);
-
-        if (svg === this.svg) {
-            return;
-        }
-
-        this.svg = svg;
-
-        this.$renderContainer.html(svg);
         await this.#setupPanZoom(!recenter);
-        this.#saveSvg();
     }
 
     #saveSvg() {
@@ -150,7 +159,7 @@ export default abstract class AbstractSvgSplitTypeWidget extends AbstractSplitTy
         const svgPanZoom = (await import("svg-pan-zoom")).default;
         const zoomInstance = svgPanZoom($svgEl[0], {
             zoomEnabled: true,
-            controlIconsEnabled: true
+            controlIconsEnabled: false
         });
 
         if (preservePanZoom && pan && zoom) {
@@ -159,6 +168,7 @@ export default abstract class AbstractSvgSplitTypeWidget extends AbstractSplitTy
             zoomInstance.pan(pan);
         } else {
             // New instance, reposition properly.
+            zoomInstance.resize();
             zoomInstance.center();
             zoomInstance.fit();
         }
@@ -170,6 +180,26 @@ export default abstract class AbstractSvgSplitTypeWidget extends AbstractSplitTy
         return {
             onDrag: () => this.zoomHandler?.()
         }
+    }
+
+    buildPreviewButtons(): OnClickButtonWidget[] {
+        return [
+            new OnClickButtonWidget()
+                .icon("bx-zoom-in")
+                .title(t("relation_map_buttons.zoom_in_title"))
+                .titlePlacement("top")
+                .onClick(() => this.zoomInstance?.zoomIn())
+            , new OnClickButtonWidget()
+                .icon("bx-zoom-out")
+                .title(t("relation_map_buttons.zoom_out_title"))
+                .titlePlacement("top")
+                .onClick(() => this.zoomInstance?.zoomOut())
+            , new OnClickButtonWidget()
+                .icon("bx-crop")
+                .title(t("relation_map_buttons.reset_pan_zoom_title"))
+                .titlePlacement("top")
+                .onClick(() => this.zoomHandler())
+        ];
     }
 
     #cleanUpZoom() {
@@ -185,6 +215,14 @@ export default abstract class AbstractSvgSplitTypeWidget extends AbstractSplitTy
         }
 
         utils.downloadSvg(this.note.title, this.svg);
+    }
+
+    async exportPngEvent({ ntxId }: EventData<"exportPng">) {
+        if (!this.isNoteContext(ntxId) || this.note?.type !== "mermaid" || !this.svg) {
+            return;
+        }
+
+        utils.downloadSvgAsPng(this.note.title, this.svg);
     }
 
 }

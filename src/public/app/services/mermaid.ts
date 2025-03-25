@@ -1,6 +1,25 @@
+import type { MermaidConfig } from "mermaid";
 import type { Mermaid } from "mermaid";
 
 let elkLoaded = false;
+
+export function getMermaidConfig(): MermaidConfig {
+    const documentStyle = window.getComputedStyle(document.documentElement);
+    const mermaidTheme = documentStyle.getPropertyValue("--mermaid-theme") as "default";
+
+    return {
+        theme: mermaidTheme.trim() as "default",
+        securityLevel: "antiscript",
+        flowchart: { useMaxWidth: false },
+        sequence: { useMaxWidth: false },
+        gantt: { useMaxWidth: false },
+        class: { useMaxWidth: false },
+        state: { useMaxWidth: false },
+        pie: { useMaxWidth: true },
+        journey: { useMaxWidth: false },
+        gitGraph: { useMaxWidth: false }
+    };
+}
 
 /**
  * Determines whether the ELK extension of Mermaid.js needs to be loaded (which is a relatively large library), based on the

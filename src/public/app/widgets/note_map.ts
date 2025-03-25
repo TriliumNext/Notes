@@ -19,25 +19,10 @@ const TPL = `<div class="note-map-widget">
             overflow: hidden;
         }
 
-        .map-type-switcher {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10; /* should be below dropdown (note actions) */
-        }
-
-        .map-type-switcher button.bx {
-            font-size: 130%;
-            padding: 1px 10px 1px 10px;
-        }
-
         /* Style Ui Element to Drag Nodes */
         .fixnodes-type-switcher {
-            position: absolute;
             display: flex;
             align-items: center;
-            bottom: 10px;
-            left: 10px;
             z-index: 10; /* should be below dropdown (note actions) */
             border-radius: .2rem;
         }
@@ -94,14 +79,14 @@ const TPL = `<div class="note-map-widget">
 
     </style>
 
-    <div class="btn-group btn-group-sm map-type-switcher" role="group">
+    <div class="btn-group btn-group-sm map-type-switcher content-floating-buttons top-left" role="group">
       <button type="button" class="btn bx bx-network-chart tn-tool-button" title="${t("note-map.button-link-map")}" data-type="link"></button>
       <button type="button" class="btn bx bx-sitemap tn-tool-button" title="${t("note-map.button-tree-map")}" data-type="tree"></button>
     </div>
 
     <! UI for dragging Notes and link force >
 
-    <div class=" btn-group-sm fixnodes-type-switcher" role="group">
+    <div class="btn-group-sm fixnodes-type-switcher content-floating-buttons bottom-left" role="group">
       <button type="button" data-toggle="button" class="btn bx bx-lock-alt tn-tool-button" title="${t("note_map.fix-nodes")}" data-type="moveable"></button>
       <input type="range" class="slider" min="1" title="${t("note_map.link-distance")}" max="100" value="40" >
     </div>

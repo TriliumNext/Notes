@@ -11,7 +11,7 @@ import ProtectedSessionPasswordDialog from "../widgets/dialogs/protected_session
 import ConfirmDialog from "../widgets/dialogs/confirm.js";
 import FilePropertiesWidget from "../widgets/ribbon_widgets/file_properties.js";
 import FloatingButtons from "../widgets/floating_buttons/floating_buttons.js";
-import EditButton from "../widgets/buttons/edit_button.js";
+import EditButton from "../widgets/floating_buttons/edit_button.js";
 import RelationMapButtons from "../widgets/floating_buttons/relation_map_buttons.js";
 import SvgExportButton from "../widgets/floating_buttons/svg_export_button.js";
 import BacklinksWidget from "../widgets/floating_buttons/zpetne_odkazy.js";
@@ -130,7 +130,7 @@ export default class MobileLayout {
                     .id("mobile-rest-container")
                     .child(
                         new SidebarContainer("tree", "column")
-                            .class("d-sm-flex d-md-flex d-lg-flex d-xl-flex col-12 col-sm-5 col-md-4 col-lg-3 col-xl-3")
+                            .class("d-md-flex d-lg-flex d-xl-flex col-12 col-sm-5 col-md-4 col-lg-3 col-xl-3")
                             .id("mobile-sidebar-wrapper")
                             .css("max-height", "100%")
                             .css("padding-left", "0")
@@ -142,10 +142,6 @@ export default class MobileLayout {
                         new ScreenContainer("detail", "column")
                             .id("detail-container")
                             .class("d-sm-flex d-md-flex d-lg-flex d-xl-flex col-12 col-sm-7 col-md-8 col-lg-9")
-                            .css("padding-left", "0")
-                            .css("padding-right", "0")
-                            .css("max-height", "100%")
-                            .css("position", "relative")
                             .child(
                                 new FlexContainer("row")
                                     .contentSized()

@@ -5,6 +5,7 @@ import server from "../services/server.js";
 import type FNote from "../entities/fnote.js";
 import type { EventData } from "../components/app_context.js";
 import type { Icon } from "./icon_list.js";
+import { Dropdown } from "bootstrap";
 
 const TPL = `
 <div class="note-icon-widget dropdown">
@@ -88,6 +89,7 @@ interface IconToCountCache {
 
 export default class NoteIconWidget extends NoteContextAwareWidget {
 
+    private dropdown!: bootstrap.Dropdown;
     private $icon!: JQuery<HTMLElement>;
     private $iconList!: JQuery<HTMLElement>;
     private $iconCategory!: JQuery<HTMLElement>;
@@ -96,6 +98,8 @@ export default class NoteIconWidget extends NoteContextAwareWidget {
 
     doRender() {
         this.$widget = $(TPL);
+        this.dropdown = Dropdown.getOrCreateInstance(this.$widget.find("[data-bs-toggle='dropdown']")[0]);
+
         this.$icon = this.$widget.find("button.note-icon");
         this.$iconList = this.$widget.find(".icon-list");
         this.$iconList.on("click", "span", async (e) => {
@@ -130,6 +134,8 @@ export default class NoteIconWidget extends NoteContextAwareWidget {
 
     async refreshWithNote(note: FNote) {
         this.$icon.removeClass().addClass(`${note.getIcon()} note-icon`);
+        this.$icon.prop("disabled", !!(this.noteContext?.viewScope?.viewMode !== "default"));
+        this.dropdown.hide();
     }
 
     async entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {

@@ -17,7 +17,7 @@
     margin: 0 !important;
 }
 
-.ck-content .admonition {
+.admonition {
     --accent-color: var(--card-border-color);
     border: 1px solid var(--accent-color);
     box-shadow: var(--card-box-shadow);
@@ -29,19 +29,19 @@
     overflow: hidden;
 }
 
-.ck-content .admonition p:last-child {
+.admonition p:last-child {
     margin-bottom: 0;
 }
 
-.ck-content .admonition p, h2 {
+.admonition p, h2 {
     margin-top: 0;
 }
 
-.ck-content .admonition.note { --accent-color: #69c7ff; }
-.ck-content .admonition.tip { --accent-color: #40c025; }
-.ck-content .admonition.important { --accent-color: #9839f7; }
-.ck-content .admonition.caution { --accent-color: #ff2e2e; }
-.ck-content .admonition.warning { --accent-color: #e2aa03; }
+.admonition.note { --accent-color: #69c7ff; }
+.admonition.tip { --accent-color: #40c025; }
+.admonition.important { --accent-color: #9839f7; }
+.admonition.caution { --accent-color: #ff2e2e; }
+.admonition.warning { --accent-color: #e2aa03; }
 
 /*
  * CKEditor 5 (v41.0.0) content styles.

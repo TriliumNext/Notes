@@ -1465,9 +1465,6 @@
     "title": "Highlights List",
     "options": "Options"
   },
-  "mermaid": {
-    "diagram_error": "The diagram could not be displayed. See <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">help and examples</a>."
-  },
   "quick-search": {
     "placeholder": "Quick search",
     "searching": "Searching...",
@@ -1703,5 +1700,16 @@
   "content_language": {
     "title": "Content languages",
     "description": "Select one or more languages that should appear in the language selection in the Basic Properties section of a read-only or editable text note. This will allow features such as spell-checking or right-to-left support."
+  },
+  "switch_layout_button": {
+    "title_vertical": "Move editing pane to the bottom",
+    "title_horizontal": "Move editing pane to the left"
+  },
+  "toggle_read_only_button": {
+    "unlock-editing": "Unlock editing",
+    "lock-editing": "Lock editing"
+  },
+  "png_export_button": {
+    "button_title": "Export diagram as PNG"
   }
 }

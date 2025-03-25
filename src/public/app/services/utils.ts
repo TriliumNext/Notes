@@ -609,9 +609,20 @@ function createImageSrcUrl(note: { noteId: string; title: string }) {
  */
 function downloadSvg(nameWithoutExtension: string, svgContent: string) {
     const filename = `${nameWithoutExtension}.svg`;
+    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    triggerDownload(filename, dataUrl);
+}
+
+/**
+ * Downloads the given data URL on the client device, with a custom file name.
+ *
+ * @param fileName the name to give the downloaded file.
+ * @param dataUrl the data URI to download.
+ */
+function triggerDownload(fileName: string, dataUrl: string) {
     const element = document.createElement("a");
-    element.setAttribute("href", `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`);
-    element.setAttribute("download", filename);
+    element.setAttribute("href", dataUrl);
+    element.setAttribute("download", fileName);
 
     element.style.display = "none";
     document.body.appendChild(element);
@@ -619,6 +630,56 @@ function downloadSvg(nameWithoutExtension: string, svgContent: string) {
     element.click();
 
     document.body.removeChild(element);
+}
+
+/**
+ * Given a string representation of an SVG, renders the SVG to PNG and triggers a download of the file on the client device.
+ *
+ * Note that the SVG must specify its width and height as attributes in order for it to be rendered.
+ *
+ * @param nameWithoutExtension the name of the file. The .png suffix is automatically added to it.
+ * @param svgContent the content of the SVG file download.
+ * @returns `true` if the operation succeeded (width/height present), or `false` if the download was not triggered.
+ */
+function downloadSvgAsPng(nameWithoutExtension: string, svgContent: string) {
+    const mime = "image/svg+xml";
+
+    // First, we need to determine the width and the height from the input SVG.
+    const svgDocument = (new DOMParser()).parseFromString(svgContent, mime);
+    const width = svgDocument.documentElement?.getAttribute("width");
+    const height = svgDocument.documentElement?.getAttribute("height");
+
+    if (!width || !height) {
+        return false;
+    }
+
+    // Convert the image to a blob.
+    const svgBlob = new Blob([ svgContent ], {
+        type: mime
+    })
+
+    // Create an image element and load the SVG.
+    const imageEl = new Image();
+    imageEl.width = parseFloat(width);
+    imageEl.height = parseFloat(height);
+    imageEl.src = URL.createObjectURL(svgBlob);
+    imageEl.onload = () => {
+        // Draw the image with a canvas.
+        const canvasEl = document.createElement("canvas");
+        canvasEl.width = imageEl.width;
+        canvasEl.height = imageEl.height;
+        document.body.appendChild(canvasEl);
+
+        const ctx = canvasEl.getContext("2d");
+        ctx?.drawImage(imageEl, 0, 0);
+        URL.revokeObjectURL(imageEl.src);
+
+        const imgUri = canvasEl.toDataURL("image/png")
+        triggerDownload(`${nameWithoutExtension}.png`, imgUri);
+        document.body.removeChild(canvasEl);
+    };
+
+    return true;
 }
 
 /**
@@ -719,6 +780,7 @@ export default {
     copyHtmlToClipboard,
     createImageSrcUrl,
     downloadSvg,
+    downloadSvgAsPng,
     compareVersions,
     isUpdateAvailable,
     isLaunchBarConfig

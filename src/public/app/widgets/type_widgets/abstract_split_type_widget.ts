@@ -4,15 +4,20 @@ import EditableCodeTypeWidget from "./editable_code.js";
 import TypeWidget from "./type_widget.js";
 import Split from "split.js";
 import { DEFAULT_GUTTER_SIZE } from "../../services/resizer.js";
+import options from "../../services/options.js";
+import type SwitchSplitOrientationButton from "../floating_buttons/switch_layout_button.js";
+import type { EventData } from "../../components/app_context.js";
+import type OnClickButtonWidget from "../buttons/onclick_button.js";
 
 const TPL = `\
-<div class="note-detail-split note-detail-printable split-horizontal">
-    <div class="note-detail-split-first-col">
+<div class="note-detail-split note-detail-printable">
+    <div class="note-detail-split-editor-col">
         <div class="note-detail-split-editor"></div>
-        <div class="note-detail-error-container alert alert-warning hidden-ext"></div>
+        <div class="admonition caution note-detail-error-container hidden-ext"></div>
     </div>
-    <div class="note-detail-split-second-col">
+    <div class="note-detail-split-preview-col">
         <div class="note-detail-split-preview"></div>
+        <div class="btn-group btn-group-sm map-type-switcher content-floating-buttons preview-buttons bottom-right" role="group"></div>
     </div>
 
     <style>
@@ -21,8 +26,13 @@ const TPL = `\
             height: 100%;
         }
 
-        .note-detail-split-first-col {
+        .note-detail-split-editor-col {
             display: flex;
+            flex-direction: column;
+        }
+
+        .note-detail-split-preview-col {
+            position: relative;
         }
 
         .note-detail-split .note-detail-split-editor {
@@ -30,13 +40,20 @@ const TPL = `\
             flex-grow: 1;
         }
 
+        .note-detail-split .note-detail-split-editor .note-detail-code {
+            contain: size !important;
+        }
+
         .note-detail-split .note-detail-error-container {
             font-family: var(--monospace-font-family);
-            margin: 0.1em;
+            margin: 5px;
+            white-space: pre-wrap;
+            font-size: 0.85em;
         }
 
         .note-detail-split .note-detail-split-preview {
             transition: opacity 250ms ease-in-out;
+            height: 100%;
         }
 
         .note-detail-split .note-detail-split-preview.on-error {
@@ -45,11 +62,12 @@ const TPL = `\
 
         /* Horizontal layout */
 
-        .note-detail-split.split-horizontal > .note-detail-split-second-col {
+        .note-detail-split.split-horizontal > .note-detail-split-preview-col {
             border-left: 1px solid var(--main-border-color);
         }
 
-        .note-detail-split.split-horizontal > div {
+        .note-detail-split.split-horizontal > .note-detail-split-editor-col,
+        .note-detail-split.split-horizontal > .note-detail-split-preview-col {
             height: 100%;
             width: 50%;
         }
@@ -58,13 +76,31 @@ const TPL = `\
             height: 100%;
         }
 
-        .note-detail-split-first-col {
+        /* Vertical layout */
+
+        .note-detail-split.split-vertical {
             flex-direction: column;
         }
 
-        /* Vertical layout */
+        .note-detail-split.split-vertical > .note-detail-split-editor-col,
+        .note-detail-split.split-vertical > .note-detail-split-preview-col {
+            width: 100%;
+            height: 50%;
+        }
 
+        .note-detail-split.split-vertical > .note-detail-split-editor-col {
+            border-top: 1px solid var(--main-border-color);
+        }
 
+        .note-detail-split.split-vertical .note-detail-split-preview-col {
+            order: -1;
+        }
+
+        /* Read-only view */
+
+        .note-detail-split.split-read-only .note-detail-split-preview-col {
+            width: 100%;
+        }
     </style>
 </div>
 `;
@@ -76,17 +112,20 @@ const TPL = `\
  *
  * - The two panes are resizeable via a split, on desktop. The split can be optionally customized via {@link buildSplitExtraOptions}.
  * - Can display errors to the user via {@link setError}.
+ * - Horizontal or vertical orientation for the editor/preview split, adjustable via {@link SwitchSplitOrientationButton}.
  */
 export default abstract class AbstractSplitTypeWidget extends TypeWidget {
 
     private splitInstance?: Split.Instance;
 
     protected $preview!: JQuery<HTMLElement>;
-    private $firstCol!: JQuery<HTMLElement>;
-    private $secondCol!: JQuery<HTMLElement>;
+    private $editorCol!: JQuery<HTMLElement>;
+    private $previewCol!: JQuery<HTMLElement>;
     private $editor!: JQuery<HTMLElement>;
     private $errorContainer!: JQuery<HTMLElement>;
     private editorTypeWidget: EditableCodeTypeWidget;
+    private layoutOrientation?: "horizontal" | "vertical";
+    private isReadOnly?: boolean;
 
     constructor() {
         super();
@@ -98,29 +137,69 @@ export default abstract class AbstractSplitTypeWidget extends TypeWidget {
     doRender(): void {
         this.$widget = $(TPL);
 
-        this.$firstCol = this.$widget.find(".note-detail-split-first-col");
-        this.$secondCol = this.$widget.find(".note-detail-split-second-col");
+        // Preview pane
+        this.$previewCol = this.$widget.find(".note-detail-split-preview-col");
         this.$preview = this.$widget.find(".note-detail-split-preview");
+
+        // Editor pane
+        this.$editorCol = this.$widget.find(".note-detail-split-editor-col");
         this.$editor = this.$widget.find(".note-detail-split-editor");
         this.$editor.append(this.editorTypeWidget.render());
         this.$errorContainer = this.$widget.find(".note-detail-error-container");
-        this.#setupResizer();
+        this.#adjustLayoutOrientation();
+
+        // Preview pane buttons
+        const $previewButtons = this.$previewCol.find(".preview-buttons");
+        const previewButtons = this.buildPreviewButtons();
+        $previewButtons.toggle(previewButtons.length > 0);
+        for (const previewButton of previewButtons) {
+            const $button = previewButton.render();
+            $button.removeClass("button-widget")
+                .addClass("btn")
+                .addClass("tn-tool-button");
+            $previewButtons.append($button);
+            previewButton.refreshIcon();
+        }
 
         super.doRender();
     }
 
     cleanup(): void {
-        this.splitInstance?.destroy();
-        this.splitInstance = undefined;
+        this.#destroyResizer();
     }
 
     async doRefresh(note: FNote | null | undefined) {
-        await this.editorTypeWidget.initialized;
+        this.#adjustLayoutOrientation();
 
-        if (note) {
+        if (note && !this.isReadOnly) {
+            await this.editorTypeWidget.initialized;
             this.editorTypeWidget.noteContext = this.noteContext;
             this.editorTypeWidget.spacedUpdate = this.spacedUpdate;
             this.editorTypeWidget.doRefresh(note);
+        }
+    }
+
+    #adjustLayoutOrientation() {
+        // Read-only
+        const isReadOnly = this.note?.hasLabel("readOnly");
+        if (this.isReadOnly !== isReadOnly) {
+            this.$editorCol.toggle(!isReadOnly);
+        }
+
+        // Vertical vs horizontal layout
+        const layoutOrientation = (!utils.isMobile() ? options.get("splitEditorOrientation") ?? "horizontal" : "vertical");
+        if (this.layoutOrientation !== layoutOrientation || this.isReadOnly !== isReadOnly) {
+            this.$widget
+                .toggleClass("split-horizontal", !isReadOnly && layoutOrientation === "horizontal")
+                .toggleClass("split-vertical", !isReadOnly && layoutOrientation === "vertical")
+                .toggleClass("split-read-only", isReadOnly);
+            this.layoutOrientation = layoutOrientation as ("horizontal" | "vertical");
+            this.isReadOnly = isReadOnly;
+            this.#destroyResizer();
+        }
+
+        if (!this.splitInstance) {
+            this.#setupResizer();
         }
     }
 
@@ -129,13 +208,28 @@ export default abstract class AbstractSplitTypeWidget extends TypeWidget {
             return;
         }
 
+        let elements = [ this.$editorCol[0], this.$previewCol[0] ];
+        if (this.layoutOrientation === "vertical") {
+            elements.reverse();
+        }
+
         this.splitInstance?.destroy();
-        this.splitInstance = Split([ this.$firstCol[0], this.$secondCol[0] ], {
-            sizes: [ 50, 50 ],
-            direction: "horizontal",
-            gutterSize: DEFAULT_GUTTER_SIZE,
-            ...this.buildSplitExtraOptions()
-        });
+
+        if (!this.isReadOnly) {
+            this.splitInstance = Split(elements, {
+                sizes: [ 50, 50 ],
+                direction: this.layoutOrientation,
+                gutterSize: DEFAULT_GUTTER_SIZE,
+                ...this.buildSplitExtraOptions()
+            });
+        } else {
+            this.splitInstance = undefined;
+        }
+    }
+
+    #destroyResizer() {
+        this.splitInstance?.destroy();
+        this.splitInstance = undefined;
     }
 
     /**
@@ -154,6 +248,10 @@ export default abstract class AbstractSplitTypeWidget extends TypeWidget {
         };
     }
 
+    buildPreviewButtons(): OnClickButtonWidget[] {
+        return [];
+    }
+
     setError(message: string | null | undefined) {
         this.$errorContainer.toggleClass("hidden-ext", !message);
         this.$preview.toggleClass("on-error", !!message);
@@ -163,4 +261,11 @@ export default abstract class AbstractSplitTypeWidget extends TypeWidget {
     getData() {
         return this.editorTypeWidget.getData();
     }
+
+    entitiesReloadedEvent({ loadResults }: EventData<"entitiesReloaded">) {
+        if (loadResults.isOptionReloaded("splitEditorOrientation")) {
+            this.refresh();
+        }
+    }
+
 }

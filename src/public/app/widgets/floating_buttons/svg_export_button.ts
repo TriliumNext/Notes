@@ -5,7 +5,7 @@ const TPL = `
 <button type="button"
         class="export-svg-button"
         title="${t("svg_export_button.button_title")}">
-        <span class="bx bx-export"></span>
+        <span class="bx bxs-file-image"></span>
 </button>
 `;
 

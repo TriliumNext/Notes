@@ -3,6 +3,14 @@ import { t } from "../../services/i18n.js";
 import type FNote from "../../entities/fnote.js";
 import type BasicWidget from "../basic_widget.js";
 
+/*
+ * Note:
+ *
+ * For floating button widgets that require content to overflow, the has-overflow CSS class should
+ * be applied to the root element of the widget. Additionally, this root element may need to
+ * properly handle rounded corners, as defined by the --border-radius CSS variable.
+ */
+
 const TPL = `
 <div class="floating-buttons no-print">
     <style>
@@ -39,8 +47,16 @@ const TPL = `
             top: 70px;
         }
 
+        .type-canvas .floating-buttons-children > * {
+            --border-radius: 0; /* Overridden by themes */
+        }
+
         .floating-buttons-children > *:not(.hidden-int):not(.no-content-hidden) {
             margin: 2px;
+        }
+
+        .floating-buttons-children > *:not(.has-overflow) {
+            overflow: hidden;
         }
 
         .floating-buttons-children > button, .floating-buttons-children .floating-button {

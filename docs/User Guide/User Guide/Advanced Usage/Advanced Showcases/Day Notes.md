@@ -43,6 +43,7 @@ It's possible to customize the title of generated date notes by defining a `#dat
 
 It is also possible to customize the title of generated month notes through the `#monthPattern` attribute, much like `#datePattern`. The options are:
 
+*   `{isoMonth}` results in an ISO 8061 formatted month (e.g. "2025-03" for March 2025)
 *   `{monthNumberPadded}` results in a number like `09` for September, and `11` for November
 *   `{month}` results in the full month name (e.g. `September` or `October`)
 *   `{shortMonth3}` is replaced with the first 3 letters of the month, e.g. Jan, Feb, etc.

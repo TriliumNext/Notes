@@ -27,6 +27,15 @@ describe("#getMime", () => {
         ],
 
         [
+            "File extension ('.mermaid') that is defined in EXTENSION_TO_MIME",
+            ["test.mermaid"], "text/vnd.mermaid"
+        ],
+        [
+            "File extension ('.mermaid') that is defined in EXTENSION_TO_MIME",
+            ["test.mmd"], "text/vnd.mermaid"
+        ],
+
+        [
             "File extension with inconsistent capitalization that is defined in EXTENSION_TO_MIME",
             ["test.gRoOvY"], "text/x-groovy"
         ],

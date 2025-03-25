@@ -54,6 +54,7 @@ export default class App {
     async goToNoteInNewTab(noteTitle: string) {
         const autocomplete = this.currentNoteSplit.locator(".note-autocomplete");
         await autocomplete.fill(noteTitle);
+        await expect(this.currentNoteSplit.locator(".note-detail-empty-results")).toContainText(noteTitle);
         await autocomplete.press("ArrowDown");
         await autocomplete.press("Enter");
     }

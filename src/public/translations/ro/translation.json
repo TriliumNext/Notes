@@ -1428,9 +1428,6 @@
     "options": "Setări",
     "title": "Listă de evidențieri"
   },
-  "mermaid": {
-    "diagram_error": "Diagrama nu a putut fi afișată. Vedeți <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">informații și exemple pe site-ul oficial</a>."
-  },
   "note_icon": {
     "change_note_icon": "Schimbă iconița notiței",
     "category": "Categorie:",

@@ -744,7 +744,8 @@
   "basic_properties": {
     "note_type": "Tipo de nota",
     "editable": "Editable",
-    "basic_properties": "Propiedades básicas"
+    "basic_properties": "Propiedades básicas",
+    "language": "Idioma"
   },
   "book_properties": {
     "view_type": "Tipo de vista",
@@ -1090,6 +1091,7 @@
     "title": "Ancho del contenido",
     "default_description": "Trilium limita de forma predeterminada el ancho máximo del contenido para mejorar la legibilidad de ventanas maximizadas en pantallas anchas.",
     "max_width_label": "Ancho máximo del contenido en píxeles",
+    "max_width_unit": "píxeles",
     "apply_changes_description": "Para aplicar cambios en el ancho del contenido, haga clic en",
     "reload_button": "recargar la interfaz",
     "reload_description": "cambios desde las opciones de apariencia"
@@ -1127,7 +1129,11 @@
   "code_auto_read_only_size": {
     "title": "Tamaño automático de solo lectura",
     "description": "El tamaño de nota de solo lectura automático es el tamaño después del cual las notas se mostrarán en modo de solo lectura (por razones de rendimiento).",
-    "label": "Tamaño automático de solo lectura (notas de código)"
+    "label": "Tamaño automático de solo lectura (notas de código)",
+    "unit": "caracteres"
+  },
+  "code-editor-options": {
+    "title": "Editor"
   },
   "code_mime_types": {
     "title": "Tipos MIME disponibles en el menú desplegable"
@@ -1146,6 +1152,7 @@
     "download_images_description": "El HTML pegado puede contener referencias a imágenes en línea; Trilium encontrará esas referencias y descargará las imágenes para que estén disponibles sin conexión.",
     "enable_image_compression": "Habilitar la compresión de imágenes",
     "max_image_dimensions": "Ancho/alto máximo de una imagen en píxeles (la imagen cambiará de tamaño si excede esta configuración).",
+    "max_image_dimensions_unit": "píxeles",
     "jpeg_quality_description": "Calidad JPEG (10 - peor calidad, 100 - mejor calidad, se recomienda 50 - 85)"
   },
   "attachment_erasure_timeout": {
@@ -1177,6 +1184,7 @@
     "note_revisions_snapshot_limit_title": "Límite de respaldos de revisiones de nota",
     "note_revisions_snapshot_limit_description": "El límite de número de respaldos de revisiones de notas se refiere al número máximo de revisiones que pueden guardarse para cada nota. Donde -1 significa sin límite, 0 significa borrar todas las revisiones. Puede establecer el máximo de revisiones para una sola nota a través de la etiqueta #versioningLimit.",
     "snapshot_number_limit_label": "Número límite de respaldos de revisiones de nota:",
+    "snapshot_number_limit_unit": "respaldos",
     "erase_excess_revision_snapshots": "Eliminar el exceso de respaldos de revisiones ahora",
     "erase_excess_revision_snapshots_prompt": "El exceso de respaldos de revisiones han sido eliminadas."
   },
@@ -1219,13 +1227,15 @@
   "table_of_contents": {
     "title": "Tabla de contenido",
     "description": "La tabla de contenido aparecerá en las notas de texto cuando la nota tenga más de un número definido de títulos. Puede personalizar este número:",
+    "unit": "títulos",
     "disable_info": "También puede utilizar esta opción para desactivar la TDC (TOC) de forma efectiva estableciendo un número muy alto.",
     "shortcut_info": "Puede configurar un atajo de teclado para alternar rápidamente el panel derecho (incluido el TDC) en Opciones -> Atajos (nombre 'toggleRightPane')."
   },
   "text_auto_read_only_size": {
     "title": "Tamaño para modo de solo lectura automático",
     "description": "El tamaño de nota de solo lectura automático es el tamaño después del cual las notas se mostrarán en modo de solo lectura (por razones de rendimiento).",
-    "label": "Tamaño para modo de solo lectura automático (notas de texto)"
+    "label": "Tamaño para modo de solo lectura automático (notas de texto)",
+    "unit": "caracteres"
   },
   "i18n": {
     "title": "Localización",
@@ -1302,7 +1312,7 @@
   "shortcuts": {
     "keyboard_shortcuts": "Atajos de teclado",
     "multiple_shortcuts": "Varios atajos para la misma acción se pueden separar mediante comas.",
-    "electron_documentation": "Véa <a href=\"https://www.electronjs.org/docs/latest/api/accelerator\">documentation de Electron </a> para los modificadores y códigos de tecla disponibles.",
+    "electron_documentation": "Véa la <a href=\"https://www.electronjs.org/docs/latest/api/accelerator\">documentación de Electron </a> para los modificadores y códigos de tecla disponibles.",
     "type_text_to_filter": "Escriba texto para filtrar los accesos directos...",
     "action_name": "Nombre de la acción",
     "shortcuts": "Atajos",
@@ -1326,6 +1336,7 @@
     "config_title": "Configuración de sincronización",
     "server_address": "Dirección de la instancia del servidor",
     "timeout": "Tiempo de espera de sincronización (milisegundos)",
+    "timeout_unit": "milisegundos",
     "proxy_label": "Sincronizar servidor proxy (opcional)",
     "note": "Nota",
     "note_description": "Si deja la configuración del proxy en blanco, se utilizará el proxy del sistema (se aplica únicamente a la compilación de escritorio/electron).",
@@ -1421,8 +1432,7 @@
     "widget": "Widget",
     "confirm-change": "No es recomendado cambiar el tipo de nota cuando el contenido de la nota no está vacío. ¿Desea continuar de cualquier manera?",
     "geo-map": "Mapa Geo",
-    "beta-feature": "Beta",
-    "task-list": "Lista de tareas"
+    "beta-feature": "Beta"
   },
   "protect_note": {
     "toggle-on": "Proteger la nota",
@@ -1454,9 +1464,6 @@
   "highlights_list_2": {
     "title": "Lista de destacados",
     "options": "Opciones"
-  },
-  "mermaid": {
-    "diagram_error": "El diagrama no pudo ser mostrado. Vea <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">ayuda y ejemplos</a>."
   },
   "quick-search": {
     "placeholder": "Búsqueda rápida",
@@ -1682,5 +1689,27 @@
       "tomorrow": "Mañana",
       "yesterday": "Ayer"
     }
+  },
+  "content_widget": {
+    "unknown_widget": "Widget desconocido para \"{{id}}\"."
+  },
+  "note_language": {
+    "not_set": "No establecido",
+    "configure-languages": "Configurar idiomas..."
+  },
+  "content_language": {
+    "title": "Contenido de idiomas",
+    "description": "Seleccione uno o más idiomas que deben aparecer en la selección del idioma en la sección Propiedades Básicas de una nota de texto de solo lectura o editable. Esto permitirá características tales como corrección de ortografía o soporte de derecha a izquierda."
+  },
+  "switch_layout_button": {
+    "title_vertical": "Mover el panel de edición hacia abajo",
+    "title_horizontal": "Mover el panel de edición a la izquierda"
+  },
+  "toggle_read_only_button": {
+    "unlock-editing": "Desbloquear la edición",
+    "lock-editing": "Bloquear la edición"
+  },
+  "png_export_button": {
+    "button_title": "Exportar diagrama como PNG"
   }
 }

@@ -132,6 +132,9 @@ const defaultOptions: DefaultOption[] = [
     { name: "promotedAttributesOpenInRibbon", value: "true", isSynced: true },
     { name: "editedNotesOpenInRibbon", value: "true", isSynced: true },
 
+    // Appearance
+    { name: "splitEditorOrientation", value: "horizontal", isSynced: true },
+
     // Internationalization
     { name: "locale", value: "en", isSynced: true },
     { name: "firstDayOfWeek", value: "1", isSynced: true },

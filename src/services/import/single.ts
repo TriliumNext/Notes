@@ -27,6 +27,10 @@ function importSingleFile(taskContext: TaskContext, file: File, parentNote: BNot
         }
     }
 
+    if (mime === "text/vnd.mermaid") {
+        return importCustomType(taskContext, file, parentNote, "mermaid", mime);
+    }
+
     if (taskContext?.data?.codeImportedAsCode && mimeService.getType(taskContext.data, mime) === "code") {
         return importCodeNote(taskContext, file, parentNote);
     }
@@ -78,6 +82,24 @@ function importCodeNote(taskContext: TaskContext, file: File, parentNote: BNote)
     if (file.originalname.endsWith(".excalidraw")) {
         type = "canvas";
     }
+
+    const { note } = noteService.createNewNote({
+        parentNoteId: parentNote.noteId,
+        title,
+        content,
+        type,
+        mime: mime,
+        isProtected: parentNote.isProtected && protectedSessionService.isProtectedSessionAvailable()
+    });
+
+    taskContext.increaseProgressCount();
+
+    return note;
+}
+
+function importCustomType(taskContext: TaskContext, file: File, parentNote: BNote, type: NoteType, mime: string) {
+    const title = getNoteTitle(file.originalname, !!taskContext.data?.replaceUnderscoresWithSpaces);
+    const content = processStringOrBuffer(file.buffer);
 
     const { note } = noteService.createNewNote({
         parentNoteId: parentNote.noteId,

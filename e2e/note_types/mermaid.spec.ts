@@ -63,7 +63,7 @@ async function testAriaSnapshot({ page, context, noteTitle, snapshot }: AriaTest
     await app.goto();
     await app.goToNoteInNewTab(noteTitle);
 
-    const svgData = app.currentNoteSplit.locator(".mermaid-render svg");
+    const svgData = app.currentNoteSplit.locator(".render-container svg");
     await expect(svgData).toBeVisible();
     await expect(svgData).toMatchAriaSnapshot(snapshot);
 }

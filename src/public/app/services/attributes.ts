@@ -24,6 +24,23 @@ async function removeAttributeById(noteId: string, attributeId: string) {
 }
 
 /**
+ * Removes a label identified by its name from the given note, if it exists. Note that the label must be owned, i.e.
+ * it will not remove inherited attributes.
+ *
+ * @param note the note from which to remove the label.
+ * @param labelName the name of the label to remove.
+ * @returns `true` if an attribute was identified and removed, `false` otherwise.
+ */
+function removeOwnedLabelByName(note: FNote, labelName: string) {
+    const label = note.getOwnedLabel(labelName);
+    if (label) {
+        removeAttributeById(note.noteId, label.attributeId);
+        return true;
+    }
+    return false;
+}
+
+/**
  * Sets the attribute of the given note to the provided value if its truthy, or removes the attribute if the value is falsy.
  * For an attribute with an empty value, pass an empty string instead.
  *
@@ -90,5 +107,6 @@ export default {
     setLabel,
     setAttribute,
     removeAttributeById,
+    removeOwnedLabelByName,
     isAffecting
 };

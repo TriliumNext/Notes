@@ -10,7 +10,7 @@ import froca from "../../services/froca.js";
 import type FNote from "../../entities/fnote.js";
 
 const TPL = `
-<div class="backlinks-widget">
+<div class="backlinks-widget has-overflow">
     <style>
         .backlinks-widget {
             position: relative;
@@ -61,7 +61,7 @@ const TPL = `
         <span class="backlinks-count"></span>
     </div>
 
-    <div class="backlinks-items" style="display: none;"></div>
+    <div class="backlinks-items dropdown-menu" style="display: none;"></div>
 </div>
 `;
 
@@ -121,7 +121,8 @@ export default class BacklinksWidget extends NoteContextAwareWidget {
     }
 
     toggle(show: boolean) {
-        this.$widget.toggleClass("hidden-no-content", !show);
+        this.$widget.toggleClass("hidden-no-content", !show)
+                    .toggleClass("visible", !!show);
     }
 
     clearItems() {

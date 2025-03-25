@@ -45,6 +45,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     passwordVerificationSalt: string;
     passwordDerivedKeySalt: string;
     encryptedDataKey: string;
+    hoistedNoteId: string;
 
     lastSyncedPull: number;
     lastSyncedPush: number;
@@ -72,6 +73,9 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     eraseUnusedAttachmentsAfterTimeScale: number;
     firstDayOfWeek: number;
     languages: string;
+
+    // Appearance
+    splitEditorOrientation: "horziontal" | "vertical";
 
     initialized: boolean;
     isPasswordSet: boolean;

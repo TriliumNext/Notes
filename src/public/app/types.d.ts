@@ -198,12 +198,13 @@ declare global {
         };
         lineNumbers: boolean;
         lineWrapping: boolean;
-        keyMap: "vim" | "default";
-        lint: boolean;
-        gutters: string[];
-        tabindex: number;
-        dragDrop: boolean;
-        placeholder: string;
+        keyMap?: "vim" | "default";
+        lint?: boolean;
+        gutters?: string[];
+        tabindex?: number;
+        dragDrop?: boolean;
+        placeholder?: string;
+        readOnly?: boolean;
     }
 
     var CodeMirror: {

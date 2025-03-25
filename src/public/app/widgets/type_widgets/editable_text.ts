@@ -16,7 +16,7 @@ import toast from "../../services/toast.js";
 import { normalizeMimeTypeForCKEditor } from "../../services/mime_type_definitions.js";
 import { buildConfig, buildToolbarConfig } from "./ckeditor/config.js";
 import type FNote from "../../entities/fnote.js";
-import { getMermaidConfig } from "./mermaid.js";
+import { getMermaidConfig } from "../../services/mermaid.js";
 
 const ENABLE_INSPECTOR = false;
 
