@@ -20,26 +20,30 @@ jobs:
         os:
           - name: macos
             image: macos-latest
-            extension: [dmg, zip]
+            shell: bash
+            forge_platform: darwin
           - name: linux
             image: ubuntu-latest
-            extension: [deb, rpm, zip, flatpak]
+            shell: bash
+            forge_platform: linux
           - name: windows
-            image: windows-latest
-            extension: [exe, zip]
+            image: win-signing
+            shell: cmd
+            forge_platform: win32
     runs-on: ${{ matrix.os.image }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up node & dependencies
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Run the build
         uses: ./.github/actions/build-electron
         with:
           os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
-          extension: ${{ join(matrix.os.extension, ' ') }}
+          shell: ${{ matrix.os.shell }}
+          forge_platform: ${{ matrix.os.forge_platform }}
         env:
           APPLE_APP_CERTIFICATE_BASE64: ${{ secrets.APPLE_APP_CERTIFICATE_BASE64 }}
           APPLE_APP_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_CERTIFICATE_PASSWORD }}
@@ -48,6 +52,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          WINDOWS_SIGN_EXECUTABLE: ${{ vars.WINDOWS_SIGN_EXECUTABLE }}
 
       - name: Publish release
         uses: softprops/action-gh-release@v2

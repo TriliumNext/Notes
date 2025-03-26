@@ -267,7 +267,8 @@
   "basic_properties": {
     "basic_properties": "Proprietăți de bază",
     "editable": "Editabil",
-    "note_type": "Tipul notiței"
+    "note_type": "Tipul notiței",
+    "language": "Limbă"
   },
   "book": {
     "no_children_help": "Această notiță de tip Carte nu are nicio subnotiță așadar nu este nimic de afișat. Vedeți <a href=\"https://triliumnext.github.io/Docs/Wiki/book-note.html\">wiki</a> pentru detalii."
@@ -678,7 +679,8 @@
     "language": "Limbă",
     "monday": "Luni",
     "sunday": "Duminică",
-    "title": "Localizare"
+    "title": "Localizare",
+    "formatting-locale": "Format dată și numere"
   },
   "image_properties": {
     "copy_reference_to_clipboard": "Copiază referință în clipboard",
@@ -1692,5 +1694,30 @@
   },
   "content_widget": {
     "unknown_widget": "Nu s-a putut găsi widget-ul corespunzător pentru „{{id}}”."
+  },
+  "code-editor-options": {
+    "title": "Editor"
+  },
+  "content_language": {
+    "description": "Selectați una sau mai multe limbi ce vor apărea în selecția limbii din cadrul secțiunii „Proprietăți de bază” pentru notițele de tip text (editabile sau doar în citire).",
+    "title": "Limbi pentru conținutul notițelor"
+  },
+  "hidden-subtree": {
+    "localization": "Limbă și regiune"
+  },
+  "note_language": {
+    "configure-languages": "Configurează limbile...",
+    "not_set": "Nedefinită"
+  },
+  "png_export_button": {
+    "button_title": "Exportă diagrama ca PNG"
+  },
+  "switch_layout_button": {
+    "title_horizontal": "Mută panoul de editare la stânga",
+    "title_vertical": "Mută panoul de editare în jos"
+  },
+  "toggle_read_only_button": {
+    "lock-editing": "Blochează editarea",
+    "unlock-editing": "Deblochează editarea"
   }
 }

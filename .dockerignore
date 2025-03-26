@@ -34,6 +34,7 @@ npm-debug.log
 
 # exceptions
 !/bin/copy-dist.ts
+!/bin/electron-forge/sign-windows.cjs
 
 # temporary exception to make copy-dist inside Docker build not fail
 # TriliumNextTODO: make copy-dist *not* requiring to copy this file for builds other than electron-forge

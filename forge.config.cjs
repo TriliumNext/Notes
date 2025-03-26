@@ -2,13 +2,17 @@ const path = require("path");
 const fs = require("fs-extra");
 
 const APP_NAME = "TriliumNext Notes";
+const BIN_PATH = path.normalize("./bin/electron-forge");
 
 const extraResourcesForPlatform = getExtraResourcesForPlatform();
 const baseLinuxMakerConfigOptions = {
   icon: "./images/app-icons/png/128x128.png",
-  desktopTemplate: path.resolve("./bin/electron-forge/desktop.ejs"),
+  desktopTemplate: path.resolve(path.join(BIN_PATH, "desktop.ejs")),
   categories: ["Office", "Utility"]
 };
+const windowsSignConfiguration = process.env.WINDOWS_SIGN_EXECUTABLE ? {
+    hookModulePath: path.join(BIN_PATH, "sign-windows.cjs")
+} : undefined;
 
 module.exports = {
     // we run electron-forge inside the ./build folder,
@@ -26,6 +30,7 @@ module.exports = {
             appleIdPassword: process.env.APPLE_ID_PASSWORD,
             teamId: process.env.APPLE_TEAM_ID
         },
+        windowsSign: windowsSignConfiguration,
         extraResource: [
             // All resources should stay in Resources directory for macOS
             ...(process.platform === "darwin" ? [] : extraResourcesForPlatform),
@@ -105,7 +110,8 @@ module.exports = {
             config: {
                 iconUrl: "https://raw.githubusercontent.com/TriliumNext/Notes/develop/images/app-icons/icon.ico",
                 setupIcon: "./images/app-icons/win/setup.ico",
-                loadingGif: "./images/app-icons/win/setup-banner.gif"
+                loadingGif: "./images/app-icons/win/setup-banner.gif",
+                windowsSign: windowsSignConfiguration
             }
         },
         {
@@ -129,7 +135,33 @@ module.exports = {
             name: "@electron-forge/plugin-auto-unpack-natives",
             config: {}
         }
-    ]
+    ],
+    hooks: {
+        postMake(_, makeResults) {
+            const outputDir = path.join(__dirname, "..", "upload");
+            fs.mkdirp(outputDir);
+            for (const makeResult of makeResults) {
+                for (const artifactPath of makeResult.artifacts) {
+                    // Ignore certain artifacts.
+                    let fileName = path.basename(artifactPath);
+                    const extension = path.extname(fileName);
+                    if (fileName === "RELEASES" || extension === ".nupkg") {
+                        continue;
+                    }
+
+                    // Override the extension for the CI.
+                    const { TRILIUM_ARTIFACT_NAME_HINT } = process.env;
+                    if (TRILIUM_ARTIFACT_NAME_HINT) {
+                        fileName = TRILIUM_ARTIFACT_NAME_HINT + extension;
+                    }
+        
+                    const outputPath = path.join(outputDir, fileName);
+                    console.log(`[Artifact] ${artifactPath} -> ${outputPath}`);
+                    fs.copyFile(artifactPath, outputPath);
+                }
+            }
+        }
+    }
 };
 
 function getExtraResourcesForPlatform() {

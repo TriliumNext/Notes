@@ -35,6 +35,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     customSearchEngineName: string;
     customSearchEngineUrl: string;
     locale: string;
+    formattingLocale: string;
     codeBlockTheme: string;
     textNoteEditorType: string;
     layoutOrientation: string;

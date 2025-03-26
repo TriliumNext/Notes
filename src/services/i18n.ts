@@ -13,36 +13,45 @@ export interface Locale {
     rtl?: boolean;
     /** `true` if the language is not supported by the application as a display language, but it is selectable by the user for the content. */
     contentOnly?: boolean;
+    /** The value to pass to `--lang` for the Electron instance in order to set it as a locale. Not setting it will hide it from the list of supported locales. */
+    electronLocale?: string;
 }
 
 const LOCALES: Locale[] = [
     {
         id: "en",
-        name: "English"
+        name: "English",
+        electronLocale: "en"
     },
     {
         id: "de",
-        name: "Deutsch"
+        name: "Deutsch",
+        electronLocale: "de"
     },
     {
         id: "es",
-        name: "Español"
+        name: "Español",
+        electronLocale: "es"
     },
     {
         id: "fr",
-        name: "Français"
+        name: "Français",
+        electronLocale: "fr"
     },
     {
         id: "cn",
-        name: "简体中文"
+        name: "简体中文",
+        electronLocale: "zh_CN"
     },
     {
         id: "tw",
-        name: "繁體中文"
+        name: "繁體中文",
+        electronLocale: "zh_TW"
     },
     {
         id: "ro",
-        name: "Română"
+        name: "Română",
+        electronLocale: "ro"
     },
 
     /*

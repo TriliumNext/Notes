@@ -61,11 +61,7 @@ export default class ElectronIntegrationOptions extends OptionsWidget {
         this.$backgroundEffects.on("change", () => this.updateCheckboxOption("backgroundEffects", this.$backgroundEffects));
 
         const restartAppButton = this.$widget.find(".restart-app-button");
-        restartAppButton.on("click", () => {
-            const app = utils.dynamicRequire("@electron/remote").app;
-            app.relaunch();
-            app.exit();
-        });
+        restartAppButton.on("click", utils.restartDesktopApp);
     }
 
     isEnabled() {

@@ -6,6 +6,7 @@ import electronDl from "electron-dl";
 import sqlInit from "./src/services/sql_init.js";
 import windowService from "./src/services/window.js";
 import tray from "./src/services/tray.js";
+import options from "./src/services/options.js";
 
 import sourceMapSupport from "source-map-support";
 sourceMapSupport.install();
@@ -22,6 +23,7 @@ electronDl({ saveAs: true });
 
 // needed for excalidraw export https://github.com/zadam/trilium/issues/4271
 electron.app.commandLine.appendSwitch("enable-experimental-web-platform-features");
+electron.app.commandLine.appendSwitch("lang", options.getOptionOrNull("formattingLocale") ?? "en");
 
 electron.app.userAgentFallback = `${electron.app.getName()} ${electron.app.getVersion()}`;
 

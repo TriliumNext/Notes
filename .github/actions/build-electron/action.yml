@@ -8,8 +8,11 @@ inputs:
   arch:
     description: "The architecture to build for: x64, arm64"
     required: true
-  extension:
-    description: "Platform specific extensions to copy in the output: dmg, deb, rpm, exe, zip"
+  shell:
+    description: "Which shell to use"
+    required: true
+  forge_platform:
+    description: "The --platform to pass to Electron Forge"
     required: true
 
 runs:
@@ -38,21 +41,21 @@ runs:
 
     - name: Verify certificates
       if: inputs.os == 'macos'
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: |
         echo "Available signing identities:"
         security find-identity -v -p codesigning build.keychain
 
     - name: Set up Python and other macOS dependencies
       if: ${{ inputs.os == 'macos' }}
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: |
         brew install python-setuptools
         brew install create-dmg
 
     - name: Install dependencies for RPM and Flatpak package building
       if: ${{ inputs.os == 'linux' }}
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: |
         sudo apt-get update && sudo apt-get install rpm flatpak-builder elfutils
         flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -62,39 +65,32 @@ runs:
 
     # Build setup
     - name: Install dependencies
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: npm ci
 
     - name: Update build info
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: npm run chore:update-build-info
 
     # Critical debugging configuration
     - name: Run electron-forge build with enhanced logging
-      shell: bash
+      shell: ${{ inputs.shell }}
       env:
         # Pass through required environment variables for signing and notarization
         APPLE_TEAM_ID: ${{ env.APPLE_TEAM_ID }}
         APPLE_ID: ${{ env.APPLE_ID }}
         APPLE_ID_PASSWORD: ${{ env.APPLE_ID_PASSWORD }}
+        WINDOWS_SIGN_EXECUTABLE: ${{ env.WINDOWS_SIGN_EXECUTABLE }}
+        TRILIUM_ARTIFACT_NAME_HINT: TriliumNextNotes ${{ inputs.os }} ${{ inputs.arch }}
       run: |
-        # Map OS names to Electron Forge platform names
-        if [ "${{ inputs.os }}" = "macos" ]; then
-          PLATFORM="darwin"
-        elif [ "${{ inputs.os }}" = "windows" ]; then
-          PLATFORM="win32"
-        else
-          PLATFORM="${{ inputs.os }}"
-        fi
-
         npm run electron-forge:make -- \
           --arch=${{ inputs.arch }} \
-          --platform=$PLATFORM
+          --platform=${{ inputs.forge_platform }}
 
     # Add DMG signing step
     - name: Sign DMG
       if: inputs.os == 'macos'
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: |
         echo "Signing DMG file..."
         dmg_file=$(find ./dist -name "*.dmg" -print -quit)
@@ -119,7 +115,7 @@ runs:
 
     - name: Verify code signing
       if: inputs.os == 'macos'
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: |
         echo "Verifying code signing for all artifacts..."
 
@@ -165,49 +161,3 @@ runs:
           echo "Found ZIP: $zip_file"
           echo "Note: ZIP files are not code signed, but their contents should be"
         fi
-
-    - name: Prepare artifacts
-      shell: bash
-      run: |
-        mkdir -p upload
-
-        if [ "${{ inputs.os }}" = "macos" ]; then
-          # For macOS, we need to look in specific directories based on the maker
-          echo "Collecting macOS artifacts..."
-
-          # Look for DMG files recursively
-          echo "Looking for DMG files..."
-          dmg_file=$(find ./dist -name "*.dmg" -print -quit)
-          if [ -n "$dmg_file" ]; then
-            echo "Found DMG: $dmg_file"
-            cp "$dmg_file" "upload/TriliumNextNotes-${{ github.ref_name }}-macos-${{ inputs.arch }}.dmg"
-          else
-            echo "Warning: No DMG file found"
-          fi
-
-          # Look for ZIP files recursively
-          echo "Looking for ZIP files..."
-          zip_file=$(find ./dist -name "*.zip" -print -quit)
-          if [ -n "$zip_file" ]; then
-            echo "Found ZIP: $zip_file"
-            cp "$zip_file" "upload/TriliumNextNotes-${{ github.ref_name }}-macos-${{ inputs.arch }}.zip"
-          else
-            echo "Warning: No ZIP file found"
-          fi
-        else
-          # For other platforms, use the existing logic but with better error handling
-          echo "Collecting artifacts for ${{ inputs.os }}..."
-          for ext in ${{ inputs.extension }}; do
-            echo "Looking for .$ext files..."
-            file=$(find ./dist -name "*.$ext" -print -quit)
-            if [ -n "$file" ]; then
-              echo "Found $file for extension $ext"
-              cp "$file" "upload/TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}.$ext"
-            else
-              echo "Warning: No file found with extension .$ext"
-            fi
-          done
-        fi
-
-        echo "Final contents of upload directory:"
-        ls -la upload/

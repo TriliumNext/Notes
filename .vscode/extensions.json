@@ -2,6 +2,7 @@
   "recommendations": [
     "lokalise.i18n-ally",
     "editorconfig.editorconfig",
-    "vitest.explorer"
+    "vitest.explorer",
+    "ms-playwright.playwright"
   ]
 }

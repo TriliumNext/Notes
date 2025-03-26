@@ -5,6 +5,9 @@ on:
     - cron: "0 2 * * *" # run at 2 AM UTC
   # This can be used to allow manually triggering nightlies from the web interface
   workflow_dispatch:
+  push:
+    branches:
+      - renovate/electron-forge*
   pull_request:
     paths:
       - .github/actions/build-electron/*
@@ -23,22 +26,24 @@ jobs:
         os:
           - name: macos
             image: macos-latest
-            extension: [dmg, zip]
+            shell: bash
+            forge_platform: darwin
           - name: linux
             image: ubuntu-latest
-            extension: [deb, rpm, zip, flatpak]
+            shell: bash
+            forge_platform: linux
           - name: windows
-            image: windows-latest
-            extension: [exe, zip]
+            image: win-signing
+            shell: cmd
+            forge_platform: win32
     runs-on: ${{ matrix.os.image }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up node & dependencies
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Install dependencies
-        shell: bash
         run: npm ci
       - name: Update nightly version
         run: npm run chore:ci-update-nightly-version
@@ -47,7 +52,8 @@ jobs:
         with:
           os: ${{ matrix.os.name }}
           arch: ${{ matrix.arch }}
-          extension: ${{ join(matrix.os.extension, ' ') }}
+          shell: ${{ matrix.os.shell }}
+          forge_platform: ${{ matrix.os.forge_platform }}
         env:
           APPLE_APP_CERTIFICATE_BASE64: ${{ secrets.APPLE_APP_CERTIFICATE_BASE64 }}
           APPLE_APP_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_CERTIFICATE_PASSWORD }}
@@ -56,6 +62,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          WINDOWS_SIGN_EXECUTABLE: ${{ vars.WINDOWS_SIGN_EXECUTABLE }}
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
@@ -69,35 +76,9 @@ jobs:
           tag_name: nightly
           name: Nightly Build
 
-  nightly-server:
-    name: Deploy server nightly
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [x64, arm64]
-        include:
-          - arch: x64
-            runs-on: ubuntu-latest
-          - arch: arm64
-            runs-on: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run the build
-        uses: ./.github/actions/build-server
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'pull_request' }}
         with:
-          os: linux
-          arch: ${{ matrix.arch }}
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: ${{ github.event_name != 'pull_request' }}
-        with:
-          make_latest: false
-          prerelease: true
-          draft: false
-          fail_on_unmatched_files: true
-          files: upload/*.*
-          tag_name: nightly
-          name: Nightly Build
+          name: TriliumNextNotes ${{ matrix.os.name }} ${{ matrix.arch }}
+          path: upload

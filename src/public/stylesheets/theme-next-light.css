@@ -189,8 +189,11 @@
     --right-pane-item-hover-background: #ececec;
     --right-pane-item-hover-color: inherit;
 
-    --scrollbar-border-color: #ddd;
-    --scrollbar-background-color: #ddd;
+    --scrollbar-thumb-color: #0000005c;
+    --scrollbar-thumb-color-hover: #00000066;
+    --scrollbar-border-color: unset; /* Deprecated */
+    --scrollbar-background-color: unset; /* Deprecated */
+
     --link-color: blue;
 
     --mermaid-theme: default;

@@ -1242,7 +1242,8 @@
     "language": "Language",
     "first-day-of-the-week": "First day of the week",
     "sunday": "Sunday",
-    "monday": "Monday"
+    "monday": "Monday",
+    "formatting-locale": "Date & number format"
   },
   "backup": {
     "automatic_backup": "Automatic backup",

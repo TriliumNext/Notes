@@ -25,7 +25,12 @@ function getOptionOrNull(name: OptionNames): string | null {
         option = becca.getOption(name);
     } else {
         // e.g. in initial sync becca is not loaded because DB is not initialized
-        option = sql.getRow<OptionRow>("SELECT * FROM options WHERE name = ?", [name]);
+        try {
+            option = sql.getRow<OptionRow>("SELECT * FROM options WHERE name = ?", [name]);
+        } catch (e: unknown) {
+            // DB is not initialized.
+            return null;
+        }
     }
 
     return option ? option.value : null;

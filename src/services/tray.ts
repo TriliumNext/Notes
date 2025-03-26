@@ -1,4 +1,4 @@
-import { Menu, Tray } from "electron";
+import { Menu, Tray, BrowserWindow } from "electron";
 import path from "path";
 import windowService from "./window.js";
 import optionService from "./options.js";
@@ -17,7 +17,7 @@ import cls from "./cls.js";
 let tray: Tray;
 // `mainWindow.isVisible` doesn't work with `mainWindow.show` and `mainWindow.hide` - it returns `false` when the window
 // is minimized
-let isVisible = true;
+let windowVisibilityMap: Record<number, boolean> = {};; // Dictionary for storing window ID and its visibility status
 
 function getTrayIconPath() {
     let name: string;
@@ -37,53 +37,93 @@ function getIconPath(name: string) {
     return path.join(path.dirname(fileURLToPath(import.meta.url)), "../..", "images", "app-icons", "tray", `${name}Template${suffix}.png`);
 }
 
-function registerVisibilityListener() {
-    const mainWindow = windowService.getMainWindow();
-    if (!mainWindow) {
+function registerVisibilityListener(window: BrowserWindow) {
+    if (!window) {
         return;
     }
 
     // They need to be registered before the tray updater is registered
-    mainWindow.on("show", () => {
-        isVisible = true;
+    window.on("show", () => {
+        windowVisibilityMap[window.id] = true;
         updateTrayMenu();
     });
-    mainWindow.on("hide", () => {
-        isVisible = false;
+    window.on("hide", () => {
+        windowVisibilityMap[window.id] = false;
         updateTrayMenu();
     });
 
-    mainWindow.on("minimize", updateTrayMenu);
-    mainWindow.on("maximize", updateTrayMenu);
-    if (!isMac) {
-        // macOS uses template icons which work great on dark & light themes.
-        nativeTheme.on("updated", updateTrayMenu);
-    }
-    ipcMain.on("reload-tray", updateTrayMenu);
-    i18next.on("languageChanged", updateTrayMenu);
+    window.on("minimize", updateTrayMenu);
+    window.on("maximize", updateTrayMenu);
 }
 
-function updateTrayMenu() {
-    const mainWindow = windowService.getMainWindow();
-    if (!mainWindow) {
+function getWindowTitle(window: BrowserWindow | null) {
+    if (!window) {
         return;
     }
+    const title = window.getTitle();
+    const titleWithoutAppName = title.replace(/\s-\s[^-]+$/, ''); // Remove the name of the app
 
-    function ensureVisible() {
-        if (mainWindow) {
-            mainWindow.show();
-            mainWindow.focus();
+    // Limit title maximum length to 17
+    if (titleWithoutAppName.length > 20) {
+        return titleWithoutAppName.substring(0, 17) + '...';
+    }
+
+    return titleWithoutAppName;
+}
+
+function updateWindowVisibilityMap(allWindows: BrowserWindow[]) {
+    const currentWindowIds: number[] = allWindows.map(window => window.id);
+
+    // Deleting closed windows from windowVisibilityMap
+    for (const [id, visibility] of Object.entries(windowVisibilityMap)) {
+        const windowId = Number(id);
+        if (!currentWindowIds.includes(windowId)) {
+            delete windowVisibilityMap[windowId];
+        }
+    }
+
+    // Iterate through allWindows to make sure the ID of each window exists in windowVisibilityMap
+    allWindows.forEach(window => {
+        const windowId = window.id;
+        if (!(windowId in windowVisibilityMap)) {
+            // If it does not exist, it is the newly created window
+            windowVisibilityMap[windowId] = true;
+            registerVisibilityListener(window);
+        }
+    });
+}
+
+
+function updateTrayMenu() {
+    const lastFocusedWindow = windowService.getLastFocusedWindow();
+    const allWindows = windowService.getAllWindows();
+    updateWindowVisibilityMap(allWindows);
+
+    function ensureVisible(win: BrowserWindow) {
+        if (win) {
+            win.show();
+            win.focus();
+        }
+    }
+
+    function openNewWindow() {
+        if (lastFocusedWindow){
+            lastFocusedWindow.webContents.send("globalShortcut", "openNewWindow");
         }
     }
 
     function triggerKeyboardAction(actionName: KeyboardActionNames) {
-        mainWindow?.webContents.send("globalShortcut", actionName);
-        ensureVisible();
+        if (lastFocusedWindow){
+            lastFocusedWindow.webContents.send("globalShortcut", actionName);
+            ensureVisible(lastFocusedWindow);
+        }
     }
 
     function openInSameTab(note: BNote | BRecentNote) {
-        mainWindow?.webContents.send("openInSameTab", note.noteId);
-        ensureVisible();
+        if (lastFocusedWindow){
+            lastFocusedWindow.webContents.send("openInSameTab", note.noteId);
+            ensureVisible(lastFocusedWindow);
+        }
     }
 
     function buildBookmarksMenu() {
@@ -144,20 +184,44 @@ function updateTrayMenu() {
         return menuItems;
     }
 
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: t("tray.show-windows"),
+    const windowVisibilityMenuItems: Electron.MenuItemConstructorOptions[] = [];
+
+    // Only call getWindowTitle if windowVisibilityMap has more than one window
+    const showTitle = Object.keys(windowVisibilityMap).length > 1;
+
+    for (const idStr in windowVisibilityMap) {
+        const id = parseInt(idStr, 10); // Get the ID of the window and make sure it is a number
+        const isVisible = windowVisibilityMap[id]; 
+        const win = allWindows.find(w => w.id === id);
+        if (!win) {
+            continue;
+        }
+        windowVisibilityMenuItems.push({
+            label: showTitle ? `${t("tray.show-windows")}: ${getWindowTitle(win)}` : t("tray.show-windows"),
             type: "checkbox",
             checked: isVisible,
             click: () => {
                 if (isVisible) {
-                    mainWindow.hide();
+                    win.hide();
+                    windowVisibilityMap[id] = false;
                 } else {
-                    ensureVisible();
+                    ensureVisible(win);
+                    windowVisibilityMap[id] = true;
                 }
             }
-        },
+        });
+    }
+    
+
+    const contextMenu = Menu.buildFromTemplate([
+        ...windowVisibilityMenuItems, 
         { type: "separator" },
+        {
+            label: t("tray.open_new_window"),
+            type: "normal",
+            icon: getIconPath("new-window"),
+            click: () => openNewWindow()
+        },
         {
             label: t("tray.new-note"),
             type: "normal",
@@ -188,7 +252,10 @@ function updateTrayMenu() {
             type: "normal",
             icon: getIconPath("close"),
             click: () => {
-                mainWindow.close();
+                const windows = BrowserWindow.getAllWindows();
+                windows.forEach(window => {
+                    window.close();
+                });
             }
         }
     ]);
@@ -197,16 +264,18 @@ function updateTrayMenu() {
 }
 
 function changeVisibility() {
-    const window = windowService.getMainWindow();
-    if (!window) {
+    const lastFocusedWindow = windowService.getLastFocusedWindow();
+    
+    if (!lastFocusedWindow) {
         return;
     }
 
-    if (isVisible) {
-        window.hide();
+    // If the window is visible, hide it
+    if (windowVisibilityMap[lastFocusedWindow.id]) {
+        lastFocusedWindow.hide();
     } else {
-        window.show();
-        window.focus();
+        lastFocusedWindow.show();
+        lastFocusedWindow.focus();
     }
 }
 
@@ -221,9 +290,15 @@ function createTray() {
     tray.on("click", changeVisibility);
     updateTrayMenu();
 
-    registerVisibilityListener();
+    if (!isMac) {
+        // macOS uses template icons which work great on dark & light themes.
+        nativeTheme.on("updated", updateTrayMenu);
+    }
+    ipcMain.on("reload-tray", updateTrayMenu);
+    i18next.on("languageChanged", updateTrayMenu);
 }
 
 export default {
-    createTray
+    createTray,
+    updateTrayMenu
 };

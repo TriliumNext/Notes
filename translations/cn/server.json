@@ -271,7 +271,8 @@
     "bookmarks": "书签",
     "today": "打开今天的日记笔记",
     "new-note": "新建笔记",
-    "show-windows": "显示窗口"
+    "show-windows": "显示窗口",
+    "open_new_window": "打开新窗口"
   },
   "migration": {
     "old_version": "由您当前版本的直接迁移不被支持。请先升级到最新的 v0.60.4 然后再到这个版本。",

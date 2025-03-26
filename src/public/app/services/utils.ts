@@ -10,6 +10,17 @@ function reloadFrontendApp(reason?: string) {
     window.location.reload();
 }
 
+function restartDesktopApp() {
+    if (!isElectron()) {
+        reloadFrontendApp();
+        return;
+    }
+
+    const app = dynamicRequire("@electron/remote").app;
+    app.relaunch();
+    app.exit();
+}
+
 /**
  * Triggers the system tray to update its menu items, i.e. after a change in dynamic content such as bookmarks or recent notes.
  *
@@ -739,6 +750,7 @@ function isLaunchBarConfig(noteId: string) {
 
 export default {
     reloadFrontendApp,
+    restartDesktopApp,
     reloadTray,
     parseDate,
     getMonthsInDateRange,

@@ -70,6 +70,7 @@ const ALLOWED_OPTIONS = new Set<OptionNames>([
     "promotedAttributesOpenInRibbon",
     "editedNotesOpenInRibbon",
     "locale",
+    "formattingLocale",
     "firstDayOfWeek",
     "languages",
     "textNoteEditorType",
