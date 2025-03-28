@@ -15,6 +15,8 @@ import error_handlers from "./routes/error_handlers.js";
 import { startScheduledCleanup } from "./services/erase.js";
 import sql_init from "./services/sql_init.js";
 import { t } from "i18next";
+import eventService from "./services/events.js";
+import log from "./services/log.js";
 
 await import("./services/handlers.js");
 await import("./becca/becca_loader.js");
@@ -25,6 +27,42 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 
 // Initialize DB
 sql_init.initializeDb();
+
+// Listen for database initialization event
+eventService.subscribe(eventService.DB_INITIALIZED, async () => {
+    try {
+        log.info("Database initialized, setting up LLM features");
+
+        // Initialize embedding providers
+        const { initializeEmbeddings } = await import("./services/llm/embeddings/init.js");
+        await initializeEmbeddings();
+
+        // Initialize the index service for LLM functionality
+        const { default: indexService } = await import("./services/llm/index_service.js");
+        await indexService.initialize().catch(e => console.error("Failed to initialize index service:", e));
+
+        log.info("LLM features initialized successfully");
+    } catch (error) {
+        console.error("Error initializing LLM features:", error);
+    }
+});
+
+// Initialize LLM features only if database is already initialized
+if (sql_init.isDbInitialized()) {
+    try {
+        // Initialize embedding providers
+        const { initializeEmbeddings } = await import("./services/llm/embeddings/init.js");
+        await initializeEmbeddings();
+
+        // Initialize the index service for LLM functionality
+        const { default: indexService } = await import("./services/llm/index_service.js");
+        await indexService.initialize().catch(e => console.error("Failed to initialize index service:", e));
+    } catch (error) {
+        console.error("Error initializing LLM features:", error);
+    }
+} else {
+    console.log("Database not initialized yet. LLM features will be initialized after setup.");
+}
 
 // view engine setup
 app.set("views", path.join(scriptDir, "views"));

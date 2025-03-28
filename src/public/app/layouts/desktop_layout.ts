@@ -87,6 +87,7 @@ import utils from "../services/utils.js";
 import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
 import ContextualHelpButton from "../widgets/floating_buttons/help_button.js";
 import CloseZenButton from "../widgets/close_zen_button.js";
+import rightPaneTabManager from "../services/right_pane_tab_manager.js";
 import type { AppContext } from "./../components/app_context.js";
 import type { WidgetsByParent } from "../services/bundle.js";
 import SwitchSplitOrientationButton from "../widgets/floating_buttons/switch_layout_button.js";
@@ -243,6 +244,7 @@ export default class DesktopLayout {
                                     )
                                     .child(
                                         new RightPaneContainer()
+                                            .id("right-pane-container")
                                             .child(new TocWidget())
                                             .child(new HighlightsListWidget())
                                             .child(...this.customWidgets.get("right-pane"))

@@ -38,6 +38,7 @@ const NOTE_TYPES: NoteTypeMapping[] = [
     // Misc note types
     { type: "render", mime: "", title: t("note_types.render-note"), selectable: true },
     { type: "webView", mime: "", title: t("note_types.web-view"), selectable: true },
+    { type: "aiChat", mime: "application/json", title: t("note_types.ai-chat"), selectable: true },
 
     // Code notes
     { type: "code", mime: "text/plain", title: t("note_types.code"), selectable: true },

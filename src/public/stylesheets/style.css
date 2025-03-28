@@ -1730,6 +1730,187 @@ footer.file-footer button {
     margin: 5px;
 }
 
+/* AI Chat Widget Styles */
+.chat-widget {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--main-border-color);
+    background-color: var(--accented-background-color);
+}
+
+.chat-title {
+    font-weight: bold;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chat-message {
+    display: flex;
+    gap: 10px;
+    max-width: 85%;
+}
+
+.chat-message-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.chat-message-assistant {
+    align-self: flex-start;
+}
+
+.chat-message-avatar {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--accented-background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-message-user .chat-message-avatar {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.chat-message-assistant .chat-message-avatar {
+    background-color: var(--muted-text-color);
+    color: white;
+}
+
+.chat-message-content {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border-radius: 12px;
+    background-color: var(--accented-background-color);
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.chat-message-user .chat-message-content {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.chat-message-content pre {
+    background-color: var(--main-background-color);
+    border-radius: 5px;
+    padding: 10px;
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+.chat-message-user .chat-message-content pre {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.chat-message-content code {
+    font-family: monospace;
+    background-color: var(--main-background-color);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.chat-message-user .chat-message-content code {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.chat-controls {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+    border-top: 1px solid var(--main-border-color);
+}
+
+.chat-input-container {
+    position: relative;
+}
+
+.chat-input {
+    width: 100%;
+    resize: none;
+    padding-right: 40px;
+}
+
+.chat-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat-loading {
+    animation: chat-loading 1s infinite;
+    letter-spacing: 3px;
+}
+
+@keyframes chat-loading {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+/* Right Pane Tab Styles */
+#right-pane-tab-container {
+    display: flex;
+    gap: 10px;
+}
+
+.right-pane-tab {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s ease;
+}
+
+.right-pane-tab:hover {
+    background-color: var(--hover-item-background-color);
+}
+
+.right-pane-tab.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.right-pane-tab .tab-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.right-pane-tab .tab-title .bx {
+    font-size: 1.1em;
+}
+
 .admonition {
     --accent-color: var(--card-border-color);
     border: 1px solid var(--accent-color);
@@ -1737,12 +1918,7 @@ footer.file-footer button {
     background: var(--card-background-color);
     border-radius: 0.5em;
     padding: 1em;
-    margin: 1.25em 0;
-    position: relative;
-    padding-left: 2.5em;
-    overflow: hidden;
 }
-
 .admonition p:last-child {
     margin-bottom: 0;
 }
@@ -1761,6 +1937,61 @@ footer.file-footer button {
 .admonition.caution { --accent-color: #ff2e2e; }
 .admonition.warning { --accent-color: #e2aa03; }
 
+.ck-content .admonition.note::before { content: "\eb21"; }
+.ck-content .admonition.tip::before { content: "\ea0d"; }
+.ck-content .admonition.important::before { content: "\ea7c"; }
+.ck-content .admonition.caution::before { content: "\eac7"; }
+.ck-content .admonition.warning::before { content: "\eac5"; }
+
+.chat-options-container {
+    display: flex;
+    margin: 5px 0;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.chat-option {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.chat-option input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Style for thinking process in chat responses */
+.thinking-process {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left: 3px solid var(--main-text-color);
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.thinking-step {
+    margin-bottom: 8px;
+    padding-left: 10px;
+}
+
+.thinking-step.observation {
+    border-left: 2px solid #69c7ff;
+}
+
+.thinking-step.hypothesis {
+    border-left: 2px solid #9839f7;
+}
+
+.thinking-step.evidence {
+    border-left: 2px solid #40c025;
+}
+
+.thinking-step.conclusion {
+    border-left: 2px solid #e2aa03;
+    font-weight: bold;
+}
 .admonition.note::before { content: "\eb21"; }
 .admonition.tip::before { content: "\ea0d"; }
 .admonition.important::before { content: "\ea7c"; }

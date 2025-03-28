@@ -60,6 +60,11 @@ import etapiTokensApiRoutes from "./api/etapi_tokens.js";
 import relationMapApiRoute from "./api/relation-map.js";
 import otherRoute from "./api/other.js";
 import shareRoutes from "../share/routes.js";
+import embeddingsRoute from "./api/embeddings.js";
+import ollamaRoute from "./api/ollama.js";
+import openaiRoute from "./api/openai.js";
+import anthropicRoute from "./api/anthropic.js";
+import llmRoute from "./api/llm.js";
 
 import etapiAuthRoutes from "../etapi/auth.js";
 import etapiAppInfoRoutes from "../etapi/app_info.js";
@@ -369,6 +374,48 @@ function register(app: express.Application) {
     etapiSpecRoute.register(router);
     etapiBackupRoute.register(router);
 
+    // Embeddings API endpoints
+    apiRoute(GET, "/api/embeddings/similar/:noteId", embeddingsRoute.findSimilarNotes);
+    apiRoute(PST, "/api/embeddings/search", embeddingsRoute.searchByText);
+    apiRoute(GET, "/api/embeddings/providers", embeddingsRoute.getProviders);
+    apiRoute(PATCH, "/api/embeddings/providers/:providerId", embeddingsRoute.updateProvider);
+    apiRoute(PST, "/api/embeddings/reprocess", embeddingsRoute.reprocessAllNotes);
+    apiRoute(GET, "/api/embeddings/queue-status", embeddingsRoute.getQueueStatus);
+    apiRoute(GET, "/api/embeddings/stats", embeddingsRoute.getEmbeddingStats);
+    apiRoute(GET, "/api/embeddings/failed", embeddingsRoute.getFailedNotes);
+    apiRoute(PST, "/api/embeddings/retry/:noteId", embeddingsRoute.retryFailedNote);
+    apiRoute(PST, "/api/embeddings/retry-all-failed", embeddingsRoute.retryAllFailedNotes);
+    apiRoute(PST, "/api/embeddings/rebuild-index", embeddingsRoute.rebuildIndex);
+    apiRoute(GET, "/api/embeddings/index-rebuild-status", embeddingsRoute.getIndexRebuildStatus);
+
+    // LLM chat session management endpoints
+    apiRoute(PST, "/api/llm/sessions", llmRoute.createSession);
+    apiRoute(GET, "/api/llm/sessions", llmRoute.listSessions);
+    apiRoute(GET, "/api/llm/sessions/:sessionId", llmRoute.getSession);
+    apiRoute(PATCH, "/api/llm/sessions/:sessionId", llmRoute.updateSession);
+    apiRoute(DEL, "/api/llm/sessions/:sessionId", llmRoute.deleteSession);
+    apiRoute(PST, "/api/llm/sessions/:sessionId/messages", llmRoute.sendMessage);
+    route(GET, "/api/llm/sessions/:sessionId/messages", [auth.checkApiAuth, csrfMiddleware], llmRoute.sendMessage, apiResultHandler);
+
+    // LLM index management endpoints
+    apiRoute(GET, "/api/llm/index/stats", llmRoute.getIndexStats);
+    apiRoute(PST, "/api/llm/index/start", llmRoute.startIndexing);
+    apiRoute(GET, "/api/llm/index/failed", llmRoute.getFailedIndexes);
+    apiRoute(PST, "/api/llm/index/retry/:noteId", llmRoute.retryFailedIndex);
+    apiRoute(PST, "/api/llm/index/retry-all", llmRoute.retryAllFailedIndexes);
+    apiRoute(PST, "/api/llm/index/similar", llmRoute.findSimilarNotes);
+    apiRoute(PST, "/api/llm/index/context", llmRoute.generateQueryContext);
+    apiRoute(PST, "/api/llm/index/notes/:noteId", llmRoute.indexNote);
+
+    // Ollama API endpoints
+    route(PST, "/api/ollama/list-models", [auth.checkApiAuth, csrfMiddleware], ollamaRoute.listModels, apiResultHandler);
+
+    // OpenAI API endpoints
+    route(PST, "/api/openai/list-models", [auth.checkApiAuth, csrfMiddleware], openaiRoute.listModels, apiResultHandler);
+
+    // Anthropic API endpoints
+    route(PST, "/api/anthropic/list-models", [auth.checkApiAuth, csrfMiddleware], anthropicRoute.listModels, apiResultHandler);
+
     // API Documentation
     apiDocsRoute.register(app);
 
@@ -482,8 +529,14 @@ function route(method: HttpMethod, path: string, middleware: express.Handler[], 
 }
 
 function handleResponse(resultHandler: ApiResultHandler, req: express.Request, res: express.Response, result: unknown, start: number) {
-    const responseLength = resultHandler(req, res, result);
+    // Skip result handling if the response has already been handled
+    if ((res as any).triliumResponseHandled) {
+        // Just log the request without additional processing
+        log.request(req, res, Date.now() - start, 0);
+        return;
+    }
 
+    const responseLength = resultHandler(req, res, result);
     log.request(req, res, Date.now() - start, responseLength);
 }
 
