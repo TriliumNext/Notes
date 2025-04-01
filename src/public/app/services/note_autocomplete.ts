@@ -11,13 +11,9 @@ const SELECTED_NOTE_PATH_KEY = "data-note-path";
 const SELECTED_EXTERNAL_LINK_KEY = "data-external-link";
 
 // To prevent search lag when there are a large number of notes, set a delay based on the number of notes to avoid jitter.
-let notesCount: number;
+const notesCount = await server.get<number>(`stats/notesCount`);
 let debounceTimeoutId: ReturnType<typeof setTimeout>;
-try {
-    notesCount = await server.get<number>(`stats/notesCount`);
-} catch (error) {
-    notesCount = 5000; 
-}
+
 function getSearchDelay(notesCount: number): number {
     const maxNotes = 20000; 
     const maxDelay = 1000;  
