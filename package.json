@@ -71,6 +71,7 @@
   "dependencies": {
     "@braintree/sanitize-url": "7.1.1",
     "@electron/remote": "2.1.2",
+    "@esbuild/win32-x64": "0.25.2",
     "@highlightjs/cdn-assets": "11.11.1",
     "@mermaid-js/layout-elk": "0.1.7",
     "@triliumnext/express-partial-content": "1.0.1",
@@ -219,7 +220,7 @@
     "bootstrap": "5.3.3",
     "copy-webpack-plugin": "13.0.0",
     "cross-env": "7.0.3",
-    "css-loader": "7.1.2",    
+    "css-loader": "7.1.2",
     "electron": "35.1.2",
     "eslint": "9.23.0",
     "esm": "3.2.25",
