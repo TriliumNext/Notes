@@ -10,6 +10,23 @@ const SELECTED_NOTE_PATH_KEY = "data-note-path";
 
 const SELECTED_EXTERNAL_LINK_KEY = "data-external-link";
 
+// To prevent search lag when there are a large number of notes, set a delay based on the number of notes to avoid jitter.
+let notesCount: number;
+let debounceTimeoutId: ReturnType<typeof setTimeout>;
+try {
+    notesCount = await server.get<number>(`stats/notesCount`);
+    console.log('notesCount',notesCount);
+} catch (error) {
+    notesCount = 5000; 
+}
+function getSearchDelay(notesCount: number): number {
+    const maxNotes = 20000; 
+    const maxDelay = 1000;  
+    const delay = Math.min(maxDelay, (notesCount / maxNotes) * maxDelay);
+    return delay;
+}
+let searchDelay = getSearchDelay(notesCount);
+
 export interface Suggestion {
     noteTitle?: string;
     externalLink?: string;
@@ -67,15 +84,16 @@ async function autocompleteSource(term: string, cb: (rows: Suggestion[]) => void
                 highlightedNotePathTitle: t("quick-search.searching")
             }
         ]);
+        // Set a delay to avoid resetting to true before full text search (await server.get) is called.
+        setTimeout(() => {
+            options.fastSearch = true;
+        }, 100);
     }
 
     const activeNoteId = appContext.tabManager.getActiveContextNoteId();
     const length = term.trim().length;
 
-    let results: Suggestion[] = [];
-    if (length >= 3) {
-        results = await server.get<Suggestion[]>(`autocomplete?query=${encodeURIComponent(term)}&activeNoteId=${activeNoteId}&fastSearch=${fastSearch}`);
-    }
+    let results = await server.get<Suggestion[]>(`autocomplete?query=${encodeURIComponent(term)}&activeNoteId=${activeNoteId}&fastSearch=${fastSearch}`);
 
     if (length >= 1 && options.allowCreatingNotes) {
         results = [
@@ -112,6 +130,7 @@ async function autocompleteSource(term: string, cb: (rows: Suggestion[]) => void
 }
 
 function clearText($el: JQuery<HTMLElement>) {
+    searchDelay = 0;
     $el.setSelectedNotePath("");
     $el.autocomplete("val", "").trigger("change");
 }
@@ -122,6 +141,7 @@ function setText($el: JQuery<HTMLElement>, text: string) {
 }
 
 function showRecentNotes($el: JQuery<HTMLElement>) {
+    searchDelay = 0;
     $el.setSelectedNotePath("");
     $el.autocomplete("val", "");
     $el.autocomplete("open");
@@ -137,11 +157,8 @@ function fullTextSearch($el: JQuery<HTMLElement>, options: Options) {
     options.fastSearch = false;
     $el.autocomplete("val", "");
     $el.setSelectedNotePath("");
+    searchDelay = 0;
     $el.autocomplete("val", searchString);
-    // Set a delay to avoid resetting to true before full text search (await server.get) is called.
-    setTimeout(() => {
-        options.fastSearch = true;
-    }, 100);
 }
 
 function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
@@ -222,11 +239,20 @@ function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
             // re-querying of the autocomplete source which then changes the currently selected suggestion
             openOnFocus: false,
             minLength: 0,
-            tabAutocomplete: false
+            tabAutocomplete: false,
         },
         [
             {
-                source: (term, cb) => autocompleteSource(term, cb, options),
+                source: (term, cb) => {
+                    clearTimeout(debounceTimeoutId);
+                    debounceTimeoutId = setTimeout(() => {
+                        autocompleteSource(term, cb, options);
+                    }, 200); 
+                    
+                    if (searchDelay === 0) {
+                        searchDelay = getSearchDelay(notesCount);
+                    }
+                },
                 displayKey: "notePathTitle",
                 templates: {
                     suggestion: (suggestion) => suggestion.highlightedNotePathTitle
