@@ -51,11 +51,7 @@ function getSubtreeSize(req: Request) {
 // Get the total number of notes
 function getNotesCount(req: Request) {
     const notesCount = sql.getRow(
-        `SELECT COUNT(*) AS count 
-FROM notes 
-WHERE isDeleted = 0 
-AND noteId NOT LIKE '|_%' ESCAPE '|';
-`,
+        `SELECT COUNT(*) AS count FROM notes WHERE isDeleted = 0;`,
     ) as { count: number };
     return notesCount.count;
 }
