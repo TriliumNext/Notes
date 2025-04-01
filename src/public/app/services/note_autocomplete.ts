@@ -15,7 +15,6 @@ let notesCount: number;
 let debounceTimeoutId: ReturnType<typeof setTimeout>;
 try {
     notesCount = await server.get<number>(`stats/notesCount`);
-    console.log('notesCount',notesCount);
 } catch (error) {
     notesCount = 5000; 
 }
@@ -171,6 +170,15 @@ function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
 
     options = options || {};
 
+    // Used to track whether the user is performing character composition with an input method (such as Chinese Pinyin, Japanese, Korean, etc.) and to avoid triggering a search during the composition process.
+    let isComposingInput = false;
+    $el.on("compositionstart", () => {
+        isComposingInput = true; 
+    });
+    $el.on("compositionend", () => {
+        isComposingInput = false; 
+    });
+
     $el.addClass("note-autocomplete-input");
 
     const $clearTextButton = $("<a>").addClass("input-group-text input-clearer-button bx bxs-tag-x").prop("title", t("note_autocomplete.clear-text-field"));
@@ -239,15 +247,18 @@ function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
             // re-querying of the autocomplete source which then changes the currently selected suggestion
             openOnFocus: false,
             minLength: 0,
-            tabAutocomplete: false,
+            tabAutocomplete: false
         },
         [
             {
                 source: (term, cb) => {
                     clearTimeout(debounceTimeoutId);
                     debounceTimeoutId = setTimeout(() => {
+                        if (isComposingInput) {
+                            return;
+                        }
                         autocompleteSource(term, cb, options);
-                    }, 200); 
+                    }, searchDelay); 
                     
                     if (searchDelay === 0) {
                         searchDelay = getSearchDelay(notesCount);
