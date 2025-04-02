@@ -103,7 +103,7 @@ function ensureNoteIsPresentInParent(noteId: string, parentNoteId: string, prefi
 }
 
 function ensureNoteIsAbsentFromParent(noteId: string, parentNoteId: string) {
-    const branchId = sql.getValue<string>(`SELECT branchId FROM branches WHERE noteId = ? AND parentNoteId = ? AND isDeleted = 0`, [noteId, parentNoteId]);
+    const branchId = sql.getValue<string>(/*sql*/`SELECT branchId FROM branches WHERE noteId = ? AND parentNoteId = ? AND isDeleted = 0`, [noteId, parentNoteId]);
     const branch = becca.getBranch(branchId);
 
     if (branch) {

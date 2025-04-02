@@ -124,7 +124,7 @@ describe("Promoted attributes", () => {
             "#calendar:displayedAttributes": "weight,mood"
         });
 
-        const event = await CalendarView.buildEvent(note, "2025-04-04");
+        const event = await CalendarView.buildEvent(note, { startDate: "2025-04-04" });
         expect(event).toHaveLength(1);
         expect(event[0]?.promotedAttributes).toMatchObject([
             [ "weight", "75" ],
@@ -142,10 +142,35 @@ describe("Promoted attributes", () => {
             "#relation:assignee": "promoted,alias=Assignee,single,text",
         });
 
-        const event = await CalendarView.buildEvent(note, "2025-04-04");
+        const event = await CalendarView.buildEvent(note, { startDate: "2025-04-04" });
         expect(event).toHaveLength(1);
         expect(event[0]?.promotedAttributes).toMatchObject([
             [ "assignee", "Target note" ]
         ])
     });
+
+    it("supports start time and end time", async () => {
+        const noteIds = buildNotes([
+            { title: "Note 1", "#startDate": "2025-05-05", "#startTime": "13:36", "#endTime": "14:56" },
+            { title: "Note 2", "#startDate": "2025-05-07", "#endDate": "2025-05-08", "#startTime": "13:36", "#endTime": "14:56" },
+        ]);
+        const events = await CalendarView.buildEvents(noteIds);
+
+        expect(events).toHaveLength(2);
+        expect(events[0]).toMatchObject({ title: "Note 1", start: "2025-05-05T13:36:00", end: "2025-05-05T14:56:00" });
+        expect(events[1]).toMatchObject({ title: "Note 2", start: "2025-05-07T13:36:00", end: "2025-05-08T14:56:00" });
+    });
+
+    it("handles start time with missing end time", async () => {
+        const noteIds = buildNotes([
+            { title: "Note 1", "#startDate": "2025-05-05", "#startTime": "13:30" },
+            { title: "Note 2", "#startDate": "2025-05-07", "#endDate": "2025-05-08", "#startTime": "13:36" },
+        ]);
+        const events = await CalendarView.buildEvents(noteIds);
+
+        expect(events).toHaveLength(2);
+        expect(events[0]).toMatchObject({ title: "Note 1", start: "2025-05-05T13:30:00" });
+        expect(events[1]).toMatchObject({ title: "Note 2", start: "2025-05-07T13:36:00", end: "2025-05-08" });
+    });
+
 });

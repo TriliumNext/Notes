@@ -41,7 +41,7 @@ To protect shared notes with a username and password, you can use the `#shareCre
 The default shared page is basic in design, but you can customize it using your own CSS:
 
 *   **Custom CSS**: Link a CSS [code note](../Note%20Types/Code.md) to the shared page by adding a `~shareCss` relation to the note. If you want this style to apply to the entire subtree, make the label inheritable. You can hide the CSS code note from the tree navigation by adding the `#shareHiddenFromTree` label.
-*   **Omitting Default CSS**: For extensive styling changes, use the `#shareOmitDefaultCss` label to avoid conflicts with Trilium's [default stylesheet](../Basic%20Concepts/Themes.md).
+*   **Omitting Default CSS**: For extensive styling changes, use the `#shareOmitDefaultCss` label to avoid conflicts with Trilium's [default stylesheet](../Basic%20Concepts%20and%20Features/Themes.md).
 
 ### Adding JavaScript
 

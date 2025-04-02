@@ -42,14 +42,9 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
     overflow: auto;
 }
 
-.ck-content pre code::-webkit-scrollbar {
-    height: 6px;
-}
-
-.ck-content pre code::-webkit-scrollbar-thumb {
-    height: 4px;
-    border: none !important;
-    background: gray !important;
+.ck-content pre code {
+    --scrollbar-thumb-color: gray;
+    --scrollbar-thumb-hover-color: gray;
 }
 
 .ck-content pre code::-webkit-scrollbar-track,
@@ -132,105 +127,4 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
 .ck-content .table > figcaption {
     background: var(--accented-background-color);
     color: var(--main-text-color);
-}
-
-/*
- * Search in text panel
- */
-
-.find-replace-widget {
-    container-type: inline-size;
-    border-top: 3px solid var(--root-background) !important;
-}
-
-.find-replace-widget > div {
-    padding: 8px;
-}
-
-.find-replace-widget > div + div {
-    padding-top: 0;
-}
-
-div.find-replace-widget div.find-widget-found-wrapper > span {
-    min-width: 50px;
-    font-style: normal;
-    font-weight: normal;
-}
-
-/* The up / down buttons of the "Find in text" input */
-.find-replace-widget .input-group button {
-    font-size: 1.3em;
-}
-
-.find-replace-widget .form-check {
-    padding-left: 0;
-    white-space: nowrap;
-}
-
-.find-replace-widget .form-check .form-check-input {
-    margin-left: 0;
-}
-
-/* Narrow version */
-@container (max-width: 600px) {
-    .find-replace-widget > *,
-    .find-replace-widget input,
-    .find-replace-widget button.btn.btn-sm {
-        font-size: .9em;
-    }
-
-    .find-widget-box {
-        position: relative;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .find-widget-box,
-    .replace-widget-box {
-        padding-right: 3em !important;
-    }
-
-    .find-widget-close-button {
-        position: absolute;
-        top: .85em;
-        right: .5em;
-    }
-
-    .find-widget-box > * {
-        margin: unset !important;
-    }
-
-    div.find-widget-search-term-input-group {
-        margin-bottom: 8px;
-        max-width: unset;
-        width: 100%;
-    }
-
-    .find-widget-found-wrapper,
-    .find-widget-found-wrapper > span {
-        min-width: 0 !important;
-    }
-
-    .find-widget-spacer {
-        display: none;
-    }
-
-    .form-check {
-        min-height: unset;
-        margin-bottom: unset;
-    }
-
-    .replace-widget-box {
-        gap: 8px;
-    }
-
-    .replace-widget-box > * {
-        margin-right: unset !important;
-    }
-
-    div.replace-widget-box button.btn.btn-sm {
-        min-width: unset;
-        white-space: nowrap;
-    }
 }

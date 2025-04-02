@@ -63,7 +63,7 @@ This will disable TLS certificate verification, significantly reducing security 
 
 ### Conflict Resolution
 
-If you edit the same note on multiple instances before synchronization, Trilium resolves conflicts by retaining the newer change and discarding the older one. The older version remains accessible in [note revisions](../Basic%20Concepts/Note/Note%20Revisions.md), allowing data recovery if needed.
+If you edit the same note on multiple instances before synchronization, Trilium resolves conflicts by retaining the newer change and discarding the older one. The older version remains accessible in [note revisions](../Basic%20Concepts%20and%20Features/Notes/Note%20Revisions.md), allowing data recovery if needed.
 
 ### Hash Check
 

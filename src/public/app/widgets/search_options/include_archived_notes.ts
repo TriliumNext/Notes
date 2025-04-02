@@ -1,7 +1,7 @@
 import AbstractSearchOption from "./abstract_search_option.js";
 import { t } from "../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr data-search-option-conf="includeArchivedNotes">
     <td colspan="2">
         <span class="bx bx-archive"></span>

@@ -259,7 +259,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
     }
 
     protected _getContent(): string | Buffer {
-        const row = sql.getRow<{ content: string | Buffer }>(`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
+        const row = sql.getRow<{ content: string | Buffer }>(/*sql*/`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
 
         if (!row) {
             const constructorData = this.constructor as unknown as ConstructorData<T>;
@@ -282,7 +282,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         this.utcDateModified = dateUtils.utcNowDateTime();
 
         sql.execute(
-            `UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
+            /*sql*/`UPDATE ${entityName} SET isDeleted = 1, deleteId = ?, utcDateModified = ?
                             WHERE ${constructorData.primaryKeyName} = ?`,
             [deleteId, this.utcDateModified, entityId]
         );
@@ -290,7 +290,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         if (this.dateModified) {
             this.dateModified = dateUtils.localNowDateTime();
 
-            sql.execute(`UPDATE ${entityName} SET dateModified = ? WHERE ${constructorData.primaryKeyName} = ?`, [this.dateModified, entityId]);
+            sql.execute(/*sql*/`UPDATE ${entityName} SET dateModified = ? WHERE ${constructorData.primaryKeyName} = ?`, [this.dateModified, entityId]);
         }
 
         log.info(`Marking ${entityName} ${entityId} as deleted`);
@@ -308,7 +308,7 @@ abstract class AbstractBeccaEntity<T extends AbstractBeccaEntity<T>> {
         this.utcDateModified = dateUtils.utcNowDateTime();
 
         sql.execute(
-            `UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
+            /*sql*/`UPDATE ${entityName} SET isDeleted = 1, utcDateModified = ?
                             WHERE ${constructorData.primaryKeyName} = ?`,
             [this.utcDateModified, entityId]
         );

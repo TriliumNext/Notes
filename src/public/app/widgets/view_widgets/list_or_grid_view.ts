@@ -2,13 +2,12 @@ import linkService from "../../services/link.js";
 import contentRenderer from "../../services/content_renderer.js";
 import froca from "../../services/froca.js";
 import attributeRenderer from "../../services/attribute_renderer.js";
-import libraryLoader from "../../services/library_loader.js";
 import treeService from "../../services/tree.js";
 import utils from "../../services/utils.js";
 import type FNote from "../../entities/fnote.js";
 import ViewMode, { type ViewModeArgs } from "./view_mode.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-list">
     <style>
     .note-list {
@@ -216,7 +215,7 @@ class ListOrGridView extends ViewMode {
 
         const highlightedTokens = this.parentNote.highlightedTokens || [];
         if (highlightedTokens.length > 0) {
-            await libraryLoader.requireLibrary(libraryLoader.MARKJS);
+            await import("script-loader!mark.js/dist/jquery.mark.min.js");
 
             const regex = highlightedTokens.map((token) => utils.escapeRegExp(token)).join("|");
 
@@ -269,12 +268,12 @@ class ListOrGridView extends ViewMode {
                     i === this.page
                         ? $("<span>").text(i).css("text-decoration", "underline").css("font-weight", "bold")
                         : $('<a href="javascript:">')
-                              .text(i)
-                              .attr("title", `Page of ${startIndex} - ${endIndex}`)
-                              .on("click", () => {
-                                  this.page = i;
-                                  this.renderList();
-                              }),
+                            .text(i)
+                            .attr("title", `Page of ${startIndex} - ${endIndex}`)
+                            .on("click", () => {
+                                this.page = i;
+                                this.renderList();
+                            }),
                     " &nbsp; "
                 );
             } else if (lastPrinted) {

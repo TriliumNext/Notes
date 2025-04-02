@@ -1,6 +1,6 @@
 import BasicWidget from "../basic_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <button type="button" class="action-button bx bx-sidebar"></button>`;
 
 class ToggleSidebarButtonWidget extends BasicWidget {

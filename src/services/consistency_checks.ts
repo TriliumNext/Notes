@@ -375,7 +375,7 @@ class ConsistencyChecks {
             ({ noteId, parentNoteId }) => {
                 if (this.autoFix) {
                     const branchIds = sql.getColumn<string>(
-                        `SELECT branchId
+                        /*sql*/`SELECT branchId
                             FROM branches
                             WHERE noteId = ?
                                 and parentNoteId = ?
@@ -729,7 +729,7 @@ class ConsistencyChecks {
             LEFT JOIN entity_changes ec ON ec.entityName = '${entityName}' AND ec.entityId = ${entityName}.${key}
             WHERE ec.id IS NULL`,
             ({ entityId }) => {
-                const entityRow = sql.getRow<EntityChange>(`SELECT * FROM ${entityName} WHERE ${key} = ?`, [entityId]);
+                const entityRow = sql.getRow<EntityChange>(/*sql*/`SELECT * FROM ${entityName} WHERE ${key} = ?`, [entityId]);
 
                 if (this.autoFix) {
                     entityChangesService.putEntityChange({
@@ -778,7 +778,7 @@ class ConsistencyChecks {
             AND entity_changes.entityName = '${entityName}'`,
             ({ id, entityId }) => {
                 if (this.autoFix) {
-                    sql.execute(`DELETE FROM ${entityName} WHERE ${key} = ?`, [entityId]);
+                    sql.execute(/*sql*/`DELETE FROM ${entityName} WHERE ${key} = ?`, [entityId]);
 
                     this.reloadNeeded = true;
 
@@ -802,7 +802,7 @@ class ConsistencyChecks {
     }
 
     findWronglyNamedAttributes() {
-        const attrNames = sql.getColumn<string>(`SELECT DISTINCT name FROM attributes`);
+        const attrNames = sql.getColumn<string>(/*sql*/`SELECT DISTINCT name FROM attributes`);
 
         for (const origName of attrNames) {
             const fixedName = sanitizeAttributeName(origName);
@@ -883,7 +883,7 @@ class ConsistencyChecks {
 
     runDbDiagnostics() {
         function getTableRowCount(tableName: string) {
-            const count = sql.getValue<number>(`SELECT COUNT(1) FROM ${tableName}`);
+            const count = sql.getValue<number>(/*sql*/`SELECT COUNT(1) FROM ${tableName}`);
 
             return `${tableName}: ${count}`;
         }

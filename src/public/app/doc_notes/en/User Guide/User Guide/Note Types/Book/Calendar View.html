@@ -18,6 +18,16 @@
         </p>
         <p>The Calendar view of Book notes will display each child note in a calendar
           that has a start date and optionally an end date, as an event.</p>
+        <p>The Calendar view has multiple display modes:</p>
+        <ul>
+          <li>Week view, where all the 7 days of the week (or 5 if the weekends are
+            hidden) are displayed in columns. This mode allows entering and displaying
+            time-specific events, not just all-day events.</li>
+          <li>Month view, where the entire month is displayed and all-day events can
+            be inserted. Both time-specific events and all-day events are listed.</li>
+          <li>Year view, which displays the entire year for quick reference.</li>
+          <li>List view, which displays all the events of a given month in sequence.</li>
+        </ul>
         <p>Unlike other Book view types, the Calendar view also allows some kind
           of interaction, such as moving events around as well as creating new ones.</p>
         <h2>Creating a calendar</h2>
@@ -71,7 +81,7 @@
         <ul>
           <li>Hovering the mouse over an event will display information about the note.
             <br>
-            <img src="9_Calendar View_image.png">
+            <img src="7_Calendar View_image.png">
           </li>
           <li>Left clicking the event will go to that note. Middle clicking will open
             the note in a new tab and right click will offer more options including
@@ -101,6 +111,23 @@
               </td>
               <td>When present (regardless of value), it will show the number of the week
                 on the calendar.</td>
+            </tr>
+            <tr>
+              <td><code>#calendar:view</code>
+              </td>
+              <td>
+                <p>Which view to display in the calendar:</p>
+                <ul>
+                  <li><code>timeGridWeek</code> for the <em>week</em> view;</li>
+                  <li><code>dayGridMonth</code> for the <em>month</em> view;</li>
+                  <li><code>multiMonthYear</code> for the <em>year</em> view;</li>
+                  <li><code>listMonth</code> for the <em>list</em> view.</li>
+                </ul>
+                <p>Any other value will be dismissed and the default view (month) will be
+                  used instead.</p>
+                <p>The value of this label is automatically updated when changing the view
+                  using the UI buttons.</p>
+              </td>
             </tr>
             <tr>
               <td><code>~child:template</code>
@@ -137,6 +164,19 @@
                 The attribute can be missing for single-day events.</td>
             </tr>
             <tr>
+              <td><code>#startTime</code>
+              </td>
+              <td>The time the event starts at. If this value is missing, then the event
+                is considered a full-day event. The format is <code>HH:MM</code> (hours in
+                24-hour format and minutes).</td>
+            </tr>
+            <tr>
+              <td><code>#endTime</code>
+              </td>
+              <td>Similar to <code>startTime</code>, it mentions the time at which the event
+                ends (in relation with <code>endDate</code> if present, or <code>startDate</code>).</td>
+            </tr>
+            <tr>
               <td><code>#color</code>
               </td>
               <td>Displays the event with a specified color (named such as <code>red</code>, <code>gray</code> or
@@ -159,24 +199,24 @@
               <td><code>#calendar:title</code>
               </td>
               <td>Changes the title of an event to point to an attribute of the note other
-                than the title, either a label (e.g. <code>#assignee</code>) or a relation
-                (e.g. <code>~for</code>). See <em>Advanced use-cases</em> for more information.</td>
+                than the title, can either a label or a relation (without the <code>#</code> or <code>~</code> symbol).
+                See <em>Use-cases</em> for more information.</td>
             </tr>
             <tr>
               <td><code>#calendar:displayedAttributes</code>
               </td>
               <td>Allows displaying the value of one or more attributes in the calendar
-                like this: 
+                like this:   
                 <br>
                 <br>
-                <img src="11_Calendar View_image.png">
+                <img src="9_Calendar View_image.png"> 
                 <br>
-                <br><code>&lt;br&gt;#weight="70"&lt;br&gt;#Mood="Good"&lt;br&gt;#calendar:displayedAttributes="weight,Mood"&lt;br&gt;</code> 
+                <br><code>#weight="70" #Mood="Good" #calendar:displayedAttributes="weight,Mood"</code> 
                 <br>
                 <br>It can also be used with relations, case in which it will display the
-                title of the target note:
+                title of the target note:  
                 <br>
-                <br><code>&lt;br&gt;~assignee=@My assignee&lt;br&gt;#calendar:displayedAttributes="assignee"&lt;br&gt;</code>
+                <br><code>~assignee=@My assignee #calendar:displayedAttributes="assignee"</code>
               </td>
             </tr>
             <tr>
@@ -189,16 +229,27 @@
             <tr>
               <td><code>#calendar:endDate</code>
               </td>
-              <td>Allows using a different label to represent the start date, other than <code>endDate</code>.
-                The label name <strong>must not be</strong> prefixed with <code>#</code>.
-                If the label is not defined for a note, the default will be used instead.</td>
+              <td>Similar to <code>#calendar:startDate</code>, allows changing the attribute
+                which is being used to read the end date.</td>
+            </tr>
+            <tr>
+              <td><code>#calendar:startTime</code>
+              </td>
+              <td>Similar to <code>#calendar:startDate</code>, allows changing the attribute
+                which is being used to read the start time.</td>
+            </tr>
+            <tr>
+              <td><code>#calendar:endTime</code>
+              </td>
+              <td>Similar to <code>#calendar:startDate</code>, allows changing the attribute
+                which is being used to read the end time.</td>
             </tr>
           </tbody>
         </table>
         
 <h2>How the calendar works</h2>
         <p>
-          <img src="14_Calendar View_image.png">
+          <img src="11_Calendar View_image.png">
         </p>
         <p>The calendar displays all the child notes of the book that have a <code>#startDate</code>.
           An <code>#endDate</code> can optionally be added.</p>
@@ -208,7 +259,7 @@
 #hidePromotedAttributes </code></pre>
         <p>This will result in:</p>
         <p>
-          <img src="12_Calendar View_image.png">
+          <img src="10_Calendar View_image.png">
         </p>
         <p>When not used in a Journal, the calendar is recursive. That is, it will
           look for events not just in its child notes but also in the children of
@@ -233,31 +284,30 @@
             will not be displayed.</li>
         </ul>
         <p>
-          <img src="10_Calendar View_image.png">
+          <img src="8_Calendar View_image.png">
         </p>
         <h3>Using a different attribute as event title</h3>
         <p>By default, events are displayed on the calendar by their note title.
           However, it is possible to configure a different attribute to be displayed
           instead.</p>
         <p>To do so, assign <code>#calendar:title</code> to the child note (not the
-          calendar/book note), with the value being <code>#name</code> where <code>name</code> can
-          be any label. The attribute can also come through inheritance such as a
-          template attribute. If the note does not have the requested label, the
-          title of the note will be used instead.</p>
+          calendar/book note), with the value being <code>name</code> where <code>name</code> can
+          be any label (make not to add the <code>#</code> prefix). The attribute can
+          also come through inheritance such as a template attribute. If the note
+          does not have the requested label, the title of the note will be used instead.</p>
         <table>
           <thead>
             <tr>
-              <th></th>
-              <th></th>
+              <th> </th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>
-                <img src="5_Calendar View_image.png">
+              <td><pre><code class="language-text-x-trilium-auto">#startDate=2025-02-11 #endDate=2025-02-13 #name="My vacation" #calendar:title="name"</code></pre>
               </td>
               <td>
-                <img src="7_Calendar View_image.png">
+                <img src="5_Calendar View_image.png">
               </td>
             </tr>
           </tbody>
@@ -265,7 +315,7 @@
         
 <h3>Using a relation attribute as event title</h3>
         <p>Similarly to using an attribute, use <code>#calendar:title</code> and set
-          it to <code>~name</code> where <code>name</code> is the name of the relation
+          it to <code>name</code> where <code>name</code> is the name of the relation
           to use.</p>
         <p>Moreover, if there are more relations of the same name, they will be displayed
           as multiple events coming from the same note.</p>
@@ -278,11 +328,10 @@
           </thead>
           <tbody>
             <tr>
-              <td>
-                <img src="6_Calendar View_image.png">
+              <td><code>#startDate=2025-02-14 #endDate=2025-02-15 ~for=@John Smith ~for=@Jane Doe #calendar:title="for"</code>
               </td>
               <td>
-                <img src="8_Calendar View_image.png">
+                <img src="6_Calendar View_image.png">
               </td>
             </tr>
           </tbody>
@@ -301,8 +350,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>
-                <img src="13_Calendar View_image.png">
+              <td><code>#calendar:title="shortName" #shortName="John S."</code>
               </td>
               <td>
                 <img src="1_Calendar View_image.png">

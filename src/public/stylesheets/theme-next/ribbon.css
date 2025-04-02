@@ -154,14 +154,3 @@ div.editability-dropdown a.dropdown-item {
 .note-info-widget {
     container: info-section / inline-size;
 }
-
-/*
- * Attribute detail dialog
- */
-
-/* Labels */
-.attr-edit-table th {
-    padding-right: 12px;
-    font-weight: normal;
-    white-space: nowrap;
-}

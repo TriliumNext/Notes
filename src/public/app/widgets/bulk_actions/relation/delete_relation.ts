@@ -2,15 +2,15 @@ import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 import { t } from "../../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td>
         ${t("delete_relation.delete_relation")}
     </td>
     <td>
         <div style="display: flex; align-items: center">
-            <input type="text" 
-                class="form-control relation-name"                    
+            <input type="text"
+                class="form-control relation-name"
                 pattern="[\\p{L}\\p{N}_:]+"
                 placeholder="${t("delete_relation.relation_name")}"
                 title="${t("delete_relation.allowed_characters")}"/>

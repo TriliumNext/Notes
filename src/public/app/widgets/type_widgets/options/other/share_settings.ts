@@ -4,7 +4,7 @@ import { t } from "../../../../services/i18n.js";
 import type { OptionMap, OptionNames } from "../../../../../../services/options_interface.js";
 import searchService from "../../../../services/search.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("share.title")}</h4>
 

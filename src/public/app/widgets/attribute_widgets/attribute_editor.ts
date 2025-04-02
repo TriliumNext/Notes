@@ -24,7 +24,7 @@ const HELP_TEXT = `
 
 <p>${t("attribute_editor.help_text_body3")}</p>`;
 
-const TPL = `
+const TPL = /*html*/`
 <div style="position: relative; padding-top: 10px; padding-bottom: 10px">
     <style>
     .attribute-list-editor {

@@ -5,11 +5,11 @@ Your Trilium data is stored in a [SQLite](https://www.sqlite.org) database which
 
 When you run Trilium for the first time, it will generate a new database containing demo notes. These notes showcase its many features, such as:
 
-*   [Relation Map](Relation%20Map.md)
+*   [Relation Map](../Note%20Types/Relation%20Map.md)
 *   [Day Notes](Advanced%20Showcases/Day%20Notes.md)
 *   [Weight Tracker](Advanced%20Showcases/Weight%20Tracker.md)
 *   [Task Manager](Advanced%20Showcases/Task%20Manager.md)
-*   [Custom CSS Themes](../Basic%20Concepts/Themes.md)
+*   [Custom CSS Themes](../Basic%20Concepts%20and%20Features/Themes.md)
 
 ### Restoring Demo Notes
 

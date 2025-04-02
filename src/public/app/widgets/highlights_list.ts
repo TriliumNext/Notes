@@ -14,7 +14,7 @@ import appContext, { type EventData } from "../components/app_context.js";
 import libraryLoader from "../services/library_loader.js";
 import type FNote from "../entities/fnote.js";
 
-const TPL = `<div class="highlights-list-widget">
+const TPL = /*html*/`<div class="highlights-list-widget">
     <style>
         .highlights-list-widget {
             padding: 10px;
@@ -203,7 +203,7 @@ export default class HighlightsListWidget extends RightPanelWidget {
         // matches a span containing color
         const regex2 = /<span[^>]*style\s*=\s*[^>]*[^-]color:[^>]*?>[\s\S]*?<\/span>/gi;
         // match italics
-        const regex3 = /<i>[\s\S]*?<\/i>/gi;
+        const regex3 = /(<i>[\s\S]*?<\/i>|<em>[\s\S]*?<\/em>)/gi;
         // match bold
         const regex4 = /<strong>[\s\S]*?<\/strong>/gi;
         // match underline
@@ -222,6 +222,7 @@ export default class HighlightsListWidget extends RightPanelWidget {
         }
         if (optionsHighlightsList.includes("italic")) {
             findSubStr += `,i:not(section.include-note i)`;
+            findSubStr += `,em:not(section.include-note em)`;
             combinedRegexStr += `|${regex3.source}`;
         }
         if (optionsHighlightsList.includes("bold")) {
@@ -288,7 +289,8 @@ export default class HighlightsListWidget extends RightPanelWidget {
         }
         return {
             $highlightsList,
-            hlLiCount
+            hlLiCount,
+            findSubStr
         };
     }
 
@@ -350,11 +352,13 @@ export default class HighlightsListWidget extends RightPanelWidget {
             }
         }
 
-        if (targetElement) {
+        if (targetElement && targetElement[itemIndex]) {
             targetElement[itemIndex].scrollIntoView({
                 behavior: "smooth",
                 block: "center"
             });
+        } else {
+            console.warn("Unable to find the target element in the highlights list.");
         }
     }
 

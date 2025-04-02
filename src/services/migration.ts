@@ -52,7 +52,7 @@ async function migrate() {
                 executeMigration(mig);
 
                 sql.execute(
-                    `UPDATE options
+                    /*sql*/`UPDATE options
                             SET value = ?
                             WHERE name = ?`,
                     [mig.dbVersion.toString(), "dbVersion"]

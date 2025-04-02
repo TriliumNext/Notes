@@ -3,7 +3,7 @@ import toastService from "../../../../services/toast.js";
 import server from "../../../../services/server.js";
 import { t } from "../../../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("vacuum_database.title")}</h4>
 

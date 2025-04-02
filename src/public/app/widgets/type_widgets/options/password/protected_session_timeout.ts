@@ -1,7 +1,7 @@
 import { t } from "../../../../services/i18n.js";
 import TimeSelector from "../time_selector.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("password.protected_session_timeout")}</h4>
 

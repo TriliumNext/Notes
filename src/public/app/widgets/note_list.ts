@@ -4,7 +4,7 @@ import type FNote from "../entities/fnote.js";
 import type { EventData } from "../components/app_context.js";
 import type ViewMode from "./view_widgets/view_mode.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-list-widget">
     <style>
     .note-list-widget {

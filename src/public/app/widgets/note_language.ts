@@ -9,7 +9,7 @@ import type { Locale } from "../../../services/i18n.js";
 import options from "../services/options.js";
 import appContext from "../components/app_context.js";
 
-const TPL = `\
+const TPL = /*html*/`\
 <div class="dropdown note-language-widget">
     <button type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle select-button note-language-button">
         <span class="note-language-desc"></span>

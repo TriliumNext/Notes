@@ -1090,7 +1090,8 @@
   "max_content_width": {
     "title": "Content Width",
     "default_description": "Trilium by default limits max content width to improve readability for maximized screens on wide screens.",
-    "max_width_label": "Max content width in pixels",
+    "max_width_label": "Max content width",
+    "max_width_unit": "pixels",
     "apply_changes_description": "To apply content width changes, click on",
     "reload_button": "reload frontend",
     "reload_description": "changes from appearance options"
@@ -1128,7 +1129,8 @@
   "code_auto_read_only_size": {
     "title": "Automatic Read-Only Size",
     "description": "Automatic read-only note size is the size after which notes will be displayed in a read-only mode (for performance reasons).",
-    "label": "Automatic read-only size (code notes)"
+    "label": "Automatic read-only size (code notes)",
+    "unit": "characters"
   },
   "code-editor-options": {
     "title": "Editor"
@@ -1149,7 +1151,8 @@
     "download_images_automatically": "Download images automatically for offline use.",
     "download_images_description": "Pasted HTML can contain references to online images, Trilium will find those references and download the images so that they are available offline.",
     "enable_image_compression": "Enable image compression",
-    "max_image_dimensions": "Max width / height of an image in pixels (image will be resized if it exceeds this setting).",
+    "max_image_dimensions": "Max width / height of an image (image will be resized if it exceeds this setting).",
+    "max_image_dimensions_unit": "pixels",
     "jpeg_quality_description": "JPEG quality (10 - worst quality, 100 - best quality, 50 - 85 is recommended)"
   },
   "attachment_erasure_timeout": {
@@ -1181,6 +1184,7 @@
     "note_revisions_snapshot_limit_title": "Note Revision Snapshot Limit",
     "note_revisions_snapshot_limit_description": "The note revision snapshot number limit refers to the maximum number of revisions that can be saved for each note. Where -1 means no limit, 0 means delete all revisions. You can set the maximum revisions for a single note through the #versioningLimit label.",
     "snapshot_number_limit_label": "Note revision snapshot number limit:",
+    "snapshot_number_limit_unit": "snapshots",
     "erase_excess_revision_snapshots": "Erase excess revision snapshots now",
     "erase_excess_revision_snapshots_prompt": "Excess revision snapshots have been erased."
   },
@@ -1223,20 +1227,23 @@
   "table_of_contents": {
     "title": "Table of Contents",
     "description": "Table of contents will appear in text notes when the note has more than a defined number of headings. You can customize this number:",
+    "unit": "headings",
     "disable_info": "You can also use this option to effectively disable TOC by setting a very high number.",
     "shortcut_info": "You can configure a keyboard shortcut for quickly toggling the right pane (including TOC) in the Options -> Shortcuts (name 'toggleRightPane')."
   },
   "text_auto_read_only_size": {
     "title": "Automatic Read-Only Size",
     "description": "Automatic read-only note size is the size after which notes will be displayed in a read-only mode (for performance reasons).",
-    "label": "Automatic read-only size (text notes)"
+    "label": "Automatic read-only size (text notes)",
+    "unit": "characters"
   },
   "i18n": {
     "title": "Localization",
     "language": "Language",
     "first-day-of-the-week": "First day of the week",
     "sunday": "Sunday",
-    "monday": "Monday"
+    "monday": "Monday",
+    "formatting-locale": "Date & number format"
   },
   "backup": {
     "automatic_backup": "Automatic backup",
@@ -1303,6 +1310,39 @@
     "password_mismatch": "New passwords are not the same.",
     "password_changed_success": "Password has been changed. Trilium will be reloaded after you press OK."
   },
+  "multi_factor_authentication": {
+    "title": "Multi-Factor Authentication",
+    "description": "Multi-Factor Authentication (MFA) adds an extra layer of security to your account. Instead of just entering a password to log in, MFA requires you to provide one or more additional pieces of evidence to verify your identity. This way, even if someone gets hold of your password, they still can't access your account without the second piece of information. It's like adding an extra lock to your door, making it much harder for anyone else to break in.<br><br>Please follow the instructions below to enable MFA. If you don't config correctly, login will fall back to password only.",
+    "mfa_enabled": "Enable Multi-Factor Authentication",
+    "mfa_method": "MFA Method",
+    "electron_disabled": "Multi-Factor Authentication is not supported in the desktop build currently.",
+    "totp_title": "Time-based One-Time Password (TOTP)",
+    "totp_description": "TOTP (Time-Based One-Time Password) is a security feature that generates a unique, temporary code which changes every 30 seconds. You use this code, along with your password to log into your account, making it much harder for anyone else to access it.",
+    "totp_secret_title": "Generate TOTP Secret",
+    "totp_secret_generate": "Generate TOTP Secret",
+    "totp_secret_regenerate": "Regenerate TOTP Secret",
+    "no_totp_secret_warning": "To enable TOTP, you need to generate a TOTP secret first.",
+    "totp_secret_description_warning": "After generating a new TOTP secret, you will be required to login again with the new TOTP secret.",
+    "totp_secret_generated": "TOTP Secret Generated",
+    "totp_secret_warning": "Please save the generated secret in a secure location. It will not be shown again.",
+    "totp_secret_regenerate_confirm": "Are you sure you want to regenerate the TOTP secret? This will invalidate previous TOTP secret and all existing recovery codes.",
+    "recovery_keys_title": "Single Sign-on Recovery Keys",
+    "recovery_keys_description": "Single sign-on recovery keys are used to login in the even you cannot access your Authenticator codes.",
+    "recovery_keys_description_warning": "Recovery keys won't be shown again after leaving the page, keep them somewhere safe and secure.<br>After a recovery key is used it cannot be used again.",
+    "recovery_keys_error": "Error generating recovery codes",
+    "recovery_keys_no_key_set": "No recovery codes set",
+    "recovery_keys_generate": "Generate Recovery Codes",
+    "recovery_keys_regenerate": "Regenerate Recovery Codes",
+    "recovery_keys_used": "Used: {{date}}",
+    "recovery_keys_unused": "Recovery code {{index}} is unused",
+    "oauth_title": "OAuth/OpenID",
+    "oauth_description": "OpenID is a standardized way to let you log into websites using an account from another service, like Google, to verify your identity. Follow these <a href=\"https://developers.google.com/identity/openid-connect/openid-connect\">instructions</a> to setup an OpenID service through Google.",
+    "oauth_description_warning": "To enable OAuth/OpenID, you need to set the OAuth/OpenID base URL, client ID and client secret in the config.ini file and restart the application. If you want to set from environment variables, please set TRILIUM_OAUTH_BASE_URL, TRILIUM_OAUTH_CLIENT_ID and TRILIUM_OAUTH_CLIENT_SECRET.",
+    "oauth_missing_vars": "Missing settings: {{variables}}",
+    "oauth_user_account": "User Account: ",
+    "oauth_user_email": "User Email: ",
+    "oauth_user_not_logged_in": "Not logged in!"
+  },
   "shortcuts": {
     "keyboard_shortcuts": "Keyboard Shortcuts",
     "multiple_shortcuts": "Multiple shortcuts for the same action can be separated by comma.",
@@ -1329,7 +1369,8 @@
   "sync_2": {
     "config_title": "Sync Configuration",
     "server_address": "Server instance address",
-    "timeout": "Sync timeout (milliseconds)",
+    "timeout": "Sync timeout",
+    "timeout_unit": "milliseconds",
     "proxy_label": "Sync proxy server (optional)",
     "note": "Note",
     "note_description": "If you leave the proxy setting blank, the system proxy will be used (applies to desktop/electron build only).",
@@ -1425,7 +1466,8 @@
     "widget": "Widget",
     "confirm-change": "It is not recommended to change note type when note content is not empty. Do you want to continue anyway?",
     "geo-map": "Geo Map",
-    "beta-feature": "Beta"
+    "beta-feature": "Beta",
+    "task-list": "Task List"
   },
   "protect_note": {
     "toggle-on": "Protect the note",
@@ -1457,9 +1499,6 @@
   "highlights_list_2": {
     "title": "Highlights List",
     "options": "Options"
-  },
-  "mermaid": {
-    "diagram_error": "The diagram could not be displayed. See <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">help and examples</a>."
   },
   "quick-search": {
     "placeholder": "Quick search",
@@ -1696,5 +1735,19 @@
   "content_language": {
     "title": "Content languages",
     "description": "Select one or more languages that should appear in the language selection in the Basic Properties section of a read-only or editable text note. This will allow features such as spell-checking or right-to-left support."
+  },
+  "switch_layout_button": {
+    "title_vertical": "Move editing pane to the bottom",
+    "title_horizontal": "Move editing pane to the left"
+  },
+  "toggle_read_only_button": {
+    "unlock-editing": "Unlock editing",
+    "lock-editing": "Lock editing"
+  },
+  "png_export_button": {
+    "button_title": "Export diagram as PNG"
+  },
+  "svg": {
+    "export_to_png": "The diagram could not be exported to PNG."
   }
 }

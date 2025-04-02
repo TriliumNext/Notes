@@ -3,7 +3,7 @@ import OptionsWidget from "../options_widget.js";
 import mimeTypesService from "../../../../services/mime_types.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("code_mime_types.title")}</h4>
 

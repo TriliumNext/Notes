@@ -115,7 +115,6 @@ function setupContextMenu() {
             items.push({ title: "----" });
 
             items.push({
-                enabled: editFlags.canPaste,
                 title: t("electron_context_menu.search_online", { term: shortenedSelection, searchEngine: searchEngineName }),
                 uiIcon: "bx bx-search-alt",
                 handler: () => electron.shell.openExternal(searchUrl)

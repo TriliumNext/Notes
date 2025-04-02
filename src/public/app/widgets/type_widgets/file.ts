@@ -6,7 +6,7 @@ import type FNote from "../../entities/fnote.js";
 
 const TEXT_MAX_NUM_CHARS = 5000;
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-file note-detail-printable">
     <style>
         .type-file .note-detail {

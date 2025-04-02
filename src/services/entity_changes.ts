@@ -60,7 +60,7 @@ function putNoteReorderingEntityChange(parentNoteId: string, componentId?: strin
 
     eventService.emit(eventService.ENTITY_CHANGED, {
         entityName: "note_reordering",
-        entity: sql.getMap(`SELECT branchId, notePosition FROM branches WHERE isDeleted = 0 AND parentNoteId = ?`, [parentNoteId])
+        entity: sql.getMap(/*sql*/`SELECT branchId, notePosition FROM branches WHERE isDeleted = 0 AND parentNoteId = ?`, [parentNoteId])
     });
 }
 
@@ -73,7 +73,7 @@ function putEntityChangeForOtherInstances(ec: EntityChange) {
 }
 
 function addEntityChangesForSector(entityName: string, sector: string) {
-    const entityChanges = sql.getRows<EntityChange>(`SELECT * FROM entity_changes WHERE entityName = ? AND SUBSTR(entityId, 1, 1) = ?`, [entityName, sector]);
+    const entityChanges = sql.getRows<EntityChange>(/*sql*/`SELECT * FROM entity_changes WHERE entityName = ? AND SUBSTR(entityId, 1, 1) = ?`, [entityName, sector]);
 
     let entitiesInserted = entityChanges.length;
 
@@ -125,7 +125,7 @@ function fillEntityChanges(entityName: string, entityPrimaryKey: string, conditi
     cleanupEntityChangesForMissingEntities(entityName, entityPrimaryKey);
 
     sql.transactional(() => {
-        const entityIds = sql.getColumn<string>(`SELECT ${entityPrimaryKey} FROM ${entityName} ${condition}`);
+        const entityIds = sql.getColumn<string>(/*sql*/`SELECT ${entityPrimaryKey} FROM ${entityName} ${condition}`);
 
         let createdCount = 0;
 

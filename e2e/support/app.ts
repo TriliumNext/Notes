@@ -54,6 +54,7 @@ export default class App {
     async goToNoteInNewTab(noteTitle: string) {
         const autocomplete = this.currentNoteSplit.locator(".note-autocomplete");
         await autocomplete.fill(noteTitle);
+        await expect(this.currentNoteSplit.locator(".note-detail-empty-results")).toContainText(noteTitle);
         await autocomplete.press("ArrowDown");
         await autocomplete.press("Enter");
     }
@@ -75,6 +76,8 @@ export default class App {
      */
     async closeAllTabs() {
         await this.triggerCommand("closeAllTabs");
+        // Page in Playwright is not updated somehow, need to click on the tab to make sure it's rendered
+        await this.getTab(0).click();
     }
 
     /**

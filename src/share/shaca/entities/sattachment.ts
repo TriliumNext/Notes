@@ -37,7 +37,7 @@ class SAttachment extends AbstractShacaEntity {
     }
 
     getContent(silentNotFoundError = false) {
-        const row = sql.getRow<Pick<Blob, "content">>(`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
+        const row = sql.getRow<Pick<Blob, "content">>(/*sql*/`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
 
         if (!row) {
             if (silentNotFoundError) {
@@ -47,7 +47,7 @@ class SAttachment extends AbstractShacaEntity {
             }
         }
 
-        let content = row.content;
+        const content = row.content;
 
         if (this.hasStringContent()) {
             return content === null ? "" : content.toString("utf-8");

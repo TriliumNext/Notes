@@ -14,7 +14,7 @@ interface AppInfo {
     dataDirectory: string;
 }
 
-const TPL = `
+const TPL = /*html*/`
 <div class="about-dialog modal fade mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">

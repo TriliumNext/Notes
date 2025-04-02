@@ -1,14 +1,18 @@
 @import url(./forms.css);
 @import url(./shell.css);
+@import url(./dialogs.css);
+@import url(./pages.css);
 @import url(./ribbon.css);
-@import url(./settings.css);
-@import url(./notes/empty.css);
 @import url(./notes/text.css);
 
 @font-face {
     font-family: "Inter";
     src: url(../../fonts/Inter/Inter-VariableFont_opsz\,wght.ttf);
 }
+
+/*
+ * GLOBAL VARIABLES
+ */
 
 :root {
     --main-font-family: "Inter", sans-serif;
@@ -26,11 +30,15 @@
 
     --left-pane-item-selected-shadow-size: 2px;
 
-    --launcher-pane-size: 58px;
-    --launcher-pane-horizontal-size: 54px;
-    --launcher-pane-horizontal-icon-size: 20px;
-    --launcher-pane-button-margin: 6px;
-    --launcher-pane-button-gap: 3px;
+    --launcher-pane-vert-size: 58px;
+    --launcher-pane-vert-icon-size: 150%;
+    --launcher-pane-vert-button-margin: 6px;
+    --launcher-pane-vert-button-gap: 3px;
+
+    --launcher-pane-horiz-size: 54px;
+    --launcher-pane-horiz-icon-size: 20px;
+    --launcher-pane-horiz-button-margin: 8px;
+    --launcher-pane-horiz-button-gap: 3px;
 
     --tree-actions-toolbar-horizontal-margin: 8px;
     --tree-actions-toolbar-vertical-margin: 8px;
@@ -44,6 +52,11 @@
     --new-tab-button-size: 24px;
 
     --center-pane-border-radius: 10px;
+
+    --floating-button-height: 34px;
+    --floating-button-width: 40px;
+    --floating-button-icon-size: 20px;
+    --floating-button-show-hide-button-size: 26px;
 
     --menu-padding-size: 8px;
     --menu-item-icon-vert-offset: -2px;
@@ -69,45 +82,196 @@
     --tab-note-icons: true;
 }
 
-/* Tool dialogs - small dialogs without a backdrop */
-div.tn-tool-dialog {
-    border-radius: 10px;
-    background: var(--tool-dialog-background-color) !important;
-    user-select: none;
-    box-shadow: 10px 10px 93px -25px var(--tool-dialog-shadow-color);
-}
-
 /*
- * Note search suggestions
+ * MENUS
+ *
+ * Note: apply the "tn-dropdown-list" class for scrollable dropdown menus. Submenus are not
+ * supported when this class is used.
  */
 
-/* List body */
-.jump-to-note-dialog .jump-to-note-results .aa-suggestions,
-.note-detail-empty .aa-suggestions {
-    padding: 0;
+ .dropdown-menu:not(.static) {
+    border-radius: var(--dropdown-border-radius);
+    padding: var(--menu-padding-size) !important;
+    font-size: 0.9rem !important;
 }
 
-/* List item */
-.jump-to-note-dialog .aa-suggestions div,
-.note-detail-empty .aa-suggestions div {
+.dropdown-menu {
+    --scrollbar-background-color: var(--menu-background-color);
+}
+
+body.mobile .dropdown-menu {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    border-radius: var(--dropdown-border-radius);
+    position: relative;
+}
+
+body.mobile .dropdown-menu .dropdown-menu {
+    backdrop-filter: unset !important;
+    border-radius: unset !important;
+}
+
+body.desktop .dropdown-menu::before {
+    content: "";
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    border-radius: var(--dropdown-border-radius);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+}
+
+body.desktop .dropdown-menu.tn-dropdown-list {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+}
+
+body.desktop .dropdown-menu.tn-dropdown-list::before {
+    display: none;
+}
+
+body.desktop .dropdown-submenu .dropdown-menu::before {
+    content: unset;
+}
+
+body.mobile .dropdown-submenu .dropdown-menu {
+    background: transparent !important;
+}
+
+body.desktop .dropdown-submenu .dropdown-menu {
+    backdrop-filter: var(--dropdown-backdrop-filter);
+    background: transparent;
+}
+
+.dropdown-item,
+body.mobile .dropdown-submenu .dropdown-toggle {
+    padding: 2px 2px 2px 8px !important;
+    padding-inline-end: 16px !important;
+    /* Note: the right padding should also accommodate the submenu arrow. */
     border-radius: 6px;
-    padding: 6px 12px;
-    color: var(--menu-text-color);
-    cursor: default;
+    cursor: default !important;
 }
 
-/* Selected list item */
-.jump-to-note-dialog .aa-suggestions div.aa-cursor,
-.note-detail-empty .aa-suggestions div.aa-cursor {
-    background: var(--hover-item-background-color);
-    color: var(--hover-item-text-color);
+body.mobile .dropdown-submenu {
+    padding: 0 !important;
+}
+
+body.mobile .dropdown-item:not(:last-of-type) {
+    margin-bottom: 0.5em;
+}
+
+body.mobile .dropdown-submenu:hover {
+    background: transparent !important;
+}
+
+html body .dropdown-item.disabled,
+html body .dropdown-item[disabled] {
+    color: var(--menu-text-color) !important;
+    opacity: var(--menu-item-disabled-opacity);
+}
+
+/* Menu item icon */
+.dropdown-item .bx {
+    transform: translateY(var(--menu-item-icon-vert-offset));
+    color: var(--menu-item-icon-color) !important;
+    font-size: 1.1em;
+}
+
+/* Menu item keyboard shortcut */
+.dropdown-item kbd {
+    margin-left: 16px;
+    font-family: unset !important;
+    font-size: unset !important;
+    color: var(--menu-item-keyboard-shortcut-color) !important;
+    padding-top: 0;
+}
+
+.dropdown-divider {
+    position: relative;
+    border-color: transparent !important;
+    overflow: visible;
+}
+
+.dropdown-divider::after {
+    position: absolute;
+    content: "";
+    top: -1px;
+    left: calc(0px - var(--menu-padding-size));
+    right: calc(0px - var(--menu-padding-size));
+    border-top: 1px solid var(--menu-item-delimiter-color);
+}
+
+/* Menu item arrow */
+.dropdown-menu .dropdown-toggle::after {
+    content: "\ed3b" !important;
+    position: absolute;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    margin: unset !important;
+    border: unset !important;
+    padding: 0 4px;
+    font-family: boxicons;
+    font-size: 1.2em;
+    color: var(--menu-item-arrow-color) !important;
+}
+
+/* Menu item group heading */
+
+/* The heading body */
+.dropdown-menu h6 {
+    position: relative;
+    background: transparent;
+    padding: 1em 8px 14px 8px;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 1pt;
+    color: var(--menu-item-group-header-color) !important;
+}
+
+/* The delimiter line */
+.dropdown-menu h6::before {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: calc(0px - var(--menu-padding-size));
+    right: calc(0px - var(--menu-padding-size));
+    border-top: 1px solid var(--menu-item-delimiter-color);
+}
+
+/* Static menus (used as a list, such as on the note revisions dialog) */
+body.desktop .dropdown-menu.static {
+    box-shadow: unset;
+    border-radius: 4px;
+    border: unset;
+    background-color: var(--card-background-color) !important;
+    padding: var(--menu-padding-size) !important;
+    user-select: none;
+}
+
+body.desktop .dropdown-menu.static .dropdown-item.active {
+    --active-item-text-color: var(--menu-text-color);
+}
+
+body.desktop .dropdown-menu .dropdown-toggle::after {
+    height: 100%;
+}
+
+body.mobile .dropdown-menu .dropdown-toggle::after {
+    transform: rotate(90deg);
+}
+
+body.mobile .dropdown-menu .dropdown-item.submenu-open .dropdown-toggle::after {
+    transform: rotate(270deg);
 }
 
 /*
- * Toasts
+ * TOASTS
  */
 
-#toast-container {
+ #toast-container {
     /* The vertical gap between toasts */
     gap: 10px;
 }
@@ -143,4 +307,223 @@ div.tn-tool-dialog {
 
 #toast-container .toast .toast-body {
     flex-grow: 1;
+}
+
+/*
+ * NOTE TOOLTIPS
+ */
+
+ .tooltip .tooltip-inner:has(.note-tooltip-content) {
+    border-radius: 8px;
+}
+
+.note-tooltip-content {
+    padding: 8px;
+    min-height: 56px;
+}
+
+.note-tooltip-title .note-title-with-path {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.note-tooltip-title a {
+    color: inherit !important;
+}
+
+.note-tooltip-title.note-no-content {
+    margin: 0;
+}
+
+.note-tooltip-title:not(.note-no-content) .note-title-with-path {
+    padding-bottom: 6px;
+    border-bottom: 2px solid currentColor;
+}
+
+.note-tooltip-content .note-path {
+    display: block;
+    color: var(--muted-text-color);
+    font-size: 0.75em;
+}
+
+.note-tooltip-content .note-tooltip-attributes {
+    margin-top: -4px;
+    font-size: 0.75em;
+}
+
+.note-tooltip-content .rendered-content {
+    padding-top: 12px;
+}
+
+/* NOTE PATHS */
+
+.note-path .path-bracket {
+    /* Hide the leading and trailing bracket from the path */
+    display: none;
+}
+
+.note-path .path-delimiter {
+    /* Hide the path delimiters (slashes) */
+    display: none;
+}
+
+.note-path .path-delimiter + span::before {
+    /* Replace the path delimiters with arrows */
+    display: inline-block;
+    content: "\ed3b";
+    padding: 0 0.25em;
+    font-family: boxicons;
+    opacity: 0.75;
+    transform: translateY(4%);
+}
+
+/*
+ * NOTE LIST
+ */
+
+ .note-list .note-book-card {
+    --note-list-horizontal-padding: 22px;
+    --note-list-vertical-padding: 15px;
+    background-color: var(--card-background-color);
+    border: 1px solid var(--card-border-color) !important;
+    box-shadow: 2px 3px 4px var(--card-shadow-color);
+    border-radius: 12px;
+    user-select: none;
+    padding: 0;
+    margin: 5px 10px 5px 0;
+}
+
+.note-list.list-view .note-book-card {
+    box-shadow: 0 0 3px var(--card-shadow-color);
+}
+
+.note-list.list-view .note-book-card .note-book-header .note-icon {
+    vertical-align: middle;
+}
+
+.note-list-wrapper .note-book-card:active {
+    background-color: var(--card-background-press-color);
+}
+
+.note-list-wrapper .note-book-card a {
+    color: inherit !important;
+}
+
+.note-list-wrapper .note-book-card .note-book-header {
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0.5em 1rem;
+    border-bottom-color: var(--card-border-color);
+}
+
+.note-list-wrapper .note-book-card .note-book-header .note-icon {
+    font-size: 17px;
+    vertical-align: text-bottom;
+}
+
+.note-list-wrapper .note-book-card .note-book-header .note-book-title {
+    font-size: 1em;
+    color: var(--active-item-text-color);
+    vertical-align: middle;
+}
+
+.note-list-wrapper .note-book-card .note-book-header .rendered-note-attributes {
+    font-size: 0.7em;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.note-list-wrapper .note-book-card .note-book-header:last-child {
+    border-bottom: 0;
+}
+
+.note-list-wrapper .note-book-card .note-book-content {
+    padding: 0 !important;
+    font-size: 0.8rem;
+}
+
+.note-list-wrapper .note-book-card .note-book-content .rendered-content {
+    padding: 1rem;
+}
+
+.note-list-wrapper .note-book-card .note-book-content .rendered-content.text-with-ellipsis {
+    padding: 1rem !important;
+}
+
+.note-list-wrapper .note-book-card .note-book-content h1,
+.note-list-wrapper .note-book-card .note-book-content h2,
+.note-list-wrapper .note-book-card .note-book-content h3,
+.note-list-wrapper .note-book-card .note-book-content h4,
+.note-list-wrapper .note-book-card .note-book-content h5,
+.note-list-wrapper .note-book-card .note-book-content h6 {
+    font-size: 1rem;
+    color: var(--active-item-text-color);
+}
+
+.note-list-wrapper .note-book-card .note-book-content p:last-child {
+    margin-bottom: 0;
+}
+
+.note-list-wrapper .note-book-card .note-book-content.type-canvas .rendered-content,
+.note-list-wrapper .note-book-card .note-book-content.type-mindMap .rendered-content,
+.note-list-wrapper .note-book-card .note-book-content.type-code .rendered-content,
+.note-list-wrapper .note-book-card .note-book-content.type-video .rendered-content {
+    padding: 0;
+}
+
+.note-list-wrapper .note-book-card .note-book-content.type-code pre {
+    height: 100%;
+    padding: 1em;
+}
+
+.note-list-wrapper .note-book-card .bx {
+    color: var(--left-pane-icon-color) !important;
+}
+
+.note-list.grid-view .note-book-card:hover {
+    background: var(--card-background-color) !important;
+    filter: contrast(105%);
+}
+
+.note-list.grid-view .note-book-card img {
+    object-fit: cover !important;
+    width: 100%;
+}
+
+.note-list.grid-view .ck-content {
+    line-height: 1.3;
+}
+
+.note-list.grid-view .ck-content p {
+    margin-bottom: 0.5em;
+}
+
+.note-list.grid-view .ck-content figure.image {
+    width: 25%;
+}
+
+/*
+ * NOTE SEARCH SUGGESTIONS
+ */
+
+/* List body */
+.jump-to-note-dialog .jump-to-note-results .aa-suggestions,
+.note-detail-empty .aa-suggestions {
+    padding: 0;
+}
+
+/* List item */
+.jump-to-note-dialog .aa-suggestions div,
+.note-detail-empty .aa-suggestions div {
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+/* Selected list item */
+.jump-to-note-dialog .aa-suggestions div.aa-cursor,
+.note-detail-empty .aa-suggestions div.aa-cursor {
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
 }

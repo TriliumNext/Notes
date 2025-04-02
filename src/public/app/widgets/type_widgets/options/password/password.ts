@@ -5,7 +5,7 @@ import toastService from "../../../../services/toast.js";
 import OptionsWidget from "../options_widget.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4 class="password-heading">${t("password.heading")}</h4>
 

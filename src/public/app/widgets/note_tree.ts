@@ -26,7 +26,7 @@ import type { NoteType } from "../entities/fnote.js";
 import type { AttributeRow, BranchRow } from "../services/load_results.js";
 import type { SetNoteOpts } from "../components/note_context.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="tree-wrapper">
     <style>
     .tree-wrapper {

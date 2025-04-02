@@ -1455,9 +1455,6 @@
     "title": "Accentuations",
     "options": "Options"
   },
-  "mermaid": {
-    "diagram_error": "Le diagramme n'a pas pu être affiché. Consultez l'<a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">aide et exemples</a>."
-  },
   "quick-search": {
     "placeholder": "Recherche rapide",
     "searching": "Recherche...",

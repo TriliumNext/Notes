@@ -12,7 +12,7 @@ import shortcutService from "../../services/shortcuts.js";
 import appContext from "../../components/app_context.js";
 import type { Attribute } from "../../services/attribute_parser.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="attr-detail tn-tool-dialog">
     <style>
         .attr-detail {
@@ -288,7 +288,7 @@ const ATTR_HELP: Record<string, Record<string, string>> = {
 };
 
 interface AttributeDetailOpts {
-    allAttributes: Attribute[];
+    allAttributes?: Attribute[];
     attribute: Attribute;
     isOwned: boolean;
     x: number;
@@ -338,7 +338,7 @@ export default class AttributeDetailWidget extends NoteContextAwareWidget {
 
     private relatedNotesSpacedUpdate!: SpacedUpdate;
     private attribute!: Attribute;
-    private allAttributes!: Attribute[];
+    private allAttributes?: Attribute[];
     private attrType!: ReturnType<AttributeDetailWidget["getAttrType"]>;
 
     async refresh() {
@@ -434,7 +434,7 @@ export default class AttributeDetailWidget extends NoteContextAwareWidget {
 
             this.attribute.value = pathChunks[pathChunks.length - 1]; // noteId
 
-            this.triggerCommand("updateAttributeList", { attributes: this.allAttributes });
+            this.triggerCommand("updateAttributeList", { attributes: this.allAttributes ?? [] });
             this.updateRelatedNotes();
         });
 
@@ -454,7 +454,7 @@ export default class AttributeDetailWidget extends NoteContextAwareWidget {
         this.$deleteButton = this.$widget.find(".attr-delete-button");
         this.$deleteButton.on("click", async () => {
             await this.triggerCommand("updateAttributeList", {
-                attributes: this.allAttributes.filter((attr) => attr !== this.attribute)
+                attributes: (this.allAttributes || []).filter((attr) => attr !== this.attribute)
             });
 
             await this.triggerCommand("saveAttributes");
@@ -714,7 +714,7 @@ export default class AttributeDetailWidget extends NoteContextAwareWidget {
             this.attribute.value = String(this.$inputValue.val());
         }
 
-        this.triggerCommand("updateAttributeList", { attributes: this.allAttributes });
+        this.triggerCommand("updateAttributeList", { attributes: this.allAttributes ?? [] });
     }
 
     buildDefinitionValue() {

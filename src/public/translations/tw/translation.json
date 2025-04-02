@@ -1399,9 +1399,6 @@
     "title": "高亮列表",
     "options": "選項"
   },
-  "mermaid": {
-    "diagram_error": "圖表無法顯示。 請參考 <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">幫助文檔和示例</a>。"
-  },
   "quick-search": {
     "placeholder": "快速搜尋",
     "searching": "正在搜尋...",

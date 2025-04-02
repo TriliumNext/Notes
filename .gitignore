@@ -26,6 +26,7 @@ server-package.json
 .idea/shelf/
 data/
 data-test/
+data-demo/
 tmp/
 .eslintcache
 

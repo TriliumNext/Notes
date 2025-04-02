@@ -14,7 +14,7 @@ import link from "../../services/link.js";
 import note_tooltip from "../../services/note_tooltip.js";
 import appContext from "../../components/app_context.js";
 
-const TPL = `\
+const TPL = /*html*/`\
 <div class="note-detail-geo-map note-detail-printable">
     <style>
         .leaflet-pane {

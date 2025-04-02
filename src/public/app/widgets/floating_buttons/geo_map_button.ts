@@ -1,7 +1,7 @@
 import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
-const TPL = `\
+const TPL = /*html*/`\
 <div class="geo-map-buttons">
     <style>
         .geo-map-buttons {
@@ -16,7 +16,7 @@ const TPL = `\
     </style>
 
     <button type="button"
-        class="geo-map-create-child-note floating-button btn bx bx-folder-plus"
+        class="geo-map-create-child-note floating-button btn bx bx-plus-circle"
         title="${t("geo-map.create-child-note-title")}" />
 </div>`;
 

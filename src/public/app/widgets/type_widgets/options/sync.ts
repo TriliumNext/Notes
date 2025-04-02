@@ -4,7 +4,7 @@ import OptionsWidget from "./options_widget.js";
 import { t } from "../../../services/i18n.js";
 import type { OptionMap } from "../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4 style="margin-top: 0px;">${t("sync_2.config_title")}</h4>
 
@@ -15,16 +15,19 @@ const TPL = `
         </div>
 
         <div class="form-group">
-            <label for="sync-server-timeout" >${t("sync_2.timeout")}</label>
-            <input id="sync-server-timeout" class="sync-server-timeout form-control" min="1" max="10000000" type="number" style="text-align: left;">
-        </div>
-
-        <div class="form-group">
             <label for="sync-proxy form-control" >${t("sync_2.proxy_label")}</label>
             <input id="sync-proxy form-control" class="sync-proxy form-control" placeholder="https://<host>:<port>">
 
             <p class="form-text"><strong>${t("sync_2.note")}:</strong> ${t("sync_2.note_description")}</p>
             <p class="form-text">${t("sync_2.special_value_description")}</p>
+        </div>
+
+        <div class="form-group">
+            <label for="sync-server-timeout">${t("sync_2.timeout")}</label>
+            <label class="input-group tn-number-unit-pair">
+                <input id="sync-server-timeout" class="sync-server-timeout form-control" min="1" max="10000000" type="number" style="text-align: left;">
+                <span class="input-group-text">${t("sync_2.timeout_unit")}</span>
+            </label>
         </div>
 
         <div style="display: flex; justify-content: space-between;">

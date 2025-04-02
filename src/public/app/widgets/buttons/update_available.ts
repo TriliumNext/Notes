@@ -2,7 +2,7 @@ import { t } from "../../services/i18n.js";
 import BasicWidget from "../basic_widget.js";
 import utils from "../../services/utils.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div style="display: none;">
     <style>
         .global-menu-button-update-available-button {

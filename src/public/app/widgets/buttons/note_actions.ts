@@ -15,7 +15,7 @@ interface ConvertToAttachmentResponse {
     attachment: FAttachmentRow;
 }
 
-const TPL = `
+const TPL = /*html*/`
 <div class="dropdown note-actions">
     <style>
         .note-actions {

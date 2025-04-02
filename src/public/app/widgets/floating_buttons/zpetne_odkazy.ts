@@ -9,8 +9,8 @@ import froca from "../../services/froca.js";
 import type FNote from "../../entities/fnote.js";
 import RightPanelWidget from "../right_panel_widget.js";
 
-const TPL = `
-<div class="backlinks-widget">
+const TPL = /*html*/`
+<div class="backlinks-widget has-overflow">
     <style>
         .backlinks-widget {
             position: relative;
@@ -61,7 +61,7 @@ const TPL = `
         <span class="backlinks-count"></span>
     </div>
 
-    <div class="backlinks-items" style="display: none;"></div>
+    <div class="backlinks-items dropdown-menu" style="display: none;"></div>
 </div>
 `;
 

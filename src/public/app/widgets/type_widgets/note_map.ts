@@ -2,7 +2,7 @@ import TypeWidget from "./type_widget.js";
 import NoteMapWidget from "../note_map.js";
 import type FNote from "../../entities/fnote.js";
 
-const TPL = `<div class="note-detail-note-map note-detail-printable"></div>`;
+const TPL = /*html*/`<div class="note-detail-note-map note-detail-printable"></div>`;
 
 export default class NoteMapTypeWidget extends TypeWidget {
 

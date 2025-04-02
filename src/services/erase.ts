@@ -12,19 +12,19 @@ function eraseNotes(noteIdsToErase: string[]) {
         return;
     }
 
-    sql.executeMany(`DELETE FROM notes WHERE noteId IN (???)`, noteIdsToErase);
-    setEntityChangesAsErased(sql.getManyRows(`SELECT * FROM entity_changes WHERE entityName = 'notes' AND entityId IN (???)`, noteIdsToErase));
+    sql.executeMany(/*sql*/`DELETE FROM notes WHERE noteId IN (???)`, noteIdsToErase);
+    setEntityChangesAsErased(sql.getManyRows(/*sql*/`SELECT * FROM entity_changes WHERE entityName = 'notes' AND entityId IN (???)`, noteIdsToErase));
 
     // we also need to erase all "dependent" entities of the erased notes
-    const branchIdsToErase = sql.getManyRows<{ branchId: string }>(`SELECT branchId FROM branches WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.branchId);
+    const branchIdsToErase = sql.getManyRows<{ branchId: string }>(/*sql*/`SELECT branchId FROM branches WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.branchId);
 
     eraseBranches(branchIdsToErase);
 
-    const attributeIdsToErase = sql.getManyRows<{ attributeId: string }>(`SELECT attributeId FROM attributes WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.attributeId);
+    const attributeIdsToErase = sql.getManyRows<{ attributeId: string }>(/*sql*/`SELECT attributeId FROM attributes WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.attributeId);
 
     eraseAttributes(attributeIdsToErase);
 
-    const revisionIdsToErase = sql.getManyRows<{ revisionId: string }>(`SELECT revisionId FROM revisions WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.revisionId);
+    const revisionIdsToErase = sql.getManyRows<{ revisionId: string }>(/*sql*/`SELECT revisionId FROM revisions WHERE noteId IN (???)`, noteIdsToErase).map((row) => row.revisionId);
 
     eraseRevisions(revisionIdsToErase);
 
@@ -47,9 +47,9 @@ function eraseBranches(branchIdsToErase: string[]) {
         return;
     }
 
-    sql.executeMany(`DELETE FROM branches WHERE branchId IN (???)`, branchIdsToErase);
+    sql.executeMany(/*sql*/`DELETE FROM branches WHERE branchId IN (???)`, branchIdsToErase);
 
-    setEntityChangesAsErased(sql.getManyRows(`SELECT * FROM entity_changes WHERE entityName = 'branches' AND entityId IN (???)`, branchIdsToErase));
+    setEntityChangesAsErased(sql.getManyRows(/*sql*/`SELECT * FROM entity_changes WHERE entityName = 'branches' AND entityId IN (???)`, branchIdsToErase));
 
     log.info(`Erased branches: ${JSON.stringify(branchIdsToErase)}`);
 }
@@ -59,9 +59,9 @@ function eraseAttributes(attributeIdsToErase: string[]) {
         return;
     }
 
-    sql.executeMany(`DELETE FROM attributes WHERE attributeId IN (???)`, attributeIdsToErase);
+    sql.executeMany(/*sql*/`DELETE FROM attributes WHERE attributeId IN (???)`, attributeIdsToErase);
 
-    setEntityChangesAsErased(sql.getManyRows(`SELECT * FROM entity_changes WHERE entityName = 'attributes' AND entityId IN (???)`, attributeIdsToErase));
+    setEntityChangesAsErased(sql.getManyRows(/*sql*/`SELECT * FROM entity_changes WHERE entityName = 'attributes' AND entityId IN (???)`, attributeIdsToErase));
 
     log.info(`Erased attributes: ${JSON.stringify(attributeIdsToErase)}`);
 }
@@ -71,9 +71,9 @@ function eraseAttachments(attachmentIdsToErase: string[]) {
         return;
     }
 
-    sql.executeMany(`DELETE FROM attachments WHERE attachmentId IN (???)`, attachmentIdsToErase);
+    sql.executeMany(/*sql*/`DELETE FROM attachments WHERE attachmentId IN (???)`, attachmentIdsToErase);
 
-    setEntityChangesAsErased(sql.getManyRows(`SELECT * FROM entity_changes WHERE entityName = 'attachments' AND entityId IN (???)`, attachmentIdsToErase));
+    setEntityChangesAsErased(sql.getManyRows(/*sql*/`SELECT * FROM entity_changes WHERE entityName = 'attachments' AND entityId IN (???)`, attachmentIdsToErase));
 
     log.info(`Erased attachments: ${JSON.stringify(attachmentIdsToErase)}`);
 }
@@ -83,9 +83,9 @@ function eraseRevisions(revisionIdsToErase: string[]) {
         return;
     }
 
-    sql.executeMany(`DELETE FROM revisions WHERE revisionId IN (???)`, revisionIdsToErase);
+    sql.executeMany(/*sql*/`DELETE FROM revisions WHERE revisionId IN (???)`, revisionIdsToErase);
 
-    setEntityChangesAsErased(sql.getManyRows(`SELECT * FROM entity_changes WHERE entityName = 'revisions' AND entityId IN (???)`, revisionIdsToErase));
+    setEntityChangesAsErased(sql.getManyRows(/*sql*/`SELECT * FROM entity_changes WHERE entityName = 'revisions' AND entityId IN (???)`, revisionIdsToErase));
 
     log.info(`Removed revisions: ${JSON.stringify(revisionIdsToErase)}`);
 }
@@ -105,10 +105,10 @@ function eraseUnusedBlobs() {
         return;
     }
 
-    sql.executeMany(`DELETE FROM blobs WHERE blobId IN (???)`, unusedBlobIds);
+    sql.executeMany(/*sql*/`DELETE FROM blobs WHERE blobId IN (???)`, unusedBlobIds);
     // blobs are not marked as erased in entity_changes, they are just purged completely
     // this is because technically every keystroke can create a new blob and there would be just too many
-    sql.executeMany(`DELETE FROM entity_changes WHERE entityName = 'blobs' AND entityId IN (???)`, unusedBlobIds);
+    sql.executeMany(/*sql*/`DELETE FROM entity_changes WHERE entityName = 'blobs' AND entityId IN (???)`, unusedBlobIds);
 
     log.info(`Erased unused blobs: ${JSON.stringify(unusedBlobIds)}`);
 }

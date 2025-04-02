@@ -8,6 +8,7 @@ import cls from "../../services/cls.js";
 import becca from "../../becca/becca.js";
 import type { Request } from "express";
 import ValidationError from "../../errors/validation_error.js";
+import sql from "../../services/sql.js";
 
 function getAutocomplete(req: Request) {
     if (typeof req.query.query !== "string") {
@@ -67,18 +68,27 @@ function getRecentNotes(activeNoteId: string) {
     return recentNotes.map((rn) => {
         const notePathArray = rn.notePath.split("/");
 
-        const noteTitle = beccaService.getNoteTitle(notePathArray[notePathArray.length - 1]);
+        const { title, icon } = beccaService.getNoteTitleAndIcon(notePathArray[notePathArray.length - 1]);
         const notePathTitle = beccaService.getNoteTitleForPath(notePathArray);
 
         return {
             notePath: rn.notePath,
-            noteTitle,
+            noteTitle: title,
             notePathTitle,
-            highlightedNotePathTitle: utils.escapeHtml(notePathTitle)
+            highlightedNotePathTitle: `<span class="${icon ?? "bx bx-note"}"></span> ${notePathTitle}`
         };
     });
 }
 
+// Get the total number of notes
+function getNotesCount(req: Request) {
+    const notesCount = sql.getRow(
+        /*sql*/`SELECT COUNT(*) AS count FROM notes WHERE isDeleted = 0;`,
+    ) as { count: number };
+    return notesCount.count;
+}
+
 export default {
-    getAutocomplete
+    getAutocomplete,
+    getNotesCount
 };

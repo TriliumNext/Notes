@@ -4,7 +4,7 @@ import server from "../../../../services/server.js";
 import { t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <style>
         .database-database-anonymization-option {

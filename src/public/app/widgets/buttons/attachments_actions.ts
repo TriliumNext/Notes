@@ -12,7 +12,7 @@ import type attachmentsApiRoute from "../../../../routes/api/attachments.js";
 import type FAttachment from "../../entities/fattachment.js";
 import type AttachmentDetailWidget from "../attachment_detail.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="dropdown attachment-actions">
     <style>
     .attachment-actions {

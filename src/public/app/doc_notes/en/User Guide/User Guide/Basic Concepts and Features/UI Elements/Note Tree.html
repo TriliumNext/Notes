@@ -1,0 +1,65 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Note Tree</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Note Tree</h1>
+
+      <div class="ck-content">
+        <p>This page explains how to manipulate the note tree in TriliumNext, focusing
+          on moving notes.</p>
+        <p>
+          <img src="1_Note Tree_image.png">
+        </p>
+        <h2>Drag and Drop</h2>
+        <p>
+          <img src="../../Attachments/drag-and-drop.gif" alt="Drag and drop example">
+        </p>
+        <p>You can easily rearrange the note tree by dragging and dropping notes,
+          as demonstrated in the example above.</p>
+        <h2>Keyboard Manipulation</h2>
+        <p>
+          <img src="../../Attachments/move-note-with-keyboard.gif" alt="Example of using keyboard keys to move a note">Trilium offers efficient keyboard-based manipulation using the following
+          <a
+          href="../Keyboard%20Shortcuts.html">shortcuts</a>:</p>
+        <ul>
+          <li><kbd>Ctrl</kbd> + <kbd><span>↑</span></kbd> and <kbd>Ctrl</kbd> +<kbd><span>↓</span></kbd>:
+            Move the note up or down in the order.</li>
+          <li><kbd>Ctrl</kbd>+<kbd><span>←</span></kbd>: Move the note up in the hierarchy
+            by changing its parent to the note's grandparent.</li>
+          <li><kbd>Ctrl</kbd>+<kbd><span>→</span></kbd>: Move the note down in the hierarchy
+            by setting its parent to the note currently above it (this action is best
+            understood through a demo or hands-on experience).</li>
+          <li><kbd><span>←</span></kbd> and <kbd><span>→</span></kbd>: Expand and collapse
+            a sub-tree.</li>
+        </ul>
+        <h2>Context Menu</h2>
+        <p>You can also move notes using the familiar cut and paste functions available
+          in the context menu, or with the associated keyboard <a href="../Keyboard%20Shortcuts.html">shortcuts</a>: <code>CTRL-C</code> (
+          <a
+          href="../Notes/Cloning%20Notes.html">copy</a>), <kbd>Ctrl</kbd> + <kbd>X</kbd> (cut) and <kbd>Ctrl</kbd> + <kbd>V</kbd> (paste).</p>
+        <h2>Multiple selection</h2>
+        <p>It is possible to select multiple notes at one time.</p>
+        <p>To do so, first select the note to start the selection with. Then hold
+          Shift and click on the note to end the selection with. All the notes between
+          the start and the end note will be selected as well.</p>
+        <p>
+          <img src="Note Tree_image.png">
+        </p>
+        <p>In the right-click menu, operations such as Cut, Copy, Move to, Clone
+          to or Delete will apply to all the selected notes. It is also possible
+          to apply <a href="../../Advanced%20Usage/Bulk%20actions.html">Bulk actions</a> to
+          them. The rest of the options will not be available and will appear disabled
+          in the menu.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

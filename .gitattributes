@@ -1,4 +1,13 @@
 package-lock.json linguist-generated=true
 **/package-lock.json linguist-generated=true
 src/public/app/doc_notes/en/User[[:space:]]Guide/** linguist-generated=true
+src/public/app/doc_notes/en/User[[:space:]]Guide/**/*.md eol=lf
+
+demo/**/*.html eol=lf
+demo/**/*.json eol=lf
+demo/**/*.svg eol=lf
+demo/**/*.txt eol=lf
+demo/**/*.js eol=lf
+demo/**/*.css eol=lf
+
 libraries/** linguist-vendored

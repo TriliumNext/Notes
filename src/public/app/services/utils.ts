@@ -2,12 +2,25 @@ import dayjs from "dayjs";
 import { Modal } from "bootstrap";
 import type { ViewScope } from "./link.js";
 
+const SVG_MIME = "image/svg+xml";
+
 function reloadFrontendApp(reason?: string) {
     if (reason) {
         logInfo(`Frontend app reload: ${reason}`);
     }
 
     window.location.reload();
+}
+
+function restartDesktopApp() {
+    if (!isElectron()) {
+        reloadFrontendApp();
+        return;
+    }
+
+    const app = dynamicRequire("@electron/remote").app;
+    app.relaunch();
+    app.exit();
 }
 
 /**
@@ -411,7 +424,11 @@ async function openInAppHelp($button: JQuery<HTMLElement>) {
     if (inAppHelpPage) {
         // Dynamic import to avoid import issues in tests.
         const appContext = (await import("../components/app_context.js")).default;
-        const subContexts = appContext.tabManager.getActiveContext().getSubContexts();
+        const activeContext = appContext.tabManager.getActiveContext();
+        if (!activeContext) {
+            return;
+        }
+        const subContexts = activeContext.getSubContexts();
         const targetNote = `_help_${inAppHelpPage}`;
         const helpSubcontext = subContexts.find((s) => s.viewScope?.viewMode === "contextual-help");
         const viewScope: ViewScope = {
@@ -605,9 +622,20 @@ function createImageSrcUrl(note: { noteId: string; title: string }) {
  */
 function downloadSvg(nameWithoutExtension: string, svgContent: string) {
     const filename = `${nameWithoutExtension}.svg`;
+    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    triggerDownload(filename, dataUrl);
+}
+
+/**
+ * Downloads the given data URL on the client device, with a custom file name.
+ *
+ * @param fileName the name to give the downloaded file.
+ * @param dataUrl the data URI to download.
+ */
+function triggerDownload(fileName: string, dataUrl: string) {
     const element = document.createElement("a");
-    element.setAttribute("href", `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`);
-    element.setAttribute("download", filename);
+    element.setAttribute("href", dataUrl);
+    element.setAttribute("download", fileName);
 
     element.style.display = "none";
     document.body.appendChild(element);
@@ -615,6 +643,89 @@ function downloadSvg(nameWithoutExtension: string, svgContent: string) {
     element.click();
 
     document.body.removeChild(element);
+}
+
+/**
+ * Given a string representation of an SVG, renders the SVG to PNG and triggers a download of the file on the client device.
+ *
+ * Note that the SVG must specify its width and height as attributes in order for it to be rendered.
+ *
+ * @param nameWithoutExtension the name of the file. The .png suffix is automatically added to it.
+ * @param svgContent the content of the SVG file download.
+ * @returns a promise which resolves if the operation was successful, or rejects if it failed (permissions issue or some other issue).
+ */
+function downloadSvgAsPng(nameWithoutExtension: string, svgContent: string) {
+    return new Promise<void>((resolve, reject) => {
+        // First, we need to determine the width and the height from the input SVG.
+        const result = getSizeFromSvg(svgContent);
+        if (!result) {
+            reject();
+            return;
+        }
+
+        // Convert the image to a blob.
+        const { width, height } = result;
+
+        // Create an image element and load the SVG.
+        const imageEl = new Image();
+        imageEl.width = width;
+        imageEl.height = height;
+        imageEl.crossOrigin = "anonymous";
+        imageEl.onload = () => {
+            try {
+                // Draw the image with a canvas.
+                const canvasEl = document.createElement("canvas");
+                canvasEl.width = imageEl.width;
+                canvasEl.height = imageEl.height;
+                document.body.appendChild(canvasEl);
+
+                const ctx = canvasEl.getContext("2d");
+                if (!ctx) {
+                    reject();
+                }
+
+                ctx?.drawImage(imageEl, 0, 0);
+
+                const imgUri = canvasEl.toDataURL("image/png")
+                triggerDownload(`${nameWithoutExtension}.png`, imgUri);
+                document.body.removeChild(canvasEl);
+                resolve();
+            } catch (e) {
+                console.warn(e);
+                reject();
+            }
+        };
+        imageEl.onerror = (e) => reject(e);
+        imageEl.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    });
+}
+
+export function getSizeFromSvg(svgContent: string) {
+    const svgDocument = (new DOMParser()).parseFromString(svgContent, SVG_MIME);
+
+    // Try to use width & height attributes if available.
+    let width = svgDocument.documentElement?.getAttribute("width");
+    let height = svgDocument.documentElement?.getAttribute("height");
+
+    // If not, use the viewbox.
+    if (!width || !height) {
+        const viewBox = svgDocument.documentElement?.getAttribute("viewBox");
+        if (viewBox) {
+            const viewBoxParts = viewBox.split(" ");
+            width = viewBoxParts[2];
+            height = viewBoxParts[3];
+        }
+    }
+
+    if (width && height) {
+        return {
+            width: parseFloat(width),
+            height: parseFloat(height)
+        }
+    } else {
+        console.warn("SVG export error", svgDocument.documentElement);
+        return null;
+    }
 }
 
 /**
@@ -674,6 +785,7 @@ function isLaunchBarConfig(noteId: string) {
 
 export default {
     reloadFrontendApp,
+    restartDesktopApp,
     reloadTray,
     parseDate,
     getMonthsInDateRange,
@@ -715,6 +827,7 @@ export default {
     copyHtmlToClipboard,
     createImageSrcUrl,
     downloadSvg,
+    downloadSvgAsPng,
     compareVersions,
     isUpdateAvailable,
     isLaunchBarConfig

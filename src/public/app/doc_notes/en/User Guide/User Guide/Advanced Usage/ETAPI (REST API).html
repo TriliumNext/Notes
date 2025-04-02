@@ -16,9 +16,13 @@
         <p>ETAPI is Trilium's public/external REST API. It is available since Trilium
           v0.50.</p>
         <p>The documentation is in OpenAPI format, available <a href="https://github.com/TriliumNext/Notes/blob/master/src/etapi/etapi.openapi.yaml">here</a>.</p>
-        <p><a href="https://github.com/Nriver/trilium-py">trilium-py</a> is a third-party
-          Python implementation for ETAPI client, you can use Python to communicate
-          with Trilium.</p>
+        <h2>API clients</h2>
+        <p>As an alternative to calling the API directly, there are client libraries
+          to simplify this</p>
+        <ul>
+          <li><a href="https://github.com/Nriver/trilium-py">trilium-py</a>, you can
+            use Python to communicate with Trilium.</li>
+        </ul>
         <h2>Authentication</h2>
         <p>All operations have to be authenticated using a token. You can get this
           token either from Options -&gt; ETAPI or programmatically using the <code>/auth/login</code> REST
@@ -33,6 +37,32 @@ Authorization: Basic BATOKEN</code></pre>
           <li>And <code>password</code> is the generated ETAPI token described above.</li>
         </ul>
         <p>Basic Auth is meant to be used with tools which support only basic auth.</p>
+        <h2>Interaction using Bash scripts</h2>
+        <p>It is possible to write simple Bash scripts to interact with Trilium.
+          As an example, here's how to obtain the HTML content of a note:</p><pre><code class="language-text-x-sh">#!/usr/bin/env bash
+
+
+
+# Configuration
+
+TOKEN=z1vA4fkGxjOR_ZXLrZeqHEFOv65yV3882iFCRtNIK9k9iWrHliITNSLQ=
+
+SERVER=http://localhost:8080
+
+
+
+# Download a note by ID
+
+NOTE_ID="i6ra4ZshJhgN"
+
+curl "$SERVER/etapi/notes/$NOTE_ID/content" -H "Authorization: $TOKEN" </code></pre>
+        <p>Make sure to replace the values of:</p>
+        <ul>
+          <li><code>TOKEN</code> with your ETAPI token.</li>
+          <li><code>SERVER</code> with the correct protocol, host name and port to your
+            Trilium instance.</li>
+          <li><code>NOTE_ID</code> with an existing note ID to download.</li>
+        </ul>
       </div>
     </div>
   </body>

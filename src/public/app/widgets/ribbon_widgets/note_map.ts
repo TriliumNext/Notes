@@ -2,7 +2,7 @@ import NoteMapWidget from "../note_map.js";
 import { t } from "../../services/i18n.js";
 import RightPanelWidget from "../right_panel_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-map-ribbon-widget">
     <style>
         .note-map-ribbon-widget {

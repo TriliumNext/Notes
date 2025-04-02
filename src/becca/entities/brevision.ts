@@ -141,11 +141,11 @@ class BRevision extends AbstractBeccaEntity<BRevision> {
         opts.includeContentLength = !!opts.includeContentLength;
 
         const query = opts.includeContentLength
-            ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
+            ? /*sql*/`SELECT attachments.*, LENGTH(blobs.content) AS contentLength
                 FROM attachments
                 JOIN blobs USING (blobId)
                 WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
-            : `SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
+            : /*sql*/`SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
 
         return sql.getRows<AttachmentRow>(query, [this.revisionId, attachmentId]).map((row) => new BAttachment(row))[0];
     }

@@ -5,8 +5,9 @@ import type CommandButtonWidget from "../buttons/command_button.js";
 import type FNote from "../../entities/fnote.js";
 import type { NoteType } from "../../entities/fnote.js";
 import type { EventData, EventNames } from "../../components/app_context.js";
+import type NoteActionsWidget from "../buttons/note_actions.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="ribbon-container">
     <style>
     .ribbon-container {
@@ -112,13 +113,15 @@ const TPL = `
     <div class="ribbon-body-container"></div>
 </div>`;
 
+type ButtonWidget = (CommandButtonWidget | NoteActionsWidget);
+
 export default class RibbonContainer extends NoteContextAwareWidget {
 
     private lastActiveComponentId?: string | null;
     private lastNoteType?: NoteType;
 
     private ribbonWidgets: NoteContextAwareWidget[];
-    private buttonWidgets: CommandButtonWidget[];
+    private buttonWidgets: ButtonWidget[];
     private $tabContainer!: JQuery<HTMLElement>;
     private $buttonContainer!: JQuery<HTMLElement>;
     private $bodyContainer!: JQuery<HTMLElement>;
@@ -144,7 +147,7 @@ export default class RibbonContainer extends NoteContextAwareWidget {
         return this;
     }
 
-    button(widget: CommandButtonWidget) {
+    button(widget: ButtonWidget) {
         super.child(widget);
 
         this.buttonWidgets.push(widget);

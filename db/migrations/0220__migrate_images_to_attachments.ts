@@ -7,7 +7,7 @@ import sql from "../../src/services/sql";
 export default () => {
     cls.init(() => {
         // emergency disabling of image compression since it appears to make problems in migration to 0.61
-        sql.execute(`UPDATE options SET value = 'false' WHERE name = 'compressImages'`);
+        sql.execute(/*sql*/`UPDATE options SET value = 'false' WHERE name = 'compressImages'`);
 
         becca_loader.load();
 

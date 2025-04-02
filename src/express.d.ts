@@ -4,6 +4,10 @@ export declare module "express-serve-static-core" {
     interface Request {
         session: Session & {
             loggedIn: boolean;
+            lastAuthState: {
+                totpEnabled: boolean;
+                ssoEnabled: boolean;
+            };
         };
         headers: {
             "x-local-date"?: string;

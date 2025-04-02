@@ -2,22 +2,22 @@ import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 import { t } from "../../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px; flex-shrink: 0;">${t("rename_relation.rename_relation_from")}</div> 
-            
-            <input type="text" 
-                class="form-control old-relation-name" 
-                placeholder="${t("rename_relation.old_name")}" 
+            <div style="margin-right: 10px; flex-shrink: 0;">${t("rename_relation.rename_relation_from")}</div>
+
+            <input type="text"
+                class="form-control old-relation-name"
+                placeholder="${t("rename_relation.old_name")}"
                 pattern="[\\p{L}\\p{N}_:]+"
                 title="${t("rename_relation.allowed_characters")}"/>
-            
-            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("rename_relation.to")}</div> 
-            
-            <input type="text" 
-                class="form-control new-relation-name" 
+
+            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("rename_relation.to")}</div>
+
+            <input type="text"
+                class="form-control new-relation-name"
                 placeholder="${t("rename_relation.new_name")}"
                 pattern="[\\p{L}\\p{N}_:]+"
                 title="${t("rename_relation.allowed_characters")}"/>

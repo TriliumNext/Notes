@@ -27,6 +27,26 @@ dayjs.extend(utc);
 const LABEL = "label";
 const RELATION = "relation";
 
+// TODO: Deduplicate with fnote
+const NOTE_TYPE_ICONS = {
+    file: "bx bx-file",
+    image: "bx bx-image",
+    code: "bx bx-code",
+    render: "bx bx-extension",
+    search: "bx bx-file-find",
+    relationMap: "bx bxs-network-chart",
+    book: "bx bx-book",
+    noteMap: "bx bxs-network-chart",
+    mermaid: "bx bx-selection",
+    canvas: "bx bx-pen",
+    webView: "bx bx-globe-alt",
+    launcher: "bx bx-link",
+    doc: "bx bxs-file-doc",
+    contentWidget: "bx bxs-widget",
+    mindMap: "bx bx-sitemap",
+    geoMap: "bx bx-map-alt"
+};
+
 interface NotePathRecord {
     isArchived: boolean;
     isInHoistedSubTree: boolean;
@@ -1088,12 +1108,12 @@ class BNote extends AbstractBeccaEntity<BNote> {
         // given that we're always fetching attachments only for a specific note, we might just do it always
 
         const query = opts.includeContentLength
-            ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
+            ? /*sql*/`SELECT attachments.*, LENGTH(blobs.content) AS contentLength
                 FROM attachments
                 JOIN blobs USING (blobId)
                 WHERE ownerId = ? AND isDeleted = 0
                 ORDER BY position`
-            : `SELECT * FROM attachments WHERE ownerId = ? AND isDeleted = 0 ORDER BY position`;
+            : /*sql*/`SELECT * FROM attachments WHERE ownerId = ? AND isDeleted = 0 ORDER BY position`;
 
         return sql.getRows<AttachmentRow>(query, [this.noteId]).map((row) => new BAttachment(row));
     }
@@ -1102,11 +1122,11 @@ class BNote extends AbstractBeccaEntity<BNote> {
         opts.includeContentLength = !!opts.includeContentLength;
 
         const query = opts.includeContentLength
-            ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
+            ? /*sql*/`SELECT attachments.*, LENGTH(blobs.content) AS contentLength
                 FROM attachments
                 JOIN blobs USING (blobId)
                 WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`
-            : `SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
+            : /*sql*/`SELECT * FROM attachments WHERE ownerId = ? AND attachmentId = ? AND isDeleted = 0`;
 
         return sql.getRows<AttachmentRow>(query, [this.noteId, attachmentId]).map((row) => new BAttachment(row))[0];
     }
@@ -1691,6 +1711,53 @@ class BNote extends AbstractBeccaEntity<BNote> {
 
         return pojo;
     }
+
+    // TODO: Deduplicate with fnote
+    getIcon() {
+        const iconClassLabels = this.getLabels("iconClass");
+
+        if (iconClassLabels && iconClassLabels.length > 0) {
+            return iconClassLabels[0].value;
+        } else if (this.noteId === "root") {
+            return "bx bx-home-alt-2";
+        }
+        if (this.noteId === "_share") {
+            return "bx bx-share-alt";
+        } else if (this.type === "text") {
+            if (this.isFolder()) {
+                return "bx bx-folder";
+            } else {
+                return "bx bx-note";
+            }
+        } else if (this.type === "code" && this.mime.startsWith("text/x-sql")) {
+            return "bx bx-data";
+        } else {
+            return NOTE_TYPE_ICONS[this.type];
+        }
+    }
+
+    // TODO: Deduplicate with fnote
+    isFolder() {
+        return this.type === "search" || this.getFilteredChildBranches().length > 0;
+    }
+
+    // TODO: Deduplicate with fnote
+    getFilteredChildBranches() {
+            let childBranches = this.getChildBranches();
+
+        if (!childBranches) {
+            console.error(`No children for '${this.noteId}'. This shouldn't happen.`);
+            return [];
+        }
+
+        // we're not checking hideArchivedNotes since that would mean we need to lazy load the child notes
+        // which would seriously slow down everything.
+        // we check this flag only once user chooses to expand the parent. This has the negative consequence that
+        // note may appear as a folder but not contain any children when all of them are archived
+
+        return childBranches;
+    }
+
 }
 
 export default BNote;

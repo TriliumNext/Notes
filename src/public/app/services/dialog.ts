@@ -1,5 +1,5 @@
 import appContext from "../components/app_context.js";
-import type { ConfirmDialogOptions, ConfirmWithMessageOptions } from "../widgets/dialogs/confirm.js";
+import type { ConfirmDialogOptions, ConfirmDialogResult, ConfirmWithMessageOptions } from "../widgets/dialogs/confirm.js";
 import type { PromptDialogOptions } from "../widgets/dialogs/prompt.js";
 
 async function info(message: string) {
@@ -16,7 +16,7 @@ async function confirm(message: string) {
 }
 
 async function confirmDeleteNoteBoxWithNote(title: string) {
-    return new Promise((res) => appContext.triggerCommand("showConfirmDeleteNoteBoxWithNoteDialog", { title, callback: res }));
+    return new Promise<ConfirmDialogResult | undefined>((res) => appContext.triggerCommand("showConfirmDeleteNoteBoxWithNoteDialog", { title, callback: res }));
 }
 
 async function prompt(props: PromptDialogOptions) {

@@ -61,8 +61,24 @@ test("Displays math popup", async ({ page, context }) => {
     const mathForm = page.locator(".ck-math-form");
     await expect(mathForm).toBeVisible();
 
-    await mathForm.locator(".ck-input").first().fill("e=mc^2");
+    const input = mathForm.locator(".ck-input").first();
+    await input.click();
+    await input.fill("e=mc^2");
+    await page.waitForTimeout(100);
 
     const preview = page.locator('[id^="math-preview"]');
+    await preview.waitFor({
+        state: 'visible',
+        timeout: 5000
+    });
+
+    await page.waitForFunction((): boolean => {
+        const preview = document.querySelector('[id^="math-preview"]');
+        if (!preview) return false;
+        const katex = preview.querySelector('.katex');
+        return !!katex && window.getComputedStyle(preview).display !== 'none';
+    }, { timeout: 5000 });
+
+    await expect(preview.locator('.katex')).toBeVisible();
     await expect(preview).toMatchAriaSnapshot("- math: e = m c 2");
 });

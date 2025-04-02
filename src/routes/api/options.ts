@@ -10,7 +10,7 @@ import { listSyntaxHighlightingThemes } from "../../services/code_block_theme.js
 import type { OptionNames } from "../../services/options_interface.js";
 
 // options allowed to be updated directly in the Options dialog
-const ALLOWED_OPTIONS = new Set([
+const ALLOWED_OPTIONS = new Set<OptionNames>([
     "eraseEntitiesAfterTimeInSeconds",
     "eraseEntitiesAfterTimeScale",
     "protectedSessionTimeout",
@@ -70,6 +70,7 @@ const ALLOWED_OPTIONS = new Set([
     "promotedAttributesOpenInRibbon",
     "editedNotesOpenInRibbon",
     "locale",
+    "formattingLocale",
     "firstDayOfWeek",
     "languages",
     "textNoteEditorType",
@@ -78,7 +79,10 @@ const ALLOWED_OPTIONS = new Set([
     "backgroundEffects",
     "allowedHtmlTags",
     "redirectBareDomain",
-    "showLoginInShareTheme"
+    "showLoginInShareTheme",
+    "splitEditorOrientation",
+    "mfaEnabled",
+    "mfaMethod"
 ]);
 
 function getOptions() {
@@ -163,7 +167,10 @@ function getSupportedLocales() {
 }
 
 function isAllowed(name: string) {
-    return ALLOWED_OPTIONS.has(name) || name.startsWith("keyboardShortcuts") || name.endsWith("Collapsed") || name.startsWith("hideArchivedNotes");
+    return (ALLOWED_OPTIONS as Set<string>).has(name)
+        || name.startsWith("keyboardShortcuts")
+        || name.endsWith("Collapsed")
+        || name.startsWith("hideArchivedNotes");
 }
 
 export default {

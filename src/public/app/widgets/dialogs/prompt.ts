@@ -3,7 +3,7 @@ import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 import { Modal } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="prompt-dialog modal mx-auto" tabindex="-1" role="dialog" style="z-index: 2000;">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">

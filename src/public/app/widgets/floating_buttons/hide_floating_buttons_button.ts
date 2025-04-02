@@ -1,26 +1,26 @@
 import { t } from "../../services/i18n.js";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="close-floating-buttons">
     <style>
         .close-floating-buttons {
             display: none;
             margin-left: 5px !important;
         }
-    
+
         /* conditionally display close button if there's some other button visible */
         .floating-buttons *:not(.hidden-int):not(.hidden-no-content) ~ .close-floating-buttons {
             display: block;
         }
-        
+
         .close-floating-buttons-button {
             border: 1px solid transparent;
             color: var(--button-text-color);
             padding: 6px;
             border-radius: 100px;
         }
-        
+
         .close-floating-buttons-button:hover {
             border: 1px solid var(--button-border-color);
         }

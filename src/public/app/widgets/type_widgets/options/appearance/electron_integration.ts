@@ -3,7 +3,7 @@ import { t } from "../../../../services/i18n.js";
 import utils from "../../../../services/utils.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("electron_integration.desktop-application")}</h4>
 
@@ -61,11 +61,7 @@ export default class ElectronIntegrationOptions extends OptionsWidget {
         this.$backgroundEffects.on("change", () => this.updateCheckboxOption("backgroundEffects", this.$backgroundEffects));
 
         const restartAppButton = this.$widget.find(".restart-app-button");
-        restartAppButton.on("click", () => {
-            const app = utils.dynamicRequire("@electron/remote").app;
-            app.relaunch();
-            app.exit();
-        });
+        restartAppButton.on("click", utils.restartDesktopApp);
     }
 
     isEnabled() {

@@ -1,5 +1,5 @@
 # Book
-A **Book Note** in Trilium is a special type of [note](../Basic%20Concepts/Note.md) designed to display the contents of its child notes sequentially, creating a linear, book-like reading experience. This format is particularly useful for viewing multiple smaller notes in a cohesive, continuous manner.
+A **Book Note** in Trilium is a special type of [note](../Basic%20Concepts%20and%20Features/Notes.md) designed to display the contents of its child notes sequentially, creating a linear, book-like reading experience. This format is particularly useful for viewing multiple smaller notes in a cohesive, continuous manner.
 
 ![](1_Book_image.png)
 

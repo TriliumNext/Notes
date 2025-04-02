@@ -1,7 +1,7 @@
 import { t } from "../../../services/i18n.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td colspan="2">
         <span class="bx bx-trash"></span>

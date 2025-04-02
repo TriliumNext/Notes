@@ -7,7 +7,7 @@ Task Manager is a [promoted attributes](../Attributes/Promoted%20Attributes.md) 
 
 Task Manager manages outstanding (TODO) tasks and finished tasks (non-empty doneDate attribute). Outstanding tasks are further categorized by location and arbitrary tags - whenever you change tag attribute in the task note, this task is then automatically moved to appropriate location.
 
-Task Manager also integrates with [day notes](Day%20Notes.md) - notes are [cloned](../../Basic%20Concepts/Note/Cloning%20Notes.md) into day note to both todoDate note and doneDate note (with [prefix](../../Basic%20Concepts/Navigation/Tree%20Concepts.md) of either "TODO" or "DONE").
+Task Manager also integrates with [day notes](Day%20Notes.md) - notes are [cloned](../../Basic%20Concepts%20and%20Features/Notes/Cloning%20Notes.md) into day note to both todoDate note and doneDate note (with [prefix](../../Basic%20Concepts%20and%20Features/Navigation/Tree%20Concepts.md) of either "TODO" or "DONE").
 
 ## Implementation
 

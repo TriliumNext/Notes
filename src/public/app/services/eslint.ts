@@ -10,6 +10,12 @@ export async function lint(code: string, mimeType: string) {
         module: "readonly"
     };
 
+    // Unsupported languages
+    if (mimeType.startsWith("text/typescript")) {
+        return [];
+    }
+
+    // Custom globals
     if (mimeType === "application/javascript;env=frontend") {
         globals = { ...globals, ...globalDefinitions.jquery };
     } else if (mimeType === "application/javascript;env=backend") {

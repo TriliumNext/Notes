@@ -20,6 +20,12 @@ class CustomMarkdownRenderer extends Renderer {
             return "";
         }
 
+        // Escape the HTML.
+        text = utils.escapeHtml(text);
+
+        // Unescape &quot
+        text = text.replace(/&quot;/g, '"');
+
         const ckEditorLanguage = getNormalizedMimeFromMarkdownLanguage(lang);
         return `<pre><code class="language-${ckEditorLanguage}">${text}</code></pre>`;
     }
@@ -66,6 +72,7 @@ import htmlSanitizer from "../html_sanitizer.js";
 import importUtils from "./utils.js";
 import { getMimeTypeFromHighlightJs, MIME_TYPE_AUTO, normalizeMimeTypeForCKEditor } from "./mime_type_definitions.js";
 import { ADMONITION_TYPE_MAPPINGS } from "../export/markdown.js";
+import utils from "../utils.js";
 
 function renderToHtml(content: string, title: string) {
     let html = parse(content, {
@@ -75,7 +82,7 @@ function renderToHtml(content: string, title: string) {
 
     // h1 handling needs to come before sanitization
     html = importUtils.handleH1(html, title);
-    html = htmlSanitizer.sanitize(html);
+    // html = htmlSanitizer.sanitize(html);
 
     // Remove slash for self-closing tags to match CKEditor's approach.
     html = html.replace(/<(\w+)([^>]*)\s+\/>/g, "<$1$2>");

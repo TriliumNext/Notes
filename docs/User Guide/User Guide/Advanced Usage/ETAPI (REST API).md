@@ -3,7 +3,11 @@ ETAPI is Trilium's public/external REST API. It is available since Trilium v0.50
 
 The documentation is in OpenAPI format, available [here](https://github.com/TriliumNext/Notes/blob/master/src/etapi/etapi.openapi.yaml).
 
-[trilium-py](https://github.com/Nriver/trilium-py) is a third-party Python implementation for ETAPI client, you can use Python to communicate with Trilium.
+## API clients
+
+As an alternative to calling the API directly, there are client libraries to simplify this
+
+*   [trilium-py](https://github.com/Nriver/trilium-py), you can use Python to communicate with Trilium.
 
 ## Authentication
 
@@ -26,3 +30,25 @@ Authorization: Basic BATOKEN
 *   And `password` is the generated ETAPI token described above.
 
 Basic Auth is meant to be used with tools which support only basic auth.
+
+## Interaction using Bash scripts
+
+It is possible to write simple Bash scripts to interact with Trilium. As an example, here's how to obtain the HTML content of a note:
+
+```sh
+#!/usr/bin/env bash
+
+# Configuration
+TOKEN=z1vA4fkGxjOR_ZXLrZeqHEFOv65yV3882iFCRtNIK9k9iWrHliITNSLQ=
+SERVER=http://localhost:8080
+
+# Download a note by ID
+NOTE_ID="i6ra4ZshJhgN"
+curl "$SERVER/etapi/notes/$NOTE_ID/content" -H "Authorization: $TOKEN" 
+```
+
+Make sure to replace the values of:
+
+*   `TOKEN` with your ETAPI token.
+*   `SERVER` with the correct protocol, host name and port to your Trilium instance.
+*   `NOTE_ID` with an existing note ID to download.

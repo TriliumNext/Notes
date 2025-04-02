@@ -1,7 +1,7 @@
 import { Tooltip } from "bootstrap";
 import NoteContextAwareWidget from "../note_context_aware_widget.js";
 
-const TPL = `<button class="button-widget bx"
+const TPL = /*html*/`<button class="button-widget bx"
       data-bs-toggle="tooltip"
       title=""></button>`;
 

@@ -354,11 +354,12 @@ function searchNotesForAutocomplete(query: string, fastSearch: boolean = true) {
     highlightSearchResults(trimmed, searchContext.highlightedTokens, searchContext.ignoreInternalAttributes);
 
     return trimmed.map((result) => {
+        const { title, icon } = beccaService.getNoteTitleAndIcon(result.noteId);
         return {
             notePath: result.notePath,
-            noteTitle: beccaService.getNoteTitle(result.noteId),
-            notePathTitle: result.notePathTitle,
-            highlightedNotePathTitle: result.highlightedNotePathTitle
+            noteTitle: title,
+            notePathTitle: `${icon} ${result.notePathTitle}`,
+            highlightedNotePathTitle: `<span class="${icon ?? "bx bx-note"}"></span> ${result.highlightedNotePathTitle}`
         };
     });
 }

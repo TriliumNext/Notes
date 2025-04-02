@@ -35,6 +35,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     customSearchEngineName: string;
     customSearchEngineUrl: string;
     locale: string;
+    formattingLocale: string;
     codeBlockTheme: string;
     textNoteEditorType: string;
     layoutOrientation: string;
@@ -45,6 +46,19 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     passwordVerificationSalt: string;
     passwordDerivedKeySalt: string;
     encryptedDataKey: string;
+    hoistedNoteId: string;
+
+    // Multi-Factor Authentication
+    mfaEnabled: boolean;
+    mfaMethod: string;
+    totpEncryptionSalt: string;
+    totpEncryptedSecret: string;
+    totpVerificationHash: string;
+    encryptedRecoveryCodes: boolean;
+    userSubjectIdentifierSaved: boolean;
+    recoveryCodeInitialVector: string;
+    recoveryCodeSecurityKey: string;
+    recoveryCodesEncrypted: string;
 
     lastSyncedPull: number;
     lastSyncedPush: number;
@@ -72,6 +86,9 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     eraseUnusedAttachmentsAfterTimeScale: number;
     firstDayOfWeek: number;
     languages: string;
+
+    // Appearance
+    splitEditorOrientation: "horziontal" | "vertical";
 
     initialized: boolean;
     isPasswordSet: boolean;

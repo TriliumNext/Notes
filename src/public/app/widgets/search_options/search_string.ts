@@ -6,7 +6,7 @@ import appContext, { type EventData } from "../../components/app_context.js";
 import { t } from "../../services/i18n.js";
 import { Tooltip } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td class="title-column">${t("search_string.title_column")}</td>
     <td>

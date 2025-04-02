@@ -30,3 +30,5 @@ declare module "is-animated" {
     function isAnimated(buffer: Buffer): boolean;
     export default isAnimated;
 }
+
+declare module "script-loader!mark.js/dist/jquery.mark.min.js";

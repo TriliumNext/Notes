@@ -8,9 +8,10 @@ interface Token {
 }
 
 export interface Attribute {
+    attributeId?: string;
     type: AttributeType;
     name: string;
-    isInheritable: boolean;
+    isInheritable?: boolean;
     value?: string;
     startIndex?: number;
     endIndex?: number;

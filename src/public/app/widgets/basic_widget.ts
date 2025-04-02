@@ -206,7 +206,8 @@ export class TypedBasicWidget<T extends TypedComponent<any>> extends TypedCompon
     doRender() {}
 
     toggleInt(show: boolean | null | undefined) {
-        this.$widget.toggleClass("hidden-int", !show);
+        this.$widget.toggleClass("hidden-int", !show)
+                    .toggleClass("visible", !!show);
     }
 
     isHiddenInt() {
@@ -214,7 +215,8 @@ export class TypedBasicWidget<T extends TypedComponent<any>> extends TypedCompon
     }
 
     toggleExt(show: boolean) {
-        this.$widget.toggleClass("hidden-ext", !show);
+        this.$widget.toggleClass("hidden-ext", !show)
+                    .toggleClass("visible", !!show);
     }
 
     isHiddenExt() {

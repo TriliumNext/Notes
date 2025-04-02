@@ -1,7 +1,7 @@
 import AbstractSearchOption from "./abstract_search_option.js";
 import { t } from "../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr data-search-option-conf="limit">
     <td class="title-column">
         <span class="bx bx-stop"></span>

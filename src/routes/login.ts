@@ -1,5 +1,3 @@
-"use strict";
-
 import utils from "../services/utils.js";
 import optionService from "../services/options.js";
 import myScryptService from "../services/encryption/my_scrypt.js";
@@ -8,13 +6,20 @@ import passwordService from "../services/encryption/password.js";
 import assetPath from "../services/asset_path.js";
 import appPath from "../services/app_path.js";
 import ValidationError from "../errors/validation_error.js";
-import type { Request, Response } from "express";
+import type { Request, Response } from 'express';
+import totp from '../services/totp.js';
+import recoveryCodeService from '../services/encryption/recovery_codes.js';
+import openID from '../services/open_id.js';
+import openIDEncryption from '../services/encryption/open_id_encryption.js';
 
 function loginPage(req: Request, res: Response) {
-    res.render("login", {
-        failedAuth: false,
-        assetPath,
-        appPath
+    res.render('login', {
+        wrongPassword: false,
+        wrongTotp: false,
+        totpEnabled: totp.isTotpEnabled(),
+        ssoEnabled: openID.isOpenIDEnabled(),
+        assetPath: assetPath,
+        appPath: appPath,
     });
 }
 
@@ -58,44 +63,96 @@ function setPassword(req: Request, res: Response) {
 }
 
 function login(req: Request, res: Response) {
-    const { password, rememberMe } = req.body;
-
-    if (!verifyPassword(password)) {
-        // note that logged IP address is usually meaningless since the traffic should come from a reverse proxy
-        log.info(`WARNING: Wrong password from ${req.ip}, rejecting.`);
-
-        return res.status(401).render("login", {
-            failedAuth: true,
-            assetPath,
-            appPath
+    if (openID.isOpenIDEnabled()) {
+        res.oidc.login({
+            returnTo: '/',
+            authorizationParams: {
+                prompt: 'consent',
+                access_type: 'offline'
+            }
         });
+        return;
     }
 
+    const submittedPassword = req.body.password;
+    const submittedTotpToken = req.body.totpToken;
+
+    if (totp.isTotpEnabled()) {
+        if (!verifyTOTP(submittedTotpToken)) {
+            sendLoginError(req, res, 'totp');
+            return;
+        }
+    }
+
+    if (!verifyPassword(submittedPassword)) {
+        sendLoginError(req, res, 'password');
+        return;
+    }
+
+    const rememberMe = req.body.rememberMe;
+
     req.session.regenerate(() => {
-        if (!rememberMe) {
+        if (rememberMe) {
+            req.session.cookie.maxAge = 21 * 24 * 3600000;  // 3 weeks
+        } else {
             // unset default maxAge set by sessionParser
             // Cookie becomes non-persistent and expires after current browser session (e.g. when browser is closed)
             req.session.cookie.maxAge = undefined;
         }
 
-        req.session.loggedIn = true;
+        req.session.lastAuthState = {
+            totpEnabled: totp.isTotpEnabled(),
+            ssoEnabled: openID.isOpenIDEnabled()
+        };
 
-        res.redirect(".");
+        req.session.loggedIn = true;
+        res.redirect('.');
     });
 }
 
-function verifyPassword(guessedPassword: string) {
+function verifyTOTP(submittedTotpToken: string) {
+    if (totp.validateTOTP(submittedTotpToken)) return true;
+
+    const recoveryCodeValidates = recoveryCodeService.verifyRecoveryCode(submittedTotpToken);
+
+    return recoveryCodeValidates;
+}
+
+function verifyPassword(submittedPassword: string) {
     const hashed_password = utils.fromBase64(optionService.getOption("passwordVerificationHash"));
 
-    const guess_hashed = myScryptService.getVerificationHash(guessedPassword);
+    const guess_hashed = myScryptService.getVerificationHash(submittedPassword);
 
     return guess_hashed.equals(hashed_password);
+}
+
+function sendLoginError(req: Request, res: Response, errorType: 'password' | 'totp' = 'password') {
+    // note that logged IP address is usually meaningless since the traffic should come from a reverse proxy
+    if (totp.isTotpEnabled()) {
+        log.info(`WARNING: Wrong ${errorType} from ${req.ip}, rejecting.`);
+    } else {
+        log.info(`WARNING: Wrong password from ${req.ip}, rejecting.`);
+    }
+
+    res.render('login', {
+        wrongPassword: errorType === 'password',
+        wrongTotp: errorType === 'totp',
+        totpEnabled: totp.isTotpEnabled(),
+        ssoEnabled: openID.isOpenIDEnabled(),
+        assetPath: assetPath,
+        appPath: appPath,
+    });
 }
 
 function logout(req: Request, res: Response) {
     req.session.regenerate(() => {
         req.session.loggedIn = false;
-        res.sendStatus(200);
+
+        if (openID.isOpenIDEnabled() && openIDEncryption.isSubjectIdentifierSaved()) {
+            res.oidc.logout({ returnTo: '/' });
+        }
+
+        res.redirect('login');
     });
 }
 

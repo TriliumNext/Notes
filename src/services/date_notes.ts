@@ -111,6 +111,7 @@ function getMonthNoteTitle(rootNote: BNote, monthNumber: string, dateObj: Date) 
     return pattern
         .replace(/{shortMonth3}/g, monthName.slice(0, 3))
         .replace(/{shortMonth4}/g, monthName.slice(0, 4))
+        .replace(/{isoMonth}/g, dateUtils.utcDateStr(dateObj).slice(0, 7))
         .replace(/{monthNumberPadded}/g, monthNumber)
         .replace(/{month}/g, monthName);
 }

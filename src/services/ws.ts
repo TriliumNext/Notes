@@ -139,19 +139,19 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
         entityChange.entity = becca.getAttribute(entityChange.entityId);
 
         if (!entityChange.entity) {
-            entityChange.entity = sql.getRow(`SELECT * FROM attributes WHERE attributeId = ?`, [entityChange.entityId]);
+            entityChange.entity = sql.getRow(/*sql*/`SELECT * FROM attributes WHERE attributeId = ?`, [entityChange.entityId]);
         }
     } else if (entityChange.entityName === "branches") {
         entityChange.entity = becca.getBranch(entityChange.entityId);
 
         if (!entityChange.entity) {
-            entityChange.entity = sql.getRow(`SELECT * FROM branches WHERE branchId = ?`, [entityChange.entityId]);
+            entityChange.entity = sql.getRow(/*sql*/`SELECT * FROM branches WHERE branchId = ?`, [entityChange.entityId]);
         }
     } else if (entityChange.entityName === "notes") {
         entityChange.entity = becca.getNote(entityChange.entityId);
 
         if (!entityChange.entity) {
-            entityChange.entity = sql.getRow(`SELECT * FROM notes WHERE noteId = ?`, [entityChange.entityId]);
+            entityChange.entity = sql.getRow(/*sql*/`SELECT * FROM notes WHERE noteId = ?`, [entityChange.entityId]);
 
             if (entityChange.entity?.isProtected) {
                 entityChange.entity.title = protectedSessionService.decryptString(entityChange.entity.title || "");
@@ -159,7 +159,7 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
         }
     } else if (entityChange.entityName === "revisions") {
         entityChange.noteId = sql.getValue<string>(
-            `SELECT noteId
+            /*sql*/`SELECT noteId
                                                     FROM revisions
                                                     WHERE revisionId = ?`,
             [entityChange.entityId]
@@ -180,11 +180,11 @@ function fillInAdditionalProperties(entityChange: EntityChange) {
         entityChange.entity = becca.getOption(entityChange.entityId);
 
         if (!entityChange.entity) {
-            entityChange.entity = sql.getRow(`SELECT * FROM options WHERE name = ?`, [entityChange.entityId]);
+            entityChange.entity = sql.getRow(/*sql*/`SELECT * FROM options WHERE name = ?`, [entityChange.entityId]);
         }
     } else if (entityChange.entityName === "attachments") {
         entityChange.entity = sql.getRow(
-            `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
+            /*sql*/`SELECT attachments.*, LENGTH(blobs.content) AS contentLength
                                                 FROM attachments
                                                 JOIN blobs USING (blobId)
                                                 WHERE attachmentId = ?`,
@@ -217,7 +217,7 @@ function sendPing(client: WebSocket, entityChangeIds = []) {
         return;
     }
 
-    const entityChanges = sql.getManyRows<EntityChange>(`SELECT * FROM entity_changes WHERE id IN (???)`, entityChangeIds);
+    const entityChanges = sql.getManyRows<EntityChange>(/*sql*/`SELECT * FROM entity_changes WHERE id IN (???)`, entityChangeIds);
     if (!entityChanges) {
         return;
     }

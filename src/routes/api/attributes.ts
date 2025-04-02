@@ -70,7 +70,7 @@ function setNoteAttribute(req: Request) {
     const noteId = req.params.noteId;
     const body = req.body;
 
-    const attributeId = sql.getValue<string | null>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = ? AND name = ?`, [noteId, body.type, body.name]);
+    const attributeId = sql.getValue<string | null>(/*sql*/`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = ? AND name = ?`, [noteId, body.type, body.name]);
 
     if (attributeId) {
         const attr = becca.getAttribute(attributeId);
@@ -196,7 +196,7 @@ function createRelation(req: Request) {
     const targetNoteId = req.params.targetNoteId;
     const name = req.params.name;
 
-    const attributeId = sql.getValue<string>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [
+    const attributeId = sql.getValue<string>(/*sql*/`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [
         sourceNoteId,
         name,
         targetNoteId
@@ -220,7 +220,7 @@ function deleteRelation(req: Request) {
     const targetNoteId = req.params.targetNoteId;
     const name = req.params.name;
 
-    const attributeId = sql.getValue<string | null>(`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [
+    const attributeId = sql.getValue<string | null>(/*sql*/`SELECT attributeId FROM attributes WHERE isDeleted = 0 AND noteId = ? AND type = 'relation' AND name = ? AND value = ?`, [
         sourceNoteId,
         name,
         targetNoteId

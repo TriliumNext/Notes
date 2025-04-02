@@ -9,7 +9,7 @@ import TemplateSwitchWidget from "../template_switch.js";
 import type FNote from "../../entities/fnote.js";
 import NoteLanguageWidget from "../note_language.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="basic-properties-widget">
     <style>
         .basic-properties-widget {
@@ -123,7 +123,7 @@ export default class BasicPropertiesWidget extends NoteContextAwareWidget {
             return;
         }
 
-        this.$widget.find(".editability-select-container").toggle(this.note && ["text", "code"].includes(this.note.type));
+        this.$widget.find(".editability-select-container").toggle(this.note && ["text", "code", "mermaid"].includes(this.note.type));
         this.$widget.find(".note-language-container").toggle(this.note && ["text"].includes(this.note.type));
     }
 }

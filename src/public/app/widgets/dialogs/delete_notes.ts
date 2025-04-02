@@ -24,7 +24,7 @@ interface ShowDeleteNotesDialogOpts {
     forceDeleteAllClones: boolean;
 }
 
-const TPL = `
+const TPL = /*html*/`
 <div class="delete-notes-dialog modal mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content">

@@ -1,12 +1,12 @@
 import utils from "../../services/utils.js";
 import TypeWidget from "./type_widget.js";
-import libraryLoader from "../../services/library_loader.js";
 import imageContextMenuService from "../../menus/image_context_menu.js";
 import imageService from "../../services/image.js";
 import type FNote from "../../entities/fnote.js";
 import type { EventData } from "../../components/app_context.js";
+import WheelZoom from 'vanilla-js-wheel-zoom';
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-image note-detail-printable">
     <style>
         .type-image .note-detail {
@@ -54,13 +54,19 @@ class ImageTypeWidget extends TypeWidget {
         this.$imageWrapper = this.$widget.find(".note-detail-image-wrapper");
         this.$imageView = this.$widget.find(".note-detail-image-view").attr("id", `image-view-${utils.randomString(10)}`);
 
-        libraryLoader.requireLibrary(libraryLoader.WHEEL_ZOOM).then(() => {
-            WZoom.create(`#${this.$imageView.attr("id")}`, {
-                maxScale: 50,
-                speed: 1.3,
-                zoomOnClick: false
-            });
-        });
+        const initZoom = async () => {
+            const element = document.querySelector(`#${this.$imageView.attr("id")}`);
+            if (element) {
+                WheelZoom.create(`#${this.$imageView.attr("id")}`, {
+                    maxScale: 50,
+                    speed: 1.3,
+                    zoomOnClick: false
+                });
+            } else {
+                requestAnimationFrame(initZoom);
+            }
+        };
+        initZoom();
 
         imageContextMenuService.setupContextMenu(this.$imageView);
 

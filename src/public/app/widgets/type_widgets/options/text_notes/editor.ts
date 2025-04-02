@@ -3,7 +3,7 @@ import { t } from "../../../../services/i18n.js";
 import utils from "../../../../services/utils.js";
 import OptionsWidget from "../options_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section formatting-toolbar">
     <h4>${t("editing.editor_type.label")}</h4>
 

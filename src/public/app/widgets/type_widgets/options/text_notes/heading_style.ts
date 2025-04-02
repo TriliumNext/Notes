@@ -2,7 +2,7 @@ import OptionsWidget from "../options_widget.js";
 import { t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("heading_style.title")}</h4>
 

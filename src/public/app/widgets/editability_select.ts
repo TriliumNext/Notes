@@ -7,7 +7,7 @@ import { Dropdown } from "bootstrap";
 
 type Editability = "auto" | "readOnly" | "autoReadOnlyDisabled";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="dropdown editability-select-widget">
     <style>
     .editability-dropdown {

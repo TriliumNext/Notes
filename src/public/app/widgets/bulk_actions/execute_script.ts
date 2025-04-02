@@ -2,7 +2,7 @@ import { t } from "../../services/i18n.js";
 import SpacedUpdate from "../../services/spaced_update.js";
 import AbstractBulkAction from "./abstract_bulk_action.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td>
         ${t("execute_script.execute_script")}

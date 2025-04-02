@@ -50,7 +50,7 @@ async function executeStartupBundles() {
     }
 }
 
-class WidgetsByParent {
+export class WidgetsByParent {
     private byParent: Record<string, Widget[]>;
 
     constructor() {

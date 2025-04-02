@@ -240,7 +240,7 @@ function getDefaultKeyboardActions() {
         },
         {
             actionName: "toggleZenMode",
-            defaultShortcuts: ["Alt+Z"],
+            defaultShortcuts: ["F9"],
             description: t("keyboard_actions.toggle-zen-mode"),
             scope: "window"
         },

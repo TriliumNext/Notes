@@ -4,7 +4,7 @@ import NoteListRenderer from "../services/note_list_renderer.js";
 import type FNote from "../entities/fnote.js";
 import type { EventData } from "../components/app_context.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="search-result-widget">
     <style>
     .search-result-widget {

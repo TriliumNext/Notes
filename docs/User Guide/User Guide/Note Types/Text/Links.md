@@ -30,4 +30,4 @@ Trilium also provides "inline" linking - type `@` and you'll see an autocomplete
 
 ## Note map
 
-Trilium provides a visualisation of incoming and outgoing links for a particular note. See [note map](../../Advanced%20Usage/Note%20Map.md) for details.
+Trilium provides a visualisation of incoming and outgoing links for a particular note. See [note map](../../Advanced%20Usage/Note%20Map%20\(Link%20map%2C%20Tree%20map\).md) for details.

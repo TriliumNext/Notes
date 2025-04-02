@@ -1449,9 +1449,6 @@
     "title": "Hervorhebungs-Liste",
     "options": "Optionen"
   },
-  "mermaid": {
-    "diagram_error": "Das Diagramm konnte nicht angezeigt werden. Siehe <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">Hilfe und Beispiele</a>."
-  },
   "quick-search": {
     "placeholder": "Schnellsuche",
     "searching": "Suche läuft…",

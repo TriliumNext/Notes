@@ -2,7 +2,7 @@ import protectedSessionService from "../../services/protected_session.js";
 import TypeWidget from "./type_widget.js";
 import { t } from "../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="protected-session-password-component note-detail-printable">
     <style>
     .protected-session-password-component {

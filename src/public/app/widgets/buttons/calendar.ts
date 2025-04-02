@@ -1,5 +1,4 @@
 import { t } from "../../services/i18n.js";
-import libraryLoader from "../../services/library_loader.js";
 import utils from "../../services/utils.js";
 import dateNoteService from "../../services/date_notes.js";
 import server from "../../services/server.js";
@@ -9,6 +8,7 @@ import toastService from "../../services/toast.js";
 import options from "../../services/options.js";
 import { Dropdown } from "bootstrap";
 import type { EventData } from "../../components/app_context.js";
+import "../../../stylesheets/calendar.css";
 
 const MONTHS = [
     t("calendar.january"),
@@ -188,7 +188,6 @@ export default class CalendarWidget extends RightDropdownButtonWidget {
     }
 
     async dropdownShown() {
-        await libraryLoader.requireLibrary(libraryLoader.CALENDAR_WIDGET);
         this.init(appContext.tabManager.getActiveContextNote()?.getOwnedLabelValue("dateNote") ?? null);
     }
 

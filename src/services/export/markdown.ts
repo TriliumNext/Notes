@@ -1,7 +1,7 @@
 "use strict";
 
 import TurndownService from "turndown";
-import turndownPluginGfm from "@joplin/turndown-plugin-gfm";
+import { gfm } from "../../../packages/turndown-plugin-gfm/src/gfm.js";
 
 let instance: TurndownService | null = null;
 
@@ -43,7 +43,7 @@ function toMarkdown(content: string) {
         instance.addRule("fencedCodeBlock", fencedCodeBlockFilter);
         instance.addRule("img", buildImageFilter());
         instance.addRule("admonition", buildAdmonitionFilter());
-        instance.use(turndownPluginGfm.gfm);
+        instance.use(gfm);
         instance.keep([ "kbd" ]);
     }
 

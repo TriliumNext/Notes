@@ -5,10 +5,9 @@ import type NoteContext from "../components/note_context.js";
 
 /**
  * This widget allows for changing and updating depending on the active note.
- * @extends {BasicWidget}
  */
 class NoteContextAwareWidget extends BasicWidget {
-    protected noteContext?: NoteContext;
+    noteContext?: NoteContext;
 
     isNoteContext(ntxId: string | string[] | null | undefined) {
         if (Array.isArray(ntxId)) {
@@ -105,7 +104,7 @@ class NoteContextAwareWidget extends BasicWidget {
     }
 
     // when note is both switched and activated, this should not produce a double refresh
-    async noteSwitchedAndActivatedEvent({ noteContext, notePath }: EventData<"noteSwitchedAndActivatedEvent">) {
+    async noteSwitchedAndActivatedEvent({ noteContext, notePath }: EventData<"noteSwitchedAndActivated">) {
         this.noteContext = noteContext;
 
         // if notePath does not match, then the noteContext has been switched to another note in the meantime
@@ -119,7 +118,7 @@ class NoteContextAwareWidget extends BasicWidget {
         this.noteContext = noteContext;
     }
 
-    async noteTypeMimeChangedEvent({ noteId }: EventData<"noteTypeMimeChangedEvent">) {
+    async noteTypeMimeChangedEvent({ noteId }: EventData<"noteTypeMimeChanged">) {
         if (this.isNote(noteId)) {
             await this.refresh();
         }

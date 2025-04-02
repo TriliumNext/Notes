@@ -3,21 +3,21 @@ import AbstractBulkAction from "../abstract_bulk_action.js";
 import noteAutocompleteService from "../../../services/note_autocomplete.js";
 import { t } from "../../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;" class="text-nowrap">${t("add_relation.add_relation")}</div> 
+            <div style="margin-right: 10px;" class="text-nowrap">${t("add_relation.add_relation")}</div>
 
-            <input type="text" 
-                class="form-control relation-name" 
+            <input type="text"
+                class="form-control relation-name"
                 placeholder="${t("add_relation.relation_name")}"
                 pattern="[\\p{L}\\p{N}_:]+"
                 style="flex-shrink: 3"
                 title="${t("add_relation.allowed_characters")}"/>
-                
+
             <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("add_relation.to")}</div>
-            
+
             <div class="input-group" style="flex-shrink: 2">
                 <input type="text" class="form-control target-note" placeholder="${t("add_relation.target_note")}"/>
             </div>
@@ -28,9 +28,9 @@ const TPL = `
             <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
                 ${t("add_relation.create_relation_on_all_matched_notes")}
-            </div> 
+            </div>
         </div>
-    
+
         <span class="bx bx-x icon-action action-conf-del"></span>
     </td>
 </tr>`;

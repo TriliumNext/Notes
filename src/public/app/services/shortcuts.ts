@@ -1,7 +1,7 @@
 import utils from "./utils.js";
 
 type ElementType = HTMLElement | Document;
-type Handler = (e: JQuery.TriggeredEvent<ElementType, string, ElementType, ElementType>) => void;
+type Handler = (e: JQuery.TriggeredEvent<ElementType | Element, string, ElementType | Element, ElementType | Element>) => void;
 
 function removeGlobalShortcut(namespace: string) {
     bindGlobalShortcut("", null, namespace);
@@ -11,7 +11,7 @@ function bindGlobalShortcut(keyboardShortcut: string, handler: Handler | null, n
     bindElShortcut($(document), keyboardShortcut, handler, namespace);
 }
 
-function bindElShortcut($el: JQuery<ElementType>, keyboardShortcut: string, handler: Handler | null, namespace: string | null = null) {
+function bindElShortcut($el: JQuery<ElementType | Element>, keyboardShortcut: string, handler: Handler | null, namespace: string | null = null) {
     if (utils.isDesktop()) {
         keyboardShortcut = normalizeShortcut(keyboardShortcut);
 

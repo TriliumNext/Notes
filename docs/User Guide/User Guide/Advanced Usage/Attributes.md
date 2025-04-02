@@ -36,15 +36,15 @@ Labels are also searchable, enhancing note retrieval.
 *   `**appCss**`: Marks CSS notes used to modify Trilium’s appearance
 *   `**appTheme**`: Marks full CSS themes available in Trilium's options
 *   `**cssClass**`: Adds a CSS class to the note's representation in the tree
-*   `**iconClass**`: Adds a CSS class to the note's icon, useful for distinguishing notes visually. See [note icons](../Basic%20Concepts/Note/Note%20Icons.md)
+*   `**iconClass**`: Adds a CSS class to the note's icon, useful for distinguishing notes visually. See [note icons](../Basic%20Concepts%20and%20Features/Notes/Note%20Icons.md)
 *   `**pageSize**`: Specifies the number of items per page in note listings
 *   `**customRequestHandler**` **and** `**customResourceProvider**`: Refer to [Custom request handler](Custom%20Request%20Handler.md)
 *   `**widget**`: Marks a note as a custom widget, added to Trilium's component tree
-*   `**workspace**` **and related attributes**: See [Workspace](../Basic%20Concepts/Navigation/Workspace.md) for more details
+*   `**workspace**` **and related attributes**: See [Workspace](../Basic%20Concepts%20and%20Features/Navigation/Workspace.md) for more details
 *   `**searchHome**`: Specifies the parent for new search notes
 *   `**inbox**`: Designates a default location for new notes created via the sidebar
 *   `**sqlConsoleHome**`: Default location for SQL console notes
-*   `**bookmarked**` **and** `**bookmarkFolder**`: See [Bookmarks](../Basic%20Concepts/Navigation/Bookmarks.md)
+*   `**bookmarked**` **and** `**bookmarkFolder**`: See [Bookmarks](../Basic%20Concepts%20and%20Features/Navigation/Bookmarks.md)
 *   `**shareXXX**`: See [Sharing](Sharing.md)
 *   `**keyboardShortcut**`: Assigns a keyboard shortcut to open the note
 *   `**displayRelations**` **and** `**hideRelations**`: Manages the display of note relations

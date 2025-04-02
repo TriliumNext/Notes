@@ -54,7 +54,7 @@ const NOTE_TYPES: NoteTypeMapping[] = [
 
 const NOT_SELECTABLE_NOTE_TYPES = NOTE_TYPES.filter((nt) => !nt.selectable).map((nt) => nt.type);
 
-const TPL = `
+const TPL = /*html*/`
 <div class="dropdown note-type-widget">
     <style>
         .note-type-dropdown {

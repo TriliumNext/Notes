@@ -5,7 +5,7 @@ import noteTypesService from "../../services/note_types.js";
 import BasicWidget from "../basic_widget.js";
 import { Dropdown, Modal } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-type-chooser-dialog modal mx-auto" tabindex="-1" role="dialog">
     <style>
         .note-type-chooser-dialog {

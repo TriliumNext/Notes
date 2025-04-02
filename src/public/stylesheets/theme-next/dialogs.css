@@ -1,0 +1,398 @@
+/*
+ * MODALS
+ */
+
+/* Modal body */
+.modal .modal-content {
+    box-shadow: 0 .5em 3em .5em var(--modal-shadow-color);
+    border: 1px solid var(--modal-border-color);
+    background: var(--modal-background-color);
+}
+
+/* Modal header */
+.modal .modal-header {
+    border-bottom: unset;
+    user-select: none;
+}
+
+.modal .modal-header .modal-title {
+    flex-grow: 1;
+    font-size: 1.2em;
+    color: var(--modal-title-color);
+}
+
+/* Modal and toast control buttons (close and help) */
+
+.modal .modal-header .btn-close,
+.modal .modal-header .help-button,
+#toast-container .toast .toast-header .btn-close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 8px;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    width: var(--modal-control-button-size);
+    height: var(--modal-control-button-size);
+    background: var(--modal-control-button-background);
+    font-size: var(--modal-control-button-size);
+    line-height: normal;
+    font-weight: normal;
+    color: var(--modal-control-button-color);
+    opacity: 1;
+    cursor: default;
+}
+
+.modal .modal-header .btn-close,
+#toast-container .toast .toast-header .btn-close {
+    --modal-control-button-hover-background: var(--modal-close-button-hover-background);
+}
+
+.modal .modal-header .btn-close::after,
+#toast-container .toast .toast-header .btn-close::after {
+    content: "\ec8d";
+    font-family: boxicons;
+}
+
+.modal .modal-header .help-button {
+    margin-right: 0;
+    font-size: calc(var(--modal-control-button-size) * .75);
+    font-family: unset;
+    font-weight: bold;
+}
+
+.modal .modal-header .btn-close:hover,
+.modal .modal-header .help-button:hover,
+#toast-container .toast .toast-header .btn-close:hover {
+    background: var(--modal-control-button-hover-background);
+    color: var(--modal-control-button-hover-color);
+}
+
+.modal .modal-header .btn-close:active,
+.modal .modal-header .help-button:active,
+#toast-container .toast .toast-header .btn-close:active {
+    transform: scale(.85);
+}
+
+.modal .modal-header .btn-close:focus,
+.modal .modal-header .help-button:focus,
+#toast-container .toast .toast-header .btn-close:focus {
+    box-shadow: none !important;
+}
+
+.modal .modal-header .btn-close:focus-visible,
+.modal .modal-header .help-button:focus-visible,
+#toast-container .toast .toast-header .btn-close:focus-visible {
+    outline: 2px solid var(--input-focus-outline-color);
+    outline-offset: 2px;
+}
+
+/* Modal footer */
+.modal .modal-footer {
+    background: var(--modal-footer-background);
+    color: var(--modal-footer-color);
+    border-top: unset;
+}
+
+/* Tool dialogs - small dialogs without a backdrop */
+div.tn-tool-dialog {
+    border-radius: 10px;
+    background: var(--tool-dialog-background-color) !important;
+    user-select: none;
+    box-shadow: 10px 10px 93px -25px var(--tool-dialog-shadow-color);
+}
+
+/*
+ * JUMP TO NOTE DIALOG
+ */
+
+ .jump-to-note-dialog .modal-dialog {
+    --modal-background-color: var(--menu-background-color);
+    --modal-footer-background: transparent;
+    --bs-modal-header-border-width: 0;
+    --bs-modal-footer-border-width: 0;
+    --bs-modal-footer-gap: 0;
+
+    backdrop-filter: var(--dropdown-backdrop-filter);
+}
+
+.jump-to-note-dialog .modal-content {
+    --bs-modal-header-padding-x: 0;
+
+    box-shadow: 0 10px 20px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
+    border: 1px solid var(--dropdown-border-color);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.jump-to-note-dialog .modal-header {
+    padding: unset !important;
+}
+
+.jump-to-note-dialog .modal-body {
+    padding: 26px 0 !important;
+}
+
+/* Search box wrapper */
+.jump-to-note-dialog .input-group {
+    margin-right: 16px;
+}
+
+.jump-to-note-dialog .input-group:hover {
+    background: var(--quick-search-hover-background);
+}
+
+/* Focused search box */
+.jump-to-note-dialog .input-group:focus-within {
+    border-color: var(--quick-search-focus-border);
+    background: var(--quick-search-focus-background);
+    color: var(--quick-search-focus-color);
+}
+
+.jump-to-note-dialog .input-clearer-button {
+    background: transparent !important;
+}
+
+/*
+ * RECENT CHANGES DIALOG
+ */
+
+ .recent-changes-dialog .modal-body {
+    padding: 0;
+}
+
+.recent-changes-content {
+    margin: var(--bs-modal-padding);
+}
+
+/* Date headings */
+.recent-changes-content > div > b {
+    position: sticky;
+    display: block;
+    top: 0;
+    background: var(--modal-background-color);
+    padding: 10px 0 10px calc(var(--timeline-left-gap) + var(--timeline-right-gap));
+    font-size: 1.25em;
+    font-weight: 300;
+    z-index: 10;
+}
+
+.recent-changes-content ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Timeline items */
+.recent-changes-content ul li {
+    display: flex;
+    position: relative;
+    margin: 0;
+    border: unset;
+    padding-top: var(--timeline-item-top-padding);
+    padding-bottom: var(--timeline-item-bottom-padding);
+    padding-left: calc(var(--timeline-left-gap) + var(--timeline-right-gap));
+    padding-right: var(--timeline-left-gap);
+    color: var(--active-item-text-color);
+}
+
+.recent-changes-content li > span:first-child::after {
+    /* Remove the dash between time and note title */
+    content: "" !important;
+}
+
+.recent-changes-content ul li:not(.deleted-note):hover {
+    border-radius: 8px;
+    background: var(--hover-item-background-color);
+    color: var(--hover-item-text-color);
+}
+
+.recent-changes-content ul li .note-path {
+    color: var(--muted-text-color);
+    font-size: 0.75em;
+}
+
+/* Item time */
+.recent-changes-content ul li > span:first-child {
+    display: inline-block;
+    min-width: 80px;
+    vertical-align: top;
+    color: var(--muted-text-color);
+}
+
+/* Item title & path container */
+.recent-changes-content ul li > span:nth-child(2) {
+    display: inline-block;
+}
+
+/* Item title link */
+
+.recent-changes-content ul li .note-title a {
+    color: currentColor;
+}
+
+.recent-changes-content ul li .note-title a:hover {
+    text-decoration: underline;
+}
+
+/* Item title for deleted notes */
+.recent-changes-content ul li.deleted-note .note-title > .note-title {
+    text-decoration: line-through;
+}
+
+/* Item path */
+.recent-changes-content ul li > span:nth-child(2) small {
+    display: block;
+    line-height: 1;
+    opacity: 0.75;
+}
+
+/* Timeline connector */
+.recent-changes-content ul li::before,
+.recent-changes-content > div > b::before {
+    position: absolute;
+    content: "";
+    top: var(--connector-top, 0);
+    left: calc(var(--timeline-left-gap) + ((var(--timeline-bullet-size) - var(--timeline-connector-size)) / 2));
+    bottom: var(--connector-bottom, 0);
+    width: var(--timeline-connector-size);
+    border-radius: var(--connector-radius, 0) var(--connector-radius, 0) 0 0;
+    background: var(--timeline-connector-color);
+    transition: background-color 400ms ease-in-out;
+}
+
+.recent-changes-content ul li:hover:before {
+    mix-blend-mode: var(--timeline-connector-hover-blend-mode);
+}
+
+.recent-changes-content > div:hover {
+    --timeline-connector-color: var(--timeline-connector-active-color);
+}
+
+/* The first item of the timeline */
+.recent-changes-content > div:first-child > *:first-child {
+    --connector-top: 50%;
+    --connector-radius: calc(var(--timeline-connector-size) / 2);
+}
+
+/* The last item of the timeline */
+.recent-changes-content > div:last-child li:last-child {
+    --connector-bottom: 50%;
+}
+
+/* Timeline bullet */
+.recent-changes-content ul li::after {
+    position: absolute;
+    content: "";
+    top: calc(var(--timeline-item-top-padding) + var(--timeline-bullet-vertical-pos));
+    left: var(--timeline-left-gap);
+    width: var(--timeline-bullet-size);
+    height: var(--timeline-bullet-size);
+    border-radius: 50%;
+    background: var(--timeline-bullet-color);
+    transform: translateY(-50%);
+}
+
+/* Hovered timeline bullet */
+.recent-changes-content ul li:hover::after {
+    background: var(--timeline-bullet-hover-color);
+}
+
+/*
+ * CHEATSHEET DIALOG
+ */
+
+ .help-dialog .modal-content {
+    --modal-background-color: var(--help-background-color);
+    backdrop-filter: blur(var(--help-backdrop-blur));
+}
+
+.help-dialog .help-cards {
+    display: block;
+    columns: 3;
+    column-gap: 20px;
+}
+
+.help-dialog .card {
+    margin: 0;
+    width: auto;
+    border: none;
+    background: unset;
+    padding: 16px 8px;
+    break-inside: avoid-column;
+}
+
+.help-dialog .card-body {
+    box-shadow: var(--help-card-shadow);
+    border-radius: 6px;
+    background: var(--help-card-background);
+}
+
+.help-dialog .card-body h5,
+.help-dialog .card-body h6 {
+    color: var(--help-card-heading-color);
+    font-weight: 600;
+}
+
+.help-dialog .card-body h5 {
+    font-size: 20px;
+}
+
+.help-dialog .card-body h6 {
+    font-size: 15px;
+    padding-bottom: 0.5em;
+}
+
+/* Help card item */
+.help-dialog .help-cards ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.help-dialog .help-cards li + li {
+    margin-top: 0.4em;
+}
+
+/* Keyboard shortcut */
+.help-dialog .help-cards kbd,
+.ck-content kbd {
+    box-shadow: var(--help-kbd-shortcut-shadow);
+    margin: 0 4px;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 10px;
+    background: var(--help-kbd-shortcut-background);
+    color: var(--help-kbd-shortcut-color);
+    font-weight: 500;
+    letter-spacing: 0.5pt;
+}
+
+.help-dialog .help-cards kbd:first-child {
+    margin-left: 0;
+}
+
+/* Inline code - used for Markdown samples */
+.help-dialog .help-cards code {
+    border-radius: 4px;
+    background: var(--help-code-background);
+    padding: 0 8px;
+    color: var(--help-code-color);
+}
+
+/* DELETE NOTE PREVIEW DIALOG */
+
+.delete-notes-list .note-path {
+    padding-left: 8px;
+}
+
+/*
+ * ATTRIBUTE DETAIL DIALOG
+ */
+
+/* Labels */
+.attr-edit-table th {
+    padding-right: 12px;
+    font-weight: normal;
+    white-space: nowrap;
+}

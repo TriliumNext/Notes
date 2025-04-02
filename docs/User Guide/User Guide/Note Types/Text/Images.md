@@ -1,7 +1,7 @@
 # Images
 Trilium supports storing and displaying images. Supported formats are JPEG, PNG and GIF.
 
-An image can be uploaded in the form of note's [attachment](../../Basic%20Concepts/Note/Attachments.md) or as a standalone [note](../../Basic%20Concepts/Navigation/Tree%20Concepts.md) placed into the [note tree](../../Basic%20Concepts/Navigation/Tree%20Concepts.md). Its reference can be copied into a text note, in order to display it in the text itself.
+An image can be uploaded in the form of note's [attachment](../../Basic%20Concepts%20and%20Features/Notes/Attachments.md) or as a standalone [note](../../Basic%20Concepts%20and%20Features/Navigation/Tree%20Concepts.md) placed into the [note tree](../../Basic%20Concepts%20and%20Features/Navigation/Tree%20Concepts.md). Its reference can be copied into a text note, in order to display it in the text itself.
 
 ## Uploading images
 

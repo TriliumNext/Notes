@@ -40,6 +40,33 @@ function getNoteTitle(childNoteId: string, parentNoteId?: string) {
     return `${branch && branch.prefix ? `${branch.prefix} - ` : ""}${title}`;
 }
 
+/**
+ * Similar to {@link getNoteTitle}, but also returns the icon class of the note.
+ *
+ * @returns An object containing the title and icon class of the note.
+ */
+function getNoteTitleAndIcon(childNoteId: string, parentNoteId?: string) {
+    const childNote = becca.notes[childNoteId];
+    const parentNote = parentNoteId ? becca.notes[parentNoteId] : null;
+
+    if (!childNote) {
+        log.info(`Cannot find note '${childNoteId}'`);
+        return {
+            title: "[error fetching title]"
+        }
+    }
+
+    const title = childNote.getTitleOrProtected();
+    const icon = childNote.getIcon();
+
+    const branch = parentNote ? becca.getBranchFromChildAndParent(childNote.noteId, parentNote.noteId) : null;
+
+    return {
+        icon,
+        title: `${branch && branch.prefix ? `${branch.prefix} - ` : ""}${title}`
+    }
+}
+
 function getNoteTitleArrayForPath(notePathArray: string[]) {
     if (!notePathArray || !Array.isArray(notePathArray)) {
         throw new Error(`${notePathArray} is not an array.`);
@@ -84,6 +111,7 @@ function getNoteTitleForPath(notePathArray: string[]) {
 
 export default {
     getNoteTitle,
+    getNoteTitleAndIcon,
     getNoteTitleForPath,
     isNotePathArchived
 };

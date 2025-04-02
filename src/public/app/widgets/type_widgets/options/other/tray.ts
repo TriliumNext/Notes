@@ -3,7 +3,7 @@ import { t } from "../../../../services/i18n.js";
 import utils from "../../../../services/utils.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("tray.title")}</h4>
 

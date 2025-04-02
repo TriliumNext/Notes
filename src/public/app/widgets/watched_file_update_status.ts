@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import type { EventData } from "../components/app_context.js";
 import type FNote from "../entities/fnote.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="dropdown watched-file-update-status-widget alert alert-warning">
     <style>
         .watched-file-update-status-widget {

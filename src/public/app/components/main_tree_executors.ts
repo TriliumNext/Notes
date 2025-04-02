@@ -1,4 +1,4 @@
-import appContext from "./app_context.js";
+import appContext, { type EventData } from "./app_context.js";
 import noteCreateService from "../services/note_create.js";
 import treeService from "../services/tree.js";
 import hoistedNoteService from "../services/hoisted_note.js";
@@ -14,22 +14,18 @@ export default class MainTreeExecutors extends Component {
         return appContext.noteTreeWidget;
     }
 
-    async cloneNotesToCommand() {
+    async cloneNotesToCommand({ selectedOrActiveNoteIds }: EventData<"cloneNotesTo">) {
         if (!this.tree) {
             return;
         }
-
-        const selectedOrActiveNoteIds = this.tree.getSelectedOrActiveNodes().map((node) => node.data.noteId);
 
         this.triggerCommand("cloneNoteIdsTo", { noteIds: selectedOrActiveNoteIds });
     }
 
-    async moveNotesToCommand() {
+    async moveNotesToCommand({ selectedOrActiveBranchIds }: EventData<"moveNotesTo">) {
         if (!this.tree) {
             return;
         }
-
-        const selectedOrActiveBranchIds = this.tree.getSelectedOrActiveNodes().map((node) => node.data.branchId);
 
         this.triggerCommand("moveBranchIdsTo", { branchIds: selectedOrActiveBranchIds });
     }

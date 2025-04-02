@@ -37,6 +37,7 @@ Feel free to join our official conversations. We would love to hear what feature
 * Fast and easy [navigation between notes](https://triliumnext.github.io/Docs/Wiki/note-navigation), full text search and [note hoisting](https://triliumnext.github.io/Docs/Wiki/note-hoisting)
 * Seamless [note versioning](https://triliumnext.github.io/Docs/Wiki/note-revisions)
 * Note [attributes](https://triliumnext.github.io/Docs/Wiki/attributes) can be used for note organization, querying and advanced [scripting](https://triliumnext.github.io/Docs/Wiki/scripts)
+* Direct OpenID and TOTP integration for more secure login
 * [Synchronization](https://triliumnext.github.io/Docs/Wiki/synchronization) with self-hosted sync server
   * there's a [3rd party service for hosting synchronisation server](https://trilium.cc/paid-hosting)
 * [Sharing](https://triliumnext.github.io/Docs/Wiki/sharing) (publishing) notes to public internet
@@ -79,10 +80,11 @@ xattr -c "/path/to/Trilium Next.app"
 
 ### Mobile
 
-To use TriliumNext on a mobile device:
+To use TriliumNext on a mobile device, you can use a mobile web browser to access the mobile interface of a server installation (see below).
 
-* Use a mobile web browser to access the mobile interface of a server installation (see below)
-* Use of a mobile app is not yet supported ([see here](https://github.com/TriliumNext/Notes/issues/72)) to track mobile improvements.
+If you prefer a native Android app, you can use [TriliumDroid](https://apt.izzysoft.de/fdroid/index/apk/eu.fliegendewurst.triliumdroid). Report bugs and missing features at [their repository](https://github.com/FliegendeWurst/TriliumDroid).
+
+See issue https://github.com/TriliumNext/Notes/issues/72 for more information on mobile app support.
 
 ### Server
 
@@ -107,7 +109,8 @@ npm run server:start
 
 ### Documentation
 
-Head on over to our [Docs repo](https://github.com/TriliumNext/Docs)
+We are currently transitioning to a new documentation mechanism.
+Meanwhile you can still view the [archived Docs repository](https://github.com/TriliumNext/Docs).
 
 ## 👏 Shoutouts
 

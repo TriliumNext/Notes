@@ -70,7 +70,7 @@ function updateEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undef
 }
 
 function updateNormalEntity(remoteEC: EntityChange, remoteEntityRow: EntityRow | undefined, instanceId: string, updateContext: UpdateContext) {
-    const localEC = sql.getRow<EntityChange | undefined>(`SELECT * FROM entity_changes WHERE entityName = ? AND entityId = ?`, [remoteEC.entityName, remoteEC.entityId]);
+    const localEC = sql.getRow<EntityChange | undefined>(/*sql*/`SELECT * FROM entity_changes WHERE entityName = ? AND entityId = ?`, [remoteEC.entityName, remoteEC.entityId]);
     const localECIsOlderOrSameAsRemote = localEC && localEC.utcDateChanged && remoteEC.utcDateChanged && localEC.utcDateChanged <= remoteEC.utcDateChanged;
 
     if (!localEC || localECIsOlderOrSameAsRemote) {
@@ -153,7 +153,7 @@ function eraseEntity(entityChange: EntityChange) {
 
     const primaryKeyName = entityConstructor.getEntityFromEntityName(entityName).primaryKeyName;
 
-    sql.execute(`DELETE FROM ${entityName} WHERE ${primaryKeyName} = ?`, [entityId]);
+    sql.execute(/*sql*/`DELETE FROM ${entityName} WHERE ${primaryKeyName} = ?`, [entityId]);
 }
 
 function logUpdateContext(updateContext: UpdateContext) {

@@ -1,6 +1,5 @@
 import server from "./server.js";
 import appContext from "../components/app_context.js";
-import utils from "./utils.js";
 import noteCreateService from "./note_create.js";
 import froca from "./froca.js";
 import { t } from "./i18n.js";
@@ -9,6 +8,18 @@ import { t } from "./i18n.js";
 const SELECTED_NOTE_PATH_KEY = "data-note-path";
 
 const SELECTED_EXTERNAL_LINK_KEY = "data-external-link";
+
+// To prevent search lag when there are a large number of notes, set a delay based on the number of notes to avoid jitter.
+const notesCount = await server.get<number>(`autocomplete/notesCount`);
+let debounceTimeoutId: ReturnType<typeof setTimeout>;
+
+function getSearchDelay(notesCount: number): number {
+    const maxNotes = 20000;
+    const maxDelay = 1000;
+    const delay = Math.min(maxDelay, (notesCount / maxNotes) * maxDelay);
+    return delay;
+}
+let searchDelay = getSearchDelay(notesCount);
 
 export interface Suggestion {
     noteTitle?: string;
@@ -70,9 +81,13 @@ async function autocompleteSource(term: string, cb: (rows: Suggestion[]) => void
     }
 
     const activeNoteId = appContext.tabManager.getActiveContextNoteId();
+    const length = term.trim().length;
 
-    let results: Suggestion[] = await server.get<Suggestion[]>(`autocomplete?query=${encodeURIComponent(term)}&activeNoteId=${activeNoteId}&fastSearch=${fastSearch}`);
-    if (term.trim().length >= 1 && options.allowCreatingNotes) {
+    let results = await server.get<Suggestion[]>(`autocomplete?query=${encodeURIComponent(term)}&activeNoteId=${activeNoteId}&fastSearch=${fastSearch}`);
+
+    options.fastSearch = true;
+
+    if (length >= 1 && options.allowCreatingNotes) {
         results = [
             {
                 action: "create-note",
@@ -83,7 +98,7 @@ async function autocompleteSource(term: string, cb: (rows: Suggestion[]) => void
         ].concat(results);
     }
 
-    if (term.trim().length >= 1 && options.allowJumpToSearchNotes) {
+    if (length >= 1 && options.allowJumpToSearchNotes) {
         results = results.concat([
             {
                 action: "search-notes",
@@ -107,6 +122,7 @@ async function autocompleteSource(term: string, cb: (rows: Suggestion[]) => void
 }
 
 function clearText($el: JQuery<HTMLElement>) {
+    searchDelay = 0;
     $el.setSelectedNotePath("");
     $el.autocomplete("val", "").trigger("change");
 }
@@ -117,6 +133,7 @@ function setText($el: JQuery<HTMLElement>, text: string) {
 }
 
 function showRecentNotes($el: JQuery<HTMLElement>) {
+    searchDelay = 0;
     $el.setSelectedNotePath("");
     $el.autocomplete("val", "");
     $el.autocomplete("open");
@@ -132,11 +149,8 @@ function fullTextSearch($el: JQuery<HTMLElement>, options: Options) {
     options.fastSearch = false;
     $el.autocomplete("val", "");
     $el.setSelectedNotePath("");
+    searchDelay = 0;
     $el.autocomplete("val", searchString);
-    // Set a delay to avoid resetting to true before full text search (await server.get) is called.
-    setTimeout(() => {
-        options.fastSearch = true;
-    }, 100);
 }
 
 function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
@@ -148,6 +162,18 @@ function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
     }
 
     options = options || {};
+
+    // Used to track whether the user is performing character composition with an input method (such as Chinese Pinyin, Japanese, Korean, etc.) and to avoid triggering a search during the composition process.
+    let isComposingInput = false;
+    $el.on("compositionstart", () => {
+        isComposingInput = true;
+    });
+    $el.on("compositionend", () => {
+        isComposingInput = false;
+        const searchString = $el.autocomplete("val") as unknown as string;
+        $el.autocomplete("val", "");
+        $el.autocomplete("val", searchString);
+    });
 
     $el.addClass("note-autocomplete-input");
 
@@ -221,7 +247,19 @@ function initNoteAutocomplete($el: JQuery<HTMLElement>, options?: Options) {
         },
         [
             {
-                source: (term, cb) => autocompleteSource(term, cb, options),
+                source: (term, cb) => {
+                    clearTimeout(debounceTimeoutId);
+                    debounceTimeoutId = setTimeout(() => {
+                        if (isComposingInput) {
+                            return;
+                        }
+                        autocompleteSource(term, cb, options);
+                    }, searchDelay);
+
+                    if (searchDelay === 0) {
+                        searchDelay = getSearchDelay(notesCount);
+                    }
+                },
                 displayKey: "notePathTitle",
                 templates: {
                     suggestion: (suggestion) => suggestion.highlightedNotePathTitle

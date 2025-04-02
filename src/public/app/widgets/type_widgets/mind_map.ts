@@ -5,9 +5,12 @@ import nodeMenu from "@mind-elixir/node-menu";
 import type FNote from "../../entities/fnote.js";
 import type { EventData } from "../../components/app_context.js";
 
+// allow node-menu plugin css to be bundled by webpack
+import "@mind-elixir/node-menu/dist/style.css";
+
 const NEW_TOPIC_NAME = "";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-mind-map note-detail-printable">
     <div class="mind-map-container">
     </div>
@@ -22,7 +25,7 @@ const TPL = `
             height: 100%;
         }
 
-        .mind-elixir .node-menu {
+        .map-container .node-menu {
             position: absolute;
             top: 60px;
             right: 20px;
@@ -38,28 +41,28 @@ const TPL = `
             transition: .3s all
         }
 
-        .mind-elixir .node-menu.close {
+        .map-container .node-menu.close {
             height: 29px;
             width: 46px;
             overflow: hidden
         }
 
-        .mind-elixir .node-menu .button-container {
+        .map-container .node-menu .button-container {
             padding: 3px 0;
             direction: rtl
         }
 
-        .mind-elixir .node-menu #nm-tag {
+        .map-container .node-menu #nm-tag {
             margin-top: 20px
         }
 
-        .mind-elixir .node-menu .nm-fontsize-container {
+        .map-container .node-menu .nm-fontsize-container {
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px
         }
 
-        .mind-elixir .node-menu .nm-fontsize-container div {
+        .map-container .node-menu .nm-fontsize-container div {
             height: 36px;
             width: 36px;
             display: flex;
@@ -71,12 +74,12 @@ const TPL = `
             border-radius: 100%
         }
 
-        .mind-elixir .node-menu .nm-fontcolor-container {
+        .map-container .node-menu .nm-fontcolor-container {
             margin-bottom: 10px
         }
 
-        .mind-elixir .node-menu input,
-        .mind-elixir .node-menu textarea {
+        .map-container .node-menu input,
+        .map-container .node-menu textarea {
             background: var(--input-background-color);
             border: 1px solid var(--panel-border-color);
             border-radius: var(--bs-border-radius);
@@ -87,17 +90,17 @@ const TPL = `
             box-sizing: border-box;
         }
 
-        .mind-elixir .node-menu textarea {
+        .map-container .node-menu textarea {
             resize: none
         }
 
-        .mind-elixir .node-menu .split6 {
+        .map-container .node-menu .split6 {
             display: inline-block;
             width: 16.66%;
             margin-bottom: 5px
         }
 
-        .mind-elixir .node-menu .palette {
+        .map-container .node-menu .palette {
             border-radius: 100%;
             width: 21px;
             height: 21px;
@@ -105,35 +108,35 @@ const TPL = `
             margin: auto
         }
 
-        .mind-elixir .node-menu .nmenu-selected,
-        .mind-elixir .node-menu .palette:hover {
+        .map-container .node-menu .nmenu-selected,
+        .map-container .node-menu .palette:hover {
             box-shadow: tomato 0 0 0 2px;
             background-color: #c7e9fa
         }
 
-        .mind-elixir .node-menu .size-selected {
+        .map-container .node-menu .size-selected {
             background-color: tomato !important;
             border-color: tomato;
             fill: #fff;
             color: #fff
         }
 
-        .mind-elixir .node-menu .size-selected svg {
+        .map-container .node-menu .size-selected svg {
             color: #fff
         }
 
-        .mind-elixir .node-menu .bof {
+        .map-container .node-menu .bof {
             text-align: center
         }
 
-        .mind-elixir .node-menu .bof span {
+        .map-container .node-menu .bof span {
             display: inline-block;
             font-size: 14px;
             border-radius: 4px;
             padding: 2px 5px
         }
 
-        .mind-elixir .node-menu .bof .selected {
+        .map-container .node-menu .bof .selected {
             background-color: tomato;
             color: #fff
         }
@@ -273,4 +276,14 @@ export default class MindMapWidget extends TypeWidget {
         const svg = await this.renderSvg();
         utils.downloadSvg(this.note.title, svg);
     }
+
+    async exportPngEvent({ ntxId }: EventData<"exportPng">) {
+        if (!this.isNoteContext(ntxId) || this.note?.type !== "mindMap") {
+            return;
+        }
+
+        const svg = await this.renderSvg();
+        utils.downloadSvgAsPng(this.note.title, svg);
+    }
+
 }

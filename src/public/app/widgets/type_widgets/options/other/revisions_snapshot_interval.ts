@@ -1,7 +1,7 @@
 import { t } from "../../../../services/i18n.js";
 import TimeSelector from "../time_selector.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("revisions_snapshot_interval.note_revisions_snapshot_interval_title")}</h4>
 

@@ -2,6 +2,7 @@ import TypeWidget from "./type_widget.js";
 import utils from "../../services/utils.js";
 import linkService from "../../services/link.js";
 import server from "../../services/server.js";
+import asset_path from "../../../../services/asset_path.js";
 import type FNote from "../../entities/fnote.js";
 import type { ExcalidrawElement, Theme } from "@excalidraw/excalidraw/element/types";
 import type { AppState, BinaryFileData, ExcalidrawImperativeAPI, ExcalidrawProps, LibraryItem, SceneData } from "@excalidraw/excalidraw/types";
@@ -10,7 +11,7 @@ import type React from "react";
 import type { Root } from "react-dom/client";
 import "@excalidraw/excalidraw/index.css";
 
-const TPL = `
+const TPL = /*html*/`
     <div class="canvas-widget note-detail-canvas note-detail-printable note-detail">
         <style>
         .excalidraw .App-menu_top .buttonList {
@@ -129,9 +130,9 @@ export default class ExcalidrawTypeWidget extends TypeWidget {
         this.SCENE_VERSION_INITIAL = -1; // -1 indicates that it is fresh. excalidraw scene version is always >0
         this.SCENE_VERSION_ERROR = -2; // -2 indicates error
 
-        // ensure that assets are loaded from trilium
-        // TODO:
-        (window as any).EXCALIDRAW_ASSET_PATH = `${window.location.origin}/node_modules/@excalidraw/excalidraw/dist/`;
+        // currently required by excalidraw, in order to allows self-hosting fonts locally.
+        // this avoids making excalidraw load the fonts from an external CDN.
+        (window as any).EXCALIDRAW_ASSET_PATH = `${window.location.origin}/${asset_path}/app-dist/excalidraw/`;
 
         // temporary vars
         this.currentNoteId = "";

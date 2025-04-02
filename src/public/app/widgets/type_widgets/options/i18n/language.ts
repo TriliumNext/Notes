@@ -3,7 +3,7 @@ import type { OptionMap } from "../../../../../../services/options_interface.js"
 import { getAvailableLocales } from "../../../../services/i18n.js";
 import { t } from "i18next";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("content_language.title")}</h4>
     <p class="form-text">${t("content_language.description")}</p>

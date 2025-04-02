@@ -2,7 +2,7 @@ import OptionsWidget from "../options_widget.js";
 import { t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <style>
         .options-section .disabled-field {
@@ -30,12 +30,18 @@ const TPL = `
     <div class="image-compression-enabled-wraper">
         <div class="form-group">
             <label>${t("images.max_image_dimensions")}</label>
-            <input class="image-max-width-height form-control options-number-input" type="number" min="1">
+            <label class="input-group tn-number-unit-pair">
+                <input class="image-max-width-height form-control options-number-input" type="number" min="1">
+                <span class="input-group-text">${t("images.max_image_dimensions_unit")}</span>
+            </label>
         </div>
 
         <div class="form-group">
             <label>${t("images.jpeg_quality_description")}</label>
-            <input class="image-jpeg-quality form-control options-number-input" min="10" max="100" type="number">
+            <label class="input-group tn-number-unit-pair">
+                <input class="image-jpeg-quality form-control options-number-input" min="10" max="100" type="number">
+                <span class="input-group-text">%</span>
+            </label>
         </div>
     </div>
 </div>

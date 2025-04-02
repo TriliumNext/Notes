@@ -34,9 +34,11 @@ npm-debug.log
 
 # exceptions
 !/bin/copy-dist.ts
+!/bin/cleanupNodeModules.ts
 
 # temporary exception to make copy-dist inside Docker build not fail
-# TriliumNextTODO: make copy-dist *not* requiring to copy this file for builds other than electron-forge
+# TriliumNextTODO: make copy-dist *not* requiring to copy these file for builds other than electron-forge
 !forge.config.cjs
 !/bin/tpl
 !/bin/electron-forge/desktop.ejs
+!/bin/electron-forge/sign-windows.cjs

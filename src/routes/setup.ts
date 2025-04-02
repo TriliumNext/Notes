@@ -37,8 +37,13 @@ function setupPage(req: Request, res: Response) {
 async function handleElectronRedirect() {
     const windowService = (await import("../services/window.js")).default;
     const { app } = await import("electron");
-    windowService.createMainWindow(app);
+
+    // Wait for the main window to be created before closing the setup window to prevent triggering `window-all-closed`.
+    await windowService.createMainWindow(app); 
     windowService.closeSetupWindow();
+
+    const tray = (await import("../services/tray.js")).default;
+    tray.createTray();
 }
 
 export default {

@@ -21,7 +21,7 @@ function greet(times) {
 }
 `;
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("highlighting.title")}</h4>
 

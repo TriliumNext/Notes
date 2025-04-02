@@ -5,7 +5,7 @@ import searchService from "../../services/search.js";
 import { t } from "../../services/i18n.js";
 import type FNote from "../../entities/fnote.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-empty note-detail-printable">
     <style>
         .workspace-notes {
@@ -87,7 +87,10 @@ export default class EmptyTypeWidget extends TypeWidget {
                     return false;
                 }
 
-                appContext.tabManager.getActiveContext().setNote(suggestion.notePath);
+                const activeContext = appContext.tabManager.getActiveContext();
+                if (activeContext) {
+                    activeContext.setNote(suggestion.notePath);
+                }
             });
 
         this.$workspaceNotes = this.$widget.find(".workspace-notes");

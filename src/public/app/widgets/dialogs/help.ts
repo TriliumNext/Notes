@@ -2,7 +2,7 @@ import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 import { t } from "../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="help-dialog modal use-tn-links" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="min-width: 90%;">
         <div class="modal-content" style="height: auto;">

@@ -13,7 +13,7 @@ import type FNote from "../../entities/fnote.js";
 import type { NoteType } from "../../entities/fnote.js";
 import { Dropdown, Modal } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="revisions-dialog modal fade mx-auto" tabindex="-1" role="dialog">
     <style>
         .revisions-dialog .revision-content-wrapper {

@@ -8,6 +8,7 @@ import becca from "../../becca/becca.js";
 import type TaskContext from "../task_context.js";
 import type BBranch from "../../becca/entities/bbranch.js";
 import type { Response } from "express";
+import type BNote from "../../becca/entities/bnote.js";
 
 function exportSingleNote(taskContext: TaskContext, branch: BBranch, format: "html" | "markdown", res: Response) {
     const note = branch.getNote();
@@ -20,9 +21,21 @@ function exportSingleNote(taskContext: TaskContext, branch: BBranch, format: "ht
         return [400, `Unrecognized format '${format}'`];
     }
 
+    const { payload, extension, mime } = mapByNoteType(note, note.getContent(), format);
+    const fileName = `${note.title}.${extension}`;
+
+    res.setHeader("Content-Disposition", getContentDisposition(fileName));
+    res.setHeader("Content-Type", `${mime}; charset=UTF-8`);
+
+    res.send(payload);
+
+    taskContext.increaseProgressCount();
+    taskContext.taskSucceeded();
+}
+
+export function mapByNoteType(note: BNote, content: string | Buffer<ArrayBufferLike>, format: "html" | "markdown") {
     let payload, extension, mime;
 
-    let content = note.getContent();
     if (typeof content !== "string") {
         throw new Error("Unsupported content type for export.");
     }
@@ -52,21 +65,17 @@ function exportSingleNote(taskContext: TaskContext, branch: BBranch, format: "ht
         payload = content;
         extension = "excalidraw";
         mime = "application/json";
+    } else if (note.type === "mermaid") {
+        payload = content;
+        extension = "mermaid";
+        mime = "text/vnd.mermaid";
     } else if (note.type === "relationMap" || note.type === "search") {
         payload = content;
         extension = "json";
         mime = "application/json";
     }
 
-    const fileName = `${note.title}.${extension}`;
-
-    res.setHeader("Content-Disposition", getContentDisposition(fileName));
-    res.setHeader("Content-Type", `${mime}; charset=UTF-8`);
-
-    res.send(payload);
-
-    taskContext.increaseProgressCount();
-    taskContext.taskSucceeded();
+    return { payload, extension, mime };
 }
 
 function inlineAttachments(content: string) {

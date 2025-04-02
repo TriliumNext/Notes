@@ -1,5 +1,3 @@
-"use strict";
-
 import etapiTokenService from "./etapi_tokens.js";
 import log from "./log.js";
 import sqlInit from "./sql_init.js";
@@ -7,6 +5,8 @@ import { isElectron } from "./utils.js";
 import passwordEncryptionService from "./encryption/password_encryption.js";
 import config from "./config.js";
 import passwordService from "./encryption/password.js";
+import totp from "./totp.js";
+import openID from "./open_id.js";
 import options from "./options.js";
 import attributes from "./attributes.js";
 import type { NextFunction, Request, Response } from "express";
@@ -15,8 +15,30 @@ const noAuthentication = config.General && config.General.noAuthentication === t
 
 function checkAuth(req: Request, res: Response, next: NextFunction) {
     if (!sqlInit.isDbInitialized()) {
-        res.redirect("setup");
-    } else if (!req.session.loggedIn && !isElectron && !noAuthentication) {
+        res.redirect('setup');
+    }
+
+    const currentTotpStatus = totp.isTotpEnabled();
+    const currentSsoStatus = openID.isOpenIDEnabled();
+    const lastAuthState = req.session.lastAuthState || { totpEnabled: false, ssoEnabled: false };
+
+    if (isElectron) {
+        next();
+        return;
+    } else if (currentTotpStatus !== lastAuthState.totpEnabled || currentSsoStatus !== lastAuthState.ssoEnabled) {
+        req.session.destroy((err) => {
+            if (err) console.error('Error destroying session:', err);
+            res.redirect('login');
+        });
+        return;
+    } else if (currentSsoStatus) {
+        if (req.oidc?.isAuthenticated() && req.session.loggedIn) {
+            next();
+            return;
+        }
+        res.redirect('login');
+        return;
+    } else if (!req.session.loggedIn && !noAuthentication) {
         const redirectToShare = options.getOptionBool("redirectBareDomain");
         if (redirectToShare) {
             // Check if any note has the #shareRoot label

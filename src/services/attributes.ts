@@ -65,7 +65,7 @@ function getAttributeNames(type: string, nameLike: string) {
     nameLike = nameLike.toLowerCase();
 
     let names = sql.getColumn<string>(
-        `SELECT DISTINCT name
+        /*sql*/`SELECT DISTINCT name
             FROM attributes
             WHERE isDeleted = 0
                 AND type = ?

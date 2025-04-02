@@ -1,4 +1,4 @@
-type LabelType = "text" | "number" | "boolean" | "date" | "datetime" | "url";
+type LabelType = "text" | "number" | "boolean" | "date" | "datetime" | "time" | "url";
 type Multiplicity = "single" | "multi";
 
 interface DefinitionObject {

@@ -4,7 +4,7 @@ import toastService from "../../../../services/toast.js";
 import { t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("sync.title")}</h4>
     <button class="force-full-sync-button btn btn-secondary">${t("sync.force_full_sync_button")}</button>

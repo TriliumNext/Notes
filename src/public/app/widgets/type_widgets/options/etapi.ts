@@ -5,7 +5,7 @@ import OptionsWidget from "./options_widget.js";
 import server from "../../../services/server.js";
 import toastService from "../../../services/toast.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="etapi-options-section options-section">
     <h4>${t("etapi.title")}</h4>
 

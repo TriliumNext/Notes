@@ -1,0 +1,59 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>CKEditor</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>CKEditor</h1>
+
+      <div class="ck-content">
+        <h2>Editor core</h2>
+        <p>The CKEditor is the WYSIWYG (standing for What You See Is What You Get)
+          editor behind&nbsp;<a class="reference-link" href="../../Note%20Types/Text.html">Text</a>&nbsp;notes.</p>
+        <p>Their website is <a href="https://ckeditor.com/">ckeditor.com</a>.</p>
+        <p>CKEditor by itself is a commercial product, but the core is open-source.
+          As described in <a href="https://ckeditor.com/docs/ckeditor5/latest/features/index.html">its documentation</a>,
+          the editor supports quite a large number of features. Do note that not
+          all the features are enabled in Trilium.</p>
+        <h2>Premium features</h2>
+        <p>Some features are marked as premium in the CKEditor feature set. This
+          means that they cannot be used without a license.</p>
+        <p>Trilium cannot benefit from any of these premium features as they require
+          a commercial license, however we are in discussions with the CKEditor team
+          to allow us to use a subset of these premium features such as <a href="https://ckeditor.com/docs/ckeditor5/latest/features/slash-commands.html">Slash commands</a>.</p>
+        <h2>Plugins</h2>
+        <p>The CKEditor ecosystem is quite extensible, in the sense that custom plugins
+          can be written to extend the functionality of the editor beyond its original
+          scope.</p>
+        <p>Trilium makes use of such features:</p>
+        <ul>
+          <li>The math feature is added by a version of <a href="https://github.com/isaul32/ckeditor5-math">isaul32/ckeditor5-math: Math feature for CKEditor 5.</a> modified
+            by us to fit our needs.</li>
+          <li>We also make use of modified upstream plugins such as <a href="https://github.com/ckeditor/ckeditor5-mermaid">ckeditor/ckeditor5-mermaid</a> to
+            allow inline Mermaid code.</li>
+          <li><a href="https://github.com/mlewand/ckeditor5-keyboard-marker">mlewand/ckeditor5-keyboard-marker: Plugin adds support for the keyboard input element (&lt;kbd&gt;) to CKEditor 5.</a> 
+          </li>
+          <li>A modified version of <a href="https://github.com/ThomasAitken/ckeditor5-footnotes">ThomasAitken/ckeditor5-footnotes: Footnotes plugin for CKEditor5</a> to
+            allow footnotes.</li>
+        </ul>
+        <p>Apart from that, Trilium also has its own set of specific plugins such
+          as:</p>
+        <ul>
+          <li>Cut to note</li>
+          <li>Include note</li>
+          <li>Mentions, for linking pages.</li>
+          <li>Markdown import.</li>
+          <li>Reference links.</li>
+          <li>etc.</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

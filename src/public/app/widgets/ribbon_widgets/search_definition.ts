@@ -20,7 +20,7 @@ import { Dropdown } from "bootstrap";
 import type FNote from "../../entities/fnote.js";
 import type { AttributeType } from "../../entities/fattribute.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="search-definition-widget">
     <style>
     .search-setting-table {

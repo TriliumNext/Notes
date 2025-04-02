@@ -6,7 +6,7 @@ import type { EventData } from "../../components/app_context.js";
 import type FNote from "../../entities/fnote.js";
 import RightPanelWidget from "../right_panel_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-info-widget">
     <style>
         .note-info-widget {

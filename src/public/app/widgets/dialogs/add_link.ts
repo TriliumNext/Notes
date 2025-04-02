@@ -7,7 +7,7 @@ import type { Suggestion } from "../../services/note_autocomplete.js";
 import type { default as TextTypeWidget } from "../type_widgets/editable_text.js";
 import type { EventData } from "../../components/app_context.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="add-link-dialog modal mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" style="max-width: 1000px" role="document">
         <div class="modal-content">
@@ -80,13 +80,13 @@ export default class AddLinkDialog extends BasicWidget {
             if (this.$autoComplete.getSelectedNotePath()) {
                 this.$widget.modal("hide");
 
-                const linkTitle = this.getLinkType() === "reference-link" ? null : this.$linkTitle.val();
+                const linkTitle = this.getLinkType() === "reference-link" ? null : this.$linkTitle.val() as string;
 
                 this.textTypeWidget?.addLink(this.$autoComplete.getSelectedNotePath()!, linkTitle);
             } else if (this.$autoComplete.getSelectedExternalLink()) {
                 this.$widget.modal("hide");
 
-                this.textTypeWidget?.addLink(this.$autoComplete.getSelectedExternalLink()!, this.$linkTitle.val(), true);
+                this.textTypeWidget?.addLink(this.$autoComplete.getSelectedExternalLink()!, this.$linkTitle.val() as string, true);
             } else {
                 logError("No link to add.");
             }

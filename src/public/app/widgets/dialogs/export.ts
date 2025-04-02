@@ -9,7 +9,7 @@ import { t } from "../../services/i18n.js";
 import type { EventData } from "../../components/app_context.js";
 import { Modal } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="export-dialog modal fade mx-auto" tabindex="-1" role="dialog">
     <style>
     .export-dialog .export-form .form-check {

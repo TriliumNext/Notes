@@ -2,7 +2,7 @@ import OptionsWidget from "../options_widget.js";
 import { t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("text_auto_read_only_size.title")}</h4>
 
@@ -10,7 +10,10 @@ const TPL = `
 
     <div class="form-group">
         <label for="auto-readonly-size-text">${t("text_auto_read_only_size.label")}</label>
-        <input id="auto-readonly-size-text" class="auto-readonly-size-text form-control options-number-input" type="number" min="0">
+        <label class="input-group tn-number-unit-pair">
+            <input id="auto-readonly-size-text" class="auto-readonly-size-text form-control options-number-input" type="number" min="0">
+            <span class="input-group-text">${t("text_auto_read_only_size.unit")}</span>
+        </label>
     </div>
 </div>`;
 

@@ -22,7 +22,7 @@ import appContext, { type EventData } from "../components/app_context.js";
 import libraryLoader from "../services/library_loader.js";
 import type FNote from "../entities/fnote.js";
 
-const TPL = `<div class="toc-widget">
+const TPL = /*html*/`<div class="toc-widget">
     <style>
         .toc-widget {
             padding: 10px;

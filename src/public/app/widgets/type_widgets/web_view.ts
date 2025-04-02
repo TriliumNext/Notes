@@ -5,7 +5,7 @@ import type FNote from "../../entities/fnote.js";
 import type { EventData } from "../../components/app_context.js";
 import utils from "../../services/utils.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-web-view note-detail-printable" style="height: 100%">
     <div class="note-detail-web-view-help alert alert-warning" style="margin: 50px; padding: 20px 20px 0px 20px;">
         <h4>${t("web_view.web_view")}</h4>

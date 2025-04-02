@@ -3,7 +3,7 @@ import NoteContextAwareWidget from "../note_context_aware_widget.js";
 import utils from "../../services/utils.js";
 import imageService from "../../services/image.js";
 
-const TPL = `
+const TPL = /*html*/`
 <button type="button"
         class="copy-image-reference-button"
         title="${t("copy_image_reference_button.button_title")}">

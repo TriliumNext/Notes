@@ -95,7 +95,7 @@ class SNote extends AbstractShacaEntity {
     }
 
     getContent(silentNotFoundError = false) {
-        const row = sql.getRow<Pick<Blob, "content">>(`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
+        const row = sql.getRow<Pick<Blob, "content">>(/*sql*/`SELECT content FROM blobs WHERE blobId = ?`, [this.blobId]);
 
         if (!row) {
             if (silentNotFoundError) {
@@ -105,7 +105,7 @@ class SNote extends AbstractShacaEntity {
             }
         }
 
-        let content = row.content;
+        const content = row.content;
 
         if (this.hasStringContent()) {
             return content === null ? "" : content.toString("utf-8");
@@ -212,7 +212,7 @@ class SNote extends AbstractShacaEntity {
     /**
      * @throws Error in case of invalid JSON
      */
-    getJsonContent(): any | null {
+    getJsonContent(): unknown | null {
         const content = this.getContent();
 
         if (typeof content !== "string" || !content || !content.trim()) {

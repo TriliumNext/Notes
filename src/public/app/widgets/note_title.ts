@@ -9,7 +9,7 @@ import shortcutService from "../services/shortcuts.js";
 import utils from "../services/utils.js";
 import type FNote from "../entities/fnote.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-title-widget">
     <style>
     .note-title-widget {

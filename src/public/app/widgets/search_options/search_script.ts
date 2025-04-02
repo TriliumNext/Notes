@@ -2,7 +2,7 @@ import AbstractSearchOption from "./abstract_search_option.js";
 import noteAutocompleteService from "../../services/note_autocomplete.js";
 import { t } from "../../services/i18n.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td class="title-column">
         ${t("search_script.title")}

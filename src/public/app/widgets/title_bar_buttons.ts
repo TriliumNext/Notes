@@ -2,7 +2,7 @@ import BasicWidget from "./basic_widget.js";
 import options from "../services/options.js";
 import utils from "../services/utils.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="title-bar-buttons">
     <style>
     .title-bar-buttons {
@@ -20,7 +20,7 @@ const TPL = `
         align-items: center;
         justify-content: center;
     }
-    
+
     .title-bar-buttons div:hover button {
         background-color: var(--accented-background-color) !important;
     }
@@ -29,14 +29,14 @@ const TPL = `
         display: inline-block;
         height: 40px;
         width: 40px;
-    }    
+    }
 
     .title-bar-buttons .btn.focus, .title-bar-buttons .btn:focus {
         box-shadow: none;
     }
     </style>
 
-    <!-- divs act as a hitbox for the buttons, making them clickable on corners -->    
+    <!-- divs act as a hitbox for the buttons, making them clickable on corners -->
     <div class="minimize-btn"><button class="btn bx bx-minus"></button></div>
     <div class="maximize-btn"><button class="btn bx bx-checkbox"></button></div>
     <div class="close-btn"><button class="btn bx bx-x"></button></div>

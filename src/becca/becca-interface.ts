@@ -171,11 +171,11 @@ export default class Becca {
         opts.includeContentLength = !!opts.includeContentLength;
 
         const query = opts.includeContentLength
-            ? `SELECT attachments.*, LENGTH(blobs.content) AS contentLength
+            ? /*sql*/`SELECT attachments.*, LENGTH(blobs.content) AS contentLength
                 FROM attachments
                 JOIN blobs USING (blobId)
                 WHERE attachmentId = ? AND isDeleted = 0`
-            : `SELECT * FROM attachments WHERE attachmentId = ? AND isDeleted = 0`;
+            : /*sql*/`SELECT * FROM attachments WHERE attachmentId = ? AND isDeleted = 0`;
 
         return sql.getRows<AttachmentRow>(query, [attachmentId]).map((row) => new BAttachment(row))[0];
     }

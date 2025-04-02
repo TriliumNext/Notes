@@ -40,11 +40,11 @@ function load() {
         // using a raw query and passing arrays to avoid allocating new objects,
         // this is worth it for the becca load since it happens every run and blocks the app until finished
 
-        for (const row of sql.getRawRows(`SELECT noteId, title, type, mime, isProtected, blobId, dateCreated, dateModified, utcDateCreated, utcDateModified FROM notes WHERE isDeleted = 0`)) {
+        for (const row of sql.getRawRows(/*sql*/`SELECT noteId, title, type, mime, isProtected, blobId, dateCreated, dateModified, utcDateCreated, utcDateModified FROM notes WHERE isDeleted = 0`)) {
             new BNote().update(row).init();
         }
 
-        const branchRows = sql.getRawRows<BranchRow>(`SELECT branchId, noteId, parentNoteId, prefix, notePosition, isExpanded, utcDateModified FROM branches WHERE isDeleted = 0`);
+        const branchRows = sql.getRawRows<BranchRow>(/*sql*/`SELECT branchId, noteId, parentNoteId, prefix, notePosition, isExpanded, utcDateModified FROM branches WHERE isDeleted = 0`);
         // in-memory sort is faster than in the DB
         branchRows.sort((a, b) => (a.notePosition || 0) - (b.notePosition || 0));
 
@@ -52,15 +52,15 @@ function load() {
             new BBranch().update(row).init();
         }
 
-        for (const row of sql.getRawRows<AttributeRow>(`SELECT attributeId, noteId, type, name, value, isInheritable, position, utcDateModified FROM attributes WHERE isDeleted = 0`)) {
+        for (const row of sql.getRawRows<AttributeRow>(/*sql*/`SELECT attributeId, noteId, type, name, value, isInheritable, position, utcDateModified FROM attributes WHERE isDeleted = 0`)) {
             new BAttribute().update(row).init();
         }
 
-        for (const row of sql.getRows<OptionRow>(`SELECT name, value, isSynced, utcDateModified FROM options`)) {
+        for (const row of sql.getRows<OptionRow>(/*sql*/`SELECT name, value, isSynced, utcDateModified FROM options`)) {
             new BOption(row);
         }
 
-        for (const row of sql.getRows<EtapiTokenRow>(`SELECT etapiTokenId, name, tokenHash, utcDateCreated, utcDateModified FROM etapi_tokens WHERE isDeleted = 0`)) {
+        for (const row of sql.getRows<EtapiTokenRow>(/*sql*/`SELECT etapiTokenId, name, tokenHash, utcDateCreated, utcDateModified FROM etapi_tokens WHERE isDeleted = 0`)) {
             new BEtapiToken(row);
         }
     });

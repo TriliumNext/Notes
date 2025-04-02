@@ -1,0 +1,133 @@
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../style.css">
+    <base target="_parent">
+    <title data-trilium-title>Keyboard Shortcuts</title>
+  </head>
+  
+  <body>
+    <div class="content">
+       <h1 data-trilium-h1>Keyboard Shortcuts</h1>
+
+      <div class="ck-content">
+        <p>This is supposed to be a complete list of keyboard shortcuts. Note that
+          some of these may work only in certain contexts (e.g. in tree pane or note
+          editor).</p>
+        <p>It is also possible to configure most keyboard shortcuts in Options -&gt;
+          Keyboard shortcuts. Using <code>global:</code> prefix, you can assign a shortcut
+          which will work even without Trilium being in focus (requires app restart
+          to take effect).</p>
+        <h2>Note navigation</h2>
+        <ul>
+          <li><kbd><span>↑</span></kbd>, <kbd><span>↓</span></kbd> - go up/down in the
+            list of notes, <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd><span>↑</span></kbd> and <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd><span>↓</span></kbd>  work
+            also from editor</li>
+          <li><kbd><span>←</span></kbd>, <kbd><span>→</span></kbd> - collapse/expand node</li>
+          <li><kbd>Alt</kbd> + <kbd><span>←</span></kbd>, <kbd>Alt</kbd> + <kbd><span>→</span></kbd> -
+            go back / forwards in the history</li>
+          <li><kbd>Ctrl</kbd> + <kbd>J</kbd> - show <a href="Navigation/Note%20Navigation.html">"Jump to" dialog</a>
+          </li>
+          <li><kbd>Ctrl</kbd> + <kbd>.</kbd> - scroll to current note (useful when you
+            scroll away from your note or your focus is currently in the editor)</li>
+          <li><kbd><span>Backspace</span></kbd> - jumps to parent note</li>
+          <li><kbd>Alt</kbd> + <kbd>C</kbd> - collapse whole note tree</li>
+          <li><kbd>Alt</kbd> + <kbd>-</kbd> (alt with minus sign) - collapse subtree (if
+            some subtree takes too much space on tree pane you can collapse it)</li>
+          <li>you can define a <a href="../Advanced%20Usage/Attributes.html">label</a>  <code>#keyboardShortcut</code> with
+            e.g. value <kbd>Ctrl</kbd> + <kbd>I</kbd> . Pressing this keyboard combination
+            will then bring you to the note on which it is defined. Note that Trilium
+            must be reloaded/restarted (<kbd>Ctrl</kbd> + <kbd>R</kbd> ) for changes to
+            be in effect.</li>
+        </ul>
+        <p>See demo of some of these features in <a href="Navigation/Note%20Navigation.html">note navigation</a>.</p>
+        <h2>Tabs</h2>
+        <ul>
+          <li><kbd>Ctrl</kbd> + <kbd>🖱 Left click</kbd> - (or middle mouse click) on note
+            link opens note in a new tab</li>
+        </ul>
+        <p>Only in desktop (electron build):</p>
+        <ul>
+          <li><kbd>Ctrl</kbd> + <kbd>T</kbd> - opens empty tab</li>
+          <li><kbd>Ctrl</kbd> + <kbd>W</kbd> - closes active tab</li>
+          <li><kbd>Ctrl</kbd> + <kbd>Tab</kbd> - activates next tab</li>
+          <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> - activates previous tab</li>
+        </ul>
+        <h2>Creating notes</h2>
+        <ul>
+          <li><code>CTRL+O</code> - creates new note after the current note</li>
+          <li><code>CTRL+P</code> - creates new sub-note into current note</li>
+          <li><code>F2</code> - edit <a href="Navigation/Note%20Navigation.html">prefix</a> of
+            current note clone</li>
+        </ul>
+        <h2>Moving / cloning notes</h2>
+        <ul>
+          <li><kbd>Ctrl</kbd> + <kbd><span>↑</span></kbd> , Ctrl + <kbd><span>↓</span></kbd> -
+            move note up/down in the note list</li>
+          <li><kbd>Ctrl</kbd> + <kbd><span>←</span></kbd> - move note up in the note tree</li>
+          <li><kbd>Ctrl</kbd>+<kbd><span>→</span></kbd> - move note down in the note
+            tree</li>
+          <li><kbd>Shift</kbd>+<kbd><span>↑</span></kbd>, <kbd>Shift</kbd><code>+</code><kbd><span>↓</span></kbd> -
+            multi-select note above/below</li>
+          <li><kbd>Ctrl</kbd>+<kbd>A</kbd> - select all notes in the current level</li>
+          <li><kbd>Shift</kbd>+<kbd>🖱 Left click</kbd> - multi select note which you
+            clicked on</li>
+          <li><kbd>Ctrl</kbd>+<kbd>C</kbd> - copies current note (or current selection)
+            into clipboard (used for <a href="Notes/Cloning%20Notes.html">cloning</a>
+          </li>
+          <li><kbd>Ctrl</kbd>+<kbd>X</kbd> - cuts current (or current selection) note
+            into clipboard (used for moving notes)</li>
+          <li><kbd>Ctrl</kbd>+<kbd>V</kbd> - pastes note(s) as sub-note into current
+            note (which is either move or clone depending on whether it was copied
+            or cut into clipboard)</li>
+          <li><kbd>Del</kbd> - delete note / sub-tree</li>
+        </ul>
+        <h2>Editing notes</h2>
+        <p>Trilium uses CKEditor 5 for the <a href="../Note%20Types/Text.html">text notes</a> and
+          CodeMirror 5 for <a href="../Note%20Types/Code.html">code notes</a>. Check
+          the documentation of these projects to see all their built-in keyboard
+          shortcuts.</p>
+        <ul>
+          <li><kbd>Alt</kbd>-<kbd>F10</kbd> - bring up inline formatting toolbar (arrow
+            keys <kbd><span>←</span></kbd>,<kbd><span>→</span></kbd> to navigate, <kbd>Enter</kbd> to
+            apply)</li>
+          <li><kbd>Alt</kbd>-<kbd>F10</kbd> - again to bring up block formatting toolbar</li>
+          <li><kbd>Enter</kbd> in tree pane switches from tree pane into note title.
+            Enter from note title switches focus to text editor. <kbd>Ctrl</kbd>+<kbd>.</kbd> switches
+            back from editor to tree pane.</li>
+          <li><kbd>Ctrl</kbd>+<kbd>K</kbd> - create / edit <a href="../Note%20Types/Text/Links.html">external link</a>
+          </li>
+          <li><kbd>Ctrl</kbd>+<kbd>L</kbd> - create <a href="../Note%20Types/Text/Links.html">internal (note) link</a>
+          </li>
+          <li><kbd>Alt</kbd>+<kbd>T</kbd> - inserts current date and time at caret position</li>
+          <li><kbd>Ctrl</kbd>+<kbd>.</kbd> - jump away from the editor to tree pane and
+            scroll to current note</li>
+        </ul>
+        <h2>Runtime shortcuts</h2>
+        <p>These are hooked in Electron to be similar to native browser keyboard
+          shortcuts.</p>
+        <ul>
+          <li><kbd>F5</kbd>, <kbd>Ctrl</kbd>-<kbd>R</kbd> - reloads Trilium front-end</li>
+          <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> - show developer tools</li>
+          <li><kbd>Ctrl</kbd>+<kbd>F</kbd> - show search dialog</li>
+          <li><kbd>Ctrl</kbd>+<kbd>-</kbd> - zoom out</li>
+          <li><kbd>Ctrl</kbd>+<kbd>=</kbd> - zoom in</li>
+        </ul>
+        <h2>Other</h2>
+        <ul>
+          <li><kbd>Alt</kbd>+<kbd>O</kbd> - show SQL console (use only if you know what
+            you're doing)</li>
+          <li><kbd>Alt</kbd>+<kbd>M</kbd> - distraction-free mode - display only note
+            editor, everything else is hidden</li>
+          <li><kbd>F11</kbd> - toggle full screen</li>
+          <li><kbd>Ctrl</kbd> + <kbd>S</kbd> - toggle <a href="Navigation/Search.html">search</a> form
+            in tree pane</li>
+          <li><kbd>Alt</kbd> +<kbd>A</kbd> - show note <a href="../Advanced%20Usage/Attributes.html">attributes</a> dialog</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+
+</html>

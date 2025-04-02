@@ -347,7 +347,7 @@ function getEntityChangeRow(entityChange: EntityChange) {
             throw new Error(`Unknown entity for entity change ${JSON.stringify(entityChange)}`);
         }
 
-        const entityRow = sql.getRow<EntityRow>(`SELECT * FROM ${entityName} WHERE ${primaryKey} = ?`, [entityId]);
+        const entityRow = sql.getRow<EntityRow>(/*sql*/`SELECT * FROM ${entityName} WHERE ${primaryKey} = ?`, [entityId]);
 
         if (!entityRow) {
             log.error(`Cannot find entity for entity change ${JSON.stringify(entityChange)}`);

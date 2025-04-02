@@ -6,7 +6,7 @@ import branchService from "../../services/branches.js";
 import treeService from "../../services/tree.js";
 import { t } from "../../services/i18n.js";
 
-const TPL = `<button type="button" class="action-button bx"></button>`;
+const TPL = /*html*/`<button type="button" class="action-button bx"></button>`;
 
 class MobileDetailMenuWidget extends BasicWidget {
     private isHorizontalLayout: boolean;

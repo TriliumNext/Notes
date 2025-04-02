@@ -5,13 +5,15 @@ import utils from "./utils.js";
 import appContext from "../components/app_context.js";
 import { t } from "./i18n.js";
 
-interface UploadFilesOptions {
-    safeImport?: boolean;
-    shrinkImages: boolean | "true" | "false";
-    textImportedAsText?: boolean;
-    codeImportedAsCode?: boolean;
-    explodeArchives?: boolean;
-    replaceUnderscoresWithSpaces?: boolean;
+type BooleanLike = boolean | "true" | "false";
+
+export interface UploadFilesOptions {
+    safeImport?: BooleanLike;
+    shrinkImages: BooleanLike;
+    textImportedAsText?: BooleanLike;
+    codeImportedAsCode?: BooleanLike;
+    explodeArchives?: BooleanLike;
+    replaceUnderscoresWithSpaces?: BooleanLike;
 }
 
 export async function uploadFiles(entityType: string, parentNoteId: string, files: string[] | File[], options: UploadFilesOptions) {

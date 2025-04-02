@@ -3,14 +3,14 @@ import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 import noteAutocompleteService from "../../../services/note_autocomplete.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;" class="text-nowrap">${t("move_note.move_note")}</div> 
-                            
+            <div style="margin-right: 10px;" class="text-nowrap">${t("move_note.move_note")}</div>
+
             <div style="margin-right: 10px;" class="text-nowrap">${t("move_note.to")}</div>
-            
+
             <div class="input-group">
                 <input type="text" class="form-control target-parent-note" placeholder="${t("move_note.target_parent_note")}"/>
             </div>
@@ -21,15 +21,15 @@ const TPL = `
             <span class="bx bx-help-circle icon-action" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
             <div class="dropdown-menu dropdown-menu-right p-4">
                 <p>${t("move_note.on_all_matched_notes")}:</p>
-                
+
                 <ul style="margin-bottom: 0;">
                     <li>${t("move_note.move_note_new_parent")}</li>
                     <li>${t("move_note.clone_note_new_parent")}</li>
                     <li>${t("move_note.nothing_will_happen")}</li>
                 </ul>
-            </div> 
+            </div>
         </div>
-    
+
         <span class="bx bx-x icon-action action-conf-del"></span>
     </td>
 </tr>`;

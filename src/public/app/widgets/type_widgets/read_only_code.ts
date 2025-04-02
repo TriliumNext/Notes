@@ -2,7 +2,7 @@ import type { EventData } from "../../components/app_context.js";
 import type FNote from "../../entities/fnote.js";
 import AbstractCodeTypeWidget from "./abstract_code_type_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-readonly-code note-detail-printable">
     <style>
     .note-detail-readonly-code {
@@ -19,7 +19,6 @@ const TPL = `
 </div>`;
 
 export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
-    $editor!: JQuery<HTMLElement>;
 
     static getType() {
         return "readOnlyCode";
@@ -44,7 +43,7 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
         this.show();
     }
 
-    getExtraOpts() {
+    getExtraOpts(): Partial<CodeMirrorOpts> {
         return {
             readOnly: true
         };
@@ -101,7 +100,7 @@ export default class ReadOnlyCodeTypeWidget extends AbstractCodeTypeWidget {
                 return ret;
             });
 
-        for (i = pre.length; i--; ) {
+        for (i = pre.length; i--;) {
             html = html.replace("<--TEMPPRE" + i + "/-->", pre[i].tag.replace("<pre>", "<pre>\n").replace("</pre>", pre[i].indent + "</pre>"));
         }
 

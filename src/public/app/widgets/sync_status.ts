@@ -6,7 +6,7 @@ import syncService from "../services/sync.js";
 import { escapeQuotes } from "../services/utils.js";
 import { Tooltip } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="sync-status-widget launcher-button">
     <style>
     .sync-status-widget {

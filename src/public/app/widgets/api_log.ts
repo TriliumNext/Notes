@@ -3,7 +3,7 @@ import type FNote from "../entities/fnote.js";
 import { t } from "../services/i18n.js";
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="api-log-widget">
     <style>
     .api-log-widget {

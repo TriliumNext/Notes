@@ -1,4 +1,0 @@
-export default [
-    "vitest.config.ts",
-    "src/public/app/vitest.config.ts"
-];

@@ -1,7 +1,7 @@
 import BasicWidget from "./basic_widget.js";
 import { t } from "../services/i18n.js";
 
-const TPL = `\
+const TPL = /*html*/`\
 <div class="close-zen-container">
     <button class="button-widget bx icon-action bxs-yin-yang"
         data-trigger-command="toggleZenMode"

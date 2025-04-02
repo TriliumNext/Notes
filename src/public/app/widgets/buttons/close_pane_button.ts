@@ -12,7 +12,7 @@ export default class ClosePaneButton extends OnClickButtonWidget {
         );
     }
 
-    async noteContextReorderEvent({ ntxIdsInOrder }: EventData<"noteContextReorderEvent">) {
+    async noteContextReorderEvent({ ntxIdsInOrder }: EventData<"noteContextReorder">) {
         this.refresh();
     }
 

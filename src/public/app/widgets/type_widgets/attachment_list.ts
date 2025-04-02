@@ -5,7 +5,7 @@ import utils from "../../services/utils.js";
 import { t } from "../../services/i18n.js";
 import type { EventData } from "../../components/app_context.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="attachment-list note-detail-printable">
     <style>
         .attachment-list {

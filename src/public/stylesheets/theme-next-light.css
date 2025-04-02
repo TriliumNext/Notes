@@ -121,13 +121,23 @@
     --left-pane-item-action-button-hover-shadow: 2px 2px 3px rgba(0, 0, 0, 0.15);
     --left-pane-item-selected-action-button-hover-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
 
-    --launcher-pane-background-color: #e8e8e8;
-    --launcher-pane-horizontal-background-color: #fafafa;
-    --launcher-pane-horizontal-border-color: rgba(0, 0, 0, 0.1);
-    --launcher-pane-text-color: #000000bd;
-    --launcher-pane-button-hover-color: black;
-    --launcher-pane-button-hover-background: white;
-    --launcher-pane-button-hover-shadow: 4px 4px 4px rgba(0, 0, 0, 0.075);
+    /* Deprecated: now local variables in #launcher, with the values dependent on the current layout. */
+    --launcher-pane-background-color: unset;
+    --launcher-pane-text-color: unset;
+    
+    --launcher-pane-vert-background-color: #e8e8e8;
+    --launcher-pane-vert-text-color: #000000bd;
+    --launcher-pane-vert-button-hover-color: black;
+    --launcher-pane-vert-button-hover-background: white;
+    --launcher-pane-vert-button-hover-shadow: 4px 4px 4px rgba(0, 0, 0, 0.075);
+    --launcher-pane-vert-button-focus-outline-color: var(--input-focus-outline-color);
+
+    --launcher-pane-horiz-border-color: rgba(0, 0, 0, 0.1);
+    --launcher-pane-horiz-background-color: #fafafa;
+    --launcher-pane-horiz-button-hover-color: black;
+    --launcher-pane-horiz-button-hover-background: var(--icon-button-hover-background);
+    --launcher-pane-horiz-button-hover-shadow: unset;
+    --launcher-pane-horiz-button-focus-outline-color: var(--input-focus-outline-color);
 
     --protected-session-active-icon-color: #16b516;
     --sync-status-error-pulse-color: #ff5528;
@@ -157,6 +167,19 @@
     --promoted-attribute-card-background-color: var(--card-background-color);
     --promoted-attribute-card-shadow-color: #00000033;
 
+    --floating-button-shadow-color: #00000042;
+    --floating-button-background-color: #eaeaeacc;
+    --floating-button-color: #454545;
+    --floating-button-hover-background: #00000017;
+    --floating-button-hover-color: black;
+    --floating-button-show-button-background: var(--left-pane-item-action-button-background);
+    --floating-button-show-button-color: var(--left-pane-item-action-button-color);
+    --floating-button-show-button-shadow: none;
+    --floating-button-show-button-hover-background: var(--left-pane-item-action-button-hover-background);
+    --floating-button-show-button-hover-shadow: 0 2px 4px #00000068;
+    --floating-button-hide-button-background: #0000000d;
+    --floating-button-hide-button-color: gray;
+
     --new-tab-button-background: #d8d8d8;
     --new-tab-button-color: #3a3a3a;
     --new-tab-button-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -166,8 +189,11 @@
     --right-pane-item-hover-background: #ececec;
     --right-pane-item-hover-color: inherit;
 
-    --scrollbar-border-color: #ddd;
-    --scrollbar-background-color: #ddd;
+    --scrollbar-thumb-color: #0000005c;
+    --scrollbar-thumb-hover-color: #00000066;
+    --scrollbar-background-color: transparent;
+    --scrollbar-border-color: unset; /* Deprecated */
+
     --link-color: blue;
 
     --mermaid-theme: default;

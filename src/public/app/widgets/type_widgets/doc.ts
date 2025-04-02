@@ -3,17 +3,22 @@ import type FNote from "../../entities/fnote.js";
 import renderDoc from "../../services/doc_renderer.js";
 import TypeWidget from "./type_widget.js";
 
-const TPL = `<div class="note-detail-doc note-detail-printable">
+const TPL = /*html*/`<div class="note-detail-doc note-detail-printable">
     <style>
         .note-detail-doc-content {
             padding: 15px;
         }
 
         .note-detail-doc-content pre {
-            background-color: var(--accented-background-color);
-            border: 1px solid var(--main-border-color);
+            border: 0;
+            box-shadow: var(--code-block-box-shadow);
             padding: 15px;
             border-radius: 5px;
+        }
+
+        .note-detail-doc-content pre:not(.hljs) {
+            background-color: var(--accented-background-color);
+            border: 1px solid var(--main-border-color);
         }
 
         .note-detail-doc.contextual-help {

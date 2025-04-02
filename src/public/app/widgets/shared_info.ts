@@ -5,7 +5,7 @@ import { t } from "../services/i18n.js";
 import type FNote from "../entities/fnote.js";
 import type { EventData } from "../components/app_context.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="shared-info-widget alert alert-warning use-tn-links">
     <style>
         .shared-info-widget {

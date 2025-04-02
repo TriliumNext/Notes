@@ -5,7 +5,7 @@ import { t } from "../../../../services/i18n.js";
 import type { OptionMap } from "../../../../../../services/options_interface.js";
 import TimeSelector from "../time_selector.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("note_erasure_timeout.note_erasure_timeout_title")}</h4>
     <p class="form-text">${t("note_erasure_timeout.note_erasure_description")}</p>

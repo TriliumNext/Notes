@@ -2,7 +2,7 @@ import type { OptionMap } from "../../../../../../services/options_interface.js"
 import { t } from "../../../../services/i18n.js";
 import OptionsWidget from "../options_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="options-section">
     <h4>${t("ribbon.widgets")}</h4>
     <div>

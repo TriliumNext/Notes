@@ -267,7 +267,8 @@
   "basic_properties": {
     "basic_properties": "Proprietăți de bază",
     "editable": "Editabil",
-    "note_type": "Tipul notiței"
+    "note_type": "Tipul notiței",
+    "language": "Limbă"
   },
   "book": {
     "no_children_help": "Această notiță de tip Carte nu are nicio subnotiță așadar nu este nimic de afișat. Vedeți <a href=\"https://triliumnext.github.io/Docs/Wiki/book-note.html\">wiki</a> pentru detalii."
@@ -353,7 +354,8 @@
   "code_auto_read_only_size": {
     "description": "Marchează pragul în care o notiță de o anumită dimensiune va fi afișată în mod de citire (pentru motive de performanță).",
     "label": "Pragul de dimensiune pentru setarea modului de citire automat (la notițe de cod)",
-    "title": "Pragul de mod de citire automat"
+    "title": "Pragul de mod de citire automat",
+    "unit": "caractere"
   },
   "code_buttons": {
     "execute_button_title": "Execută scriptul",
@@ -677,7 +679,8 @@
     "language": "Limbă",
     "monday": "Luni",
     "sunday": "Duminică",
-    "title": "Localizare"
+    "title": "Localizare",
+    "formatting-locale": "Format dată și numere"
   },
   "image_properties": {
     "copy_reference_to_clipboard": "Copiază referință în clipboard",
@@ -697,7 +700,8 @@
     "enable_image_compression": "Activează compresia imaginilor",
     "images_section_title": "Imagini",
     "jpeg_quality_description": "Calitatea JPEG (10 - cea mai slabă calitate, 100 - cea mai bună calitate, se recomandă între 50 și 85)",
-    "max_image_dimensions": "Lungimea/lățimea maximă a unei imagini în pixeli (imaginea va fi redimensionată dacă depășește acest prag)."
+    "max_image_dimensions": "Lungimea/lățimea maximă a unei imagini (imaginea va fi redimensionată dacă depășește acest prag).",
+    "max_image_dimensions_unit": "pixeli"
   },
   "import": {
     "chooseImportFile": "Selectați fișierul de importat",
@@ -772,7 +776,8 @@
   "max_content_width": {
     "apply_changes_description": "Pentru a aplica schimbările de lățime a conținutului, dați click pe",
     "default_description": "În mod implicit Trilium limitează lățimea conținutului pentru a îmbunătăți lizibilitatea pentru ferestrele maximizate pe ecrane late.",
-    "max_width_label": "Lungimea maximă a conținutului în pixeli",
+    "max_width_label": "Lungimea maximă a conținutului",
+    "max_width_unit": "pixeli",
     "reload_button": "reîncarcă interfața",
     "reload_description": "schimbări din opțiunile de afișare",
     "title": "Lățime conținut"
@@ -1215,10 +1220,12 @@
     "test_button": "Probează sincronizarea",
     "test_description": "Această opțiune va testa conexiunea și comunicarea cu serverul de sincronizare. Dacă serverul de sincronizare nu este inițializat, acest lucru va rula și o sincronizare cu documentul local.",
     "test_title": "Probează sincronizarea",
-    "timeout": "Timp limită de sincronizare (millisecunde)"
+    "timeout": "Timp limită de sincronizare",
+    "timeout_unit": "milisecunde"
   },
   "table_of_contents": {
     "description": "Tabela de conținut va apărea în notițele de tip text atunci când notița are un număr de titluri mai mare decât cel definit. Acest număr se poate personaliza:",
+    "unit": "titluri",
     "disable_info": "De asemenea se poate dezactiva tabela de conținut setând o valoare foarte mare.",
     "shortcut_info": "Se poate configura și o scurtatură pentru a comuta rapid vizibilitatea panoului din dreapta (inclusiv tabela de conținut) în Opțiuni -> Scurtături (denumirea „toggleRightPane”).",
     "title": "Tabelă de conținut"
@@ -1226,7 +1233,8 @@
   "text_auto_read_only_size": {
     "description": "Marchează pragul în care o notiță de o anumită dimensiune va fi afișată în mod de citire (pentru motive de performanță).",
     "label": "Pragul de dimensiune pentru setarea modului de citire automat (la notițe text)",
-    "title": "Pragul de mod de citire automat"
+    "title": "Pragul de mod de citire automat",
+    "unit": "caractere"
   },
   "theme": {
     "auto_theme": "Temă auto (se adaptează la schema de culori a sistemului)",
@@ -1422,9 +1430,6 @@
     "options": "Setări",
     "title": "Listă de evidențieri"
   },
-  "mermaid": {
-    "diagram_error": "Diagrama nu a putut fi afișată. Vedeți <a href=\"https://mermaid-js.github.io/mermaid/#/flowchart?id=graph\">informații și exemple pe site-ul oficial</a>."
-  },
   "note_icon": {
     "change_note_icon": "Schimbă iconița notiței",
     "category": "Categorie:",
@@ -1481,7 +1486,8 @@
     "erase_excess_revision_snapshots_prompt": "Reviziile excesive au fost șterse.",
     "note_revisions_snapshot_limit_description": "Limita numărului de revizii se referă la numărul maxim de revizii pentru fiecare notiță. -1 reprezintă nicio limită, 0 înseamnă ștergerea tuturor reviziilor. Se poate seta valoarea individual pentru o notiță prin eticheta #versioningLimit.",
     "note_revisions_snapshot_limit_title": "Limita de revizii a notițelor",
-    "snapshot_number_limit_label": "Numărul maxim de revizii pentru notițe:"
+    "snapshot_number_limit_label": "Numărul maxim de revizii pentru notițe:",
+    "snapshot_number_limit_unit": "revizii"
   },
   "search_result": {
     "no_notes_found": "Nu au fost găsite notițe pentru parametrii de căutare dați.",
@@ -1688,5 +1694,30 @@
   },
   "content_widget": {
     "unknown_widget": "Nu s-a putut găsi widget-ul corespunzător pentru „{{id}}”."
+  },
+  "code-editor-options": {
+    "title": "Editor"
+  },
+  "content_language": {
+    "description": "Selectați una sau mai multe limbi ce vor apărea în selecția limbii din cadrul secțiunii „Proprietăți de bază” pentru notițele de tip text (editabile sau doar în citire).",
+    "title": "Limbi pentru conținutul notițelor"
+  },
+  "hidden-subtree": {
+    "localization": "Limbă și regiune"
+  },
+  "note_language": {
+    "configure-languages": "Configurează limbile...",
+    "not_set": "Nedefinită"
+  },
+  "png_export_button": {
+    "button_title": "Exportă diagrama ca PNG"
+  },
+  "switch_layout_button": {
+    "title_horizontal": "Mută panoul de editare la stânga",
+    "title_vertical": "Mută panoul de editare în jos"
+  },
+  "toggle_read_only_button": {
+    "lock-editing": "Blochează editarea",
+    "unlock-editing": "Deblochează editarea"
   }
 }

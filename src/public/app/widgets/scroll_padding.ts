@@ -1,6 +1,6 @@
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 
-const TPL = `<div class="scroll-padding-widget"></div>`;
+const TPL = /*html*/`<div class="scroll-padding-widget"></div>`;
 
 export default class ScrollPaddingWidget extends NoteContextAwareWidget {
 

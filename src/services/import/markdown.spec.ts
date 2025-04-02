@@ -43,7 +43,6 @@ describe("markdown", () => {
         expect(result).toBe(`<h2>Hello</h2><h2>world</h2><h2>another one</h2><p>Hello, world</p>`);
     });
 
-
     it("parses duplicate title with escape correctly", () => {
         const result = markdownService.renderToHtml(trimIndentation`\
             # What's new
@@ -105,6 +104,26 @@ second line 2</code></pre><ul><li>Hello</li><li>world</li></ul><ol><li>Hello</li
     it("imports images with same outcome as if inserted from CKEditor", () => {
         const input = "![](api/attachments/YbkR3wt2zMcA/image/image)";
         const expected = `<p><img src="api/attachments/YbkR3wt2zMcA/image/image"></p>`;
+        expect(markdownService.renderToHtml(input, "Title")).toStrictEqual(expected);
+    });
+
+    it("maintains code blocks with XML/HTML", () => {
+        const input = trimIndentation`\
+            Before
+            \`\`\`
+            <application
+                ...
+                android:testOnly="false">
+                ...
+            </application>
+            \`\`\`
+            After`;
+        const expected = trimIndentation`\
+            <p>Before</p><pre><code class="language-text-x-trilium-auto">&lt;application
+                ...
+                android:testOnly="false"&gt;
+                ...
+            &lt;/application&gt;</code></pre><p>After</p>`;
         expect(markdownService.renderToHtml(input, "Title")).toStrictEqual(expected);
     });
 

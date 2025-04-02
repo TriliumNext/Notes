@@ -210,7 +210,7 @@ class BAttachment extends AbstractBeccaEntity<BAttachment> {
             this.position =
                 10 +
                 sql.getValue<number>(
-                    `SELECT COALESCE(MAX(position), 0)
+                    /*sql*/`SELECT COALESCE(MAX(position), 0)
                                                         FROM attachments
                                                         WHERE ownerId = ?`,
                     [this.noteId]

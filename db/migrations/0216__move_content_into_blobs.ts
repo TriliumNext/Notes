@@ -17,8 +17,8 @@ interface NoteRevisionContents {
 export default () => {
     const existingBlobIds = new Set();
 
-    for (const noteId of sql.getColumn<string>(`SELECT noteId FROM note_contents`)) {
-        const row = sql.getRow<NoteContentsRow>(`SELECT noteId, content, dateModified, utcDateModified FROM note_contents WHERE noteId = ?`, [noteId]);
+    for (const noteId of sql.getColumn<string>(/*sql*/`SELECT noteId FROM note_contents`)) {
+        const row = sql.getRow<NoteContentsRow>(/*sql*/`SELECT noteId, content, dateModified, utcDateModified FROM note_contents WHERE noteId = ?`, [noteId]);
         const blobId = utils.hashedBlobId(row.content);
 
         if (!existingBlobIds.has(blobId)) {
@@ -40,8 +40,8 @@ export default () => {
         sql.execute("UPDATE notes SET blobId = ? WHERE noteId = ?", [blobId, row.noteId]);
     }
 
-    for (const noteRevisionId of sql.getColumn(`SELECT noteRevisionId FROM note_revision_contents`)) {
-        const row = sql.getRow<NoteRevisionContents>(`SELECT noteRevisionId, content, utcDateModified FROM note_revision_contents WHERE noteRevisionId = ?`, [noteRevisionId]);
+    for (const noteRevisionId of sql.getColumn(/*sql*/`SELECT noteRevisionId FROM note_revision_contents`)) {
+        const row = sql.getRow<NoteRevisionContents>(/*sql*/`SELECT noteRevisionId, content, utcDateModified FROM note_revision_contents WHERE noteRevisionId = ?`, [noteRevisionId]);
         const blobId = utils.hashedBlobId(row.content);
 
         if (!existingBlobIds.has(blobId)) {

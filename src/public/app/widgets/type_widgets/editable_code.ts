@@ -5,7 +5,7 @@ import keyboardActionService from "../../services/keyboard_actions.js";
 import options from "../../services/options.js";
 import AbstractCodeTypeWidget from "./abstract_code_type_widget.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="note-detail-code note-detail-printable">
     <style>
     .note-detail-code {
@@ -24,8 +24,6 @@ const TPL = `
 
 export default class EditableCodeTypeWidget extends AbstractCodeTypeWidget {
 
-    private $editor!: JQuery<HTMLElement>;
-
     static getType() {
         return "editableCode";
     }
@@ -40,7 +38,7 @@ export default class EditableCodeTypeWidget extends AbstractCodeTypeWidget {
         super.doRender();
     }
 
-    getExtraOpts() {
+    getExtraOpts(): Partial<CodeMirrorOpts> {
         return {
             keyMap: options.is("vimKeymapEnabled") ? "vim" : "default",
             lint: true,
@@ -59,7 +57,7 @@ export default class EditableCodeTypeWidget extends AbstractCodeTypeWidget {
         const blob = await this.note?.getBlob();
 
         await this.spacedUpdate.allowUpdateWithoutChange(() => {
-            this._update(note, blob?.content);
+            this._update(note, blob?.content ?? "");
         });
 
         this.show();

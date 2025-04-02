@@ -35,7 +35,7 @@ VACUUM;
 }
 
 function getLightAnonymizationScript() {
-    return `UPDATE blobs SET content = 'text' WHERE content IS NOT NULL AND blobId NOT IN (
+    return /*sql*/`UPDATE blobs SET content = 'text' WHERE content IS NOT NULL AND blobId NOT IN (
                 SELECT blobId FROM notes WHERE mime IN ('application/javascript;env=backend', 'application/javascript;env=frontend')
             UNION ALL
                 SELECT blobId FROM revisions WHERE mime IN ('application/javascript;env=backend', 'application/javascript;env=frontend')

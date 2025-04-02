@@ -12,7 +12,7 @@ import utils from "../../services/utils.js";
 import ws from "../../services/ws.js";
 import { Modal } from "bootstrap";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="recent-changes-dialog modal fade mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
@@ -115,7 +115,10 @@ export default class RecentChangesDialog extends BasicWidget {
 
                                     await ws.waitForMaxKnownEntityChangeId();
 
-                                    appContext.tabManager.getActiveContext().setNote(change.noteId);
+                                    const activeContext = appContext.tabManager.getActiveContext();
+                                    if (activeContext) {
+                                        activeContext.setNote(change.noteId);
+                                    }
                                 }
                             });
 
@@ -141,7 +144,10 @@ export default class RecentChangesDialog extends BasicWidget {
                             // Skip clicks on the link or deleted notes
                             if (e.target?.nodeName !== "A" && !change.current_isDeleted) {
                                 // Open the current note
-                                appContext.tabManager.getActiveContext().setNote(change.noteId);
+                                const activeContext = appContext.tabManager.getActiveContext();
+                                if (activeContext) {
+                                    activeContext.setNote(change.noteId);
+                                }
                             }
                         })
                         .toggleClass("deleted-note", !!change.current_isDeleted)

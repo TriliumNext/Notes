@@ -23,7 +23,7 @@ To create an instance note through the UI:
 
 ![show child note templates](../../Attachments/template-create-instance-n.png)
 
-For the template to appear in the menu, the template note must have the `#template` label. Do not confuse this with the `~template` relation, which links the instance note to the template note. If you use [workspaces](../../Basic%20Concepts/Navigation/Workspace.md), you can also mark templates with `#workspaceTemplate` to display them only in the workspace.
+For the template to appear in the menu, the template note must have the `#template` label. Do not confuse this with the `~template` relation, which links the instance note to the template note. If you use [workspaces](../../Basic%20Concepts%20and%20Features/Navigation/Workspace.md), you can also mark templates with `#workspaceTemplate` to display them only in the workspace.
 
 Templates can also be added or changed after note creation by creating a `~template` relation pointing to the desired template note.
 
@@ -31,6 +31,6 @@ Templates can also be added or changed after note creation by creating a `~templ
 
 From a visual perspective, templates can define `#iconClass` and `#cssClass` attributes, allowing all instance notes (e.g., books) to display a specific icon and CSS style.
 
-Explore the concept further in the [demo notes](../Database.md), including examples like the [Relation Map](../Relation%20Map.md), [Task Manager](../Advanced%20Showcases/Task%20Manager.md), and [Day Notes](../Advanced%20Showcases/Day%20Notes.md).
+Explore the concept further in the [demo notes](../Database.md), including examples like the [Relation Map](../../Note%20Types/Relation%20Map.md), [Task Manager](../Advanced%20Showcases/Task%20Manager.md), and [Day Notes](../Advanced%20Showcases/Day%20Notes.md).
 
 Additionally, see [default note title](../Default%20Note%20Title.md) for creating title templates. Note templates and title templates can be combined by creating a `#titleTemplate` for a template note.

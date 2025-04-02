@@ -101,7 +101,7 @@ export const DEFAULT_ALLOWED_TAGS = [
     "tt"
 ];
 
-const TPL = `
+const TPL = /*html*/`
 <div class="html-import-tags-settings options-section">
     <style>
         .html-import-tags-settings .allowed-html-tags {

@@ -2,22 +2,22 @@ import { t } from "../../../services/i18n.js";
 import SpacedUpdate from "../../../services/spaced_update.js";
 import AbstractBulkAction from "../abstract_bulk_action.js";
 
-const TPL = `
+const TPL = /*html*/`
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px; flex-shrink: 0;">${t("rename_label.rename_label_from")}</div> 
-            
-            <input type="text" 
-                class="form-control old-label-name" 
-                placeholder="${t("rename_label.old_name_placeholder")}" 
+            <div style="margin-right: 10px; flex-shrink: 0;">${t("rename_label.rename_label_from")}</div>
+
+            <input type="text"
+                class="form-control old-label-name"
+                placeholder="${t("rename_label.old_name_placeholder")}"
                 pattern="[\\p{L}\\p{N}_:]+"
                 title="${t("rename_label.name_title")}"/>
-            
-            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("rename_label.to")}</div> 
-            
-            <input type="text" 
-                class="form-control new-label-name" 
+
+            <div style="margin-right: 10px; margin-left: 10px;" class="text-nowrap">${t("rename_label.to")}</div>
+
+            <input type="text"
+                class="form-control new-label-name"
                 placeholder="${t("rename_label.new_name_placeholder")}"
                 pattern="[\\p{L}\\p{N}_:]+"
                 title="${t("rename_label.name_title")}"/>

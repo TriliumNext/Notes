@@ -2,7 +2,7 @@ import BasicWidget from "../basic_widget.js";
 import { Tooltip, Dropdown } from "bootstrap";
 type PopoverPlacement = Tooltip.PopoverPlacement;
 
-const TPL = `
+const TPL = /*html*/`
 <div class="dropdown right-dropdown-widget dropend">
     <button type="button" data-bs-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false"

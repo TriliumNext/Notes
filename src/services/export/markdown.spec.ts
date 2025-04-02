@@ -193,4 +193,37 @@ describe("Markdown export", () => {
         expect(markdownExportService.toMarkdown(html)).toBe(expected);
     });
 
+    it("exports code in tables properly", () => {
+        const html = trimIndentation`\
+        <table>
+            <tr>
+                <td>
+                    Row 1
+                </td>
+                <td>
+                    <p>Allows displaying the value of one or more attributes in the calendar
+                        like this:&nbsp;</p>
+                    <p>
+                        <img src="13_Calendar View_image.png" alt="">
+                    </p>
+
+                    <pre><code class="language-text-x-trilium-auto">#weight="70"
+                    #Mood="Good"
+                    #calendar:displayedAttributes="weight,Mood"</code></pre>
+                    <p>It can also be used with relations, case in which it will display the
+                        title of the target note:</p><pre><code class="language-text-x-trilium-auto">~assignee=@My assignee
+                    #calendar:displayedAttributes="assignee"</code></pre>
+                </td>
+            </tr>
+        </table>
+        `;
+
+        const expected = trimIndentation`\
+            <table><tbody><tr><td>Row 1</td><td><p>Allows displaying the value of one or more attributes in the calendar like this:&nbsp;</p><p><img src="13_Calendar View_image.png" alt=""></p><pre><code class="language-text-x-trilium-auto">#weight="70"
+                        #Mood="Good"
+                        #calendar:displayedAttributes="weight,Mood"</code></pre><p>It can also be used with relations, case in which it will display the title of the target note:</p><pre><code class="language-text-x-trilium-auto">~assignee=@My assignee
+                        #calendar:displayedAttributes="assignee"</code></pre></td></tr></tbody></table>`;
+        expect(markdownExportService.toMarkdown(html)).toBe(expected);
+    });
+
 });

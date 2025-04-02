@@ -55,4 +55,8 @@ describe("Linter", () => {
         expect(await lint(`module.exports("Hi");`, "application/javascript;env=backend")).toStrictEqual([]);
         expect(await lint(`module.exports("Hi");`, "application/javascript;env=frontend")).toStrictEqual([]);
     });
+
+    it("ignores TypeScript file", async () => {
+        expect(await lint("export async function lint(code: string, mimeType: string) {}", "text/typescript-jsx")).toStrictEqual([]);
+    });
 });

@@ -1,9 +1,8 @@
-import type { CommandNames } from "../components/app_context.js";
 import keyboardActionService from "../services/keyboard_actions.js";
 import note_tooltip from "../services/note_tooltip.js";
 import utils from "../services/utils.js";
 
-interface ContextMenuOptions<T extends CommandNames> {
+interface ContextMenuOptions<T> {
     x: number;
     y: number;
     orientation?: "left";
@@ -17,7 +16,7 @@ interface MenuSeparatorItem {
     title: "----";
 }
 
-export interface MenuCommandItem<T extends CommandNames> {
+export interface MenuCommandItem<T> {
     title: string;
     command?: T;
     type?: string;
@@ -30,8 +29,8 @@ export interface MenuCommandItem<T extends CommandNames> {
     spellingSuggestion?: string;
 }
 
-export type MenuItem<T extends CommandNames> = MenuCommandItem<T> | MenuSeparatorItem;
-export type MenuHandler<T extends CommandNames> = (item: MenuCommandItem<T>, e: JQuery.MouseDownEvent<HTMLElement, undefined, HTMLElement, HTMLElement>) => void;
+export type MenuItem<T> = MenuCommandItem<T> | MenuSeparatorItem;
+export type MenuHandler<T> = (item: MenuCommandItem<T>, e: JQuery.MouseDownEvent<HTMLElement, undefined, HTMLElement, HTMLElement>) => void;
 export type ContextMenuEvent = PointerEvent | MouseEvent | JQuery.ContextMenuEvent;
 
 class ContextMenu {
@@ -55,7 +54,7 @@ class ContextMenu {
         }
     }
 
-    async show<T extends CommandNames>(options: ContextMenuOptions<T>) {
+    async show<T>(options: ContextMenuOptions<T>) {
         this.options = options;
 
         note_tooltip.dismissAllTooltips();

@@ -1,7 +1,3 @@
-/*
- * USER INTERFACE
- */
-
 @keyframes fade-in {
     from {
         opacity: 0;
@@ -26,9 +22,7 @@ body {
 }
 
 body.layout-horizontal {
-    --launcher-pane-background-color: var(--launcher-pane-horizontal-background-color);
-    --launcher-pane-size: var(--launcher-pane-horizontal-size);
-    --active-tab-background-color: var(--launcher-pane-background-color);
+    --active-tab-background-color: var(--launcher-pane-horiz-background-color);
     --active-tab-hover-background-color: var(--active-tab-background-color);
     --new-tab-button-background: transparent;
     --tab-bar-height: 44px;
@@ -42,24 +36,24 @@ body.mobile {
 
 /* #region Mica */
 body.background-effects.platform-win32 {
-    --launcher-pane-horizontal-border-color: rgba(0, 0, 0, 0.15);
-    --launcher-pane-background-color: rgba(255, 255, 255, 0.7);
+    --launcher-pane-horiz-border-color: rgba(0, 0, 0, 0.15);
+    --launcher-pane-horiz-background-color: rgba(255, 255, 255, 0.7);
+    --launcher-pane-vert-background-color: rgba(255, 255, 255, 0.055);
     --tab-background-color: transparent;
     --new-tab-button-background: transparent;
-    --active-tab-background-color: var(--launcher-pane-background-color);
+    --active-tab-background-color: var(--launcher-pane-horiz-background-color);
     --background-material: tabbed;
 }
 
 @media (prefers-color-scheme: dark) {
     body.background-effects.platform-win32 {
-        --launcher-pane-horizontal-border-color: rgba(0, 0, 0, 0.5);
-        --launcher-pane-background-color: rgba(255, 255, 255, 0.09);
+        --launcher-pane-horiz-border-color: rgba(0, 0, 0, 0.5);
+        --launcher-pane-horiz-background-color: rgba(255, 255, 255, 0.09);
     }
 }
 
 body.background-effects.platform-win32.layout-vertical {
     --left-pane-background-color: transparent;
-    --launcher-pane-background-color: rgba(255, 255, 255, 0.055);
     --left-pane-item-hover-background: rgba(127, 127, 127, 0.05);
     --background-material: mica;
 }
@@ -86,73 +80,73 @@ body.background-effects.platform-win32.layout-vertical #vertical-main-container 
     border-right: 2px solid var(--left-pane-collapsed-border-color);
 }
 
-/*
- * Log in page
- */
-
-.login-page {
-    display: flex; /* Note: the login page contents is hidden before this property is applied  */
-    height: 100%;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.login-page > div {
-    padding-top: 0 !important;
-    padding-bottom: 20vh;
-}
-
-.login-page h1 {
-    margin-bottom: .5em;
-    font-weight: 300;
-    color: var(--muted-text-color);
-}
-
-.login-page .form-group {
-    margin-top: 8px;
-}
-
-.login-page .alert {
-    margin: 0;
-    border: unset;
-    padding: 8px 0 0 0;
-    font-size: .85em;
-    color: var(--dropdown-item-icon-destructive-color) !important;
+body.background-effects.zen #root-widget {
+    --main-background-color: transparent;
+    --root-background: transparent;
 }
 
 /*
- * Global menu
+ * Gutter
  */
 
-.global-menu div.zoom-buttons a {
-    border: unset;
+ .gutter {
+    background: var(--gutter-color) !important;
+    transition: background 150ms ease-out;
 }
 
-.global-menu div.zoom-buttons a.bx {
-    color: var(--menu-text-color) !important;
+.gutter:hover {
+    background: var(--gutter-hover-color) !important;
+    transition: background 300ms ease-in;
 }
 
 /*
- *  Launcher pane
+ * LAUNCHER PANE / TOOLBAR
  */
+
 #launcher-container,
 body.layout-horizontal > .horizontal {
     align-items: center;
 }
 
 #launcher-pane.vertical {
+    --launcher-pane-border-color: unset;
+    --launcher-pane-background-color: var(--launcher-pane-vert-background-color);
+    --launcher-pane-text-color: var(--launcher-pane-vert-text-color);
+    --launcher-pane-button-hover-color: var(--launcher-pane-vert-button-hover-color);
+    --launcher-pane-button-hover-background: var(--launcher-pane-vert-button-hover-background);
+    --launcher-pane-button-hover-shadow: var(--launcher-pane-vert-button-hover-shadow);
+    --launcher-pane-button-focus-outline-color: var(--launcher-pane-vert-button-focus-outline-color);
+
+    --launcher-pane-size: var(--launcher-pane-vert-size);
+    --launcher-pane-icon-size: var(--launcher-pane-vert-icon-size);
+    --launcher-pane-button-margin: var(--launcher-pane-vert-button-margin);
+    --launcher-pane-button-gap: var(--launcher-pane-vert-button-gap);
+
     width: var(--launcher-pane-size) !important;
     padding-bottom: var(--launcher-pane-button-gap);
 }
 
 #launcher-pane.horizontal {
+    --launcher-pane-border-color: var(--launcher-pane-horiz-border-color);
+    --launcher-pane-background-color: var(--launcher-pane-horiz-background-color);
+    --launcher-pane-text-color: var(--launcher-pane-horiz-text-color);
+    --launcher-pane-button-hover-color: var(--launcher-pane-horiz-button-hover-color);
+    --launcher-pane-button-hover-background: var(--launcher-pane-horiz-button-hover-background);
+    --launcher-pane-button-hover-shadow: var(--launcher-pane-horiz-button-hover-shadow);
+    --launcher-pane-button-focus-outline-color: var(--launcher-pane-horiz-button-focus-outline-color);
+
+    --launcher-pane-size: var(--launcher-pane-horiz-size);
+    --launcher-pane-icon-size: var(--launcher-pane-horiz-icon-size);
+    --launcher-pane-button-margin: var(--launcher-pane-horiz-button-margin);
+    --launcher-pane-button-gap: var(--launcher-pane-horiz-button-gap);
+
     height: var(--launcher-pane-size) !important;
     align-items: center;
 }
 
 @media (max-width: 991px) {
     #mobile-bottom-bar {
-        background: var(--launcher-pane-background-color);
+        background: var(--launcher-pane-horiz-background-color);
     }
 
     body.mobile #launcher-pane {
@@ -163,7 +157,7 @@ body.layout-horizontal > .horizontal {
 @media (min-width: 992px) {
     #launcher-pane.horizontal {
         border-top: unset;
-        border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
+        border-bottom: 1px solid var(--launcher-pane-horiz-border-color);
     }
 }
 
@@ -213,6 +207,27 @@ body.layout-horizontal > .horizontal {
     align-items: center;
 }
 
+#launcher-pane .launcher-button {
+    font-size: var(--launcher-pane-icon-size) !important;
+}
+
+#launcher-pane .launcher-button:focus,
+#launcher-pane .global-menu button:focus {
+    outline: none;
+}
+
+#launcher-pane .launcher-button:focus-visible,
+#launcher-pane.horizontal .global-menu button:focus-visible {
+    outline: 2px solid var(--launcher-pane-button-focus-outline-color);
+}
+
+#launcher-pane.vertical .global-menu button:focus-visible svg {
+    outline-offset: 4px;
+    outline: 2px solid var(--launcher-pane-button-focus-outline-color);
+    border-radius: 4px;
+    overflow: visible;
+}
+
 #launcher-pane.vertical .spacer {
     width: var(--launcher-pane-size);
 }
@@ -253,10 +268,6 @@ body.layout-horizontal > .horizontal {
     animation: sync-status-pulse 1s ease-in-out alternate-reverse infinite;
 }
 
-#launcher-pane.horizontal .launcher-button {
-    font-size: var(--launcher-pane-horizontal-icon-size);
-}
-
 #launcher-pane .global-menu-button {
     --hover-item-background-color: transparent;
 }
@@ -282,9 +293,169 @@ body.layout-horizontal > .horizontal {
     color: var(--tooltip-foreground-color) !important;
 }
 
+/*
+ * Global menu
+ */
+
+ .global-menu div.zoom-buttons a {
+    border: unset;
+}
+
+.global-menu div.zoom-buttons a.bx {
+    color: var(--menu-text-color) !important;
+}
+
+/*
+ * Calendar
+ */
+
+ .calendar-dropdown-widget {
+    width: unset !important;
+    padding: 12px;
+    color: var(--calendar-color);
+    user-select: none;
+}
+
+.calendar-dropdown-widget .calendar-header {
+    padding: 8px 0 20px 0;
+    gap: 10px;
+}
+
+.calendar-dropdown-widget .calendar-header input,
+.calendar-dropdown-widget .calendar-header [data-calendar-input="month"] {
+    --input-background-color: transparent;
+    --menu-background-color: transparent;
+
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: 300;
+}
+
+.calendar-dropdown-widget .calendar-header input:not(:focus) {
+    outline: 3px solid transparent;
+}
+
+.calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+    --select-arrow-svg: ""; /* Disable the dropdown arrow */
+}
+
+@media (max-width: 992px) {
+    .calendar-dropdown-widget .calendar-header button {
+        margin: 0 !important;
+        padding: 0;
+    }
+
+    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+        padding: 0 8px;
+        flex-grow: 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
+        min-width: 120px;
+        padding: 0 10px;
+    }
+}
+
+.calendar-dropdown-widget .calendar-header .dropdown-toggle::after {
+    content: unset !important;
+}
+
+.calendar-dropdown-widget .calendar-week span {
+    font-size: 0.85em;
+    font-weight: 500;
+    color: var(--calendar-weekday-labels-color);
+}
+
+.calendar-dropdown-widget .calendar-body {
+    font-size: 0.9em;
+}
+
+.calendar-dropdown-widget .calendar-body a {
+    background: transparent;
+    color: var(--calendar-color);
+}
+
+.calendar-dropdown-widget .calendar-body a.calendar-date-exists {
+    position: relative;
+    text-decoration: none !important;
+}
+
+.calendar-dropdown-widget .calendar-body a.calendar-date-exists:not(:hover)::before {
+    --vertical-margin: 13%;
+    --horiz-margin: 18%;
+    content: "";
+    position: absolute;
+    top: var(--vertical-margin);
+    right: var(--horiz-margin);
+    bottom: var(--vertical-margin);
+    left: var(--horiz-margin);
+    border-radius: 6px;
+    background: var(--calendar-day-highlight-background);
+    z-index: -1;
+}
+
+body .calendar-dropdown-widget .calendar-body a:hover {
+    border-radius: 6px;
+    background: var(--calendar-day-hover-background);
+    color: var(--calendar-day-hover-color) !important;
+    text-decoration: unset;
+}
+
+/*
+ * Bookmarks folder popup
+ */
+
+div.bookmark-folder-widget {
+    min-width: auto;
+    max-width: 40vw;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+div.bookmark-folder-widget .children-notes {
+    margin: 0;
+}
+
+/* Item */
+div.bookmark-folder-widget span.note-link {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 6px 25px;
+}
+
+/* Item: the parent note */
+div.bookmark-folder-widget .parent-note .note-link {
+    padding: 6px 8px;
+    font-weight: bold;
+}
+
+div.bookmark-folder-widget .note-link:hover {
+    background: var(--hover-item-background-color);
+}
+
+div.bookmark-folder-widget .note-link a {
+    padding-left: 8px;
+    color: var(--menu-text-color);
+    cursor: default;
+}
+
+div.bookmark-folder-widget .note-link:hover a {
+    color: var(--hover-item-text-color);
+}
+
+/* The item's icon */
+div.bookmark-folder-widget .note-link .bx {
+    color: var(--menu-item-icon-color);
+    font-size: 1.2em;
+}
+
 /* 
-  * Search Box
-  */
+ * QUICK SEARCH BOX
+ */
 
 div.quick-search {
     --padding-top: 8px;
@@ -416,10 +587,8 @@ div.quick-search .search-button.show {
 }
 
 /*
- * Left pane
+ * TREE PANE
  */
-
-/* Tree */
 
 #left-pane div.tree {
     padding: 3px 6px 40px 6px;
@@ -563,7 +732,9 @@ body.mobile .fancytree-node > span {
     --menu-item-icon-vert-offset: -1px;
 }
 
-/* Tree actions toolbar */
+/*
+ * Tree actions toolbar
+ */
 
 /* Toolbar container (collapsed state) */
 #left-pane .tree-actions {
@@ -660,21 +831,7 @@ body.mobile .fancytree-node > span {
 }
 
 /*
- * Gutter
- */
-
-.gutter {
-    background: var(--gutter-color) !important;
-    transition: background 150ms ease-out;
-}
-
-.gutter:hover {
-    background: var(--gutter-hover-color) !important;
-    transition: background 300ms ease-in;
-}
-
-/*
- * Tab bar
+ * TAB BAR
  */
 
 /* The parent element of the tab bar */
@@ -711,7 +868,7 @@ body.layout-horizontal .tab-row-container .note-tab[active]:before {
     top: var(--tab-height);
     right: calc(100% - 1px);
     height: 1px;
-    border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
+    border-bottom: 1px solid var(--launcher-pane-horiz-border-color);
 }
 
 body.layout-horizontal .tab-row-container .note-tab[active]:after {
@@ -723,7 +880,7 @@ body.layout-horizontal .tab-row-container .note-tab[active]:after {
     right: 0;
     width: 100vw;
     height: 1px;
-    border-bottom: 1px solid var(--launcher-pane-horizontal-border-color);
+    border-bottom: 1px solid var(--launcher-pane-horiz-border-color);
 }
 /* #endregion */
 
@@ -738,6 +895,21 @@ body.layout-vertical.electron.platform-darwin .tab-row-container {
 
 body.layout-horizontal .tab-row-container {
     padding-top: calc((var(--tab-bar-height) - var(--tab-height)));
+}
+
+/* Define extra drag areas for Electron windows */
+body.layout-horizontal .tab-row-container,
+body.layout-vertical .tab-row-widget,
+body.layout-vertical #left-pane .quick-search {
+    -webkit-app-region: drag;
+}
+
+/* Limit the drag area for the previous elements to include just to the element itself
+   and not its descendants also */
+body.layout-horizontal .tab-row-container > *,
+body.layout-vertical .tab-row-widget > *,
+body.layout-vertical #left-pane .quick-search > * {
+    -webkit-app-region: no-drag;
 }
 
 body.layout-horizontal .tab-row-widget-container {
@@ -757,7 +929,7 @@ body.desktop:not(.background-effects.platform-win32) #root-widget.horizontal-lay
 }
 
 #root-widget.horizontal-layout .tab-row-widget .note-tab[active] .note-tab-wrapper {
-    border: 1px solid var(--launcher-pane-horizontal-border-color);
+    border: 1px solid var(--launcher-pane-horiz-border-color);
     border-bottom-color: transparent;
 }
 
@@ -906,7 +1078,7 @@ body.layout-vertical .tab-row-widget-is-sorting .note-tab[active] .note-tab-wrap
 }
 
 /*
- * Center pane
+ * CENTER PANE
  */
 
 #center-pane {
@@ -917,16 +1089,15 @@ body.layout-vertical .tab-row-widget-is-sorting .note-tab[active] .note-tab-wrap
     border-radius: var(--center-pane-border-radius) 0 0 0;
 }
 
+.note-split {
+    padding-top: 2px;
+    animation: note-entrance 100ms linear;
+    /* will-change: opacity; -- causes some weird artifacts to the note menu in split view */
+}
+
 /*
  * Ribbon & note header
  */
-.note-title.protected {
-    text-shadow: unset !important;
-}
-
-body.mobile .note-title {
-    background: transparent;
-}
 
 .ribbon-container {
     margin-bottom: 0 !important;
@@ -944,947 +1115,21 @@ body.mobile .note-title {
     }
 }
 
-.note-split {
-    padding-top: 2px;
-    animation: note-entrance 100ms linear;
-    /* will-change: opacity; -- causes some weird artifacts to the note menu in split view */
-}
-
 /*
- * Table of contents & Highlights list
+ * Note title
  */
 
 #right-pane {
     background: var(--left-pane-background-color);
 }
 
-#right-pane div.card-header {
-    align-items: center;
-    border: 0;
+.note-title.protected {
+    text-shadow: unset !important;
 }
 
-#right-pane .card-header-title {
-    margin-top: 2px;
-    font-weight: 600;
-    font-size: .85em;
-    letter-spacing: .3pt;
-    color: var(--right-pane-heading-color);
-}
-
-#right-pane .card-header-buttons {
-    align-items: center;
-    top: 0;
-}
-
-#right-pane .toc-widget,
-#right-pane .highlights-list-widget {
-    padding: 0 0 0 10px;
-}
-
-#right-pane .toc li,
-#right-pane .highlights-list li {
-    padding: 2px 8px;
-    border-radius: 4px;
-    text-align: unset;
-    transition:
-        background-color 150ms ease-in,
-        color 150ms ease-in;
-}
-
-#right-pane .highlights-list li {
-    line-height: 1.2;
-    padding: 8px;
-}
-
-#right-pane .toc li::marker,
-#right-pane .highlights-list li::marker {
-    color: var(--muted-text-color);
-}
-
-#right-pane .toc li:hover,
-#right-pane .highlights-list li:hover {
-    background: var(--right-pane-item-hover-background);
-    color: var(--right-pane-item-hover-color);
-    font-weight: normal;
-    transition: background-color 300ms ease-out color 300ms ease-out;
-}
-
-#right-pane .toc li:active,
-#right-pane .highlights-list li:active {
-    background: transparent;
-    transition: none;
-}
-
-/*
- * Menus
- *
- * Note: apply the "tn-dropdown-list" class for scrollable dropdown menus. Submenus are not
- * supported when this class is used.
- */
-
-.dropdown-menu:not(.static) {
-    border-radius: var(--dropdown-border-radius);
-    padding: var(--menu-padding-size) !important;
-    font-size: 0.9rem !important;
-}
-
-.dropdown-menu::-webkit-scrollbar-track {
-    background: var(--menu-background-color);
-}
-
-body.mobile .dropdown-menu {
-    backdrop-filter: var(--dropdown-backdrop-filter);
-    border-radius: var(--dropdown-border-radius);
-    position: relative;
-}
-
-body.mobile .dropdown-menu .dropdown-menu {
-    backdrop-filter: unset !important;
-    border-radius: unset !important;
-}
-
-body.desktop .dropdown-menu::before {
-    content: "";
-    backdrop-filter: var(--dropdown-backdrop-filter);
-    border-radius: var(--dropdown-border-radius);
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-}
-
-body.desktop .dropdown-menu.tn-dropdown-list {
-    backdrop-filter: var(--dropdown-backdrop-filter);
-}
-
-body.desktop .dropdown-menu.tn-dropdown-list::before {
-    display: none;
-}
-
-body.desktop .dropdown-submenu .dropdown-menu::before {
-    content: unset;
-}
-
-body.mobile .dropdown-submenu .dropdown-menu {
-    background: transparent !important;
-}
-
-body.desktop .dropdown-submenu .dropdown-menu {
-    backdrop-filter: var(--dropdown-backdrop-filter);
+body.mobile .note-title {
     background: transparent;
 }
-
-.dropdown-item,
-body.mobile .dropdown-submenu .dropdown-toggle {
-    padding: 2px 2px 2px 8px !important;
-    padding-inline-end: 16px !important;
-    /* Note: the right padding should also accommodate the submenu arrow. */
-    border-radius: 6px;
-    cursor: default !important;
-}
-
-body.mobile .dropdown-submenu {
-    padding: 0 !important;
-}
-
-body.mobile .dropdown-item:not(:last-of-type) {
-    margin-bottom: 0.5em;
-}
-
-body.mobile .dropdown-submenu:hover {
-    background: transparent !important;
-}
-
-html body .dropdown-item.disabled,
-html body .dropdown-item[disabled] {
-    color: var(--menu-text-color) !important;
-    opacity: var(--menu-item-disabled-opacity);
-}
-
-/* Menu item icon */
-.dropdown-item .bx {
-    transform: translateY(var(--menu-item-icon-vert-offset));
-    color: var(--menu-item-icon-color) !important;
-    font-size: 1.1em;
-}
-
-/* Menu item keyboard shortcut */
-.dropdown-item kbd {
-    margin-left: 16px;
-    font-family: unset !important;
-    font-size: unset !important;
-    color: var(--menu-item-keyboard-shortcut-color) !important;
-    padding-top: 0;
-}
-
-.dropdown-divider {
-    position: relative;
-    border-color: transparent !important;
-    overflow: visible;
-}
-
-.dropdown-divider::after {
-    position: absolute;
-    content: "";
-    top: -1px;
-    left: calc(0px - var(--menu-padding-size));
-    right: calc(0px - var(--menu-padding-size));
-    border-top: 1px solid var(--menu-item-delimiter-color);
-}
-
-/* Menu item arrow */
-.dropdown-menu .dropdown-toggle::after {
-    content: "\ed3b" !important;
-    position: absolute;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    right: 0;
-    margin: unset !important;
-    border: unset !important;
-    padding: 0 4px;
-    font-family: boxicons;
-    font-size: 1.2em;
-    color: var(--menu-item-arrow-color) !important;
-}
-
-/* Menu item group heading */
-
-/* The heading body */
-.dropdown-menu h6 {
-    position: relative;
-    background: transparent;
-    padding: 1em 8px 14px 8px;
-    text-transform: uppercase;
-    font-size: 0.8em;
-    letter-spacing: 1pt;
-    color: var(--menu-item-group-header-color) !important;
-}
-
-/* The delimiter line */
-.dropdown-menu h6::before {
-    content: "";
-    position: absolute;
-    bottom: 8px;
-    left: calc(0px - var(--menu-padding-size));
-    right: calc(0px - var(--menu-padding-size));
-    border-top: 1px solid var(--menu-item-delimiter-color);
-}
-
-/* Static menus (used as a list, such as on the note revisions dialog) */
-body.desktop .dropdown-menu.static {
-    box-shadow: unset;
-    border-radius: 4px;
-    border: unset;
-    background-color: var(--card-background-color) !important;
-    padding: var(--menu-padding-size) !important;
-    user-select: none;
-}
-
-body.desktop .dropdown-menu.static .dropdown-item.active {
-    --active-item-text-color: var(--menu-text-color);
-}
-
-body.desktop .dropdown-menu .dropdown-toggle::after {
-    height: 100%;
-}
-
-body.mobile .dropdown-menu .dropdown-toggle::after {
-    transform: rotate(90deg);
-}
-
-body.mobile .dropdown-menu .dropdown-item.submenu-open .dropdown-toggle::after {
-    transform: rotate(270deg);
-}
-
-/*
- * Calendar
- */
-
-.calendar-dropdown-widget {
-    width: unset !important;
-    padding: 12px;
-    color: var(--calendar-color);
-    user-select: none;
-}
-
-.calendar-dropdown-widget .calendar-header {
-    padding: 8px 0 20px 0;
-    gap: 10px;
-}
-
-.calendar-dropdown-widget .calendar-header input,
-.calendar-dropdown-widget .calendar-header [data-calendar-input="month"] {
-    --input-background-color: transparent;
-    --menu-background-color: transparent;
-
-    text-align: center;
-    font-size: 1.4em;
-    font-weight: 300;
-}
-
-.calendar-dropdown-widget .calendar-header input:not(:focus) {
-    outline: 3px solid transparent;
-}
-
-.calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
-    --select-arrow-svg: ""; /* Disable the dropdown arrow */
-}
-
-@media (max-width: 992px) {
-    .calendar-dropdown-widget .calendar-header button {
-        margin: 0 !important;
-        padding: 0;
-    }
-
-    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
-        padding: 0 8px;
-        flex-grow: 1;
-    }
-}
-
-@media (min-width: 992px) {
-    .calendar-dropdown-widget .calendar-header .calendar-month-selector .select-button {
-        min-width: 120px;
-        padding: 0 10px;
-    }
-}
-
-.calendar-dropdown-widget .calendar-header .dropdown-toggle::after {
-    content: unset !important;
-}
-
-.calendar-dropdown-widget .calendar-week span {
-    font-size: 0.85em;
-    font-weight: 500;
-    color: var(--calendar-weekday-labels-color);
-}
-
-.calendar-dropdown-widget .calendar-body {
-    font-size: 0.9em;
-}
-
-.calendar-dropdown-widget .calendar-body a {
-    background: transparent;
-    color: var(--calendar-color);
-}
-
-.calendar-dropdown-widget .calendar-body a.calendar-date-exists {
-    position: relative;
-    text-decoration: none !important;
-}
-
-.calendar-dropdown-widget .calendar-body a.calendar-date-exists:not(:hover)::before {
-    --vertical-margin: 13%;
-    --horiz-margin: 18%;
-    content: "";
-    position: absolute;
-    top: var(--vertical-margin);
-    right: var(--horiz-margin);
-    bottom: var(--vertical-margin);
-    left: var(--horiz-margin);
-    border-radius: 6px;
-    background: var(--calendar-day-highlight-background);
-    z-index: -1;
-}
-
-body .calendar-dropdown-widget .calendar-body a:hover {
-    border-radius: 6px;
-    background: var(--calendar-day-hover-background);
-    color: var(--calendar-day-hover-color) !important;
-    text-decoration: unset;
-}
-
-/*
- * Note tooltip
- */
-
-.tooltip .tooltip-inner:has(.note-tooltip-content) {
-    border-radius: 8px;
-}
-
-.note-tooltip-content {
-    padding: 8px;
-    min-height: 56px;
-}
-
-.note-tooltip-title .note-title-with-path {
-    display: flex;
-    flex-direction: column-reverse;
-}
-
-.note-tooltip-title a {
-    color: inherit !important;
-}
-
-.note-tooltip-title.note-no-content {
-    margin: 0;
-}
-
-.note-tooltip-title:not(.note-no-content) .note-title-with-path {
-    padding-bottom: 6px;
-    border-bottom: 2px solid currentColor;
-}
-
-.note-tooltip-content .note-path {
-    display: block;
-    color: var(--muted-text-color);
-    font-size: 0.75em;
-}
-
-.note-tooltip-content .note-tooltip-attributes {
-    margin-top: -4px;
-    font-size: 0.75em;
-}
-
-.note-tooltip-content .rendered-content {
-    padding-top: 12px;
-}
-
-/*
- * Jump to note
- */
-
-.jump-to-note-dialog .modal-dialog {
-    --modal-background-color: var(--menu-background-color);
-    --modal-footer-background: transparent;
-    --bs-modal-header-border-width: 0;
-    --bs-modal-footer-border-width: 0;
-    --bs-modal-footer-gap: 0;
-
-    backdrop-filter: var(--dropdown-backdrop-filter);
-}
-
-.jump-to-note-dialog .modal-content {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, var(--dropdown-shadow-opacity));
-    border: 1px solid var(--dropdown-border-color);
-    padding: 32px;
-    border-radius: 8px;
-}
-
-.jump-to-note-dialog .modal-header {
-    padding: unset !important;
-}
-
-.jump-to-note-dialog .modal-body {
-    padding: 26px 0 !important;
-}
-
-/* Search box wrapper */
-.jump-to-note-dialog .input-group {
-    margin-right: 16px;
-}
-
-.jump-to-note-dialog .input-group:hover {
-    background: var(--quick-search-hover-background);
-}
-
-/* Focused search box */
-.jump-to-note-dialog .input-group:focus-within {
-    border-color: var(--quick-search-focus-border);
-    background: var(--quick-search-focus-background);
-    color: var(--quick-search-focus-color);
-}
-
-.jump-to-note-dialog .input-clearer-button {
-    background: transparent !important;
-}
-
-/*
- * Note Map
- */
-
-.note-detail-note-map .fixnodes-type-switcher .tn-tool-button.toggled {
-    color: var(--tab-close-button-hover-background);
-}
-
-/*
- * Recent changes list
- */
-
-.recent-changes-dialog .modal-body {
-    padding: 0;
-}
-
-.recent-changes-content {
-    margin: var(--bs-modal-padding);
-}
-
-/* Date headings */
-.recent-changes-content > div > b {
-    position: sticky;
-    display: block;
-    top: 0;
-    background: var(--modal-background-color);
-    padding: 10px 0 10px calc(var(--timeline-left-gap) + var(--timeline-right-gap));
-    font-size: 1.25em;
-    font-weight: 300;
-    z-index: 10;
-}
-
-.recent-changes-content ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-/* Timeline items */
-.recent-changes-content ul li {
-    display: flex;
-    position: relative;
-    margin: 0;
-    border: unset;
-    padding-top: var(--timeline-item-top-padding);
-    padding-bottom: var(--timeline-item-bottom-padding);
-    padding-left: calc(var(--timeline-left-gap) + var(--timeline-right-gap));
-    padding-right: var(--timeline-left-gap);
-    color: var(--active-item-text-color);
-}
-
-.recent-changes-content li > span:first-child::after {
-    /* Remove the dash between time and note title */
-    content: "" !important;
-}
-
-.recent-changes-content ul li:not(.deleted-note):hover {
-    border-radius: 8px;
-    background: var(--hover-item-background-color);
-    color: var(--hover-item-text-color);
-}
-
-.recent-changes-content ul li .note-path {
-    color: var(--muted-text-color);
-    font-size: 0.75em;
-}
-
-/* Item time */
-.recent-changes-content ul li > span:first-child {
-    display: inline-block;
-    min-width: 80px;
-    vertical-align: top;
-    color: var(--muted-text-color);
-}
-
-/* Item title & path container */
-.recent-changes-content ul li > span:nth-child(2) {
-    display: inline-block;
-}
-
-/* Item title link */
-
-.recent-changes-content ul li .note-title a {
-    color: currentColor;
-}
-
-.recent-changes-content ul li .note-title a:hover {
-    text-decoration: underline;
-}
-
-/* Item title for deleted notes */
-.recent-changes-content ul li.deleted-note .note-title > .note-title {
-    text-decoration: line-through;
-}
-
-/* Item path */
-.recent-changes-content ul li > span:nth-child(2) small {
-    display: block;
-    line-height: 1;
-    opacity: 0.75;
-}
-
-/* Timeline connector */
-.recent-changes-content ul li::before,
-.recent-changes-content > div > b::before {
-    position: absolute;
-    content: "";
-    top: var(--connector-top, 0);
-    left: calc(var(--timeline-left-gap) + ((var(--timeline-bullet-size) - var(--timeline-connector-size)) / 2));
-    bottom: var(--connector-bottom, 0);
-    width: var(--timeline-connector-size);
-    border-radius: var(--connector-radius, 0) var(--connector-radius, 0) 0 0;
-    background: var(--timeline-connector-color);
-    transition: background-color 400ms ease-in-out;
-}
-
-.recent-changes-content ul li:hover:before {
-    mix-blend-mode: var(--timeline-connector-hover-blend-mode);
-}
-
-.recent-changes-content > div:hover {
-    --timeline-connector-color: var(--timeline-connector-active-color);
-}
-
-/* The first item of the timeline */
-.recent-changes-content > div:first-child > *:first-child {
-    --connector-top: 50%;
-    --connector-radius: calc(var(--timeline-connector-size) / 2);
-}
-
-/* The last item of the timeline */
-.recent-changes-content > div:last-child li:last-child {
-    --connector-bottom: 50%;
-}
-
-/* Timeline bullet */
-.recent-changes-content ul li::after {
-    position: absolute;
-    content: "";
-    top: calc(var(--timeline-item-top-padding) + var(--timeline-bullet-vertical-pos));
-    left: var(--timeline-left-gap);
-    width: var(--timeline-bullet-size);
-    height: var(--timeline-bullet-size);
-    border-radius: 50%;
-    background: var(--timeline-bullet-color);
-    transform: translateY(-50%);
-}
-
-/* Hovered timeline bullet */
-.recent-changes-content ul li:hover::after {
-    background: var(--timeline-bullet-hover-color);
-}
-
-/*
- * Bookmarks folder popup
- */
-
-div.bookmark-folder-widget {
-    min-width: auto;
-    max-width: 40vw;
-    padding: 0;
-    font-size: 1.1em;
-}
-
-div.bookmark-folder-widget .children-notes {
-    margin: 0;
-}
-
-/* Item */
-div.bookmark-folder-widget span.note-link {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    border-radius: 6px;
-    padding: 6px 25px;
-}
-
-/* Item: the parent note */
-div.bookmark-folder-widget .parent-note .note-link {
-    padding: 6px 8px;
-    font-weight: bold;
-}
-
-div.bookmark-folder-widget .note-link:hover {
-    background: var(--hover-item-background-color);
-}
-
-div.bookmark-folder-widget .note-link a {
-    padding-left: 8px;
-    color: var(--menu-text-color);
-    cursor: default;
-}
-
-div.bookmark-folder-widget .note-link:hover a {
-    color: var(--hover-item-text-color);
-}
-
-/* The item's icon */
-div.bookmark-folder-widget .note-link .bx {
-    color: var(--menu-item-icon-color);
-    font-size: 1.2em;
-}
-
-/*
- * Note list
- */
-.note-list .note-book-card {
-    --note-list-horizontal-padding: 22px;
-    --note-list-vertical-padding: 15px;
-    background-color: var(--card-background-color);
-    border: 1px solid var(--card-border-color) !important;
-    box-shadow: 2px 3px 4px var(--card-shadow-color);
-    border-radius: 12px;
-    user-select: none;
-    padding: 0;
-    margin: 5px 10px 5px 0;
-}
-
-.note-list.list-view .note-book-card {
-    box-shadow: 0 0 3px var(--card-shadow-color);
-}
-
-.note-list.list-view .note-book-card .note-book-header .note-icon {
-    vertical-align: middle;
-}
-
-.note-list-wrapper .note-book-card:active {
-    background-color: var(--card-background-press-color);
-}
-
-.note-list-wrapper .note-book-card a {
-    color: inherit !important;
-}
-
-.note-list-wrapper .note-book-card .note-book-header {
-    font-size: 1em;
-    font-weight: bold;
-    padding: 0.5em 1rem;
-    border-bottom-color: var(--card-border-color);
-}
-
-.note-list-wrapper .note-book-card .note-book-header .note-icon {
-    font-size: 17px;
-    vertical-align: text-bottom;
-}
-
-.note-list-wrapper .note-book-card .note-book-header .note-book-title {
-    font-size: 1em;
-    color: var(--active-item-text-color);
-    vertical-align: middle;
-}
-
-.note-list-wrapper .note-book-card .note-book-header .rendered-note-attributes {
-    font-size: 0.7em;
-    font-weight: normal;
-    margin-bottom: 0;
-}
-
-.note-list-wrapper .note-book-card .note-book-header:last-child {
-    border-bottom: 0;
-}
-
-.note-list-wrapper .note-book-card .note-book-content {
-    padding: 0 !important;
-    font-size: 0.8rem;
-}
-
-.note-list-wrapper .note-book-card .note-book-content .rendered-content {
-    padding: 1rem;
-}
-
-.note-list-wrapper .note-book-card .note-book-content .rendered-content.text-with-ellipsis {
-    padding: 1rem !important;
-}
-
-.note-list-wrapper .note-book-card .note-book-content h1,
-.note-list-wrapper .note-book-card .note-book-content h2,
-.note-list-wrapper .note-book-card .note-book-content h3,
-.note-list-wrapper .note-book-card .note-book-content h4,
-.note-list-wrapper .note-book-card .note-book-content h5,
-.note-list-wrapper .note-book-card .note-book-content h6 {
-    font-size: 1rem;
-    color: var(--active-item-text-color);
-}
-
-.note-list-wrapper .note-book-card .note-book-content p:last-child {
-    margin-bottom: 0;
-}
-
-.note-list-wrapper .note-book-card .note-book-content.type-canvas .rendered-content,
-.note-list-wrapper .note-book-card .note-book-content.type-mindMap .rendered-content,
-.note-list-wrapper .note-book-card .note-book-content.type-code .rendered-content,
-.note-list-wrapper .note-book-card .note-book-content.type-video .rendered-content {
-    padding: 0;
-}
-
-.note-list-wrapper .note-book-card .note-book-content.type-code pre {
-    height: 100%;
-    padding: 1em;
-}
-
-.note-list-wrapper .note-book-card .bx {
-    color: var(--left-pane-icon-color) !important;
-}
-
-.note-list.grid-view .note-book-card:hover {
-    background: var(--card-background-color) !important;
-    filter: contrast(105%);
-}
-
-.note-list.grid-view .note-book-card img {
-    object-fit: cover !important;
-    width: 100%;
-}
-
-.note-list.grid-view .ck-content {
-    line-height: 1.3;
-}
-
-.note-list.grid-view .ck-content p {
-    margin-bottom: 0.5em;
-}
-
-.note-list.grid-view .ck-content figure.image {
-    width: 25%;
-}
-
-/* Note paths */
-
-.note-path .path-bracket {
-    /* Hide the leading and trailing bracket from the path */
-    display: none;
-}
-
-.note-path .path-delimiter {
-    /* Hide the path delimiters (slashes) */
-    display: none;
-}
-
-.note-path .path-delimiter + span::before {
-    /* Replace the path delimiters with arrows */
-    display: inline-block;
-    content: "\ed3b";
-    padding: 0 0.25em;
-    font-family: boxicons;
-    opacity: 0.75;
-    transform: translateY(4%);
-}
-
-/* 
- * Search
- */
-
- /* Button bar */
- .search-definition-widget .search-setting-table tbody:last-child div {
-    justify-content: flex-end !important;
-    gap: 8px;
- }
-
-.search-result-widget-content .note-path .path-bracket {
-    display: inline;
-}
-
-.search-result-widget-content .note-path {
-    opacity: 0.75;
-    font-weight: normal;
-}
-
-/*
- * SQL Console
- */
-
-/* Table buttons */
-
-.sql-table-schemas-widget .sql-table-schemas button {
-    --color: var(--main-text-color);
-    --background: var(--card-background-color);
-
-    display: inline-block;
-    box-shadow: 2px 2px 2px var(--card-shadow-color);
-    margin-top: 4px;
-    vertical-align: baseline;
-    border: unset;
-    border-radius: 12px;
-    padding: 2px 12px;
-    background: var(--background) !important;
-    color: var(--color) !important;
-    line-height: unset;
-    cursor: help;
-}
-
-.sql-table-schemas-widget .sql-table-schemas button:hover,
-.sql-table-schemas-widget .sql-table-schemas button:active,
-.sql-table-schemas-widget .sql-table-schemas button:focus-visible {
-    --background: var(--card-background-press-color);
-    --color: var(--main-text-color);
-}
-
-/* Tooltip */
-
-.tooltip .table-schema {
-    font-family: var(--monospace-font-family);
-    font-size: .85em;
-}
-
-/* Data type */
-.tooltip .table-schema td:nth-child(2) {
-    color: var(--muted-text-color);
-}
-
-/*
- * Help
- */
-
-.help-dialog .modal-content {
-    --modal-background-color: var(--help-background-color);
-    backdrop-filter: blur(var(--help-backdrop-blur));
-}
-
-.help-dialog .help-cards {
-    display: block;
-    columns: 3;
-    column-gap: 20px;
-}
-
-.help-dialog .card {
-    margin: 0;
-    width: auto;
-    border: none;
-    background: unset;
-    padding: 16px 8px;
-    break-inside: avoid-column;
-}
-
-.help-dialog .card-body {
-    box-shadow: var(--help-card-shadow);
-    border-radius: 6px;
-    background: var(--help-card-background);
-}
-
-.help-dialog .card-body h5,
-.help-dialog .card-body h6 {
-    color: var(--help-card-heading-color);
-    font-weight: 600;
-}
-
-.help-dialog .card-body h5 {
-    font-size: 20px;
-}
-
-.help-dialog .card-body h6 {
-    font-size: 15px;
-    padding-bottom: 0.5em;
-}
-
-/* Help card item */
-.help-dialog .help-cards ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.help-dialog .help-cards li + li {
-    margin-top: 0.4em;
-}
-
-/* Keyboard shortcut */
-.help-dialog .help-cards kbd,
-.ck-content kbd {
-    box-shadow: var(--help-kbd-shortcut-shadow);
-    margin: 0 4px;
-    border: none;
-    border-radius: 4px;
-    padding: 2px 10px;
-    background: var(--help-kbd-shortcut-background);
-    color: var(--help-kbd-shortcut-color);
-    font-weight: 500;
-    letter-spacing: 0.5pt;
-}
-
-.help-dialog .help-cards kbd:first-child {
-    margin-left: 0;
-}
-
-/* Inline code - used for Markdown samples */
-.help-dialog .help-cards code {
-    border-radius: 4px;
-    background: var(--help-code-background);
-    padding: 0 8px;
-    color: var(--help-code-color);
-}
-
-/* Note area */
 
 .title-row > *:first-child {
     margin-right: 0;
@@ -1906,21 +1151,6 @@ div.bookmark-folder-widget .note-link .bx {
     padding-left: 12px;
 }
 
-.note-actions {
-    --menu-item-icon-vert-offset: -2.5px;
-}
-
-/* Promoted attributes */
-.promoted-attribute-cell div.input-group {
-    margin: 1px 0;
-}
-
-/* Delete notes preview dialog */
-
-.delete-notes-list .note-path {
-    padding-left: 8px;
-}
-
 /* The "Change note icon" button */
 
 .note-icon-widget .note-icon {
@@ -1933,7 +1163,13 @@ div.bookmark-folder-widget .note-link .bx {
     color: var(--icon-button-hover-color);
 }
 
-/* Note icon popup */
+.note-actions {
+    --menu-item-icon-vert-offset: -2.5px;
+}
+
+/*
+ * Note icon popup
+ */
 
 .note-icon-widget .icon-list span {
     border-radius: 8px;
@@ -1944,12 +1180,9 @@ div.bookmark-folder-widget .note-link .bx {
     color: var(--hover-item-text-color);
 }
 
-body.background-effects.zen #root-widget {
-    --main-background-color: transparent;
-    --root-background: transparent;
-}
-
-/* Alert bar */
+/*
+ * Alert bar
+ */
 
 @keyframes alert-show {
     from {
@@ -1976,6 +1209,10 @@ body.background-effects.zen #root-widget {
 /*
  * Promoted attributes
  */
+
+.promoted-attribute-cell div.input-group {
+    margin: 1px 0;
+}
 
 /* The promoted attributes section */
 div.promoted-attributes-container {
@@ -2081,98 +1318,362 @@ div.promoted-attribute-cell .multiplicity:has(span) {
 }
 
 /*
- * Modals
+ * Floating buttons
  */
 
-/* Modal body */
-.modal .modal-content {
-    box-shadow: 0 .5em 3em .5em var(--modal-shadow-color);
-    border: 1px solid var(--modal-border-color);
-    background: var(--modal-background-color);
+ /* Floating buttons container */
+div#center-pane .floating-buttons-children {
+    opacity: 1;
+    min-height: var(--floating-button-height);
+    transform-origin: right;
+    box-shadow: 1px 1px 1px var(--floating-button-shadow-color);
+    background: var(--floating-button-background-color);
+    backdrop-filter: blur(10px) saturate(6);
+    border-radius: 6px;
+    transition: transform 250ms ease-out,
+                opacity 250ms ease-out;
 }
 
-/* Modal header */
-.modal .modal-header {
-    border-bottom: unset;
+ /* Floating buttons container (collapsed) */
+ div#center-pane .floating-buttons-children.temporarily-hidden {
+    display: flex !important;
+    opacity: 0;
+    transform: scaleX(0);
+    pointer-events: none;
+}
+
+/* Floating buttons */
+
+.floating-buttons-children {
+    --border-radius-size: 6px;
+}
+
+.floating-buttons-children > * {
+    margin: 0 !important;
+}
+
+div.floating-buttons-children > button,
+div.floating-buttons-children .floating-button {
+    width: var(--floating-button-width);
+    height: var(--floating-button-height);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: var(--floating-button-icon-size);
+    align-items: center;
+    color: var(--floating-button-color);
+}
+
+div.floating-buttons-children > button:hover,
+div.floating-buttons-children .floating-button:hover {
+    background: var(--floating-button-hover-background);
+    color: var(--floating-button-hover-color);
+}
+
+div.floating-buttons-children > button:active,
+div.floating-buttons-children .floating-button:active {
+    font-size: calc(var(--floating-button-icon-size) * 0.85);
+}
+
+/* The first visible floating button */
+div.floating-buttons-children > *:nth-child(1 of .visible) {
+    --border-radius: var(--border-radius-size) 0 0 var(--border-radius-size);
+    border-radius: var(--border-radius);
+}
+
+ /* "Show / hide floating buttons" buttons */
+
+ @keyframes floating-buttons-show-hide-button-animation {
+    from {
+        transform: rotate(180deg);
+    } to {
+        transform: rotate(0);
+    }
+}
+
+div.floating-buttons-children .close-floating-buttons-button,
+div.floating-buttons .show-floating-buttons-button {
+    margin-top: calc((var(--floating-button-height) - var(--floating-button-show-hide-button-size)) / 2);
+    width: var(--floating-button-show-hide-button-size);
+    height: var(--floating-button-show-hide-button-size);
+    padding: 0;
+    border: 0;
+    font-size: calc(var(--floating-button-show-hide-button-size) * .8);
+}
+
+div.floating-buttons-children .close-floating-buttons-button:active,
+div.floating-buttons .show-floating-buttons-button:active {
+    font-size: calc(var(--floating-button-show-hide-button-size) * .65);
+    background: transparent!important;
+}
+
+div.floating-buttons-children .close-floating-buttons-button::before,
+div.floating-buttons .show-floating-buttons-button::before {
+    display: block;
+}
+
+/* "Show buttons" button */
+
+div.floating-buttons .show-floating-buttons-button {
+    box-shadow: var(--floating-button-show-button-shadow);
+    background: var(--floating-button-show-button-background);
+    color: var(--floating-button-show-button-color);
+    backdrop-filter: blur(10px);
+}
+
+div.floating-buttons .show-floating-buttons-button::before {
+    animation: floating-buttons-show-hide-button-animation 400ms ease-out;
+}
+ 
+div.floating-buttons .show-floating-buttons-button:hover,
+div.floating-buttons .show-floating-buttons-button:active {
+    box-shadow: var(--floating-button-show-button-hover-shadow);
+    background: var(--floating-button-show-button-hover-background) !important;
+    color: var(--floating-button-show-button-color) !important;
+}
+
+/* "Hide buttons" button */
+
+div.floating-buttons-children:not(.temporarily-hidden) .close-floating-buttons-button::before {
+    animation: floating-buttons-show-hide-button-animation 400ms ease-out;
+}
+
+div.floating-buttons-children .close-floating-buttons {
+    border-radius: 0 var(--border-radius-size) var(--border-radius-size) 0;
+    overflow: hidden;
+}
+
+div.floating-buttons-children .close-floating-buttons {
+    margin-left: 0 !important;
+    background: var(--floating-button-hide-button-background);
+    color: var(--floating-button-hide-button-color);
+}
+
+div.floating-buttons-children .close-floating-buttons:has(.close-floating-buttons-button:hover) {
+    background: var(--floating-button-hover-background);
+    color: var(--floating-button-hover-color);
+}
+
+/* Backlink count */
+
+.backlinks-widget .backlinks-ticker {
+    height: 100%;
+    padding: 0 10px;
+    border-radius: var(--border-radius);
+    background: transparent;
     user-select: none;
 }
 
-.modal .modal-header .modal-title {
-    flex-grow: 1;
-    font-size: 1.2em;
-    color: var(--modal-title-color);
+.backlinks-widget .backlinks-ticker:hover {
+    background: var(--floating-button-hover-background);
 }
 
-/* Modal and toast control buttons (close and help) */
+.backlinks-widget .backlinks-items {
+    --menu-padding-size: 20px;
+}
 
-.modal .modal-header .btn-close,
-.modal .modal-header .help-button,
-#toast-container .toast .toast-header .btn-close {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 8px;
-    border: 0;
-    border-radius: 50%;
-    padding: 0;
-    width: var(--modal-control-button-size);
-    height: var(--modal-control-button-size);
-    background: var(--modal-control-button-background);
-    font-size: var(--modal-control-button-size);
-    line-height: normal;
+/* TODO: Restyle the path */
+.backlinks-widget .backlinks-items .note-path {
+    padding-inline-start: 8px;
+}
+
+/* Copy image reference */
+
+.floating-buttons .copy-image-reference-button .hidden-image-copy {
+    /* Take out of the the hidden image from flexbox to prevent the layout being affected */
+    position: absolute;
+}
+
+/* Code, relation map buttons */
+
+.floating-buttons .code-buttons-widget,
+.floating-buttons .relation-map-buttons {
+    gap: 0;
+}
+
+/* The highlight animation */
+
+@keyframes floating-button-highlight {
+    from {
+        background: var(--floating-button-background);
+        color: var(--floating-button-color);
+    } to {
+        background: var(--floating-button-hover-background);
+        color: var(--floating-button-hover-color);
+    }
+}
+
+.floating-buttons .bx-tada {
+    /* The class is applied for 1700ms */
+    animation: floating-button-highlight 425ms ease-in-out alternate infinite;
+}
+
+.floating-buttons .bx-tada::before {
+    font-size: var(--floating-button-icon-size);
+}
+
+/*
+ * Find and replace bar
+ */
+
+ .find-replace-widget {
+    container-type: inline-size;
+    border-top: 3px solid var(--root-background) !important;
+}
+
+.find-replace-widget > div {
+    padding: 8px;
+}
+
+.find-replace-widget > div + div {
+    padding-top: 0;
+}
+
+div.find-replace-widget div.find-widget-found-wrapper > span {
+    min-width: 50px;
+    font-style: normal;
     font-weight: normal;
-    color: var(--modal-control-button-color);
-    opacity: 1;
-    cursor: default;
 }
 
-.modal .modal-header .btn-close,
-#toast-container .toast .toast-header .btn-close {
-    --modal-control-button-hover-background: var(--modal-close-button-hover-background);
+/* The up / down buttons of the "Find in text" input */
+.find-replace-widget .input-group button {
+    font-size: 1.3em;
 }
 
-.modal .modal-header .btn-close::after,
-#toast-container .toast .toast-header .btn-close::after {
-    content: "\ec8d";
-    font-family: boxicons;
+.find-replace-widget .form-check {
+    padding-left: 0;
+    white-space: nowrap;
 }
 
-.modal .modal-header .help-button {
-    margin-right: 0;
-    font-size: calc(var(--modal-control-button-size) * .75);
-    font-family: unset;
-    font-weight: bold;
+.find-replace-widget .form-check .form-check-input {
+    margin-left: 0;
 }
 
-.modal .modal-header .btn-close:hover,
-.modal .modal-header .help-button:hover,
-#toast-container .toast .toast-header .btn-close:hover {
-    background: var(--modal-control-button-hover-background);
-    color: var(--modal-control-button-hover-color);
+/* Narrow version */
+@container (max-width: 600px) {
+    .find-replace-widget > *,
+    .find-replace-widget input,
+    .find-replace-widget button.btn.btn-sm {
+        font-size: .9em;
+    }
+
+    .find-widget-box {
+        position: relative;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .find-widget-box,
+    .replace-widget-box {
+        padding-right: 3em !important;
+    }
+
+    .find-widget-close-button {
+        position: absolute;
+        top: .85em;
+        right: .5em;
+    }
+
+    .find-widget-box > * {
+        margin: unset !important;
+    }
+
+    div.find-widget-search-term-input-group {
+        margin-bottom: 8px;
+        max-width: unset;
+        width: 100%;
+    }
+
+    .find-widget-found-wrapper,
+    .find-widget-found-wrapper > span {
+        min-width: 0 !important;
+    }
+
+    .find-widget-spacer {
+        display: none;
+    }
+
+    .form-check {
+        min-height: unset;
+        margin-bottom: unset;
+    }
+
+    .replace-widget-box {
+        gap: 8px;
+    }
+
+    .replace-widget-box > * {
+        margin-right: unset !important;
+    }
+
+    div.replace-widget-box button.btn.btn-sm {
+        min-width: unset;
+        white-space: nowrap;
+    }
 }
 
-.modal .modal-header .btn-close:active,
-.modal .modal-header .help-button:active,
-#toast-container .toast .toast-header .btn-close:active {
-    transform: scale(.85);
+/*
+ * RIGHT PANE: TABLE OF CONTENTS AND HIGHLIGHT LIST
+ */
+
+#right-pane {
+    background: var(--main-background-color);
 }
 
-.modal .modal-header .btn-close:focus,
-.modal .modal-header .help-button:focus,
-#toast-container .toast .toast-header .btn-close:focus {
-    box-shadow: none !important;
+#right-pane div.card-header {
+    align-items: center;
+    border: 0;
 }
 
-.modal .modal-header .btn-close:focus-visible,
-.modal .modal-header .help-button:focus-visible,
-#toast-container .toast .toast-header .btn-close:focus-visible {
-    outline: 2px solid var(--input-focus-outline-color);
-    outline-offset: 2px;
+#right-pane .card-header-title {
+    margin-top: 2px;
+    font-weight: 600;
+    font-size: .85em;
+    letter-spacing: .3pt;
+    color: var(--right-pane-heading-color);
 }
 
-/* Modal footer */
-.modal .modal-footer {
-    background: var(--modal-footer-background);
-    color: var(--modal-footer-color);
-    border-top: unset;
+#right-pane .card-header-buttons {
+    align-items: center;
+    top: 0;
+}
+
+#right-pane .toc-widget,
+#right-pane .highlights-list-widget {
+    padding: 0 0 0 10px;
+}
+
+#right-pane .toc li,
+#right-pane .highlights-list li {
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-align: unset;
+    transition:
+        background-color 150ms ease-in,
+        color 150ms ease-in;
+}
+
+#right-pane .highlights-list li {
+    line-height: 1.2;
+    padding: 8px;
+}
+
+#right-pane .toc li::marker,
+#right-pane .highlights-list li::marker {
+    color: var(--muted-text-color);
+}
+
+#right-pane .toc li:hover,
+#right-pane .highlights-list li:hover {
+    background: var(--right-pane-item-hover-background);
+    color: var(--right-pane-item-hover-color);
+    font-weight: normal;
+    transition: background-color 300ms ease-out color 300ms ease-out;
+}
+
+#right-pane .toc li:active,
+#right-pane .highlights-list li:active {
+    background: transparent;
+    transition: none;
 }

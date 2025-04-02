@@ -46,7 +46,7 @@ These types were inspired by GitHub's support for this feature and there are cur
 
 The Markdown syntax for admonitions as supported by Trilium is the one that GitHub uses, which is as follows:
 
-```markdown
+```
 > [!NOTE]
 > This is a note.
 

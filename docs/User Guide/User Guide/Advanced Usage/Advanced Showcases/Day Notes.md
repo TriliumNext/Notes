@@ -7,7 +7,7 @@ Select an existing day note, and the menubar contains a calendar widget. Select 
 
 ![](1_Day%20Notes_image.png)
 
-This pattern works well also because of [Cloning Notes](../../Basic%20Concepts/Note/Cloning%20Notes.md) functionality - note can appear in multiple places in the note tree, so besides appearing under day note, it can also be categorized into other notes.
+This pattern works well also because of [Cloning Notes](../../Basic%20Concepts%20and%20Features/Notes/Cloning%20Notes.md) functionality - note can appear in multiple places in the note tree, so besides appearing under day note, it can also be categorized into other notes.
 
 ## Demo
 
@@ -43,6 +43,7 @@ It's possible to customize the title of generated date notes by defining a `#dat
 
 It is also possible to customize the title of generated month notes through the `#monthPattern` attribute, much like `#datePattern`. The options are:
 
+*   `{isoMonth}` results in an ISO 8061 formatted month (e.g. "2025-03" for March 2025)
 *   `{monthNumberPadded}` results in a number like `09` for September, and `11` for November
 *   `{month}` results in the full month name (e.g. `September` or `October`)
 *   `{shortMonth3}` is replaced with the first 3 letters of the month, e.g. Jan, Feb, etc.

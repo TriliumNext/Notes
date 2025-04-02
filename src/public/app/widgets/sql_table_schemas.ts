@@ -3,7 +3,7 @@ import NoteContextAwareWidget from "./note_context_aware_widget.js";
 import server from "../services/server.js";
 import type FNote from "../entities/fnote.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="sql-table-schemas-widget">
     <style>
     .sql-table-schemas-widget {

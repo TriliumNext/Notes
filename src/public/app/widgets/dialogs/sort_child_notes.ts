@@ -4,7 +4,7 @@ import server from "../../services/server.js";
 import utils from "../../services/utils.js";
 import BasicWidget from "../basic_widget.js";
 
-const TPL = `<div class="sort-child-notes-dialog modal mx-auto" tabindex="-1" role="dialog">
+const TPL = /*html*/`<div class="sort-child-notes-dialog modal mx-auto" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" style="max-width: 500px" role="document">
         <div class="modal-content">
             <div class="modal-header">

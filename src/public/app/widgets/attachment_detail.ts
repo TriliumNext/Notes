@@ -10,7 +10,7 @@ import toastService from "../services/toast.js";
 import type FAttachment from "../entities/fattachment.js";
 import type { EventData } from "../components/app_context.js";
 
-const TPL = `
+const TPL = /*html*/`
 <div class="attachment-detail-widget">
     <style>
         .attachment-detail-widget {

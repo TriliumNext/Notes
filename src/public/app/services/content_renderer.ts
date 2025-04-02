@@ -15,6 +15,7 @@ import { loadElkIfNeeded, postprocessMermaidSvg } from "./mermaid.js";
 import { normalizeMimeTypeForCKEditor } from "./mime_type_definitions.js";
 import renderDoc from "./doc_renderer.js";
 import { t } from "i18next";
+import WheelZoom from 'vanilla-js-wheel-zoom';
 
 let idCounter = 1;
 
@@ -149,13 +150,19 @@ function renderImage(entity: FNote | FAttachment, $renderedContent: JQuery<HTMLE
     $renderedContent.append($img);
 
     if (options.imageHasZoom) {
-        libraryLoader.requireLibrary(libraryLoader.WHEEL_ZOOM).then(() => {
-            WZoom.create(`#${$img.attr("id")}`, {
-                maxScale: 50,
-                speed: 1.3,
-                zoomOnClick: false
-            });
-        });
+        const initZoom = async () => {
+            const element = document.querySelector(`#${$img.attr("id")}`);
+            if (element) {
+                WheelZoom.create(`#${$img.attr("id")}`, {
+                    maxScale: 50,
+                    speed: 1.3,
+                    zoomOnClick: false
+                });
+            } else {
+                requestAnimationFrame(initZoom);
+            }
+        };
+        initZoom();
     }
 
     imageContextMenuService.setupContextMenu($img);
@@ -226,7 +233,7 @@ function renderFile(entity: FNote | FAttachment, type: string, $renderedContent:
 }
 
 async function renderMermaid(note: FNote | FAttachment, $renderedContent: JQuery<HTMLElement>) {
-    await libraryLoader.requireLibrary(libraryLoader.MERMAID);
+    const mermaid = (await import("mermaid")).default;
 
     const blob = await note.getBlob();
     const content = blob?.content || "";
@@ -236,10 +243,10 @@ async function renderMermaid(note: FNote | FAttachment, $renderedContent: JQuery
     const documentStyle = window.getComputedStyle(document.documentElement);
     const mermaidTheme = documentStyle.getPropertyValue("--mermaid-theme");
 
-    mermaid.mermaidAPI.initialize({ startOnLoad: false, theme: mermaidTheme.trim(), securityLevel: "antiscript" });
+    mermaid.mermaidAPI.initialize({ startOnLoad: false, theme: mermaidTheme.trim() as "default", securityLevel: "antiscript" });
 
     try {
-        await loadElkIfNeeded(content);
+        await loadElkIfNeeded(mermaid, content);
         const { svg } = await mermaid.mermaidAPI.render("in-mermaid-graph-" + idCounter++, content);
 
         $renderedContent.append($(postprocessMermaidSvg(svg)));

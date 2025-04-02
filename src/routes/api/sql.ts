@@ -7,7 +7,7 @@ import ValidationError from "../../errors/validation_error.js";
 import { safeExtractMessageAndStackFromError } from "../../services/utils.js";
 
 function getSchema() {
-    const tableNames = sql.getColumn(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`);
+    const tableNames = sql.getColumn(/*sql*/`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`);
     const tables = [];
 
     for (const tableName of tableNames) {

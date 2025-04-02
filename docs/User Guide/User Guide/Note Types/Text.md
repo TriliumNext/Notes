@@ -20,7 +20,7 @@ Text notes are usually opened in edit mode. However, they may open in read-only 
 
 In both cases, it is possible to switch back to editable mode using the ![](Text_bx-edit-alt.svg)button at top right of page.
 
-For more information, see [Read-Only Notes](../Basic%20Concepts/Note/Read-Only%20Notes.md).
+For more information, see [Read-Only Notes](../Basic%20Concepts%20and%20Features/Notes/Read-Only%20Notes.md).
 
 ## General Formatting
 
@@ -28,7 +28,6 @@ Since Trilium uses CKEditor, all of its formatting options are available here. Y
 
 *   **Bold**: Type `**text**` or `__text__`
 *   _Italic_: Type `*text*` or `_text_`
-*   `Code`: Type \`text\`
 *   ~~Strikethrough~~: Type `~~text~~`
 
 ### Lists
@@ -39,15 +38,14 @@ See [Lists](Text/Lists.md).
 
 *   Block quote: Start a line with `>` followed by a space
 
-### Multi-Line Code Blocks
+## Developer-specific formatting
 
-To create a multi-line code block, start a line with "\`\`\`\[lang\]", for example:
+The following features are supported:
 
-```
-if (1 > 2) {
-    console.log("Error in the matrix");
-}
-```
+*   Inline code
+*   [Code blocks](Text/Developer-specific%20formatting/Code%20blocks.md)
+
+See [Developer-specific formatting](Text/Developer-specific%20formatting.md) for more information.
 
 ### Headings
 

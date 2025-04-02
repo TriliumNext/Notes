@@ -131,9 +131,17 @@ const defaultOptions: DefaultOption[] = [
     { name: "customSearchEngineUrl", value: "https://duckduckgo.com/?q={keyword}", isSynced: true },
     { name: "promotedAttributesOpenInRibbon", value: "true", isSynced: true },
     { name: "editedNotesOpenInRibbon", value: "true", isSynced: true },
+    { name: "mfaEnabled", value: "false", isSynced: false },
+    { name: "mfaMethod", value: "totp", isSynced: false },
+    { name: "encryptedRecoveryCodes", value: "false", isSynced: false },
+    { name: "userSubjectIdentifierSaved", value: "false", isSynced: false },
+
+    // Appearance
+    { name: "splitEditorOrientation", value: "horizontal", isSynced: true },
 
     // Internationalization
     { name: "locale", value: "en", isSynced: true },
+    { name: "formattingLocale", value: "en", isSynced: true },
     { name: "firstDayOfWeek", value: "1", isSynced: true },
     { name: "languages", value: "[]", isSynced: true },
 

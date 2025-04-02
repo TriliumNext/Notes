@@ -1,7 +1,7 @@
 # Advanced Showcases
 Trilium offers advanced functionality through [Scripts](../Note%20Types/Code/Scripts.md) and [Promoted Attributes](Attributes/Promoted%20Attributes.md). To illustrate these features, we've prepared several showcases available in the [demo notes](Database.md):
 
-*   [Relation Map](Relation%20Map.md)
+*   [Relation Map](../Note%20Types/Relation%20Map.md)
 *   [Day Notes](Advanced%20Showcases/Day%20Notes.md)
 *   [Weight Tracker](Advanced%20Showcases/Weight%20Tracker.md)
 *   [Task Manager](Advanced%20Showcases/Task%20Manager.md)
