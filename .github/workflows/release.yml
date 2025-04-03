@@ -1,8 +1,7 @@
 name: Release
 on:
+  # ! Make sure this is removed before merging.
   push:
-    tags:
-      - "v*"
 permissions:
   contents: write
 concurrency:
@@ -106,6 +105,7 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: 0.0.0 # ! Make sure this is removed before merging.
           draft: true
           fail_on_unmatched_files: true
           files: upload/*.*
