@@ -14,16 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64, arm64]
+        arch: [x64]
         os:
-          - name: macos
-            image: macos-latest
-            shell: bash
-            forge_platform: darwin
-          - name: linux
-            image: ubuntu-latest
-            shell: bash
-            forge_platform: linux
           - name: windows
             image: win-signing
             shell: cmd
@@ -59,39 +51,11 @@ jobs:
           name: release-desktop-${{ matrix.os.name }}-${{ matrix.arch }}
           path: upload/*.*
 
-  build_linux_server-x64:
-    name: Build Linux Server
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [x64, arm64]
-        include:
-          - arch: x64
-            runs-on: ubuntu-latest
-          - arch: arm64
-            runs-on: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run the build
-        uses: ./.github/actions/build-server
-        with:
-          os: linux
-          arch: ${{ matrix.arch }}
-
-      - name: Upload the artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-server-${{ matrix.arch }}
-          path: upload/*.*
-
   publish_release:
     name: Publish release
     runs-on: ubuntu-latest
     needs:
       - make-electron
-      - build_linux_server-x64
     steps:
       - run: mkdir upload
 
