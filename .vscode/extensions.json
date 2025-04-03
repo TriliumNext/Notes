@@ -5,6 +5,7 @@
     "vitest.explorer",
     "ms-playwright.playwright",
     "tobermory.es6-string-html",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "github.vscode-github-actions"
   ]
 }
