@@ -74,7 +74,7 @@
     "@braintree/sanitize-url": "7.1.1",
     "@electron/remote": "2.1.2",
     "@highlightjs/cdn-assets": "11.11.1",
-    "@triliumnext/express-partial-content": "1.0.1",
+    "@triliumnext/express-partial-content": "1.1.0",
     "archiver": "7.0.1",
     "async-mutex": "0.5.0",
     "autocomplete.js": "0.38.1",
