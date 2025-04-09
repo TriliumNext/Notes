@@ -63,7 +63,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: release-*
+          pattern: release-*
           path: upload
 
       - name: Publish release
