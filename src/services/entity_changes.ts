@@ -188,6 +188,7 @@ function fillAllEntityChanges() {
         fillEntityChanges("attributes", "attributeId");
         fillEntityChanges("etapi_tokens", "etapiTokenId");
         fillEntityChanges("options", "name", "WHERE isSynced = 1");
+        fillEntityChanges("note_embeddings", "embedId");
     });
 }
 

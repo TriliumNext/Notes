@@ -13,6 +13,7 @@ import HistoryNavigationButton from "../buttons/history_navigation.js";
 import QuickSearchLauncherWidget from "../quick_search_launcher.js";
 import type FNote from "../../entities/fnote.js";
 import type { CommandNames } from "../../components/app_context.js";
+import AiChatButton from "../buttons/ai_chat_button.js";
 
 interface InnerWidget extends BasicWidget {
     settings?: {
@@ -123,6 +124,8 @@ export default class LauncherWidget extends BasicWidget {
                 return new TodayLauncher(note);
             case "quickSearch":
                 return new QuickSearchLauncherWidget(this.isHorizontalLayout);
+            case "aiChatLauncher":
+                return new AiChatButton(note);
             default:
                 throw new Error(`Unrecognized builtin widget ${builtinWidget} for launcher ${note.noteId} "${note.title}"`);
         }

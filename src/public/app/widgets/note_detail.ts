@@ -36,6 +36,7 @@ import utils from "../services/utils.js";
 import type { NoteType } from "../entities/fnote.js";
 import type TypeWidget from "./type_widgets/type_widget.js";
 import { MermaidTypeWidget } from "./type_widgets/mermaid.js";
+import AiChatTypeWidget from "./type_widgets/ai_chat.js";
 
 const TPL = /*html*/`
 <div class="note-detail">
@@ -74,6 +75,7 @@ const typeWidgetClasses = {
     attachmentList: AttachmentListTypeWidget,
     mindMap: MindMapWidget,
     geoMap: GeoMapTypeWidget,
+    aiChat: AiChatTypeWidget,
 
     // Split type editors
     mermaid: MermaidTypeWidget
@@ -92,7 +94,8 @@ type ExtendedNoteType =
     | "editableCode"
     | "attachmentDetail"
     | "attachmentList"
-    | "protectedSession";
+    | "protectedSession"
+    | "aiChat";
 
 export default class NoteDetailWidget extends NoteContextAwareWidget {
 
@@ -215,12 +218,11 @@ export default class NoteDetailWidget extends NoteContextAwareWidget {
 
     async getWidgetType(): Promise<ExtendedNoteType> {
         const note = this.note;
-
         if (!note) {
             return "empty";
         }
 
-        let type: NoteType = note.type;
+        const type = note.type;
         let resultingType: ExtendedNoteType;
         const viewScope = this.noteContext?.viewScope;
 

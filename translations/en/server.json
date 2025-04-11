@@ -234,6 +234,7 @@
     "protected-session-title": "Protected Session",
     "sync-status-title": "Sync Status",
     "settings-title": "Settings",
+    "llm-chat-title": "Chat with Notes",
     "options-title": "Options",
     "appearance-title": "Appearance",
     "shortcuts-title": "Shortcuts",
@@ -246,11 +247,13 @@
     "etapi-title": "ETAPI",
     "backup-title": "Backup",
     "sync-title": "Sync",
+    "ai-llm-title": "AI/LLM",
     "other": "Other",
     "advanced-title": "Advanced",
     "visible-launchers-title": "Visible Launchers",
     "user-guide": "User Guide",
-    "localization": "Language & Region"
+    "localization": "Language & Region",
+    "inbox-title": "Inbox"
   },
   "notes": {
     "new-note": "New note",

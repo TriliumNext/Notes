@@ -17,6 +17,7 @@ import zipImportService from "./import/zip.js";
 import becca_loader from "../becca/becca_loader.js";
 import password from "./encryption/password.js";
 import backup from "./backup.js";
+import eventService from "./events.js";
 
 const dbReady = deferred<void>();
 
@@ -176,6 +177,11 @@ function setDbAsInitialized() {
         optionService.setOption("initialized", "true");
 
         initDbConnection();
+
+        // Emit an event to notify that the database is now initialized
+        eventService.emit(eventService.DB_INITIALIZED);
+
+        log.info("Database initialization completed, emitted DB_INITIALIZED event");
     }
 }
 

@@ -82,7 +82,35 @@ const ALLOWED_OPTIONS = new Set<OptionNames>([
     "allowedHtmlTags",
     "redirectBareDomain",
     "showLoginInShareTheme",
-    "splitEditorOrientation",
+
+    // AI/LLM integration options
+    "aiEnabled",
+    "aiTemperature",
+    "aiSystemPrompt",
+    "aiProviderPrecedence",
+    "openaiApiKey",
+    "openaiBaseUrl",
+    "openaiDefaultModel",
+    "openaiEmbeddingModel",
+    "anthropicApiKey",
+    "anthropicBaseUrl",
+    "anthropicDefaultModel",
+    "voyageApiKey",
+    "voyageEmbeddingModel",
+    "ollamaBaseUrl",
+    "ollamaDefaultModel",
+    "ollamaEmbeddingModel",
+    "embeddingAutoUpdateEnabled",
+    "embeddingDimensionStrategy",
+    "embeddingProviderPrecedence",
+    "embeddingSimilarityThreshold",
+    "embeddingBatchSize",
+    "embeddingUpdateInterval",
+    "enableAutomaticIndexing",
+    "maxNotesPerLlmQuery",
+
+    // Embedding options
+    "embeddingDefaultDimension",
     "mfaEnabled",
     "mfaMethod"
 ]);

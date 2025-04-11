@@ -207,7 +207,8 @@ const ORDERING: Record<string, number> = {
     revisions: 2,
     attachments: 3,
     notes: 1,
-    options: 0
+    options: 0,
+    note_embeddings: 3
 };
 
 function sendPing(client: WebSocket, entityChangeIds = []) {

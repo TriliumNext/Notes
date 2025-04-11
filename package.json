@@ -71,6 +71,7 @@
     "chore:generate-openapi": "tsx bin/generate-openapi.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.39.0",
     "@braintree/sanitize-url": "7.1.1",
     "@electron/remote": "2.1.2",
     "@highlightjs/cdn-assets": "11.11.1",
@@ -129,6 +130,8 @@
     "multer": "1.4.5-lts.2",
     "normalize-strings": "1.1.1",
     "normalize.css": "8.0.1",
+    "ollama": "0.5.14",
+    "openai": "4.93.0",
     "rand-token": "1.0.1",
     "safe-compare": "1.1.4",
     "sanitize-filename": "1.6.3",

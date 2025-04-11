@@ -1,22 +1,28 @@
 import BAttribute from "../becca/entities/battribute.js";
-import type { AttributeType, NoteType } from "../becca/entities/rows.js";
+import type { AttributeType } from "../becca/entities/rows.js";
 
 import becca from "../becca/becca.js";
 import noteService from "./notes.js";
 import log from "./log.js";
 import migrationService from "./migration.js";
+import options from "./options.js";
+import sql from "./sql.js";
 import { t } from "i18next";
 import { cleanUpHelp, getHelpHiddenSubtreeData } from "./in_app_help.js";
 import buildLaunchBarConfig from "./hidden_subtree_launcherbar.js";
 
 const LBTPL_ROOT = "_lbTplRoot";
 const LBTPL_BASE = "_lbTplBase";
-const LBTPL_COMMAND = "_lbTplCommandLauncher";
-const LBTPL_NOTE_LAUNCHER = "_lbTplNoteLauncher";
-const LBTPL_SCRIPT = "_lbTplScriptLauncher";
-const LBTPL_BUILTIN_WIDGET = "_lbTplBuiltinWidget";
+const LBTPL_HEADER = "_lbTplHeader";
+const LBTPL_NOTE_LAUNCHER = "_lbTplLauncherNote";
+const LBTPL_WIDGET = "_lbTplLauncherWidget";
+const LBTPL_COMMAND = "_lbTplLauncherCommand";
+const LBTPL_SCRIPT = "_lbTplLauncherScript";
 const LBTPL_SPACER = "_lbTplSpacer";
 const LBTPL_CUSTOM_WIDGET = "_lbTplCustomWidget";
+
+// Define launcher note types locally
+type LauncherNoteType = "launcher" | "search" | "doc" | "noteMap" | "contentWidget" | "book" | "file" | "image" | "text" | "relationMap" | "render" | "canvas" | "mermaid" | "webView" | "code" | "mindMap" | "geoMap";
 
 interface HiddenSubtreeAttribute {
     type: AttributeType;
@@ -29,7 +35,7 @@ export interface HiddenSubtreeItem {
     notePosition?: number;
     id: string;
     title: string;
-    type: NoteType;
+    type: LauncherNoteType;
     icon?: string;
     attributes?: HiddenSubtreeAttribute[];
     children?: HiddenSubtreeItem[];
@@ -37,7 +43,17 @@ export interface HiddenSubtreeItem {
     baseSize?: string;
     growthFactor?: string;
     targetNoteId?: "_backendLog" | "_globalNoteMap";
-    builtinWidget?: "bookmarks" | "spacer" | "backInHistoryButton" | "forwardInHistoryButton" | "syncStatus" | "protectedSession" | "todayInJournal" | "calendar" | "quickSearch";
+    builtinWidget?:
+        | "todayInJournal"
+        | "bookmarks"
+        | "spacer"
+        | "backInHistoryButton"
+        | "forwardInHistoryButton"
+        | "syncStatus"
+        | "protectedSession"
+        | "calendar"
+        | "quickSearch"
+        | "aiChatLauncher";
     command?: keyof typeof Command;
 }
 
@@ -47,7 +63,8 @@ enum Command {
     searchNotes,
     createNoteIntoInbox,
     showRecentChanges,
-    showOptions
+    showOptions,
+    createAiChat
 }
 
 /*
@@ -168,7 +185,7 @@ function buildHiddenSubtreeDefinition(helpSubtree: HiddenSubtreeItem[]): HiddenS
                         ]
                     },
                     {
-                        id: LBTPL_BUILTIN_WIDGET,
+                        id: LBTPL_WIDGET,
                         title: t("hidden-subtree.built-in-widget-title"),
                         type: "doc",
                         attributes: [
@@ -182,7 +199,7 @@ function buildHiddenSubtreeDefinition(helpSubtree: HiddenSubtreeItem[]): HiddenS
                         type: "doc",
                         icon: "bx-move-vertical",
                         attributes: [
-                            { type: "relation", name: "template", value: LBTPL_BUILTIN_WIDGET },
+                            { type: "relation", name: "template", value: LBTPL_WIDGET },
                             { type: "label", name: "builtinWidget", value: "spacer" },
                             { type: "label", name: "label:baseSize", value: "promoted,number" },
                             { type: "label", name: "label:growthFactor", value: "promoted,number" },
@@ -275,6 +292,7 @@ function buildHiddenSubtreeDefinition(helpSubtree: HiddenSubtreeItem[]): HiddenS
                     { id: "_optionsEtapi", title: t("hidden-subtree.etapi-title"), type: "contentWidget", icon: "bx-extension" },
                     { id: "_optionsBackup", title: t("hidden-subtree.backup-title"), type: "contentWidget", icon: "bx-data" },
                     { id: "_optionsSync", title: t("hidden-subtree.sync-title"), type: "contentWidget", icon: "bx-wifi" },
+                    { id: "_optionsAi", title: t("hidden-subtree.ai-llm-title"), type: "contentWidget", icon: "bx-bot" },
                     { id: "_optionsOther", title: t("hidden-subtree.other"), type: "contentWidget", icon: "bx-dots-horizontal" },
                     { id: "_optionsLocalization", title: t("hidden-subtree.localization"), type: "contentWidget", icon: "bx-world" },
                     { id: "_optionsAdvanced", title: t("hidden-subtree.advanced-title"), type: "contentWidget" }
@@ -359,7 +377,7 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: HiddenSubtree
                 attrs.push({ type: "label", name: "baseSize", value: item.baseSize });
                 attrs.push({ type: "label", name: "growthFactor", value: item.growthFactor });
             } else {
-                attrs.push({ type: "relation", name: "template", value: LBTPL_BUILTIN_WIDGET });
+                attrs.push({ type: "relation", name: "template", value: LBTPL_WIDGET });
             }
 
             attrs.push({ type: "label", name: "builtinWidget", value: item.builtinWidget });
@@ -430,8 +448,8 @@ export default {
     LBTPL_BASE,
     LBTPL_COMMAND,
     LBTPL_NOTE_LAUNCHER,
+    LBTPL_WIDGET,
     LBTPL_SCRIPT,
-    LBTPL_BUILTIN_WIDGET,
     LBTPL_SPACER,
     LBTPL_CUSTOM_WIDGET
 };
