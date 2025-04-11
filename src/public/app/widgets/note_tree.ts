@@ -418,6 +418,9 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
                 // click event won't propagate so let's close context menu manually
                 contextMenu.hide();
 
+                // hide all dropdowns, fix calendar widget dropdown doesn't close when click on a note
+                $('.dropdown-menu').parent('.dropdown').find('[data-bs-toggle="dropdown"]').dropdown('hide');
+
                 this.clearSelectedNodes();
 
                 const notePath = treeService.getNotePath(data.node);
@@ -1683,7 +1686,7 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
         this.triggerCommand("showImportDialog", { noteId: node.data.noteId });
     }
 
-    editNoteTitleCommand({ node }: CommandListenerData<"editNoteTitle">) {
+    editNoteTitleCommand() {
         appContext.triggerCommand("focusOnTitle");
     }
 
