@@ -82,6 +82,9 @@ const ALLOWED_OPTIONS = new Set<OptionNames>([
     "allowedHtmlTags",
     "redirectBareDomain",
     "showLoginInShareTheme",
+    "shareSubtree",
+    "useCleanUrls",
+    "sharePath",
     "splitEditorOrientation",
     "mfaEnabled",
     "mfaMethod"

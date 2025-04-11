@@ -48,11 +48,80 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
             // Check if any note has the #shareRoot label
             const shareRootNotes = attributes.getNotesWithLabel("shareRoot");
             if (shareRootNotes.length === 0) {
+                // should this be a translation string?
                 res.status(404).json({ message: "Share root not found. Please set up a note with #shareRoot label first." });
                 return;
             }
+
+            // Get the configured share path
+            const sharePath = options.getOption("sharePath") || '/share';
+
+            // Check if we're already at the share path to prevent redirect loops
+            if (req.path === sharePath || req.path.startsWith(`${sharePath}/`)) {
+                log.info(`checkAuth: Already at share path, skipping redirect. Path: ${req.path}, SharePath: ${sharePath}`);
+                next();
+                return;
+            }
+
+            // Redirect to the share path
+            log.info(`checkAuth: Redirecting to share path. From: ${req.path}, To: ${sharePath}`);
+            res.redirect(`${sharePath}/`);
+        } else {
+            res.redirect("login");
         }
-        res.redirect(hasRedirectBareDomain ? "share" : "login");
+    } else {
+        next();
+    }
+}
+
+/**
+ * Checks if a URL path might be a shared note ID when clean URLs are enabled
+ */
+function checkCleanUrl(req: Request, res: Response, next: NextFunction) {
+    // Only process if not logged in and clean URLs are enabled
+    if (!req.session.loggedIn && !isElectron && !noAuthentication &&
+        options.getOptionBool("redirectBareDomain") &&
+        options.getOptionBool("useCleanUrls")) {
+
+        // Get the configured share path
+        const sharePath = options.getOption("sharePath") || '/share';
+
+        // Get path without leading slash
+        const path = req.path.substring(1);
+
+        // Skip processing for known routes, empty paths, and paths that already start with sharePath
+        if (!path ||
+            path === 'login' ||
+            path === 'setup' ||
+            path.startsWith('api/') ||
+            req.path === sharePath ||
+            req.path.startsWith(`${sharePath}/`)) {
+            log.info(`checkCleanUrl: Skipping redirect. Path: ${req.path}, SharePath: ${sharePath}`);
+            next();
+            return;
+        }
+
+        // If sharePath is just '/', we don't need to redirect
+        if (sharePath === '/') {
+            log.info(`checkCleanUrl: SharePath is root, skipping redirect. Path: ${req.path}`);
+            next();
+            return;
+        }
+
+        // Redirect to the share URL with this ID
+        log.info(`checkCleanUrl: Redirecting to share path. From: ${req.path}, To: ${sharePath}/${path}`);
+        res.redirect(`${sharePath}/${path}`);
+    } else {
+        next();
+    }
+}
+
+/**
+ * Middleware for API authentication - works for both sync and normal API
+ */
+function checkApiAuth(req: Request, res: Response, next: NextFunction) {
+    if (!req.session.loggedIn && !noAuthentication) {
+        reject(req, res, "Logged in session not found");
     } else {
         next();
     }
@@ -64,14 +133,6 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
 //  currently, we're doing that for file upload because handling form data seems to be difficult
 function checkApiAuthOrElectron(req: Request, res: Response, next: NextFunction) {
     if (!req.session.loggedIn && !isElectron && !noAuthentication) {
-        reject(req, res, "Logged in session not found");
-    } else {
-        next();
-    }
-}
-
-function checkApiAuth(req: Request, res: Response, next: NextFunction) {
-    if (!req.session.loggedIn && !noAuthentication) {
         reject(req, res, "Logged in session not found");
     } else {
         next();
@@ -155,6 +216,7 @@ function checkCredentials(req: Request, res: Response, next: NextFunction) {
 
 export default {
     checkAuth,
+    checkCleanUrl,
     checkApiAuth,
     checkAppInitialized,
     checkPasswordSet,

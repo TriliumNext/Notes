@@ -272,12 +272,12 @@
     "help_title": "Help on Note Revisions",
     "close": "Close",
     "revision_last_edited": "This revision was last edited on {{date}}",
-    "confirm_delete_all": "Do you want to delete all revisions of this note?",
+    "confirm_delete_all": "Do you want to delete all revisions of this note? This action will erase the revision title and content, but still preserve the revision metadata.",
     "no_revisions": "No revisions for this note yet...",
     "restore_button": "Restore this revision",
     "confirm_restore": "Do you want to restore this revision? This will overwrite the current title and content of the note with this revision.",
     "delete_button": "Delete this revision",
-    "confirm_delete": "Do you want to delete this revision?",
+    "confirm_delete": "Do you want to delete this revision? This action will delete the revision title and content, but still preserve the revision metadata.",
     "revisions_deleted": "Note revisions have been deleted.",
     "revision_restored": "Note revision has been restored.",
     "revision_deleted": "Note revision has been deleted.",
@@ -376,7 +376,7 @@
     "auto_read_only_disabled": "text/code notes can be set automatically into read mode when they are too large. You can disable this behavior on per-note basis by adding this label to the note",
     "app_css": "marks CSS notes which are loaded into the Trilium application and can thus be used to modify Trilium's looks.",
     "app_theme": "marks CSS notes which are full Trilium themes and are thus available in Trilium options.",
-    "app_theme_base": "set to \"next\", \"next-light\", or \"next-dark\" to use the corresponding TriliumNext theme (auto, light or dark) as the base for a custom theme, instead of the legacy one.",
+    "app_theme_base": "set to \"next\" in order to use the TriliumNext theme as a base for a custom theme instead of the legacy one.",
     "css_class": "value of this label is then added as CSS class to the node representing given note in the tree. This can be useful for advanced theming. Can be used in template notes.",
     "icon_class": "value of this label is added as a CSS class to the icon on the tree which can help visually distinguish the notes in the tree. Example might be bx bx-home - icons are taken from boxicons. Can be used in template notes.",
     "page_size": "number of items per page in note listing",
@@ -744,8 +744,7 @@
   "basic_properties": {
     "note_type": "Note type",
     "editable": "Editable",
-    "basic_properties": "Basic Properties",
-    "language": "Language"
+    "basic_properties": "Basic Properties"
   },
   "book_properties": {
     "view_type": "View type",
@@ -1270,8 +1269,9 @@
   "etapi": {
     "title": "ETAPI",
     "description": "ETAPI is a REST API used to access Trilium instance programmatically, without UI.",
-    "see_more": "See more details in the {{- link_to_wiki}} and the {{- link_to_openapi_spec}} or the {{- link_to_swagger_ui }}.",
+    "see_more": "See more details on",
     "wiki": "wiki",
+    "and": "and",
     "openapi_spec": "ETAPI OpenAPI spec",
     "swagger_ui": "ETAPI Swagger UI",
     "create_token": "Create new ETAPI token",
@@ -1719,7 +1719,14 @@
     "check_share_root": "Check Share Root Status",
     "share_root_found": "Share root note '{{noteTitle}}' is ready",
     "share_root_not_found": "No note with #shareRoot label found",
-    "share_root_not_shared": "Note '{{noteTitle}}' has #shareRoot label but is not shared"
+    "share_root_not_shared": "Note '{{noteTitle}}' has #shareRoot label but is not Shared",
+    "use_clean_urls": "Use clean URLs for shared notes",
+    "use_clean_urls_description": "When enabled, shared note URLs will be simplified from /share/STi3RCMhUvG6 to /STi3RCMhUvG6",
+    "share_path": "Share path",
+    "share_path_description": "The url prefix for shared notes (e.g. '/share' --> '/share/noteId' and '/' --> '/noteId')",
+    "share_path_placeholder": "/share or / for root",
+    "share_subtree": "Share subtree",
+    "share_subtree_description": "Share the entire subtree, not just the note"
   },
   "time_selector": {
     "invalid_input": "The entered time value is not a valid number.",
