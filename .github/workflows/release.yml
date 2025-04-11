@@ -80,3 +80,4 @@ jobs:
         with:
           identifier: TriliumNext.Notes
           token: ${{ secrets.WINGET_PAT }}
+          version: 0.0.0 # ! Make sure this is removed before merging.
