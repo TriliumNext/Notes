@@ -87,6 +87,7 @@ import utils from "../services/utils.js";
 import GeoMapButtons from "../widgets/floating_buttons/geo_map_button.js";
 import ContextualHelpButton from "../widgets/floating_buttons/help_button.js";
 import CloseZenButton from "../widgets/close_zen_button.js";
+import TouchBarWidget from "../widgets/touch_bar.js";
 import type { AppContext } from "./../components/app_context.js";
 import type { WidgetsByParent } from "../services/bundle.js";
 import SwitchSplitOrientationButton from "../widgets/floating_buttons/switch_layout_button.js";
@@ -160,6 +161,7 @@ export default class DesktopLayout {
                                             .filling()
                                             .collapsible()
                                             .id("center-pane")
+                                            .child(new TouchBarWidget())
                                             .child(
                                                 new SplitNoteContainer(() =>
                                                     new NoteWrapperWidget()

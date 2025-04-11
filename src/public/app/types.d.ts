@@ -339,6 +339,11 @@ declare global {
             mention: MentionConfig
         });
         enableReadOnlyMode(reason: string);
+        commands: {
+            get(name: string): {
+                value: unknown;
+            };
+        }
         model: {
             document: {
                 on(event: string, cb: () => void);

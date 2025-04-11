@@ -24,7 +24,7 @@ import type NoteTreeWidget from "../widgets/note_tree.js";
 import type { default as NoteContext, GetTextEditorCallback } from "./note_context.js";
 import type TypeWidget from "../widgets/type_widgets/type_widget.js";
 import type EditableTextTypeWidget from "../widgets/type_widgets/editable_text.js";
-import type FAttribute from "../entities/fattribute.js";
+import type { NativeImage } from "electron";
 
 interface Layout {
     getRootWidget: (appContext: AppContext) => RootWidget;
@@ -170,6 +170,8 @@ export type CommandMappings = {
     moveNoteDownInHierarchy: ContextMenuCommandData;
     selectAllNotesInParent: ContextMenuCommandData;
 
+    createNoteIntoInbox: CommandData;
+
     addNoteLauncher: ContextMenuCommandData;
     addScriptLauncher: ContextMenuCommandData;
     addWidgetLauncher: ContextMenuCommandData;
@@ -249,6 +251,7 @@ export type CommandMappings = {
     scrollToEnd: CommandData;
     closeThisNoteSplit: CommandData;
     moveThisNoteSplit: CommandData & { isMovingLeft: boolean };
+    jumpToNote: CommandData;
 
     // Geomap
     deleteFromMap: { noteId: string };
@@ -263,6 +266,14 @@ export type CommandMappings = {
 
     refreshResults: {};
     refreshSearchDefinition: {};
+
+    geoMapCreateChildNote: CommandData;
+
+    buildTouchBar: CommandData & {
+        TouchBar: typeof import("electron").TouchBar;
+        buildIcon(name: string): NativeImage;
+    };
+    refreshTouchBar: CommandData;
 };
 
 type EventMappings = {

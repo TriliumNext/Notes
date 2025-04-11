@@ -1,9 +1,12 @@
-import type { EventData } from "../../components/app_context.js";
+import { app } from "electron";
+import type { CommandListenerData, EventData } from "../../components/app_context.js";
 import type FNote from "../../entities/fnote.js";
 import { t } from "../../services/i18n.js";
 import keyboardActionService from "../../services/keyboard_actions.js";
 import options from "../../services/options.js";
 import AbstractCodeTypeWidget from "./abstract_code_type_widget.js";
+import appContext from "../../components/app_context.js";
+import type { TouchBarItem } from "../touch_bar.js";
 
 const TPL = /*html*/`
 <div class="note-detail-code note-detail-printable">
@@ -61,6 +64,8 @@ export default class EditableCodeTypeWidget extends AbstractCodeTypeWidget {
         });
 
         this.show();
+
+        this.triggerCommand("refreshTouchBar");
     }
 
     getData() {
@@ -78,4 +83,21 @@ export default class EditableCodeTypeWidget extends AbstractCodeTypeWidget {
 
         resolve(this.codeEditor);
     }
+
+    buildTouchBarCommand({ TouchBar, buildIcon }: CommandListenerData<"buildTouchBar">) {
+        const items: TouchBarItem[] = [
+            new TouchBar.TouchBarSpacer({ size: "flexible" }),
+        ];
+
+        const note = this.note;
+        if (note?.mime.startsWith("application/javascript") || note?.mime === "text/x-sqlite;schema=trilium") {
+            items.push(new TouchBar.TouchBarButton({
+                icon: buildIcon("NSImageNameTouchBarPlayTemplate"),
+                click: () => appContext.triggerCommand("runActiveNote")
+            }));
+        }
+
+        return items;
+    }
+
 }
