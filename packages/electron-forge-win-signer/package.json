@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@actions/artifact": "^2.3.2"
+    "@actions/artifact": "^2.3.2",
+    "typescript": "^5.8.3"
   }
 }
