@@ -67,6 +67,8 @@ runs:
     - name: Install dependencies
       shell: ${{ inputs.shell }}
       run: npm ci
+      env:
+        npm_config_arch: ${{ inputs.arch }}
 
     - name: Update build info
       shell: ${{ inputs.shell }}
