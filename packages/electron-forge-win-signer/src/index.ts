@@ -28,3 +28,6 @@ function generateArtifactName(artifactPath: string) {
 function log(...args) {
     console.log(`[WIN-SIGN] `, ...args);
 }
+
+// TODO: Remove once integrated in the CI.
+sign("Dockerfile");
