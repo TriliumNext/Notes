@@ -23,16 +23,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64, arm64]
+        arch: [arm64]
         os:
-          - name: macos
-            image: macos-latest
-            shell: bash
-            forge_platform: darwin
-          - name: linux
-            image: ubuntu-latest
-            shell: bash
-            forge_platform: linux
           - name: windows
             image: win-signing
             shell: cmd
