@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "sourceMap": true,
+  },
+  "include": ["./src/**/*.js", , "./*.ts", "./*.js", "./spec/**/*.ts"],
+  "exclude": ["./node_modules/**/*", "./spec-es6/**/*.ts"],
+  "files": [ "src/public/app/types.d.ts"]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@triliumnext/commons",
+  "version": "0.0.1",
+  "description": "Shared library between the clients (e.g. browser, Electron) and the server, mostly for type definitions and utility methods.",
+  "homepage": "https://github.com/TriliumNext/Notes#readme",
+  "bugs": {
+    "url": "https://github.com/TriliumNext/Notes/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TriliumNext/Notes.git"
+  },
+  "license": "AGPL-3.0-only",
+  "author": {
+    "name": "TriliumNext Notes Team",
+    "email": "contact@eliandoran.me",
+    "url": "https://github.com/TriliumNext/Notes"
+  },
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

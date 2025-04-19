@@ -1,0 +1,55 @@
+{
+  "name": "@triliumnext/electron",
+  "version": "0.0.1",
+  "description": "Desktop client for TriliumNext, embedding both the client and the server.",
+  "homepage": "https://github.com/TriliumNext/Notes#readme",
+  "bugs": {
+    "url": "https://github.com/TriliumNext/Notes/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TriliumNext/Notes.git"
+  },
+  "license": "AGPL-3.0-only",
+  "author": {
+    "name": "TriliumNext Notes Team",
+    "email": "contact@eliandoran.me",
+    "url": "https://github.com/TriliumNext/Notes"
+  },
+  "type": "module",
+  "main": "src/electron-main.js",
+  "scripts": {
+    "start": "cross-env NODE_OPTIONS=\"--import tsx\" TRILIUM_DATA_DIR=./data TRILIUM_ENV=dev electron ./src/electron-main.ts --inspect=5858 .",
+    "start-prod": "npm run build:prepare-dist && cross-env TRILIUM_DATA_DIR=./data TRILIUM_ENV=prod electron ./build/src/electron-main.js --inspect=5858 .",
+    "postinstall": "electron-rebuild",
+
+    "build:clean": "rimraf ./dist ./build",
+    "build:copy-dist": "tsx ./scripts/copy-dist.ts",
+    "build:prepare-dist": "npm run build:clean && npm run build:copy-dist && npm run build:ts",
+    "build:ts": "tsc",
+
+    "electron-forge:start": "npm run build:prepare-dist && cd ./build && electron-forge start",
+    "electron-forge:make": "npm run build:prepare-dist && cross-env DEBUG=electron-windows-installer:* electron-forge make ./build",
+    "electron-forge:package": "npm run build:prepare-dist && cd ./build && electron-forge package"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.9.1",
+    "electron-debug": "4.1.0",
+    "electron-dl": "4.0.0",
+    "electron-squirrel-startup": "1.0.1"    
+  },
+  "devDependencies": {
+    "@types/electron-squirrel-startup": "1.0.2",
+    "electron": "35.1.5",
+    "@electron/rebuild": "3.7.2",
+    "tsx": "4.19.3",
+    "@electron-forge/cli": "7.8.0",
+    "@electron-forge/maker-deb": "7.8.0",
+    "@electron-forge/maker-dmg": "7.8.0",
+    "@electron-forge/maker-flatpak": "7.8.0",
+    "@electron-forge/maker-rpm": "7.8.0",
+    "@electron-forge/maker-squirrel": "7.8.0",
+    "@electron-forge/maker-zip": "7.8.0",
+    "@electron-forge/plugin-auto-unpack-natives": "7.8.0"
+  }
+}

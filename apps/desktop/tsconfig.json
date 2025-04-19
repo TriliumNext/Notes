@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "declaration": false,
+        "sourceMap": true,
+        "outDir": "./build/src",
+        "strict": true,
+        "noImplicitAny": true,
+        "resolveJsonModule": true,
+        "lib": ["ES2023"],
+        "downlevelIteration": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "verbatimModuleSyntax": true,
+        "allowJs": true
+    },
+    "include": [ "./src/**/*.ts" ],
+    "files": [
+        "../server/src/types.d.ts",
+        "../server/src/express.d.ts",
+    ]
+}

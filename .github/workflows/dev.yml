@@ -98,7 +98,7 @@ jobs:
       - run: npm ci
 
       - name: Run the TypeScript build
-        run: npx tsc
+        run: npm run build
 
       - name: Run the unit tests
         run: npm run test

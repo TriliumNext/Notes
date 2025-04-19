@@ -55,7 +55,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run the TypeScript build
-        run: npx tsc
+        run: npm run build
 
       - name: Build and export to Docker
         uses: docker/build-push-action@v6

@@ -18,152 +18,152 @@ inputs:
 runs:
   using: composite
   steps:
-    # Certificate setup
-    - name: Import Apple certificates
-      if: inputs.os == 'macos'
-      uses: apple-actions/import-codesign-certs@v5
-      with:
-        p12-file-base64: ${{ env.APPLE_APP_CERTIFICATE_BASE64 }}
-        p12-password: ${{ env.APPLE_APP_CERTIFICATE_PASSWORD }}
-        keychain: build-app-${{ github.run_id }}
-        keychain-password: ${{ github.run_id }}
+  # Certificate setup
+  - name: Import Apple certificates
+    if: inputs.os == 'macos'
+    uses: apple-actions/import-codesign-certs@v5
+    with:
+      p12-file-base64: ${{ env.APPLE_APP_CERTIFICATE_BASE64 }}
+      p12-password: ${{ env.APPLE_APP_CERTIFICATE_PASSWORD }}
+      keychain: build-app-${{ github.run_id }}
+      keychain-password: ${{ github.run_id }}
 
-    - name: Install Installer certificate
-      if: inputs.os == 'macos'
-      uses: apple-actions/import-codesign-certs@v5
-      with:
-        p12-file-base64: ${{ env.APPLE_INSTALLER_CERTIFICATE_BASE64 }}
-        p12-password: ${{ env.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
-        keychain: build-installer-${{ github.run_id }}
-        keychain-password: ${{ github.run_id }}
+  - name: Install Installer certificate
+    if: inputs.os == 'macos'
+    uses: apple-actions/import-codesign-certs@v5
+    with:
+      p12-file-base64: ${{ env.APPLE_INSTALLER_CERTIFICATE_BASE64 }}
+      p12-password: ${{ env.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
+      keychain: build-installer-${{ github.run_id }}
+      keychain-password: ${{ github.run_id }}
 
-    - name: Verify certificates
-      if: inputs.os == 'macos'
-      shell: ${{ inputs.shell }}
-      run: |
-        echo "Available signing identities in app keychain:"
-        security find-identity -v -p codesigning build-app-${{ github.run_id }}.keychain
+  - name: Verify certificates
+    if: inputs.os == 'macos'
+    shell: ${{ inputs.shell }}
+    run: |
+      echo "Available signing identities in app keychain:"
+      security find-identity -v -p codesigning build-app-${{ github.run_id }}.keychain
 
-        echo "Available signing identities in installer keychain:"
-        security find-identity -v -p codesigning build-installer-${{ github.run_id }}.keychain
+      echo "Available signing identities in installer keychain:"
+      security find-identity -v -p codesigning build-installer-${{ github.run_id }}.keychain
 
-        # Make the keychains searchable
-        security list-keychains -d user -s build-app-${{ github.run_id }}.keychain build-installer-${{ github.run_id }}.keychain $(security list-keychains -d user | tr -d '"')
-        security default-keychain -s build-app-${{ github.run_id }}.keychain
-        security unlock-keychain -p ${{ github.run_id }} build-app-${{ github.run_id }}.keychain
-        security unlock-keychain -p ${{ github.run_id }} build-installer-${{ github.run_id }}.keychain
-        security set-keychain-settings -t 3600 -l build-app-${{ github.run_id }}.keychain
-        security set-keychain-settings -t 3600 -l build-installer-${{ github.run_id }}.keychain
+      # Make the keychains searchable
+      security list-keychains -d user -s build-app-${{ github.run_id }}.keychain build-installer-${{ github.run_id }}.keychain $(security list-keychains -d user | tr -d '"')
+      security default-keychain -s build-app-${{ github.run_id }}.keychain
+      security unlock-keychain -p ${{ github.run_id }} build-app-${{ github.run_id }}.keychain
+      security unlock-keychain -p ${{ github.run_id }} build-installer-${{ github.run_id }}.keychain
+      security set-keychain-settings -t 3600 -l build-app-${{ github.run_id }}.keychain
+      security set-keychain-settings -t 3600 -l build-installer-${{ github.run_id }}.keychain
 
-    - name: Set up Python and other macOS dependencies
-      if: ${{ inputs.os == 'macos' }}
-      shell: ${{ inputs.shell }}
-      run: |
-        brew install python-setuptools
-        brew install create-dmg
+  - name: Set up Python and other macOS dependencies
+    if: ${{ inputs.os == 'macos' }}
+    shell: ${{ inputs.shell }}
+    run: |
+      brew install python-setuptools
+      brew install create-dmg
 
-    - name: Install dependencies for RPM and Flatpak package building
-      if: ${{ inputs.os == 'linux' }}
-      shell: ${{ inputs.shell }}
-      run: |
-        sudo apt-get update && sudo apt-get install rpm flatpak-builder elfutils
-        flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        FLATPAK_ARCH=$(if [[ ${{ inputs.arch }} = 'arm64' ]]; then echo 'aarch64'; else echo 'x86_64'; fi)
-        FLATPAK_VERSION='24.08'
-        flatpak install --user --no-deps --arch $FLATPAK_ARCH --assumeyes runtime/org.freedesktop.Platform/$FLATPAK_ARCH/$FLATPAK_VERSION runtime/org.freedesktop.Sdk/$FLATPAK_ARCH/$FLATPAK_VERSION org.electronjs.Electron2.BaseApp/$FLATPAK_ARCH/$FLATPAK_VERSION
+  - name: Install dependencies for RPM and Flatpak package building
+    if: ${{ inputs.os == 'linux' }}
+    shell: ${{ inputs.shell }}
+    run: |
+      sudo apt-get update && sudo apt-get install rpm flatpak-builder elfutils
+      flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      FLATPAK_ARCH=$(if [[ ${{ inputs.arch }} = 'arm64' ]]; then echo 'aarch64'; else echo 'x86_64'; fi)
+      FLATPAK_VERSION='24.08'
+      flatpak install --user --no-deps --arch $FLATPAK_ARCH --assumeyes runtime/org.freedesktop.Platform/$FLATPAK_ARCH/$FLATPAK_VERSION runtime/org.freedesktop.Sdk/$FLATPAK_ARCH/$FLATPAK_VERSION org.electronjs.Electron2.BaseApp/$FLATPAK_ARCH/$FLATPAK_VERSION
 
-    # Build setup
-    - name: Install dependencies
-      shell: ${{ inputs.shell }}
-      run: npm ci
+  # Build setup
+  - name: Install dependencies
+    shell: ${{ inputs.shell }}
+    run: npm ci
 
-    - name: Update build info
-      shell: ${{ inputs.shell }}
-      run: npm run chore:update-build-info
+  - name: Update build info
+    shell: ${{ inputs.shell }}
+    run: npm run chore:update-build-info
 
-    # Critical debugging configuration
-    - name: Run electron-forge build with enhanced logging
-      shell: ${{ inputs.shell }}
-      env:
-        # Pass through required environment variables for signing and notarization
-        APPLE_TEAM_ID: ${{ env.APPLE_TEAM_ID }}
-        APPLE_ID: ${{ env.APPLE_ID }}
-        APPLE_ID_PASSWORD: ${{ env.APPLE_ID_PASSWORD }}
-        WINDOWS_SIGN_EXECUTABLE: ${{ env.WINDOWS_SIGN_EXECUTABLE }}
-        TRILIUM_ARTIFACT_NAME_HINT: TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}
-      run: npm run electron-forge:make -- --arch=${{ inputs.arch }} --platform=${{ inputs.forge_platform }}
+  # Critical debugging configuration
+  - name: Run electron-forge build with enhanced logging
+    shell: ${{ inputs.shell }}
+    env:
+      # Pass through required environment variables for signing and notarization
+      APPLE_TEAM_ID: ${{ env.APPLE_TEAM_ID }}
+      APPLE_ID: ${{ env.APPLE_ID }}
+      APPLE_ID_PASSWORD: ${{ env.APPLE_ID_PASSWORD }}
+      WINDOWS_SIGN_EXECUTABLE: ${{ env.WINDOWS_SIGN_EXECUTABLE }}
+      TRILIUM_ARTIFACT_NAME_HINT: TriliumNextNotes-${{ github.ref_name }}-${{ inputs.os }}-${{ inputs.arch }}
+    run: npm run electron-forge:make -- --arch=${{ inputs.arch }} --platform=${{ inputs.forge_platform }}
 
-    # Add DMG signing step
-    - name: Sign DMG
-      if: inputs.os == 'macos'
-      shell: ${{ inputs.shell }}
-      run: |
-        echo "Signing DMG file..."
-        dmg_file=$(find ./dist -name "*.dmg" -print -quit)
-        if [ -n "$dmg_file" ]; then
-          echo "Found DMG: $dmg_file"
-          # Get the first valid signing identity from the keychain
-          SIGNING_IDENTITY=$(security find-identity -v -p codesigning build-app-${{ github.run_id }}.keychain | grep "Developer ID Application" | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
-          if [ -z "$SIGNING_IDENTITY" ]; then
-            echo "Error: No valid Developer ID Application certificate found in keychain"
-            exit 1
-          fi
-          echo "Using signing identity: $SIGNING_IDENTITY"
-          # Sign the DMG
-          codesign --force --sign "$SIGNING_IDENTITY" --options runtime --timestamp "$dmg_file"
-          # Notarize the DMG
-          xcrun notarytool submit "$dmg_file" --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
-          # Staple the notarization ticket
-          xcrun stapler staple "$dmg_file"
-        else
-          echo "No DMG found to sign"
+  # Add DMG signing step
+  - name: Sign DMG
+    if: inputs.os == 'macos'
+    shell: ${{ inputs.shell }}
+    run: |
+      echo "Signing DMG file..."
+      dmg_file=$(find ./apps/desktop/dist -name "*.dmg" -print -quit)
+      if [ -n "$dmg_file" ]; then
+        echo "Found DMG: $dmg_file"
+        # Get the first valid signing identity from the keychain
+        SIGNING_IDENTITY=$(security find-identity -v -p codesigning build-app-${{ github.run_id }}.keychain | grep "Developer ID Application" | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+        if [ -z "$SIGNING_IDENTITY" ]; then
+          echo "Error: No valid Developer ID Application certificate found in keychain"
+          exit 1
         fi
+        echo "Using signing identity: $SIGNING_IDENTITY"
+        # Sign the DMG
+        codesign --force --sign "$SIGNING_IDENTITY" --options runtime --timestamp "$dmg_file"
+        # Notarize the DMG
+        xcrun notarytool submit "$dmg_file" --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
+        # Staple the notarization ticket
+        xcrun stapler staple "$dmg_file"
+      else
+        echo "No DMG found to sign"
+      fi
 
-    - name: Verify code signing
-      if: inputs.os == 'macos'
-      shell: ${{ inputs.shell }}
-      run: |
-        echo "Verifying code signing for all artifacts..."
+  - name: Verify code signing
+    if: inputs.os == 'macos'
+    shell: ${{ inputs.shell }}
+    run: |
+      echo "Verifying code signing for all artifacts..."
 
-        # First check the .app bundle
-        echo "Looking for .app bundle..."
-        app_bundle=$(find ./dist -name "*.app" -print -quit)
-        if [ -n "$app_bundle" ]; then
-          echo "Found app bundle: $app_bundle"
-          echo "Verifying app bundle signing..."
-          codesign --verify --deep --strict --verbose=2 "$app_bundle"
-          echo "Displaying app bundle signing info..."
-          codesign --display --verbose=2 "$app_bundle"
+      # First check the .app bundle
+      echo "Looking for .app bundle..."
+      app_bundle=$(find ./apps/desktop/dist -name "*.app" -print -quit)
+      if [ -n "$app_bundle" ]; then
+        echo "Found app bundle: $app_bundle"
+        echo "Verifying app bundle signing..."
+        codesign --verify --deep --strict --verbose=2 "$app_bundle"
+        echo "Displaying app bundle signing info..."
+        codesign --display --verbose=2 "$app_bundle"
 
-          echo "Checking entitlements..."
-          codesign --display --entitlements :- "$app_bundle"
+        echo "Checking entitlements..."
+        codesign --display --entitlements :- "$app_bundle"
 
-          echo "Checking notarization status..."
-          xcrun stapler validate "$app_bundle" || echo "Warning: App bundle not notarized yet"
-        else
-          echo "No .app bundle found to verify"
-        fi
+        echo "Checking notarization status..."
+        xcrun stapler validate "$app_bundle" || echo "Warning: App bundle not notarized yet"
+      else
+        echo "No .app bundle found to verify"
+      fi
 
-        # Then check DMG if it exists
-        echo "Looking for DMG..."
-        dmg_file=$(find ./dist -name "*.dmg" -print -quit)
-        if [ -n "$dmg_file" ]; then
-          echo "Found DMG: $dmg_file"
-          echo "Verifying DMG signing..."
-          codesign --verify --deep --strict --verbose=2 "$dmg_file"
-          echo "Displaying DMG signing info..."
-          codesign --display --verbose=2 "$dmg_file"
+      # Then check DMG if it exists
+      echo "Looking for DMG..."
+      dmg_file=$(find ./apps/desktop/dist -name "*.dmg" -print -quit)
+      if [ -n "$dmg_file" ]; then
+        echo "Found DMG: $dmg_file"
+        echo "Verifying DMG signing..."
+        codesign --verify --deep --strict --verbose=2 "$dmg_file"
+        echo "Displaying DMG signing info..."
+        codesign --display --verbose=2 "$dmg_file"
 
-          echo "Checking DMG notarization..."
-          xcrun stapler validate "$dmg_file" || echo "Warning: DMG not notarized yet"
-        else
-          echo "No DMG found to verify"
-        fi
+        echo "Checking DMG notarization..."
+        xcrun stapler validate "$dmg_file" || echo "Warning: DMG not notarized yet"
+      else
+        echo "No DMG found to verify"
+      fi
 
-        # Finally check ZIP if it exists
-        echo "Looking for ZIP..."
-        zip_file=$(find ./dist -name "*.zip" -print -quit)
-        if [ -n "$zip_file" ]; then
-          echo "Found ZIP: $zip_file"
-          echo "Note: ZIP files are not code signed, but their contents should be"
-        fi
+      # Finally check ZIP if it exists
+      echo "Looking for ZIP..."
+      zip_file=$(find ./apps/desktop/dist -name "*.zip" -print -quit)
+      if [ -n "$zip_file" ]; then
+        echo "Found ZIP: $zip_file"
+        echo "Note: ZIP files are not code signed, but their contents should be"
+      fi

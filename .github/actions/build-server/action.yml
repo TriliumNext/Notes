@@ -8,25 +8,25 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Set up node & dependencies
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: "npm"
-    - name: Install dependencies
-      shell: bash
-      run: npm ci
-    - name: Run Linux server build
-      env:
-        MATRIX_ARCH: ${{ inputs.arch }}
-      shell: bash
-      run: |
-        npm run chore:update-build-info
-        ./bin/build-server.sh
-    - name: Prepare artifacts
-      shell: bash
-      run: |
-        mkdir -p upload
-        file=$(find dist -name '*.tar.xz' -print -quit)
-        name=${{ github.ref_name }}
-        cp "$file" "upload/TriliumNextNotes-Server-${name//\//-}-${{ inputs.os }}-${{ inputs.arch }}.tar.xz"
+  - name: Set up node & dependencies
+    uses: actions/setup-node@v4
+    with:
+      node-version: 22
+      cache: "npm"
+  - name: Install dependencies
+    shell: bash
+    run: npm ci
+  - name: Run Linux server build
+    env:
+      MATRIX_ARCH: ${{ inputs.arch }}
+    shell: bash
+    run: |
+      npm run chore:update-build-info
+      npm run server:package
+  - name: Prepare artifacts
+    shell: bash
+    run: |
+      mkdir -p upload
+      file=$(find ./apps/server/dist -name '*.tar.xz' -print -quit)
+      name=${{ github.ref_name }}
+      cp "$file" "upload/TriliumNextNotes-Server-${name//\//-}-${{ inputs.os }}-${{ inputs.arch }}.tar.xz"

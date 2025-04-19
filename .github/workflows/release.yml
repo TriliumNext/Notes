@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-desktop-${{ matrix.os.name }}-${{ matrix.arch }}
-          path: upload/*.*
+          path: apps/desktop/upload/*.*
 
   build_server:
     name: Build Linux Server
