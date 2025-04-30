@@ -79,6 +79,13 @@ jobs:
 
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signing ${{ matrix.os.name }} ${{ matrix.arch }}
+          path: build/bin/electron-forge/sign
+
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: TriliumNextNotes ${{ matrix.os.name }} ${{ matrix.arch }}
