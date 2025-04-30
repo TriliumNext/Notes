@@ -18,6 +18,8 @@ function loginPage(req: Request, res: Response) {
         wrongTotp: false,
         totpEnabled: totp.isTotpEnabled(),
         ssoEnabled: openID.isOpenIDEnabled(),
+        ssoName: openID.getSsoName(),
+        ssoIcon: openID.getSsoIcon(),
         assetPath: assetPath,
         appPath: appPath,
     });

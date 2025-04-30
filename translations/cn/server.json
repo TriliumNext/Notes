@@ -103,7 +103,7 @@
     "password": "密码",
     "remember-me": "记住我",
     "button": "登录",
-    "sign_in_with_google": "使用 Google 登录"
+    "sign_in_with_sso": "使用 {{ ssoName }} 登录"
   },
   "set_password": {
     "title": "设置密码",

@@ -26,8 +26,8 @@
 
         <% if (ssoEnabled) { %>
             <a href="/authenticate" class="google-login-btn">
-                <img src="<%= assetPath %>/images/google-logo.svg" alt="Google logo">
-                <%= t("login.sign_in_with_google") %>
+                <img src="<%= ssoIcon.length === 0 ? assetPath + '/images/google-logo.svg' : ssoIcon %>" alt="<%= ssoName %>">
+                <%= t("login.sign_in_with_sso", { ssoName }) %>
             </a>
         <% } else { %>
             <form action="login" method="POST">

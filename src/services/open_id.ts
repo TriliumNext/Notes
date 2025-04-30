@@ -89,6 +89,14 @@ function isTokenValid(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+function getSsoName() {
+    return config.MultiFactorAuthentication.issuerName
+}
+
+function getSsoIcon() {
+    return config.MultiFactorAuthentication.issuerIcon
+}
+
 function generateOAuthConfig() {
     const authRoutes = {
         callback: "/callback",
@@ -105,7 +113,7 @@ function generateOAuthConfig() {
         auth0Logout: false,
         baseURL: config.MultiFactorAuthentication.oauthBaseUrl,
         clientID: config.MultiFactorAuthentication.oauthClientId,
-        issuerBaseURL: "https://accounts.google.com",
+        issuerBaseURL: config.MultiFactorAuthentication.issuerBaseUrl,
         secret: config.MultiFactorAuthentication.oauthClientSecret,
         clientSecret: config.MultiFactorAuthentication.oauthClientSecret,
         authorizationParams: {
@@ -128,8 +136,9 @@ function generateOAuthConfig() {
 
             openIDEncryption.saveUser(
                 req.oidc.user.sub.toString(),
-                req.oidc.user.name.toString(),
-                req.oidc.user.email.toString()
+                // The claims of the ID token do not include name and email by default.
+                req.oidc.user.name?.toString() || "none",
+                req.oidc.user.email?.toString() || "none"
             );
 
             req.session.loggedIn = true;
@@ -148,6 +157,8 @@ export default {
     generateOAuthConfig,
     getOAuthStatus,
     isOpenIDEnabled,
+    getSsoName,
+    getSsoIcon,
     clearSavedUser,
     isTokenValid,
     isUserSaved,
