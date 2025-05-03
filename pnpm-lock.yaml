@@ -293,8 +293,8 @@ importers:
         specifier: 5.0.0
         version: 5.0.0
       sqlite:
-        specifier: 4.0.23
-        version: 4.0.23
+        specifier: 4.2.1
+        version: 4.2.1
       sqlite3:
         specifier: 5.1.5
         version: 5.1.5(encoding@0.1.13)
@@ -9421,8 +9421,8 @@ packages:
   sqlite3@5.1.5:
     resolution: {integrity: sha512-7sP16i4wI+yKnGOO2q2ijze7EjQ9US+Vw7DYYwxfFtqNZDGgBcEw0oeDaDvUTq66uJOzVd/z6MkIg+c9erSJKg==}
 
-  sqlite@4.0.23:
-    resolution: {integrity: sha512-dSdmSkrdIhUL7xP/fiEMfFuAo4dxb0afag3rK8T4Y9lYxE3g3fXT0J8H9qSFvmcKxnM0zEA8yvLbpdWQ8mom3g==}
+  sqlite@4.2.1:
+    resolution: {integrity: sha512-Tll0Ndvnwkuv5Hn6WIbh26rZiYQORuH1t5m/or9LUpSmDmmyFG89G9fKrSeugMPxwmEIXoVxqTun4LbizTs4uw==}
 
   ssri@12.0.0:
     resolution: {integrity: sha512-S7iGNosepx9RadX82oimUkvr0Ct7IjJbEbs4mJcTxst8um95J3sDYU1RBEOvdu6oL1Wek2ODI5i4MAw+dZ6cAQ==}
@@ -21487,7 +21487,7 @@ snapshots:
       - encoding
       - supports-color
 
-  sqlite@4.0.23: {}
+  sqlite@4.2.1: {}
 
   ssri@12.0.0:
     dependencies:
