@@ -38,7 +38,7 @@
     "@nx/web": "20.8.0",
     "@nx/webpack": "20.8.0",
     "@playwright/test": "^1.36.0",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.0",
     "@svgr/webpack": "^8.0.1",
     "@swc-node/register": "~1.9.1",
     "@swc/cli": "~0.6.0",
