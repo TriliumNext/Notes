@@ -290,8 +290,8 @@ importers:
         specifier: 1.4.0
         version: 1.4.0
       diff:
-        specifier: 5.0.0
-        version: 5.0.0
+        specifier: 5.2.0
+        version: 5.2.0
       sqlite:
         specifier: 5.1.1
         version: 5.1.1
@@ -5303,8 +5303,8 @@ packages:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  diff@5.0.0:
-    resolution: {integrity: sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==}
+  diff@5.2.0:
+    resolution: {integrity: sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==}
     engines: {node: '>=0.3.1'}
 
   dir-compare@4.2.0:
@@ -16512,7 +16512,7 @@ snapshots:
 
   diff-sequences@29.6.3: {}
 
-  diff@5.0.0: {}
+  diff@5.2.0: {}
 
   dir-compare@4.2.0:
     dependencies:
@@ -22304,7 +22304,7 @@ snapshots:
   uvu@0.5.6:
     dependencies:
       dequal: 2.0.3
-      diff: 5.0.0
+      diff: 5.2.0
       kleur: 4.1.5
       sade: 1.8.1
 
