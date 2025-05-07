@@ -17,7 +17,10 @@ function getElectronVersion(distDir: string) {
 
     const packageJsonPath = join(distDir, "package.json");
     const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-    return packageJson.dependencies.electron;
+
+    const electronVersion = packageJson.devDependencies.electron || packageJson.dependencies.electron;
+
+    return electronVersion;
 }
 
 function main() {
