@@ -25,6 +25,7 @@
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@electron/rebuild": "4.0.1",
     "@nx/devkit": "20.8.1",
     "@nx/esbuild": "20.8.1",
     "@nx/eslint": "20.8.1",

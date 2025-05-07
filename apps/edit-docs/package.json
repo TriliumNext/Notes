@@ -4,7 +4,6 @@
   "private": true,
   "description": "Desktop version of Trilium which imports the demo database (presented to new users at start-up) or the user guide and other documentation and saves the modifications for committing.",
   "devDependencies": {
-    "@electron/rebuild": "4.0.1",
     "@triliumnext/client": "workspace:*",
     "@triliumnext/desktop": "workspace:*",
     "@types/fs-extra": "11.0.4",
@@ -17,19 +16,19 @@
     "targets": {
       "rebuild-deps": {
         "executor": "nx:run-commands",
-        "dependsOn": [ "build" ],
+        "dependsOn": [
+          "build"
+        ],
         "defaultConfiguration": "default",
         "cache": true,
         "configurations": {
           "default": {
-            "command": "cross-env DEBUG=* tsx scripts/rebuild.mts",
-            "cwd": "{projectRoot}"
+            "command": "cross-env DEBUG=* tsx scripts/electron-rebuild.mts {projectRoot}/dist"
           },
           "nixos": {
-            "command": "electron-rebuild -f -v $(nix-shell -p electron_35 --run \"electron --version\") dist/main.js -m dist",
-            "cwd": "{projectRoot}"
+            "command": "cross-env DEBUG=* tsx scripts/electron-rebuild.mts {projectRoot}/dist $(nix-shell -p electron_33 --run \"electron --version\")"
           }
-        }        
+        }
       },
       "serve": {
         "executor": "nx:run-commands",

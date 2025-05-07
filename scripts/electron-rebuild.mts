@@ -6,31 +6,36 @@
  * the server build (and it doesn't expose a CLI option to override this).
  */
 
-// TODO: Deduplicate with apps/desktop/scripts/rebuild.ts.
-
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import path, { join } from "path";
 import { rebuild } from "@electron/rebuild"
 import { readFileSync } from "fs";
 
-const scriptDir = dirname(fileURLToPath(import.meta.url));
-const rootDir = join(scriptDir, "..");
+function getElectronVersion(distDir: string) {
+    if (process.argv[3]) {
+        return process.argv[3];
+    }
 
-function getElectronVersion() {
-    const packageJsonPath = join(rootDir, "package.json");
+    const packageJsonPath = join(distDir, "package.json");
     const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
     return packageJson.devDependencies.electron;
 }
 
 function main() {
-    const distDir = join(rootDir, "dist");
+    const distDir = path.resolve(process.argv[2]);
+    if (!distDir) {
+        console.error("Missing root dir as argument.");
+        process.exit(1);
+    }
+
+    const electronVersion = getElectronVersion(distDir);
+    console.log(`Rebuilding ${distDir} with version ${electronVersion}...`);
 
     rebuild({
         // We force the project root path to avoid electron-rebuild from rebuilding the monorepo-level dependency and breaking the server.
         projectRootPath: distDir,
         buildPath: distDir,
         force: true,
-        electronVersion: getElectronVersion(),
+        electronVersion,
     });
 }
 
