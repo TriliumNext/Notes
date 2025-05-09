@@ -260,6 +260,20 @@ class NoteContext extends Component implements EventListener<"entitiesReloaded">
             return true;
         }
 
+        // Before checking size for auto read-only status,
+        // ensure any pending changes are saved to prevent data loss
+        if (this.ntxId && (this.note.type === "text" || this.note.type === "code")) {
+            try {
+                // Trigger the same event that's used when switching notes, which already
+                // has the implementation to save pending changes
+                await appContext.triggerEvent("beforeNoteSwitch", { noteContext: this });
+            } catch (e) {
+                console.debug("Error saving pending changes before read-only check:", e);
+                // Continue with the check even if saving fails
+            }
+        }
+
+        // Now that we've saved any pending changes, get the updated blob size
         const blob = await this.note.getBlob();
         if (!blob) {
             return false;
