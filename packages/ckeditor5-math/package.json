@@ -39,7 +39,7 @@
     "@ckeditor/ckeditor5-dev-utils": "43.0.1",
     "@ckeditor/ckeditor5-inspector": ">=4.1.0",
     "@ckeditor/ckeditor5-package-tools": "^3.0.1",
-    "@typescript-eslint/eslint-plugin": "~5.43.0",
+    "@typescript-eslint/eslint-plugin": "~5.62.0",
     "@typescript-eslint/parser": "^5.18.0",
     "@vitest/browser": "^3.0.5",
     "@vitest/coverage-istanbul": "^3.0.5",
