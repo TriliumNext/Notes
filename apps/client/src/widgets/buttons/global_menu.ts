@@ -405,6 +405,7 @@ export default class GlobalMenuWidget extends BasicWidget {
     }
 
     async updateVersionStatus() {
+        this.$updateToLatestVersionButton.toggle(false);
         await options.initializedPromise;
 
         if (options.get("checkForUpdates") !== "true") {
