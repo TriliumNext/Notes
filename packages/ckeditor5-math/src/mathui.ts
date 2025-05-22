@@ -23,31 +23,7 @@ export default class MathUI extends Plugin {
 	private _previewEl: HTMLElement | null = null;
 	private _initialTextareaHeight: number | null = null;
 	private _initialPreviewTop: number | null = null;
-	private _textareaResizeObserver = new ResizeObserver(([entry]) => {
-		const { height } = entry.contentRect;
-		if (!this._previewEl) {
-			this._previewEl = document.getElementById(this._previewUid);
-			if (!this._previewEl) {
-				return;
-			}
-			this._initialTextareaHeight = height;
-			this._initialPreviewTop = parseFloat(window.getComputedStyle(this._previewEl).top);
-			
-		}
-		if (height === 0) {
-			this._previewEl = null
-			this._initialTextareaHeight = null;
-			this._initialPreviewTop = null;
-			this._textareaResizeObserver.unobserve(entry.target);
-			return;
-		}
-		if (!this._initialTextareaHeight  || !this._initialPreviewTop) {
-			return;
-		}
-		const delta = height - this._initialTextareaHeight;
-		const newTop = this._initialPreviewTop + delta;
-		this._previewEl!.style.top = `${newTop}px`;
-	});
+	private _textareaResizeObserver: ResizeObserver | null = null;
 	
 	public formView: MainFormView | null = null;
 
@@ -178,8 +154,31 @@ export default class MathUI extends Plugin {
 			textarea.style.resize = 'both';
 			textarea.style.height = '100px';
 			textarea.style.width = '100%';
+			this._textareaResizeObserver = new ResizeObserver(([entry]) => {
+				const { height } = entry.contentRect;
+				if (!this._previewEl) {
+					this._previewEl = document.getElementById(this._previewUid);
+					if (!this._previewEl) {
+						return;
+					}
+					this._initialTextareaHeight = height;
+					this._initialPreviewTop = parseFloat(window.getComputedStyle(this._previewEl).top);
+
+				}
+
+				if (!this._initialTextareaHeight || !this._initialPreviewTop) {
+					return;
+				}
+
+				const delta = height - this._initialTextareaHeight;
+				const newTop = this._initialPreviewTop + delta;
+				this._previewEl!.style.top = `${newTop}px`;
+			});
+			
 			this._textareaResizeObserver.observe(textarea);
 		}
+
+		// Allow pressing Enter to submit changes, and use Shift+Enter to insert a new line
 		this.formView?.element?.addEventListener('keydown', event => {
 			if (event.key === 'Enter' && !event.shiftKey) {
 				event.preventDefault();
@@ -215,6 +214,13 @@ export default class MathUI extends Plugin {
 
 		// Remove form first because it's on top of the stack.
 		this._removeFormView();
+
+		// Stop observing textarea resize
+		this._textareaResizeObserver?.disconnect();
+		this._previewEl = null;
+		this._initialTextareaHeight = null;
+		this._initialPreviewTop = null;
+		this._textareaResizeObserver = null;
 	}
 
 	private _closeFormView() {
@@ -224,7 +230,6 @@ export default class MathUI extends Plugin {
 		} else {
 			this._hideUI();
 		}
-		this._textareaResizeObserver.disconnect();
 	}
 
 	private _removeFormView() {
