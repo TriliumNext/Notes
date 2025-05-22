@@ -117,6 +117,14 @@ export default class MathUI extends Plugin {
 			cancel();
 		} );
 
+		// Allow pressing Enter to submit changes, and use Shift+Enter to insert a new line
+		formView.keystrokes.set('enter', (data, cancel) => {
+			if (!data.shiftKey) {
+				formView.fire('submit');
+				cancel();
+			}
+		});
+
 		return formView;
 	}
 
@@ -177,14 +185,6 @@ export default class MathUI extends Plugin {
 			
 			this._textareaResizeObserver.observe(textarea);
 		}
-
-		// Allow pressing Enter to submit changes, and use Shift+Enter to insert a new line
-		this.formView?.element?.addEventListener('keydown', event => {
-			if (event.key === 'Enter' && !event.shiftKey) {
-				event.preventDefault();
-				this.formView?.fire('submit');
-			}
-		});
 
 		// Show preview element
 		const previewEl = document.getElementById( this._previewUid );
