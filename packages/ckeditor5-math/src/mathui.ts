@@ -27,20 +27,26 @@ export default class MathUI extends Plugin {
 		const { height } = entry.contentRect;
 		if (!this._previewEl) {
 			this._previewEl = document.getElementById(this._previewUid);
-			this._initialTextareaHeight = entry.contentRect.height;
-			this._initialPreviewTop = parseFloat(window.getComputedStyle(this._previewEl!).top);
+			if (!this._previewEl) {
+				return;
+			}
+			this._initialTextareaHeight = height;
+			this._initialPreviewTop = parseFloat(window.getComputedStyle(this._previewEl).top);
+			
 		}
 		if (height === 0) {
 			this._previewEl = null
 			this._initialTextareaHeight = null;
 			this._initialPreviewTop = null;
 			this._textareaResizeObserver.unobserve(entry.target);
+			return;
 		}
-		if (this._initialPreviewTop) {
-			const delta = height - this._initialTextareaHeight!;
-			const newTop = this._initialPreviewTop + delta;
-			this._previewEl!.style.top = `${newTop}px`;
+		if (!this._initialTextareaHeight  || !this._initialPreviewTop) {
+			return;
 		}
+		const delta = height - this._initialTextareaHeight;
+		const newTop = this._initialPreviewTop + delta;
+		this._previewEl!.style.top = `${newTop}px`;
 	});
 	
 	public formView: MainFormView | null = null;
