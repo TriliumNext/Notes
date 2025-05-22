@@ -18,11 +18,6 @@ export default class MathUI extends Plugin {
 
 	private _previewUid = `math-preview-${ uid() }`;
 	private _balloon: ContextualBalloon = this.editor.plugins.get( ContextualBalloon );
-
-	// Used to observe textarea resizing.
-	private _previewEl: HTMLElement | null = null;
-	private _initialTextareaHeight: number | null = null;
-	private _initialPreviewTop: number | null = null;
 	private _textareaResizeObserver: ResizeObserver | null = null;
 	
 	public formView: MainFormView | null = null;
@@ -156,38 +151,31 @@ export default class MathUI extends Plugin {
 			this.formView.mathInputView.fieldView.element?.select();
 		}
 
+		const previewEl = document.getElementById( this._previewUid );
+
 		// Allow the textarea to be resizable and observe its resize events.
 		const textarea = this.formView?.mathInputView.fieldView.element;
-		if (textarea) {
+		if (textarea && previewEl) {
 			textarea.style.resize = 'both';
 			textarea.style.height = '100px';
 			textarea.style.width = '100%';
+			let initialTextareaHeight = textarea.offsetHeight;
+			let initialPreviewTop = 0;
+			this._textareaResizeObserver?.disconnect();
 			this._textareaResizeObserver = new ResizeObserver(([entry]) => {
-				const { height } = entry.contentRect;
-				if (!this._previewEl) {
-					this._previewEl = document.getElementById(this._previewUid);
-					if (!this._previewEl) {
-						return;
-					}
-					this._initialTextareaHeight = height;
-					this._initialPreviewTop = parseFloat(window.getComputedStyle(this._previewEl).top);
-
+				const delta = textarea.offsetHeight - initialTextareaHeight;
+				if (initialPreviewTop === 0) {
+					initialPreviewTop = parseFloat(window.getComputedStyle(previewEl).top);
+				} else if (initialPreviewTop >= 0) {
+					const newTop = initialPreviewTop + delta;
+					previewEl.style.top = `${newTop}px`;
 				}
-
-				if (!this._initialTextareaHeight || !this._initialPreviewTop) {
-					return;
-				}
-
-				const delta = height - this._initialTextareaHeight;
-				const newTop = this._initialPreviewTop + delta;
-				this._previewEl!.style.top = `${newTop}px`;
 			});
-			
-			this._textareaResizeObserver.observe(textarea);
+
+			this._textareaResizeObserver?.observe(textarea);
 		}
 
 		// Show preview element
-		const previewEl = document.getElementById( this._previewUid );
 		if ( previewEl && this.formView.previewEnabled ) {
 			// Force refresh preview
 			this.formView.mathView?.updateMath();
@@ -217,9 +205,6 @@ export default class MathUI extends Plugin {
 
 		// Stop observing textarea resize
 		this._textareaResizeObserver?.disconnect();
-		this._previewEl = null;
-		this._initialTextareaHeight = null;
-		this._initialPreviewTop = null;
 		this._textareaResizeObserver = null;
 	}
 
