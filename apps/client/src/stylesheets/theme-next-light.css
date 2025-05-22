@@ -83,6 +83,7 @@
     --menu-item-arrow-color: #00000080;
     --menu-item-delimiter-color: #00000030;
     --menu-item-group-header-color: #00000061;
+    --menu-section-background-color: #00000006;
 
     --modal-backdrop-color: #7c7c7c;
     --modal-shadow-color: #00000033;
@@ -236,4 +237,9 @@
     --help-code-background: #d7d5d5;
 
     --ck-editor-popup-border-color: var(--dropdown-border-color);
+    --ck-editor-toolbar-button-on-background: #00000017;
+    --ck-editor-toolbar-button-on-color: black;
+    --ck-editor-toolbar-button-on-shadow: 1px 1px 1px rgba(0, 0, 0, .35);
+    --ck-editor-toolbar-dropdown-button-open-background: #0000000f;
+
 }

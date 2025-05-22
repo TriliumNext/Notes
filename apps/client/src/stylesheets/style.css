@@ -15,6 +15,14 @@
     src: url(../fonts/JetBrainsMono-Light.woff2) format("woff");
 }
 
+:root {
+    --admonition-note-accent-color: #69c7ff;
+    --admonition-tip-accent-color: #40c025;
+    --admonition-important-accent-color: #9839f7;
+    --admonition-caution-accent-color: #ff2e2e;
+    --admonition-warning-accent-color: #e2aa03;
+}
+
 .table {
     --bs-table-bg: transparent !important;
 }
@@ -2008,11 +2016,11 @@ footer.file-footer button {
     left: 1em;
 }
 
-.admonition.note { --accent-color: #69c7ff; }
-.admonition.tip { --accent-color: #40c025; }
-.admonition.important { --accent-color: #9839f7; }
-.admonition.caution { --accent-color: #ff2e2e; }
-.admonition.warning { --accent-color: #e2aa03; }
+.admonition.note { --accent-color: var(--admonition-note-accent-color); }
+.admonition.tip { --accent-color: var(--admonition-tip-accent-color); }
+.admonition.important { --accent-color: var(--admonition-important-accent-color); }
+.admonition.caution { --accent-color: var(--admonition-caution-accent-color); }
+.admonition.warning { --accent-color: var(--admonition-warning-accent-color); }
 
 .admonition.note::before { content: "\eb21"; }
 .admonition.tip::before { content: "\ea0d"; }

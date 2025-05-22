@@ -23,19 +23,7 @@ class CustomMarkdownRenderer extends Renderer {
     }
 
     paragraph(data: Tokens.Paragraph): string {
-        let text = super.paragraph(data).trimEnd();
-
-        if (text.includes("$")) {
-            // Display math
-            text = text.replaceAll(/(?<!\\)\$\$(.+)\$\$/g,
-                `<span class="math-tex">\\\[$1\\\]</span>`);
-
-            // Inline math
-            text = text.replaceAll(/(?<!\\)\$(.+?)\$/g,
-                `<span class="math-tex">\\\($1\\\)</span>`);
-        }
-
-        return text;
+        return super.paragraph(data).trimEnd();
     }
 
     code({ text, lang }: Tokens.Code): string {
@@ -133,10 +121,16 @@ function renderToHtml(content: string, title: string) {
     // Double-escape slashes in math expression because they are otherwise consumed by the parser somewhere.
     content = content.replaceAll("\\$", "\\\\$");
 
-    let html = parse(content, {
+    // Extract formulas and replace them with placeholders to prevent interference from Markdown rendering
+    const { processedText, placeholderMap: formulaMap } = extractFormulas(content);
+
+    let html = parse(processedText, {
         async: false,
         renderer: renderer
     }) as string;
+
+    // After rendering, replace placeholders back with the formula HTML
+    html = restoreFromMap(html, formulaMap);
 
     // h1 handling needs to come before sanitization
     html = importUtils.handleH1(html, title);
@@ -163,6 +157,59 @@ function getNormalizedMimeFromMarkdownLanguage(language: string | undefined) {
     }
 
     return MIME_TYPE_AUTO;
+}
+
+function extractCodeBlocks(text: string): { processedText: string, placeholderMap: Map<string, string> } {
+    const codeMap = new Map<string, string>();
+    let id = 0;
+    const timestamp = Date.now();
+
+    // Multi-line code block and Inline code
+    text = text.replace(/```[\s\S]*?```/g, (m) => {
+        const key = `<!--CODE_BLOCK_${timestamp}_${id++}-->`;
+        codeMap.set(key, m);
+        return key;
+    }).replace(/`[^`\n]+`/g, (m) => {
+        const key = `<!--INLINE_CODE_${timestamp}_${id++}-->`;
+        codeMap.set(key, m);
+        return key;
+    });
+
+    return { processedText: text, placeholderMap: codeMap };
+}
+
+function extractFormulas(text: string): { processedText: string, placeholderMap: Map<string, string> } {
+    // Protect the $ signs inside code blocks from being recognized as formulas.
+    const { processedText: noCodeText, placeholderMap: codeMap } = extractCodeBlocks(text);
+
+    const formulaMap = new Map<string, string>();
+    let id = 0;
+    const timestamp = Date.now();
+
+    // Display math and Inline math
+    let processedText = noCodeText.replace(/(?<!\\)\$\$((?:(?!\n{2,})[\s\S])+?)\$\$/g, (_, formula) => {
+        const key = `<!--FORMULA_BLOCK_${timestamp}_${id++}-->`;
+        const rendered = `<span class="math-tex">\\[${formula}\\]</span>`;
+        formulaMap.set(key, rendered);
+        return key;
+    }).replace(/(?<!\\)\$(.+?)\$/g, (_, formula) => {
+        const key = `<!--FORMULA_INLINE_${timestamp}_${id++}-->`;
+        const rendered = `<span class="math-tex">\\(${formula}\\)</span>`;
+        formulaMap.set(key, rendered);
+        return key;
+    });
+
+    processedText = restoreFromMap(processedText, codeMap);
+
+    return { processedText, placeholderMap: formulaMap };
+}
+
+function restoreFromMap(text: string, map: Map<string, string>): string {
+    if (map.size === 0) return text;
+    const pattern = [...map.keys()]
+        .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|');
+    return text.replace(new RegExp(pattern, 'g'), match => map.get(match) ?? match);
 }
 
 const renderer = new CustomMarkdownRenderer({ async: false });
