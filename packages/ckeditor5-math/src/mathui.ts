@@ -18,6 +18,31 @@ export default class MathUI extends Plugin {
 
 	private _previewUid = `math-preview-${ uid() }`;
 	private _balloon: ContextualBalloon = this.editor.plugins.get( ContextualBalloon );
+
+	// Used to observe textarea resizing.
+	private _previewEl: HTMLElement | null = null;
+	private _initialTextareaHeight: number | null = null;
+	private _initialPreviewTop: number | null = null;
+	private _textareaResizeObserver = new ResizeObserver(([entry]) => {
+		const { height } = entry.contentRect;
+		if (!this._previewEl) {
+			this._previewEl = document.getElementById(this._previewUid);
+			this._initialTextareaHeight = entry.contentRect.height;
+			this._initialPreviewTop = parseFloat(window.getComputedStyle(this._previewEl!).top);
+		}
+		if (height === 0) {
+			this._previewEl = null
+			this._initialTextareaHeight = null;
+			this._initialPreviewTop = null;
+			this._textareaResizeObserver.unobserve(entry.target);
+		}
+		if (this._initialPreviewTop) {
+			const delta = height - this._initialTextareaHeight!;
+			const newTop = this._initialPreviewTop + delta;
+			this._previewEl!.style.top = `${newTop}px`;
+		}
+	});
+	
 	public formView: MainFormView | null = null;
 
 	public init(): void {
@@ -141,6 +166,21 @@ export default class MathUI extends Plugin {
 			this.formView.mathInputView.fieldView.element?.select();
 		}
 
+		// Allow the textarea to be resizable and observe its resize events.
+		const textarea = this.formView?.mathInputView.fieldView.element;
+		if (textarea) {
+			textarea.style.resize = 'both';
+			textarea.style.height = '100px';
+			textarea.style.width = '100%';
+			this._textareaResizeObserver.observe(textarea);
+		}
+		this.formView?.element?.addEventListener('keydown', event => {
+			if (event.key === 'Enter' && !event.shiftKey) {
+				event.preventDefault();
+				this.formView?.fire('submit');
+			}
+		});
+
 		// Show preview element
 		const previewEl = document.getElementById( this._previewUid );
 		if ( previewEl && this.formView.previewEnabled ) {
@@ -178,6 +218,7 @@ export default class MathUI extends Plugin {
 		} else {
 			this._hideUI();
 		}
+		this._textareaResizeObserver.disconnect();
 	}
 
 	private _removeFormView() {
