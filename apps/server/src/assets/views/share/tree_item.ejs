@@ -1,24 +1,36 @@
 <%
-const isExternalLink = note.hasLabel('shareExternalLink');
-const linkHref = isExternalLink ? note.getLabelValue('shareExternalLink') : `./${note.shareId}`;
-const target = isExternalLink ? ` target="_blank" rel="noopener noreferrer"` : '';
+const isExternalLink = note.hasLabel("shareExternal") || note.hasLabel("shareExternalLink");
+const linkHref = isExternalLink ? note.getLabelValue("shareExternal") ?? note.getLabelValue("shareExternalLink") : `./${note.shareId}`;
+const target = isExternalLink ? ` target="_blank" rel="noopener noreferrer"` : "";
+const isActive = activeNote.noteId === note.noteId;
+const isAncestor = ancestors.includes(note.noteId);
+const hasChildren = note.hasVisibleChildren();
+const isExpanded = isActive || isAncestor;
 %>
-<p>
-    <% const titleWithPrefix = (branch.prefix ? `${branch.prefix} - ` : '') + note.title; %>
-
-    <% if (activeNote.noteId === note.noteId) { %>
-    <strong><%= titleWithPrefix %></strong>
+<li class="<% if (hasChildren) { %>submenu-item<% } else { %>item<% } %><% if (isExpanded) { %> expanded<% } %>">
+    <% if (hasChildren) { %>
+        <span class="collapsible-label">
+            <% if (isActive) { %>
+                <strong><%= note.title %></strong>
+            <% } else { %>
+                <a class="type-<%= note.type %>" href="<%= linkHref %>"<%= target %>><%= note.title %></a>
+            <% } %>
+            <button class="collapse-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="m12 15.586-4.293-4.293-1.414 1.414L12 18.414l5.707-5.707-1.414-1.414z"></path>
+                </svg>
+            </button>
+        </span>
+        <ul>
+            <% for (const childNote of note.getVisibleChildNotes()) { %>
+                <%- include("tree_item", {note: childNote, activeNote: activeNote, subRoot: subRoot, ancestors: ancestors}) %>
+            <% } %>
+        </ul>
     <% } else { %>
-    <a class="type-<%= note.type %>" href="<%= linkHref %>"<%= target %>><%= titleWithPrefix %></a>
+        <% if (isActive) { %>
+            <strong><%= note.title %></strong>
+        <% } else { %>
+            <a class="type-<%= note.type %>" href="<%= linkHref %>"<%= target %>><%= note.title %></a>
+        <% } %>
     <% } %>
-</p>
-
-<% if (note.hasChildren()) { %>
-<ul>
-    <% note.getVisibleChildBranches().forEach(function (branch) { %>
-        <li>
-            <%- include('tree_item', {branch: branch, note: branch.getNote()}) %>
-        </li>
-    <% }) %>
-</ul>
-<% } %>
+</li>
