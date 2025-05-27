@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="shortcut icon" href="<% if (note.hasRelation("shareFavicon")) { %>api/notes/<%= note.getRelation("shareFavicon").value %>/download<% } else { %>../favicon.ico<% } %>">
-    <script src="../<%= appPath %>/share.js"></script>
-    <link href="../<%= assetPath %>/libraries/normalize.min.css" rel="stylesheet">
+    <script src="<%= appPath %>/share.js" type="module"></script>
+    <% if (!note.isLabelTruthy("shareOmitDefaultCss")) { %>
+        <link href="<%= assetPath %>/stylesheets/share.css" rel="stylesheet">
+    <% } %>
 
     <% if (note.hasLabel("shareSwagger")) { %>
         <!-- TODO: make these note IDs customizable -->
@@ -45,7 +47,7 @@ const customServerYml = `- url: "{protocol}://{domain}:{port}/etapi"
     <% } %>
 
     <% if (note.type === "text" || note.type === "book") { %>
-        <link href="../<%= assetPath %>/libraries/ckeditor/ckeditor-content.css" rel="stylesheet">
+        <link href="<%= assetPath %>/libraries/ckeditor/ckeditor-content.css" rel="stylesheet">
     <% } %>
     <% for (const cssRelation of note.getRelations("shareCss")) { %>
         <link href="api/notes/<%= cssRelation.value %>/download" rel="stylesheet">
