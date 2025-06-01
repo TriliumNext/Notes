@@ -400,23 +400,14 @@ export default class TabRowWidget extends BasicWidget {
             }
         };
         this.$tabScrollingContainer[0].addEventListener('wheel', async (event) => {
-            if (!event.shiftKey && event.deltaX === 0) {
-                event.preventDefault();
-                // Clamp deltaX between TAB_CONTAINER_MIN_WIDTH and TAB_CONTAINER_MIN_WIDTH * 3
-                deltaX += Math.sign(event.deltaY) * Math.max(Math.min(Math.abs(event.deltaY), TAB_CONTAINER_MIN_WIDTH * 3), TAB_CONTAINER_MIN_WIDTH);
-                if (!isScrolling) {
-                    isScrolling = true;
-                    stepScroll();
-                }
-            } else if (event.shiftKey) {
-                event.preventDefault();
-                if (event.deltaY > 0) {
-                    await appContext.tabManager.activateNextTabCommand();
-                } else {
-                    await appContext.tabManager.activatePreviousTabCommand();
-                }
-                this.activeTabEl.scrollIntoView();
+            // this is inspired by https://stackoverflow.com/a/59680347 with the addition of `stopImmediatePropagation`
+            if (!event.deltaY) {
+                return;
             }
+
+            event.currentTarget.scrollLeft += event.deltaY + event.deltaX;
+            event.preventDefault();
+            event.stopImmediatePropagation(); // avoids the tab under pointer needlessly "catching" events while scrolling (causing refreshes)
         });
 
         this.$scrollButtonLeft[0].addEventListener('click', () => this.scrollTabContainer(-200));
