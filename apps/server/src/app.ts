@@ -99,7 +99,8 @@ export default async function buildApp() {
                 log.info("LLM features disabled in settings, skipping initialization");
             }
         } catch (error) {
-            log.error("Error initializing LLM features:", error);
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            log.error(`Error initializing LLM features: ${errorMsg}`);
             console.error("Error initializing LLM features:", error);
         }
     });
@@ -115,8 +116,9 @@ export default async function buildApp() {
                 log.info("LLM features disabled in settings, skipping initialization");
             }
         } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            log.error(`Error initializing LLM features: ${errorMsg}`);
             console.error("Error initializing LLM features:", error);
-            log.error(`Error initializing LLM features: ${error}`);
         }
     } else {
         log.info("Database not initialized yet. LLM features will be initialized after setup.");
