@@ -21,6 +21,60 @@ import "./services/handlers.js";
 import "./becca/becca_loader.js";
 import { RESOURCE_DIR } from "./services/resource_dir.js";
 
+/**
+ * Initialize or shutdown LLM features based on settings
+ */
+async function manageLLMFeatures(enabled: boolean) {
+    if (enabled) {
+        log.info("LLM features enabled in settings, initializing...");
+        try {
+            // Initialize embedding providers
+            log.info("Initializing embedding providers...");
+            const { initializeEmbeddings } = await import("./services/llm/embeddings/init.js");
+            await initializeEmbeddings();
+            log.info("Embedding providers initialized");
+
+            // Initialize the index service for LLM functionality
+            log.info("Initializing index service...");
+            const { default: indexService } = await import("./services/llm/index_service.js");
+            await indexService.initialize()
+                .then(() => log.info("Index service initialized successfully"))
+                .catch((error) => {
+                    const errorMsg = error instanceof Error ? error.message : String(error);
+                    log.error(`Failed to initialize index service: ${errorMsg}`);
+                    console.error("Failed to initialize index service:", error);
+                });
+
+            log.info("LLM features initialization completed");
+        } catch (error: unknown) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            log.error(`Error initializing LLM features: ${errorMsg}`);
+            console.error("Error initializing LLM features:", error);
+        }
+    } else {
+        log.info("LLM features disabled in settings, shutting down...");
+        try {
+            // Get index service and shut it down if it exists
+            try {
+                const { default: indexService } = await import("./services/llm/index_service.js");
+                if (indexService && typeof indexService.shutdown === 'function') {
+                    await indexService.shutdown();
+                    log.info("Index service shut down successfully");
+                }
+            } catch (error) {
+                // Skip if index service can't be loaded
+                log.info(`Index service not available for shutdown: ${error}`);
+            }
+            
+            log.info("LLM features shutdown completed");
+        } catch (error: unknown) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            log.error(`Error shutting down LLM features: ${errorMsg}`);
+            console.error("Error shutting down LLM features:", error);
+        }
+    }
+}
+
 export default async function buildApp() {
     const app = express();
 
@@ -30,18 +84,22 @@ export default async function buildApp() {
     // Listen for database initialization event
     eventService.subscribe(eventService.DB_INITIALIZED, async () => {
         try {
-            log.info("Database initialized, setting up LLM features");
-
-            // Initialize embedding providers
-            const { initializeEmbeddings } = await import("./services/llm/embeddings/init.js");
-            await initializeEmbeddings();
-
-            // Initialize the index service for LLM functionality
-            const { default: indexService } = await import("./services/llm/index_service.js");
-            await indexService.initialize().catch(e => console.error("Failed to initialize index service:", e));
-
-            log.info("LLM features initialized successfully");
+            log.info("Database initialized, setting up LLM features with delay to ensure all services are ready");
+            
+            // Add a small delay to ensure all services are completely initialized
+            // This helps prevent race conditions where the database is marked as initialized
+            // but other dependent services haven't fully loaded
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Check if AI features are enabled
+            const aiEnabled = await (await import("./services/options.js")).default.getOptionBool('aiEnabled');
+            if (aiEnabled) {
+                await manageLLMFeatures(true);
+            } else {
+                log.info("LLM features disabled in settings, skipping initialization");
+            }
         } catch (error) {
+            log.error("Error initializing LLM features:", error);
             console.error("Error initializing LLM features:", error);
         }
     });
@@ -49,19 +107,29 @@ export default async function buildApp() {
     // Initialize LLM features only if database is already initialized
     if (sql_init.isDbInitialized()) {
         try {
-            // Initialize embedding providers
-            const { initializeEmbeddings } = await import("./services/llm/embeddings/init.js");
-            await initializeEmbeddings();
-
-            // Initialize the index service for LLM functionality
-            const { default: indexService } = await import("./services/llm/index_service.js");
-            await indexService.initialize().catch(e => console.error("Failed to initialize index service:", e));
+            // Check if AI features are enabled
+            const aiEnabled = await (await import("./services/options.js")).default.getOptionBool('aiEnabled');
+            if (aiEnabled) {
+                await manageLLMFeatures(true);
+            } else {
+                log.info("LLM features disabled in settings, skipping initialization");
+            }
         } catch (error) {
             console.error("Error initializing LLM features:", error);
+            log.error(`Error initializing LLM features: ${error}`);
         }
     } else {
-        console.log("Database not initialized yet. LLM features will be initialized after setup.");
+        log.info("Database not initialized yet. LLM features will be initialized after setup.");
     }
+    
+    // Listen for changes to the aiEnabled option
+    eventService.subscribe(eventService.ENTITY_CHANGED, async ({ entityName, entity }) => {
+        if (entityName === "options" && entity && entity.name === 'aiEnabled' && sql_init.isDbInitialized()) {
+            const enabled = entity.value === "true";
+            log.info(`AI features ${enabled ? 'enabled' : 'disabled'} in settings`);
+            await manageLLMFeatures(enabled);
+        }
+    });
 
     const publicDir = isDev ? path.join(getResourceDir(), "../dist/public") : path.join(getResourceDir(), "public");
     const publicAssetsDir = path.join(publicDir, "assets");

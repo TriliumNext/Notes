@@ -41,6 +41,36 @@ export class IndexService {
     private indexUpdateInterval = 3600000; // 1 hour in milliseconds
 
     /**
+     * Shutdown the index service and free resources
+     */
+    async shutdown(): Promise<void> {
+        if (!this.initialized) {
+            log.info('Index service not initialized, nothing to shut down');
+            return;
+        }
+        
+        try {
+            // Clear any automatic indexing tasks
+            if (this.automaticIndexingInterval) {
+                clearInterval(this.automaticIndexingInterval);
+                this.automaticIndexingInterval = undefined;
+            }
+            
+            // Cancel any ongoing indexing operations
+            this.indexingInProgress = false;
+            this.indexRebuildInProgress = false;
+            
+            // Release resources and signal that the service is no longer initialized
+            this.initialized = false;
+            log.info('Index service shut down successfully');
+        } catch (error: unknown) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            log.error(`Error shutting down index service: ${errorMsg}`);
+            throw error;
+        }
+    }
+
+    /**
      * Initialize the index service
      */
     async initialize() {
