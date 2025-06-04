@@ -10,7 +10,7 @@
     "url": "https://github.com/TriliumNext/Notes"
   },
   "dependencies": {
-    "@eslint/js": "9.27.0",
+    "@eslint/js": "9.28.0",
     "@excalidraw/excalidraw": "0.18.0",
     "@fullcalendar/core": "6.1.17",
     "@fullcalendar/daygrid": "6.1.17",
@@ -66,7 +66,7 @@
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5",
     "copy-webpack-plugin": "13.0.0",
-    "happy-dom": "17.5.6",
+    "happy-dom": "17.6.1",
     "script-loader": "0.7.2",
     "vite-plugin-static-copy": "3.0.0"
   },

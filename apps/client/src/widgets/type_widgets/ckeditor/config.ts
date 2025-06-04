@@ -222,7 +222,6 @@ export function buildFloatingToolbar() {
                 "|",
                 "code",
                 "link",
-                "bookmark",
                 "removeFormat",
                 "internallink",
                 "cuttonote"
@@ -244,7 +243,7 @@ export function buildFloatingToolbar() {
             {
                 label: "Insert",
                 icon: "plus",
-                items: ["internallink", "includeNote", "|", "math", "mermaid", "horizontalLine", "pageBreak"]
+                items: ["bookmark", "internallink", "includeNote", "|", "math", "mermaid", "horizontalLine", "pageBreak"]
             },
             "|",
             "outdent",

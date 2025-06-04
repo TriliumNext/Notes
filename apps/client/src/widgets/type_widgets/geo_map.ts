@@ -239,6 +239,9 @@ export default class GeoMapTypeWidget extends TypeWidget {
                 wptIcons: {
                     "": this.#buildIcon("bx bx-pin")
                 }
+            },
+            polyline_options: {
+                color: note.getLabelValue("color") ?? "blue"
             }
         });
         track.addTo(this.geoMapWidget.map);

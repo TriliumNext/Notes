@@ -61,6 +61,6 @@
     "@ssddanbrown/codemirror-lang-twig": "1.0.0",
     "codemirror-lang-hcl": "0.1.0",
     "codemirror-lang-mermaid": "0.5.0",
-    "eslint-linter-browserify": "9.27.0"
+    "eslint-linter-browserify": "9.28.0"
   }
 }
