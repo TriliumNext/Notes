@@ -36,12 +36,14 @@ export class AIServiceManager implements IAIServiceManager {
         ollama: new OllamaService()
     };
 
-    private providerOrder: ServiceProviders[] = ['openai', 'anthropic', 'ollama']; // Default order
+    private currentChatProvider: ServiceProviders | null = null; // No default
+    private currentChatService: AIService | null = null; // Current active service
+    private currentEmbeddingProvider: string | null = null; // No default
     private initialized = false;
 
     constructor() {
-        // Initialize provider order immediately
-        this.updateProviderOrder();
+        // Initialize provider immediately
+        this.updateCurrentProvider();
 
         // Initialize tools immediately
         this.initializeTools().catch(error => {
@@ -71,68 +73,47 @@ export class AIServiceManager implements IAIServiceManager {
     }
 
     /**
-     * Update the provider precedence order from saved options
+     * Update the current provider from saved options
      * Returns true if successful, false if options not available yet
      */
-    updateProviderOrder(): boolean {
+    updateCurrentProvider(): boolean {
         if (this.initialized) {
             return true;
         }
 
         try {
-            // Default precedence: openai, anthropic, ollama
-            const defaultOrder: ServiceProviders[] = ['openai', 'anthropic', 'ollama'];
-
-            // Get custom order from options
-            const customOrder = options.getOption('aiProviderPrecedence');
-
-            if (customOrder) {
-                try {
-                    // Try to parse as JSON first
-                    let parsed;
-
-                    // Handle both array in JSON format and simple string format
-                    if (customOrder.startsWith('[') && customOrder.endsWith(']')) {
-                        parsed = JSON.parse(customOrder);
-                    } else if (typeof customOrder === 'string') {
-                        // If it's a string with commas, split it
-                        if (customOrder.includes(',')) {
-                            parsed = customOrder.split(',').map(p => p.trim());
-                        } else {
-                            // If it's a simple string (like "ollama"), convert to single-item array
-                            parsed = [customOrder];
-                        }
-                    } else {
-                        // Fallback to default
-                        parsed = defaultOrder;
-                    }
-
-                    // Validate that all providers are valid
-                    if (Array.isArray(parsed) &&
-                        parsed.every(p => Object.keys(this.services).includes(p))) {
-                        this.providerOrder = parsed as ServiceProviders[];
-                    } else {
-                        log.info('Invalid AI provider precedence format, using defaults');
-                        this.providerOrder = defaultOrder;
-                    }
-                } catch (e) {
-                    log.error(`Failed to parse AI provider precedence: ${e}`);
-                    this.providerOrder = defaultOrder;
-                }
-            } else {
-                this.providerOrder = defaultOrder;
+            // Always get selected chat provider from options
+            const selectedChatProvider = options.getOption('aiChatProvider');
+            if (!selectedChatProvider) {
+                throw new Error('No chat provider configured. Please set aiChatProvider option.');
             }
+            
+            if (!Object.keys(this.services).includes(selectedChatProvider)) {
+                throw new Error(`Invalid chat provider '${selectedChatProvider}'. Valid providers are: ${Object.keys(this.services).join(', ')}`);
+            }
+            
+            this.currentChatProvider = selectedChatProvider as ServiceProviders;
+            this.currentChatService = this.services[this.currentChatProvider];
+            
+            // Always get selected embedding provider from options
+            const selectedEmbeddingProvider = options.getOption('aiEmbeddingProvider');
+            if (!selectedEmbeddingProvider) {
+                throw new Error('No embedding provider configured. Please set aiEmbeddingProvider option.');
+            }
+            
+            this.currentEmbeddingProvider = selectedEmbeddingProvider;
 
             this.initialized = true;
-
-            // Remove the validateEmbeddingProviders call since we now do validation on the client
-            // this.validateEmbeddingProviders();
+            log.info(`AI Service Manager initialized with chat provider: ${this.currentChatProvider}, embedding provider: ${this.currentEmbeddingProvider}`);
 
             return true;
         } catch (error) {
-            // If options table doesn't exist yet, use defaults
+            // If options table doesn't exist yet or providers not configured
             // This happens during initial database creation
-            this.providerOrder = ['openai', 'anthropic', 'ollama'];
+            log.error(`Failed to initialize AI providers: ${error}`);
+            this.currentChatProvider = null;
+            this.currentChatService = null;
+            this.currentEmbeddingProvider = null;
             return false;
         }
     }
@@ -152,51 +133,34 @@ export class AIServiceManager implements IAIServiceManager {
                 return null;
             }
 
-            // Get precedence list from options
-            let precedenceList: string[] = ['openai']; // Default to openai if not set
-            const precedenceOption = await options.getOption('aiProviderPrecedence');
-            
-            if (precedenceOption) {
-                try {
-                    if (precedenceOption.startsWith('[') && precedenceOption.endsWith(']')) {
-                        precedenceList = JSON.parse(precedenceOption);
-                    } else if (typeof precedenceOption === 'string') {
-                        if (precedenceOption.includes(',')) {
-                            precedenceList = precedenceOption.split(',').map(p => p.trim());
-                        } else {
-                            precedenceList = [precedenceOption];
-                        }
-                    }
-                } catch (e) {
-                    log.error(`Error parsing precedence list: ${e}`);
-                }
+            // Get selected provider from options
+            const selectedProvider = await options.getOption('aiChatProvider');
+            if (!selectedProvider) {
+                throw new Error('No chat provider configured');
             }
             
-            // Check for configuration issues with providers in the precedence list
+            // Check for configuration issues with the selected provider
             const configIssues: string[] = [];
             
-            // Check each provider in the precedence list for proper configuration
-            for (const provider of precedenceList) {
-                if (provider === 'openai') {
-                    // Check OpenAI configuration
-                    const apiKey = await options.getOption('openaiApiKey');
-                    if (!apiKey) {
-                        configIssues.push(`OpenAI API key is missing`);
-                    }
-                } else if (provider === 'anthropic') {
-                    // Check Anthropic configuration
-                    const apiKey = await options.getOption('anthropicApiKey');
-                    if (!apiKey) {
-                        configIssues.push(`Anthropic API key is missing`);
-                    }
-                } else if (provider === 'ollama') {
-                    // Check Ollama configuration
-                    const baseUrl = await options.getOption('ollamaBaseUrl');
-                    if (!baseUrl) {
-                        configIssues.push(`Ollama Base URL is missing`);
-                    }
+            // Check the selected provider for proper configuration
+            if (selectedProvider === 'openai') {
+                // Check OpenAI configuration
+                const apiKey = await options.getOption('openaiApiKey');
+                if (!apiKey) {
+                    configIssues.push(`OpenAI API key is missing`);
                 }
-                // Add checks for other providers as needed
+            } else if (selectedProvider === 'anthropic') {
+                // Check Anthropic configuration
+                const apiKey = await options.getOption('anthropicApiKey');
+                if (!apiKey) {
+                    configIssues.push(`Anthropic API key is missing`);
+                }
+            } else if (selectedProvider === 'ollama') {
+                // Check Ollama configuration
+                const baseUrl = await options.getOption('ollamaBaseUrl');
+                if (!baseUrl) {
+                    configIssues.push(`Ollama Base URL is missing`);
+                }
             }
             
             // Return warning message if there are configuration issues
@@ -227,7 +191,7 @@ export class AIServiceManager implements IAIServiceManager {
      */
     private ensureInitialized() {
         if (!this.initialized) {
-            this.updateProviderOrder();
+            this.updateCurrentProvider();
         }
     }
 
@@ -249,8 +213,7 @@ export class AIServiceManager implements IAIServiceManager {
     }
 
     /**
-     * Generate a chat completion response using the first available AI service
-     * based on the configured precedence order
+     * Generate a chat completion response using the current AI service
      */
     async generateChatCompletion(messages: Message[], options: ChatCompletionOptions = {}): Promise<ChatResponse> {
         this.ensureInitialized();
@@ -266,49 +229,46 @@ export class AIServiceManager implements IAIServiceManager {
             throw new Error('No messages provided for chat completion');
         }
 
-        // Try providers in order of preference
-        const availableProviders = this.getAvailableProviders();
-
-        if (availableProviders.length === 0) {
-            throw new Error('No AI providers are available. Please check your AI settings.');
-        }
-
-        // Sort available providers by precedence
-        const sortedProviders = this.providerOrder
-            .filter(provider => availableProviders.includes(provider));
-
-        // If a specific provider is requested and available, use it
+        // If a specific provider is requested via model prefix, use it temporarily
         if (options.model && options.model.includes(':')) {
             const [providerName, modelName] = options.model.split(':');
 
-            if (availableProviders.includes(providerName as ServiceProviders)) {
+            if (this.services[providerName as ServiceProviders]?.isAvailable()) {
                 try {
                     const modifiedOptions = { ...options, model: modelName };
                     log.info(`[AIServiceManager] Using provider ${providerName} from model prefix with modifiedOptions.stream: ${modifiedOptions.stream}`);
                     return await this.services[providerName as ServiceProviders].generateChatCompletion(messages, modifiedOptions);
                 } catch (error) {
                     log.error(`Error with specified provider ${providerName}: ${error}`);
-                    // If the specified provider fails, continue with the fallback providers
+                    throw new Error(`Provider ${providerName} failed: ${error}`);
                 }
+            } else {
+                throw new Error(`Requested provider ${providerName} is not available`);
             }
         }
 
-        // Try each provider in order until one succeeds
-        let lastError: Error | null = null;
-
-        for (const provider of sortedProviders) {
-            try {
-                log.info(`[AIServiceManager] Trying provider ${provider} with options.stream: ${options.stream}`);
-                return await this.services[provider].generateChatCompletion(messages, options);
-            } catch (error) {
-                log.error(`Error with provider ${provider}: ${error}`);
-                lastError = error as Error;
-                // Continue to the next provider
+        // Ensure we have a configured service
+        if (!this.currentChatProvider || !this.currentChatService) {
+            // Try to initialize again in case options were updated
+            this.initialized = false;
+            this.updateCurrentProvider();
+            
+            if (!this.currentChatProvider || !this.currentChatService) {
+                throw new Error('No chat provider configured. Please configure aiChatProvider in AI settings.');
             }
         }
+        
+        if (!this.currentChatService.isAvailable()) {
+            throw new Error(`Configured chat provider '${this.currentChatProvider}' is not available. Please check your AI settings.`);
+        }
 
-        // If we get here, all providers failed
-        throw new Error(`All AI providers failed: ${lastError?.message || 'Unknown error'}`);
+        try {
+            log.info(`[AIServiceManager] Using current chat service (${this.currentChatProvider}) with options.stream: ${options.stream}`);
+            return await this.currentChatService.generateChatCompletion(messages, options);
+        } catch (error) {
+            log.error(`Error with provider ${this.currentChatProvider}: ${error}`);
+            throw new Error(`Chat provider ${this.currentChatProvider} failed: ${error}`);
+        }
     }
 
     setupEventListeners() {
@@ -406,21 +366,8 @@ export class AIServiceManager implements IAIServiceManager {
                 return;
             }
 
-            // Get provider precedence list
-            const precedenceOption = await options.getOption('embeddingProviderPrecedence');
-            let precedenceList: string[] = [];
-
-            if (precedenceOption) {
-                if (precedenceOption.startsWith('[') && precedenceOption.endsWith(']')) {
-                    precedenceList = JSON.parse(precedenceOption);
-                } else if (typeof precedenceOption === 'string') {
-                    if (precedenceOption.includes(',')) {
-                        precedenceList = precedenceOption.split(',').map(p => p.trim());
-                    } else {
-                        precedenceList = [precedenceOption];
-                    }
-                }
-            }
+            // Get selected embedding provider
+            const selectedProvider = await options.getOption('aiEmbeddingProvider') || 'openai';
 
             // Check if we have enabled providers
             const enabledProviders = await getEnabledEmbeddingProviders();
@@ -572,17 +519,13 @@ export class AIServiceManager implements IAIServiceManager {
             return this.services[provider as ServiceProviders];
         }
 
-        // Otherwise, use the first available provider in the configured order
-        for (const providerName of this.providerOrder) {
-            const service = this.services[providerName];
-            if (service.isAvailable()) {
-                return service;
-            }
+        // Otherwise, use the current chat service
+        if (this.currentChatService && this.currentChatService.isAvailable()) {
+            return this.currentChatService;
         }
 
-        // If no provider is available, use first one anyway (it will throw an error)
-        // This allows us to show a proper error message rather than "provider not found"
-        return this.services[this.providerOrder[0]];
+        // If current service is not available, throw an error
+        throw new Error(`Configured chat provider '${this.currentChatProvider}' is not available`);
     }
 
     /**
@@ -590,16 +533,40 @@ export class AIServiceManager implements IAIServiceManager {
      */
     getPreferredProvider(): string {
         this.ensureInitialized();
-
-        // Return the first available provider in the order
-        for (const providerName of this.providerOrder) {
-            if (this.services[providerName].isAvailable()) {
-                return providerName;
-            }
+        if (!this.currentChatProvider) {
+            throw new Error('No chat provider configured');
         }
-
-        // Return the first provider as fallback
-        return this.providerOrder[0];
+        return this.currentChatProvider;
+    }
+    
+    /**
+     * Get the current chat service
+     */
+    getCurrentChatService(): AIService | null {
+        this.ensureInitialized();
+        return this.currentChatService;
+    }
+    
+    /**
+     * Get the current chat provider name
+     */
+    getCurrentChatProvider(): string {
+        this.ensureInitialized();
+        if (!this.currentChatProvider) {
+            throw new Error('No chat provider configured');
+        }
+        return this.currentChatProvider;
+    }
+    
+    /**
+     * Get the current embedding provider name
+     */
+    getCurrentEmbeddingProvider(): string {
+        this.ensureInitialized();
+        if (!this.currentEmbeddingProvider) {
+            throw new Error('No embedding provider configured');
+        }
+        return this.currentEmbeddingProvider;
     }
 
     /**
@@ -607,6 +574,25 @@ export class AIServiceManager implements IAIServiceManager {
      */
     isProviderAvailable(provider: string): boolean {
         return this.services[provider as ServiceProviders]?.isAvailable() ?? false;
+    }
+
+    /**
+     * Reinitialize the service manager when provider settings change
+     * This will update the current provider selection and service objects
+     */
+    async reinitialize(): Promise<void> {
+        log.info('Reinitializing AI Service Manager due to provider change');
+        
+        // Reset initialization flag to force update
+        this.initialized = false;
+        
+        // Update current provider and service objects from options
+        this.updateCurrentProvider();
+        
+        // Re-validate providers if needed
+        await this.validateEmbeddingProviders();
+        
+        log.info(`AI Service Manager reinitialized with chat provider: ${this.currentChatProvider}, embedding provider: ${this.currentEmbeddingProvider}`);
     }
 
     /**
@@ -723,6 +709,18 @@ export default {
     },
     getProviderMetadata(provider: string): ProviderMetadata | null {
         return getInstance().getProviderMetadata(provider);
+    },
+    async reinitialize(): Promise<void> {
+        return getInstance().reinitialize();
+    },
+    getCurrentChatService(): AIService | null {
+        return getInstance().getCurrentChatService();
+    },
+    getCurrentChatProvider(): string {
+        return getInstance().getCurrentChatProvider();
+    },
+    getCurrentEmbeddingProvider(): string {
+        return getInstance().getCurrentEmbeddingProvider();
     }
 };
 

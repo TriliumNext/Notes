@@ -16,50 +16,35 @@ export async function validateEmbeddingProviders(validationWarning: HTMLElement)
             return;
         }
 
-        // Get precedence list from options
-        const precedenceStr = options.get('aiProviderPrecedence') || 'openai,anthropic,ollama';
-        let precedenceList: string[] = [];
-
-        if (precedenceStr) {
-            if (precedenceStr.startsWith('[') && precedenceStr.endsWith(']')) {
-                try {
-                    precedenceList = JSON.parse(precedenceStr);
-                } catch (e) {
-                    console.error('Error parsing precedence list:', e);
-                    precedenceList = ['openai']; // Default if parsing fails
-                }
-            } else if (precedenceStr.includes(',')) {
-                precedenceList = precedenceStr.split(',').map(p => p.trim());
-            } else {
-                precedenceList = [precedenceStr];
-            }
+        // Get selected chat provider
+        const selectedProvider = options.get('aiChatProvider');
+        if (!selectedProvider) {
+            // No provider configured, hide validation
+            validationWarning.style.display = 'none';
+            return;
         }
         
-        // Check for configuration issues with providers in the precedence list
+        // Check for configuration issues with the selected provider
         const configIssues: string[] = [];
         
-        // Check each provider in the precedence list for proper configuration
-        for (const provider of precedenceList) {
-            if (provider === 'openai') {
-                // Check OpenAI configuration
-                const apiKey = options.get('openaiApiKey');
-                if (!apiKey) {
-                    configIssues.push(`OpenAI API key is missing`);
-                }
-            } else if (provider === 'anthropic') {
-                // Check Anthropic configuration
-                const apiKey = options.get('anthropicApiKey');
-                if (!apiKey) {
-                    configIssues.push(`Anthropic API key is missing`);
-                }
-            } else if (provider === 'ollama') {
-                // Check Ollama configuration
-                const baseUrl = options.get('ollamaBaseUrl');
-                if (!baseUrl) {
-                    configIssues.push(`Ollama Base URL is missing`);
-                }
+        if (selectedProvider === 'openai') {
+            // Check OpenAI configuration
+            const apiKey = options.get('openaiApiKey');
+            if (!apiKey) {
+                configIssues.push(`OpenAI API key is missing`);
             }
-            // Add checks for other providers as needed
+        } else if (selectedProvider === 'anthropic') {
+            // Check Anthropic configuration
+            const apiKey = options.get('anthropicApiKey');
+            if (!apiKey) {
+                configIssues.push(`Anthropic API key is missing`);
+            }
+        } else if (selectedProvider === 'ollama') {
+            // Check Ollama configuration
+            const baseUrl = options.get('ollamaBaseUrl');
+            if (!baseUrl) {
+                configIssues.push(`Ollama Base URL is missing`);
+            }
         }
 
         // Fetch embedding stats to check if there are any notes being processed

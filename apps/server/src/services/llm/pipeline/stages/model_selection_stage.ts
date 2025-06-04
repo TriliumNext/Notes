@@ -86,52 +86,44 @@ export class ModelSelectionStage extends BasePipelineStage<ModelSelectionInput, 
             }
         }
 
-        // Get default provider and model based on precedence
-        let defaultProvider = 'openai';
-        let defaultModelName = 'gpt-3.5-turbo';
-
+        // Get current provider and model from AIServiceManager
+        let currentProvider: string;
+        let defaultModelName: string | null = null;
+        
         try {
-            // Get provider precedence list
-            const providerPrecedence = await options.getOption('aiProviderPrecedence');
-            if (providerPrecedence) {
-                // Parse provider precedence list
-                let providers: string[] = [];
-                if (providerPrecedence.includes(',')) {
-                    providers = providerPrecedence.split(',').map(p => p.trim());
-                } else if (providerPrecedence.startsWith('[') && providerPrecedence.endsWith(']')) {
-                    providers = JSON.parse(providerPrecedence);
-                } else {
-                    providers = [providerPrecedence];
-                }
-
-                // Check for first available provider
-                if (providers.length > 0) {
-                    const firstProvider = providers[0];
-                    defaultProvider = firstProvider;
-
-                    // Get provider-specific default model
-                    if (firstProvider === 'openai') {
-                        const model = await options.getOption('openaiDefaultModel');
-                        if (model) defaultModelName = model;
-                    } else if (firstProvider === 'anthropic') {
-                        const model = await options.getOption('anthropicDefaultModel');
-                        if (model) defaultModelName = model;
-                    } else if (firstProvider === 'ollama') {
-                        const model = await options.getOption('ollamaDefaultModel');
-                        if (model) {
-                            defaultModelName = model;
-
-                            // Enable tools for all Ollama models
-                            // The Ollama API will handle models that don't support tool calling
-                            log.info(`Using Ollama model ${model} with tool calling enabled`);
-                            updatedOptions.enableTools = true;
-                        }
-                    }
-                }
-            }
+            currentProvider = aiServiceManager.getCurrentChatProvider();
         } catch (error) {
-            // If any error occurs, use the fallback default
-            log.error(`Error determining default model: ${error}`);
+            // Provider not configured, try to get from options
+            const provider = await options.getOption('aiChatProvider');
+            if (!provider) {
+                throw new Error('No chat provider configured. Please configure AI settings.');
+            }
+            currentProvider = provider;
+        }
+
+        // Get provider-specific default model from options
+        if (currentProvider === 'openai') {
+            defaultModelName = await options.getOption('openaiDefaultModel');
+            if (!defaultModelName) {
+                throw new Error('OpenAI default model not configured. Please set openaiDefaultModel option.');
+            }
+        } else if (currentProvider === 'anthropic') {
+            defaultModelName = await options.getOption('anthropicDefaultModel');
+            if (!defaultModelName) {
+                throw new Error('Anthropic default model not configured. Please set anthropicDefaultModel option.');
+            }
+        } else if (currentProvider === 'ollama') {
+            defaultModelName = await options.getOption('ollamaDefaultModel');
+            if (!defaultModelName) {
+                throw new Error('Ollama default model not configured. Please set ollamaDefaultModel option.');
+            }
+            
+            // Enable tools for all Ollama models
+            // The Ollama API will handle models that don't support tool calling
+            log.info(`Using Ollama model ${defaultModelName} with tool calling enabled`);
+            updatedOptions.enableTools = true;
+        } else {
+            throw new Error(`Unknown provider '${currentProvider}'. Cannot determine default model.`);
         }
 
         // Determine query complexity
@@ -162,13 +154,13 @@ export class ModelSelectionStage extends BasePipelineStage<ModelSelectionInput, 
 
         // Set the model and add provider metadata
         updatedOptions.model = defaultModelName;
-        this.addProviderMetadata(updatedOptions, defaultProvider, defaultModelName);
+        this.addProviderMetadata(updatedOptions, currentProvider, defaultModelName);
 
-        log.info(`Selected model: ${defaultModelName} from provider: ${defaultProvider} for query complexity: ${queryComplexity}`);
+        log.info(`Selected model: ${defaultModelName} from provider: ${currentProvider} for query complexity: ${queryComplexity}`);
         log.info(`[ModelSelectionStage] Final options: ${JSON.stringify({
             model: updatedOptions.model,
             stream: updatedOptions.stream,
-            provider: defaultProvider,
+            provider: currentProvider,
             enableTools: updatedOptions.enableTools
         })}`);
 
@@ -207,19 +199,10 @@ export class ModelSelectionStage extends BasePipelineStage<ModelSelectionInput, 
             return;
         }
 
-        // If no provider could be determined, try to use precedence
+        // If no provider could be determined, use the current provider
         let selectedProvider = provider;
         if (!selectedProvider) {
-            // List of providers in precedence order
-            const providerPrecedence = ['anthropic', 'openai', 'ollama'];
-
-            // Find the first available provider
-            for (const p of providerPrecedence) {
-                if (aiServiceManager.isProviderAvailable(p)) {
-                    selectedProvider = p;
-                    break;
-                }
-            }
+            selectedProvider = aiServiceManager.getCurrentChatProvider();
         }
 
         // Set the provider metadata in the options
@@ -242,32 +225,50 @@ export class ModelSelectionStage extends BasePipelineStage<ModelSelectionInput, 
     }
 
     /**
-     * Determine model based on provider precedence
+     * Determine model based on current provider
      */
-    private determineDefaultModel(input: ModelSelectionInput): string {
-        const providerPrecedence = ['anthropic', 'openai', 'ollama'];
-
-        // Use only providers that are available
-        const availableProviders = providerPrecedence.filter(provider =>
-            aiServiceManager.isProviderAvailable(provider));
-
-        if (availableProviders.length === 0) {
-            throw new Error('No AI providers are available');
+    private async determineDefaultModel(input: ModelSelectionInput): Promise<string> {
+        let currentProvider: string;
+        try {
+            currentProvider = aiServiceManager.getCurrentChatProvider();
+        } catch (error) {
+            // Provider not initialized, get from options
+            const provider = await options.getOption('aiChatProvider');
+            if (!provider) {
+                throw new Error('No chat provider configured');
+            }
+            currentProvider = provider;
+        }
+        
+        const service = aiServiceManager.getCurrentChatService();
+        if (!service || !service.isAvailable()) {
+            throw new Error(`Current AI provider '${currentProvider}' is not available`);
         }
 
-        // Get the first available provider and its default model
-        const defaultProvider = availableProviders[0] as 'openai' | 'anthropic' | 'ollama' | 'local';
-        let defaultModel = 'gpt-3.5-turbo'; // Use model from our constants
+        // Get the default model from options based on provider
+        let defaultModel: string | null = null;
+        
+        if (currentProvider === 'openai') {
+            defaultModel = await options.getOption('openaiDefaultModel');
+        } else if (currentProvider === 'anthropic') {
+            defaultModel = await options.getOption('anthropicDefaultModel');
+        } else if (currentProvider === 'ollama') {
+            defaultModel = await options.getOption('ollamaDefaultModel');
+        }
+        
+        if (!defaultModel) {
+            throw new Error(`No default model configured for provider '${currentProvider}'`);
+        }
 
         // Set provider metadata
         if (!input.options.providerMetadata) {
             input.options.providerMetadata = {
-                provider: defaultProvider,
+                provider: currentProvider as 'openai' | 'anthropic' | 'ollama' | 'local',
                 modelId: defaultModel
             };
         }
 
-        log.info(`Selected default model ${defaultModel} from provider ${defaultProvider}`);
+        log.info(`Selected default model ${defaultModel} from provider ${currentProvider}`);
         return defaultModel;
     }
 
