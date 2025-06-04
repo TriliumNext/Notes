@@ -501,7 +501,7 @@ export class IndexService {
             const options = (await import('../options.js')).default;
             let preferredProviders: string[] = [];
 
-            const embeddingPrecedence = await options.getOption('embeddingProviderPrecedence');
+            const embeddingPrecedence = await options.getOption('aiEmbeddingProvider');
             let provider;
 
             if (embeddingPrecedence) {

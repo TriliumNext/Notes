@@ -142,7 +142,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     ollamaDefaultModel: string;
     ollamaEmbeddingModel: string;
     codeOpenAiModel: string;
-    aiProviderPrecedence: string;
+    aiChatProvider: string;
 
     // Embedding-related options
     embeddingAutoUpdateEnabled: boolean;
@@ -150,7 +150,7 @@ export interface OptionDefinitions extends KeyboardShortcutsOptions<KeyboardActi
     embeddingBatchSize: number;
     embeddingDefaultDimension: number;
     embeddingsDefaultProvider: string;
-    embeddingProviderPrecedence: string;
+    aiEmbeddingProvider: string;
     enableAutomaticIndexing: boolean;
     embeddingGenerationLocation: string;
     embeddingDimensionStrategy: string;

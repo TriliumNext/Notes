@@ -212,9 +212,9 @@ const defaultOptions: DefaultOption[] = [
     // Adding missing AI options
     { name: "aiTemperature", value: "0.7", isSynced: true },
     { name: "aiSystemPrompt", value: "", isSynced: true },
-    { name: "aiProviderPrecedence", value: "openai,anthropic,ollama", isSynced: true },
+    { name: "aiChatProvider", value: "openai", isSynced: true },
     { name: "embeddingDimensionStrategy", value: "auto", isSynced: true },
-    { name: "embeddingProviderPrecedence", value: "openai,voyage,ollama,local", isSynced: true },
+    { name: "aiEmbeddingProvider", value: "openai", isSynced: true },
     { name: "embeddingSimilarityThreshold", value: "0.75", isSynced: true },
     { name: "enableAutomaticIndexing", value: "true", isSynced: true },
     { name: "maxNotesPerLlmQuery", value: "3", isSynced: true },

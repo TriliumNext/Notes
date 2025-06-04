@@ -273,7 +273,7 @@ export async function findSimilarNotes(
                 } else {
                     // Use dedicated embedding provider precedence from options for other strategies
                     let preferredProviders: string[] = [];
-                    const embeddingPrecedence = await options.getOption('embeddingProviderPrecedence');
+                    const embeddingPrecedence = await options.getOption('aiEmbeddingProvider');
 
                     if (embeddingPrecedence) {
                         // For "comma,separated,values"

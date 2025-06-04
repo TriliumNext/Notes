@@ -61,9 +61,14 @@ export const TPL = `
     <h4>${t("ai_llm.provider_configuration")}</h4>
 
     <div class="form-group">
-        <label>${t("ai_llm.provider_precedence")}</label>
-        <input type="text" class="ai-provider-precedence form-control" placeholder="openai,anthropic,ollama">
-        <div class="form-text">${t("ai_llm.provider_precedence_description")}</div>
+        <label>${t("ai_llm.chat_provider")}</label>
+        <select class="ai-chat-provider form-control">
+            <option value="">-- Select a provider --</option>
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="ollama">Ollama</option>
+        </select>
+        <div class="form-text">${t("ai_llm.chat_provider_description")}</div>
     </div>
 
     <div class="form-group">
@@ -225,9 +230,15 @@ export const TPL = `
     <h4>${t("ai_llm.embeddings_configuration")}</h4>
 
     <div class="form-group">
-        <label class="embedding-provider-label">${t("ai_llm.embedding_provider_precedence")}</label>
-        <input type="text" class="embedding-provider-precedence form-control" placeholder="openai,voyage,ollama,local">
-        <div class="form-text">${t("ai_llm.embedding_provider_precedence_description")}</div>
+        <label class="embedding-provider-label">${t("ai_llm.embedding_provider")}</label>
+        <select class="ai-embedding-provider form-control">
+            <option value="">-- Select a provider --</option>
+            <option value="openai">OpenAI</option>
+            <option value="voyage">Voyage</option>
+            <option value="ollama">Ollama</option>
+            <option value="local">Local</option>
+        </select>
+        <div class="form-text">${t("ai_llm.embedding_provider_description")}</div>
     </div>
 
     <div class="form-group">
@@ -297,9 +308,4 @@ export const TPL = `
         <div class="form-text">${t("ai_llm.rebuild_index_description")}</div>
     </div>
 
-    <!-- Note about embedding provider precedence -->
-    <div class="form-group mt-3">
-        <h5>${t("ai_llm.embedding_providers_order")}</h5>
-        <div class="form-text mt-2">${t("ai_llm.embedding_providers_order_description")}</div>
-    </div>
 </div>`;

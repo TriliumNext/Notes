@@ -8,6 +8,7 @@ import type { Request } from "express";
 import { changeLanguage, getLocales } from "../../services/i18n.js";
 import type { OptionNames } from "@triliumnext/commons";
 import config from "../../services/config.js";
+import aiServiceManager from "../../services/llm/ai_service_manager.js";
 
 interface UserTheme {
     val: string; // value of the theme, used in the URL
@@ -95,7 +96,7 @@ const ALLOWED_OPTIONS = new Set<OptionNames>([
     "aiEnabled",
     "aiTemperature",
     "aiSystemPrompt",
-    "aiProviderPrecedence",
+    "aiChatProvider",
     "openaiApiKey",
     "openaiBaseUrl",
     "openaiDefaultModel",
@@ -110,7 +111,7 @@ const ALLOWED_OPTIONS = new Set<OptionNames>([
     "ollamaEmbeddingModel",
     "embeddingAutoUpdateEnabled",
     "embeddingDimensionStrategy",
-    "embeddingProviderPrecedence",
+    "aiEmbeddingProvider",
     "embeddingSimilarityThreshold",
     "embeddingBatchSize",
     "embeddingUpdateInterval",
@@ -176,6 +177,14 @@ function update(name: string, value: string) {
     if (name === "locale") {
         // This runs asynchronously, so it's not perfect, but it does the trick for now.
         changeLanguage(value);
+    }
+    
+    // Reinitialize AI service manager when provider settings change
+    if (name === "aiChatProvider" || name === "aiEmbeddingProvider") {
+        // Run asynchronously to avoid blocking the response
+        aiServiceManager.reinitialize().catch(error => {
+            log.error(`Failed to reinitialize AI service manager: ${error}`);
+        });
     }
 
     return true;
