@@ -1209,8 +1209,8 @@ importers:
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-tokyo-night-storm':
-        specifier: 6.1.4
-        version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
+        specifier: 6.2.0
+        version: 6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-volcano':
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
@@ -2816,8 +2816,8 @@ packages:
       '@codemirror/view': ^6.0.0
       '@lezer/highlight': ^1.0.0
 
-  '@fsegurai/codemirror-theme-tokyo-night-storm@6.1.4':
-    resolution: {integrity: sha512-n7RsAHZAfsx03JVDeCNFS42bOp3FbkFVi1kg+KJlAB9CB1aGI4qkG5QaTbH0d5qaFtPZXqJlyqs6PlwKbRqNjg==}
+  '@fsegurai/codemirror-theme-tokyo-night-storm@6.2.0':
+    resolution: {integrity: sha512-q2/SFJNqlfzgMHIMU/TlxKf5i9aSZeaTO26BP24OIraRIDiTrt0YhW9947h952z8aXF00DMjfTNOqym4r5wVjw==}
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
@@ -15477,7 +15477,7 @@ snapshots:
       '@codemirror/view': 6.37.1
       '@lezer/highlight': 1.2.1
 
-  '@fsegurai/codemirror-theme-tokyo-night-storm@6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
+  '@fsegurai/codemirror-theme-tokyo-night-storm@6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
     dependencies:
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
