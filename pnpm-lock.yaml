@@ -1161,8 +1161,8 @@ importers:
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-andromeda':
-        specifier: 6.1.4
-        version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
+        specifier: 6.2.0
+        version: 6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-basic-dark':
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
@@ -2688,8 +2688,8 @@ packages:
       '@codemirror/view': ^6.0.0
       '@lezer/highlight': ^1.0.0
 
-  '@fsegurai/codemirror-theme-andromeda@6.1.4':
-    resolution: {integrity: sha512-CUD/sHahsA2sZO9Px+G1r1QXg4aqs8ZVA1xe1QhU0Qf8Rc8wI3L0VVBmgvvvNB37rq3YBTyeDpMkxs2XafEUGg==}
+  '@fsegurai/codemirror-theme-andromeda@6.2.0':
+    resolution: {integrity: sha512-5p2kYi9PuorG3BWBCgxphg9p14IUOWwbVCv4JTmI7gqBko0pIhqTSt1Q+N9aTQgaytZJC61zD3lWXfmD8K84vQ==}
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
@@ -15365,7 +15365,7 @@ snapshots:
       '@codemirror/view': 6.37.1
       '@lezer/highlight': 1.2.1
 
-  '@fsegurai/codemirror-theme-andromeda@6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
+  '@fsegurai/codemirror-theme-andromeda@6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
     dependencies:
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
