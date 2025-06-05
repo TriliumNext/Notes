@@ -1197,8 +1197,8 @@ importers:
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-palenight':
-        specifier: 6.1.4
-        version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
+        specifier: 6.2.0
+        version: 6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-solarized-dark':
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
@@ -2784,8 +2784,8 @@ packages:
       '@codemirror/view': ^6.0.0
       '@lezer/highlight': ^1.0.0
 
-  '@fsegurai/codemirror-theme-palenight@6.1.4':
-    resolution: {integrity: sha512-YZcTEkkiwz5lr12FmPf4JU/gUb1k44eEW25Vj0jzCZwBu92vWESRD1RyPqKjl7p9TxAJkLNBCIC82A7D5uMhRA==}
+  '@fsegurai/codemirror-theme-palenight@6.2.0':
+    resolution: {integrity: sha512-8hOFcYyYhqhInZ7p4kyO4cfASps9E9HTw32g40HI9CFoC+z1Ip6vcI7BWAc74WBouvBLM7uO39gE8shnpvQ5jA==}
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
@@ -15449,7 +15449,7 @@ snapshots:
       '@codemirror/view': 6.37.1
       '@lezer/highlight': 1.2.1
 
-  '@fsegurai/codemirror-theme-palenight@6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
+  '@fsegurai/codemirror-theme-palenight@6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
     dependencies:
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
