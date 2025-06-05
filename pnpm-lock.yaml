@@ -1155,8 +1155,8 @@ importers:
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-abyss':
-        specifier: 6.1.4
-        version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
+        specifier: 6.2.0
+        version: 6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
       '@fsegurai/codemirror-theme-android-studio':
         specifier: 6.1.4
         version: 6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)
@@ -2672,8 +2672,8 @@ packages:
       '@codemirror/view': ^6.0.0
       '@lezer/highlight': ^1.0.0
 
-  '@fsegurai/codemirror-theme-abyss@6.1.4':
-    resolution: {integrity: sha512-Rr5LM7z3LSoeZobunHe3cxlpQ+FU+eo5hagxoAlW+UCl50VGK55h7M8tI/XF8Ry3H7G2PWwacGHjweYiRhhzlA==}
+  '@fsegurai/codemirror-theme-abyss@6.2.0':
+    resolution: {integrity: sha512-ZLF60VBCo922bicL3hddnNF8SQgMz+b7pI5+A9fzQ+c3zsmVF8n2wmPxan0qIrkB8TRn3nUsz4aQjfhWir8UVw==}
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
@@ -15351,7 +15351,7 @@ snapshots:
       '@codemirror/view': 6.37.1
       '@lezer/highlight': 1.2.1
 
-  '@fsegurai/codemirror-theme-abyss@6.1.4(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
+  '@fsegurai/codemirror-theme-abyss@6.2.0(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.37.1)(@lezer/highlight@1.2.1)':
     dependencies:
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
