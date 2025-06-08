@@ -1260,6 +1260,7 @@
     },
     "create_new_ai_chat": "Create new AI Chat",
     "configuration_warnings": "There are some issues with your AI configuration. Please check your settings.",
+    "experimental_warning": "The LLM feature is currently experimental - you have been warned.",
     "selected_provider": "Selected Provider",
     "selected_provider_description": "Choose the AI provider for chat and completion features",
     "select_model": "Select model...",

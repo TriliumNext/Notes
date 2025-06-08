@@ -203,6 +203,11 @@ export default class AiSettingsWidget extends OptionsWidget {
         // Get selected provider
         const selectedProvider = this.$widget.find('.ai-selected-provider').val() as string;
 
+        // Start with experimental warning
+        const allWarnings = [
+            t("ai_llm.experimental_warning")
+        ];
+
         // Check for selected provider configuration
         const providerWarnings: string[] = [];
         if (selectedProvider === 'openai') {
@@ -222,10 +227,8 @@ export default class AiSettingsWidget extends OptionsWidget {
             }
         }
 
-        // Combine all warnings
-        const allWarnings = [
-            ...providerWarnings
-        ];
+        // Add provider warnings to all warnings
+        allWarnings.push(...providerWarnings);
 
         // Show or hide warnings
         if (allWarnings.length > 0) {

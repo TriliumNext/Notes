@@ -2,6 +2,7 @@
  * Validation functions for LLM Chat
  */
 import options from "../../services/options.js";
+import { t } from "../../services/i18n.js";
 
 /**
  * Validate providers configuration
@@ -37,6 +38,9 @@ export async function validateProviders(validationWarning: HTMLElement): Promise
         // Check for configuration issues with providers in the precedence list
         const configIssues: string[] = [];
         
+        // Always add experimental warning as the first item
+        configIssues.push(t("ai_llm.experimental_warning"));
+
         // Check each provider in the precedence list for proper configuration
         for (const provider of precedenceList) {
             if (provider === 'openai') {
