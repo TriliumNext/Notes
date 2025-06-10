@@ -91,6 +91,9 @@
     },
     "overrides": {
       "node-abi": "4.9.0",
+      "image-type": "4.0.0",
+      "strip-bom": "4.0.0",
+      "is-svg": "4.4.0",
       "@types/express-serve-static-core": "5.0.6",
       "flat@<5.0.1": ">=5.0.1",
       "debug@>=3.2.0 <3.2.7": ">=3.2.7",
