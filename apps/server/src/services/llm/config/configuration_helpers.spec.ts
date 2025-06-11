@@ -94,6 +94,83 @@ describe('configuration_helpers', () => {
                 fullIdentifier: ''
             });
         });
+
+        // Tests for special characters in model names
+        it('should handle model names with periods', () => {
+            const result = configHelpers.parseModelIdentifier('gpt-4.1-turbo-preview');
+            
+            expect(result).toStrictEqual({
+                modelId: 'gpt-4.1-turbo-preview',
+                fullIdentifier: 'gpt-4.1-turbo-preview'
+            });
+        });
+
+        it('should handle model names with provider prefix and periods', () => {
+            const result = configHelpers.parseModelIdentifier('openai:gpt-4.1-turbo');
+            
+            expect(result).toStrictEqual({
+                provider: 'openai',
+                modelId: 'gpt-4.1-turbo',
+                fullIdentifier: 'openai:gpt-4.1-turbo'
+            });
+        });
+
+        it('should handle model names with multiple colons', () => {
+            const result = configHelpers.parseModelIdentifier('custom:model:v1.2:latest');
+            
+            expect(result).toStrictEqual({
+                modelId: 'custom:model:v1.2:latest',
+                fullIdentifier: 'custom:model:v1.2:latest'
+            });
+        });
+
+        it('should handle Ollama model names with colons', () => {
+            const result = configHelpers.parseModelIdentifier('ollama:llama3.1:70b-instruct-q4_K_M');
+            
+            expect(result).toStrictEqual({
+                provider: 'ollama',
+                modelId: 'llama3.1:70b-instruct-q4_K_M',
+                fullIdentifier: 'ollama:llama3.1:70b-instruct-q4_K_M'
+            });
+        });
+
+        it('should handle model names with slashes', () => {
+            const result = configHelpers.parseModelIdentifier('library/mistral:7b-instruct');
+            
+            expect(result).toStrictEqual({
+                modelId: 'library/mistral:7b-instruct',
+                fullIdentifier: 'library/mistral:7b-instruct'
+            });
+        });
+
+        it('should handle complex model names with special characters', () => {
+            const complexName = 'org/model-v1.2.3:tag@version#variant';
+            const result = configHelpers.parseModelIdentifier(complexName);
+            
+            expect(result).toStrictEqual({
+                modelId: complexName,
+                fullIdentifier: complexName
+            });
+        });
+
+        it('should handle model names with @ symbols', () => {
+            const result = configHelpers.parseModelIdentifier('claude-3.5-sonnet@20241022');
+            
+            expect(result).toStrictEqual({
+                modelId: 'claude-3.5-sonnet@20241022',
+                fullIdentifier: 'claude-3.5-sonnet@20241022'
+            });
+        });
+
+        it('should not modify or encode special characters', () => {
+            const specialChars = 'model!@#$%^&*()_+-=[]{}|;:\'",.<>?/~`';
+            const result = configHelpers.parseModelIdentifier(specialChars);
+            
+            expect(result).toStrictEqual({
+                modelId: specialChars,
+                fullIdentifier: specialChars
+            });
+        });
     });
 
     describe('createModelConfig', () => {
@@ -154,6 +231,34 @@ describe('configuration_helpers', () => {
             
             expect(result).toBe('llama2');
             expect(optionService.getOption).toHaveBeenCalledWith('ollamaDefaultModel');
+        });
+
+        // Tests for special characters in model names
+        it('should handle OpenAI model names with periods', async () => {
+            const modelName = 'gpt-4.1-turbo-preview';
+            vi.mocked(optionService.getOption).mockReturnValue(modelName);
+            
+            const result = await configHelpers.getDefaultModelForProvider('openai');
+            
+            expect(result).toBe(modelName);
+        });
+
+        it('should handle Anthropic model names with periods and @ symbols', async () => {
+            const modelName = 'claude-3.5-sonnet@20241022';
+            vi.mocked(optionService.getOption).mockReturnValue(modelName);
+            
+            const result = await configHelpers.getDefaultModelForProvider('anthropic');
+            
+            expect(result).toBe(modelName);
+        });
+
+        it('should handle Ollama model names with colons and slashes', async () => {
+            const modelName = 'library/llama3.1:70b-instruct-q4_K_M';
+            vi.mocked(optionService.getOption).mockReturnValue(modelName);
+            
+            const result = await configHelpers.getDefaultModelForProvider('ollama');
+            
+            expect(result).toBe(modelName);
         });
     });
 
@@ -379,6 +484,124 @@ describe('configuration_helpers', () => {
         it('should clear configuration cache (no-op)', () => {
             // The function is now a no-op since caching was removed
             expect(() => configHelpers.clearConfigurationCache()).not.toThrow();
+        });
+    });
+
+    describe('getValidModelConfig', () => {
+        it('should handle model names with special characters', async () => {
+            const modelName = 'gpt-4.1-turbo@latest';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce(modelName)  // openaiDefaultModel
+                .mockReturnValueOnce('test-key')  // openaiApiKey
+                .mockReturnValueOnce('')  // openaiBaseUrl
+                .mockReturnValueOnce('');  // openaiDefaultModel
+            
+            const result = await configHelpers.getValidModelConfig('openai');
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'openai'
+            });
+        });
+
+        it('should handle Anthropic model with complex naming', async () => {
+            const modelName = 'claude-3.5-sonnet-20241022';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce(modelName)  // anthropicDefaultModel
+                .mockReturnValueOnce('anthropic-key')  // anthropicApiKey
+                .mockReturnValueOnce('')  // anthropicBaseUrl
+                .mockReturnValueOnce('');  // anthropicDefaultModel
+            
+            const result = await configHelpers.getValidModelConfig('anthropic');
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'anthropic'
+            });
+        });
+
+        it('should handle Ollama model with colons', async () => {
+            const modelName = 'custom/llama3.1:70b-q4_K_M@latest';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce(modelName)  // ollamaDefaultModel
+                .mockReturnValueOnce('http://localhost:11434')  // ollamaBaseUrl
+                .mockReturnValueOnce('');  // ollamaDefaultModel
+            
+            const result = await configHelpers.getValidModelConfig('ollama');
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'ollama'
+            });
+        });
+    });
+
+    describe('getSelectedModelConfig', () => {
+        it('should preserve OpenAI model names with special characters', async () => {
+            const modelName = 'gpt-4.1-turbo-preview@2024';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce('openai')  // aiSelectedProvider
+                .mockReturnValueOnce(modelName)  // openaiDefaultModel
+                .mockReturnValueOnce('test-key')  // openaiApiKey
+                .mockReturnValueOnce('')  // openaiBaseUrl
+                .mockReturnValueOnce('');  // openaiDefaultModel
+            
+            const result = await configHelpers.getSelectedModelConfig();
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'openai'
+            });
+        });
+
+        it('should handle model names with URL-like patterns', async () => {
+            const modelName = 'https://models.example.com/gpt-4.1';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce('openai')  // aiSelectedProvider
+                .mockReturnValueOnce(modelName)  // openaiDefaultModel
+                .mockReturnValueOnce('test-key')  // openaiApiKey
+                .mockReturnValueOnce('')  // openaiBaseUrl
+                .mockReturnValueOnce('');  // openaiDefaultModel
+            
+            const result = await configHelpers.getSelectedModelConfig();
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'openai'
+            });
+        });
+
+        it('should handle model names that look like file paths', async () => {
+            const modelName = '/models/custom/gpt-4.1.safetensors';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce('ollama')  // aiSelectedProvider
+                .mockReturnValueOnce(modelName)  // ollamaDefaultModel
+                .mockReturnValueOnce('http://localhost:11434')  // ollamaBaseUrl
+                .mockReturnValueOnce('');  // ollamaDefaultModel
+            
+            const result = await configHelpers.getSelectedModelConfig();
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'ollama'
+            });
+        });
+
+        it('should handle model names with all possible special characters', async () => {
+            const modelName = 'model!@#$%^&*()_+-=[]{}|;:\'",.<>?/~`';
+            vi.mocked(optionService.getOption)
+                .mockReturnValueOnce('anthropic')  // aiSelectedProvider
+                .mockReturnValueOnce(modelName)  // anthropicDefaultModel
+                .mockReturnValueOnce('test-key')  // anthropicApiKey
+                .mockReturnValueOnce('')  // anthropicBaseUrl
+                .mockReturnValueOnce('');  // anthropicDefaultModel
+            
+            const result = await configHelpers.getSelectedModelConfig();
+            
+            expect(result).toStrictEqual({
+                model: modelName,
+                provider: 'anthropic'
+            });
         });
     });
 });
