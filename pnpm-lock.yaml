@@ -1292,7 +1292,7 @@ importers:
         specifier: ^6.7.2
         version: 6.21.0(eslint@8.57.1)(typescript@5.8.3)
       dotenv:
-        specifier: ^16.3.1
+        specifier: ^16.5.0
         version: 16.5.0
       esbuild:
         specifier: ^0.25.0
@@ -11692,6 +11692,10 @@ packages:
     resolution: {integrity: sha512-D3YaD0aRxR3mEcqnidIs7ReYJFVzWdd6fXJYUM8ixcQcJRGTka/b3saV0KflYhyVJXKhb947GndU35SxYNResQ==}
     engines: {node: '>= 10.0.0', npm: '>= 3.0.0'}
 
+  socks@2.8.5:
+    resolution: {integrity: sha512-iF+tNDQla22geJdTyJB1wM/qrX9DMRwWrciEPwWLPRWAUEM8sQiyxgckLxWT1f7+9VabJS0jTGGr4QgBuvi6Ww==}
+    engines: {node: '>= 10.0.0', npm: '>= 3.0.0'}
+
   sort-keys-length@1.0.1:
     resolution: {integrity: sha512-GRbEOUqCxemTAk/b32F2xa8wDTs+Z1QHOkbhJDQTvv/6G3ZkbJ+frYWsTcc7cBB3Fu4wy4XlLCuNtJuMn7Gsvw==}
     engines: {node: '>=0.10.0'}
@@ -20766,7 +20770,7 @@ snapshots:
 
   dotenv-expand@11.0.7:
     dependencies:
-      dotenv: 16.5.0
+      dotenv: 16.4.7
 
   dotenv@16.4.7: {}
 
@@ -26453,7 +26457,7 @@ snapshots:
     dependencies:
       agent-base: 6.0.2
       debug: 4.4.1(supports-color@6.0.0)
-      socks: 2.8.4
+      socks: 2.8.5
     transitivePeerDependencies:
       - supports-color
 
@@ -26466,6 +26470,11 @@ snapshots:
       - supports-color
 
   socks@2.8.4:
+    dependencies:
+      ip-address: 9.0.5
+      smart-buffer: 4.2.0
+
+  socks@2.8.5:
     dependencies:
       ip-address: 9.0.5
       smart-buffer: 4.2.0
