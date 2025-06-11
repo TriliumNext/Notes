@@ -4,6 +4,8 @@ import Math from './math.js';
 import MathCommand from './mathcommand.js';
 import MathUI from './mathui.js';
 
+import type Autoformat from '@ckeditor/ckeditor5-autoformat/src/autoformat';
+
 export default class AutoformatMath extends Plugin {
 	public static get requires() {
 		return [ Math, 'Autoformat' ] as const;
@@ -44,10 +46,22 @@ export default class AutoformatMath extends Plugin {
 				);
 			};
 
-			// @ts-expect-error: blockAutoformatEditing expects an Autoformat instance even though it works with any Plugin instance
-			blockAutoformatEditing( editor, this, /^\$\$$/, callback );
-			// @ts-expect-error: blockAutoformatEditing expects an Autoformat instance even though it works with any Plugin instance
-			blockAutoformatEditing( editor, this, /^\\\[$/, callback );
+			// Common LaTeX math delimiters: \(\), \[\], $$
+			// Chosen based on MathJax defaults:
+			// https://docs.mathjax.org/en/latest/input/tex/delimiters.html
+			//
+			// INFO: blockAutoformatEditing expects an Autoformat instance,
+			// but works fine with any Plugin that has `isEnabled`.
+			// We cast `this` accordingly.
+			// Source: Only `plugin.isEnabled` is used internally in the function:
+			// https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-autoformat/src/blockautoformatediting.ts#L91
+
+			blockAutoformatEditing(
+				editor, this as unknown as Autoformat, /\$\$/, callback );
+			blockAutoformatEditing(
+				editor, this as unknown as Autoformat, /\\\(/, callback );
+			blockAutoformatEditing(
+				editor, this as unknown as Autoformat, /\\\[/, callback );
 		}
 	}
 
