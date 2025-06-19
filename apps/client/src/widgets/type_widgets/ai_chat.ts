@@ -26,8 +26,50 @@ export default class AiChatTypeWidget extends TypeWidget {
     }
 
     doRender() {
-        this.$widget = $('<div class="ai-chat-widget-container" style="height: 100%;"></div>');
+        this.$widget = $('<div class="ai-chat-widget-container"></div>');
+        
+        // Apply Firefox-specific layout fixes immediately
+        if (navigator.userAgent.includes('Firefox')) {
+            this.$widget.css({
+                'display': 'flex !important',
+                'flex-direction': 'column !important', 
+                'height': '100% !important',
+                'width': '100% !important',
+                'min-height': '0',
+                'flex': '1'
+            });
+            console.log('Applied Firefox container fixes');
+        } else {
+            this.$widget.css('height', '100%');
+        }
+        
         this.$widget.append(this.llmChatPanel.render());
+
+        // Apply additional Firefox fixes after content is added
+        if (navigator.userAgent.includes('Firefox')) {
+            setTimeout(() => {
+                // Ensure the container and its children are visible
+                this.$widget.removeClass('hidden-int hidden-ext');
+                this.$widget.css({
+                    'display': 'flex',
+                    'flex-direction': 'column',
+                    'visibility': 'visible'
+                });
+                
+                // Also ensure the chat panel is visible
+                const chatElement = this.$widget.find('.note-context-chat');
+                chatElement.removeClass('hidden-int hidden-ext');
+                chatElement.css({
+                    'display': 'flex',
+                    'flex-direction': 'column', 
+                    'visibility': 'visible',
+                    'height': '100%',
+                    'width': '100%'
+                });
+                
+                console.log('Applied Firefox visibility fixes to AI chat widget');
+            }, 100);
+        }
 
         return this.$widget;
     }
@@ -101,6 +143,17 @@ export default class AiChatTypeWidget extends TypeWidget {
 
                         // This will load saved data via the getData callback
                         await this.llmChatPanel.refresh();
+                        
+                        // Firefox-specific: ensure visibility after refresh
+                        if (navigator.userAgent.includes('Firefox')) {
+                            this.$widget.removeClass('hidden-int hidden-ext');
+                            this.$widget.css('display', 'flex');
+                            const chatElement = this.$widget.find('.note-context-chat');
+                            chatElement.removeClass('hidden-int hidden-ext');
+                            chatElement.css('display', 'flex');
+                            console.log('Reapplied Firefox visibility fixes after refresh');
+                        }
+                        
                         this.isInitialized = true;
                     } catch (e) {
                         console.error("Error initializing LlmChatPanel:", e);

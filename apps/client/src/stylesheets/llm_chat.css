@@ -1,4 +1,78 @@
 /* LLM Chat Panel Styles */
+.ai-chat-widget-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+/* Firefox-specific fixes using multiple approaches */
+
+/* Method 1: Mozilla-specific CSS */
+@-moz-document url-prefix() {
+    .ai-chat-widget-container {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        flex: 1 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    .note-context-chat {
+        min-height: 0 !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    .note-context-chat-container {
+        min-height: 0 !important;
+        flex: 1 !important;
+        overflow-y: auto !important;
+        width: 100% !important;
+    }
+}
+
+/* Method 2: CSS feature detection fallback */
+@supports (-moz-appearance: none) {
+    .ai-chat-widget-container {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        flex: 1 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    .note-context-chat {
+        min-height: 0 !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* Method 3: General Firefox layout fixes */
+.ai-chat-widget-container {
+    /* Ensure container is always properly displayed */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Force proper layout in all scenarios */
+.ai-chat-widget-container .note-context-chat {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+}
+
 .note-context-chat {
     background-color: var(--main-background-color);
 }

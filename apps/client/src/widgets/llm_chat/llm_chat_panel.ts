@@ -148,12 +148,25 @@ export default class LlmChatPanel extends BasicWidget {
         // Set up thinking toggle functionality
         this.setupThinkingToggle();
 
+        // Apply Firefox-specific fixes for chat panel
+        if (navigator.userAgent.includes('Firefox')) {
+            this.applyFirefoxFixes();
+        }
+
         // Initialize CKEditor with mention support (async)
         this.initializeCKEditor().then(() => {
             this.initializeEventListeners();
+            // Reapply Firefox fixes after CKEditor initialization
+            if (navigator.userAgent.includes('Firefox')) {
+                setTimeout(() => this.applyFirefoxFixes(), 100);
+            }
         }).catch(error => {
             console.error('Failed to initialize CKEditor, falling back to basic event listeners:', error);
             this.initializeBasicEventListeners();
+            // Reapply Firefox fixes after fallback
+            if (navigator.userAgent.includes('Firefox')) {
+                setTimeout(() => this.applyFirefoxFixes(), 100);
+            }
         });
 
         return this.$widget;
@@ -1787,5 +1800,84 @@ export default class LlmChatPanel extends BasicWidget {
             const newText = currentText + additionalText;
             this.updateThinkingText(newText);
         }
+    }
+
+    /**
+     * Apply Firefox-specific fixes to ensure proper visibility and functionality
+     */
+    private applyFirefoxFixes() {
+        console.log('Applying Firefox fixes to LLM Chat Panel');
+        
+        // Fix the main chat container
+        this.$widget.removeClass('hidden-int hidden-ext');
+        this.$widget.css({
+            'display': 'flex',
+            'flex-direction': 'column',
+            'visibility': 'visible',
+            'height': '100%',
+            'width': '100%',
+            'min-height': '0'
+        });
+
+        // Fix the chat messages container
+        if (this.chatContainer) {
+            $(this.chatContainer).css({
+                'display': 'block',
+                'visibility': 'visible',
+                'flex': '1',
+                'overflow-y': 'auto',
+                'min-height': '0'
+            });
+        }
+
+        // Fix the chat input and form
+        if (this.noteContextChatForm) {
+            $(this.noteContextChatForm).css({
+                'display': 'flex',
+                'visibility': 'visible'
+            });
+        }
+
+        if (this.noteContextChatInput) {
+            $(this.noteContextChatInput).css({
+                'visibility': 'visible'
+            });
+        }
+
+        if (this.noteContextChatSendButton) {
+            $(this.noteContextChatSendButton).css({
+                'visibility': 'visible'
+            });
+        }
+
+        // Fix CKEditor read-only state in Firefox
+        if (this.noteContextChatInput && this.noteContextChatInputEditor) {
+            try {
+                console.log('Fixing CKEditor read-only state in Firefox');
+                
+                // Enable the editor if it's read-only
+                if (this.noteContextChatInputEditor.isReadOnly) {
+                    this.noteContextChatInputEditor.disableReadOnlyMode('#default-lock');
+                    console.log('Disabled CKEditor read-only mode');
+                }
+                
+                // Force contenteditable to true
+                this.noteContextChatInput.setAttribute('contenteditable', 'true');
+                this.noteContextChatInput.classList.remove('ck-read-only');
+                
+                console.log('Fixed CKEditor contenteditable state');
+            } catch (error) {
+                console.error('Failed to fix CKEditor in Firefox:', error);
+                
+                // Fallback: try to make the element editable directly
+                if (this.noteContextChatInput) {
+                    this.noteContextChatInput.setAttribute('contenteditable', 'true');
+                    this.noteContextChatInput.classList.remove('ck-read-only');
+                    console.log('Applied fallback contenteditable fix');
+                }
+            }
+        }
+
+        console.log('Firefox fixes applied to LLM Chat Panel elements');
     }
 }
