@@ -90,7 +90,7 @@
     },
     "overrides": {
       "node-abi": "4.9.0",
-      "mermaid": "11.6.0",
+      "mermaid": "11.7.0",
       "preact": "10.26.9",
       "roughjs": "4.6.6",
       "@types/express-serve-static-core": "5.0.6",
