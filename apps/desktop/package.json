@@ -6,7 +6,7 @@
   "main": "main.cjs",
   "dependencies": {
     "@electron/remote": "2.1.2",
-    "better-sqlite3": "^11.9.1",
+    "better-sqlite3": "^12.0.0",
     "electron-debug": "4.1.0",
     "electron-dl": "4.0.0",
     "electron-squirrel-startup": "1.0.1",

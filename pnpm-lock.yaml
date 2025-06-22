@@ -343,8 +343,8 @@ importers:
         specifier: 2.1.2
         version: 2.1.2(electron@36.5.0)
       better-sqlite3:
-        specifier: ^11.9.1
-        version: 11.10.0
+        specifier: ^12.0.0
+        version: 12.0.0
       electron-debug:
         specifier: 4.1.0
         version: 4.1.0
@@ -413,8 +413,8 @@ importers:
   apps/dump-db:
     dependencies:
       better-sqlite3:
-        specifier: ^11.1.2
-        version: 11.10.0
+        specifier: ^12.0.0
+        version: 12.0.0
       mime-types:
         specifier: ^3.0.0
         version: 3.0.1
@@ -444,8 +444,8 @@ importers:
         specifier: 7.0.1
         version: 7.0.1
       better-sqlite3:
-        specifier: ^11.9.1
-        version: 11.10.0
+        specifier: ^12.0.0
+        version: 12.0.0
     devDependencies:
       '@triliumnext/client':
         specifier: workspace:*
@@ -469,8 +469,8 @@ importers:
   apps/server:
     dependencies:
       better-sqlite3:
-        specifier: 11.10.0
-        version: 11.10.0
+        specifier: 12.0.0
+        version: 12.0.0
     devDependencies:
       '@anthropic-ai/sdk':
         specifier: 0.54.0
@@ -6324,8 +6324,9 @@ packages:
   batch@0.6.1:
     resolution: {integrity: sha512-x+VAiMRL6UPkx+kudNvxTl6hB2XNNCG2r+7wixVfIYwu/2HKRXimwQyaumLjMveWvT2Hkd/cAJw+QBMfJ/EKVw==}
 
-  better-sqlite3@11.10.0:
-    resolution: {integrity: sha512-EwhOpyXiOEL/lKzHz9AW1msWFNzGc/z+LzeB3/jnFJpxu+th2yqvzsSWas1v9jgs9+xiXJcD5A8CJxAG2TaghQ==}
+  better-sqlite3@12.0.0:
+    resolution: {integrity: sha512-ElLgwbEth4MHBrDXEqzkE7Hm2+ACw5+KKBhkLArcjJrVFJyOXvzcE/if2dx7/m5pXTc8vqJjsCQUt1AFQY+TTQ==}
+    engines: {node: 20.x || 22.x || 23.x || 24.x}
 
   bezier-easing@2.1.0:
     resolution: {integrity: sha512-gbIqZ/eslnUFC1tjEvtz0sgx+xTK20wDnYMIA27VA04R7w6xxXQPZDbibjA9DTWZRA2CXtwHykkVzlCaAJAZig==}
@@ -21428,7 +21429,7 @@ snapshots:
 
   batch@0.6.1: {}
 
-  better-sqlite3@11.10.0:
+  better-sqlite3@12.0.0:
     dependencies:
       bindings: 1.5.0
       prebuild-install: 7.1.3
