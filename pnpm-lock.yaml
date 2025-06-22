@@ -180,8 +180,8 @@ importers:
         specifier: 6.1.17
         version: 6.1.17(@fullcalendar/core@6.1.17)
       '@mermaid-js/layout-elk':
-        specifier: 0.1.7
-        version: 0.1.7(mermaid@11.6.0)
+        specifier: 0.1.8
+        version: 0.1.8(mermaid@11.6.0)
       '@mind-elixir/node-menu':
         specifier: 1.0.5
         version: 1.0.5(mind-elixir@4.6.1)
@@ -3599,8 +3599,8 @@ packages:
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
 
-  '@mermaid-js/layout-elk@0.1.7':
-    resolution: {integrity: sha512-G3AJ2jMaCAqky2CT3z/sf3pK5UuS3tne98GsXDl3PkKByCmPmOYmJPf+6oX5PUlV3HNWWHuSgtZ9NU/CZDSuHQ==}
+  '@mermaid-js/layout-elk@0.1.8':
+    resolution: {integrity: sha512-uU+Glm1tQZScphrFuzf6dzPpYTrET3sz6Q2SqpLj/nr+FpO6cfgJmYdJ+vWA8oGoeNQZLVey480qbKAFk8DBuQ==}
     peerDependencies:
       mermaid: 11.6.0
 
@@ -18059,7 +18059,7 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@mermaid-js/layout-elk@0.1.7(mermaid@11.6.0)':
+  '@mermaid-js/layout-elk@0.1.8(mermaid@11.6.0)':
     dependencies:
       d3: 7.9.0
       elkjs: 0.9.3
